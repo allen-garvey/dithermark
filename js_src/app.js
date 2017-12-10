@@ -1,11 +1,11 @@
-(function(Util, Canvas, Pixel, Threshold, Timer){
+(function(Fs, Canvas, Pixel, Threshold, Timer){
     
     var sourceCanvas = Canvas.create('source-canvas');
     var outputCanvas = Canvas.create('output-canvas');
     
     var inputElement = document.getElementById('file-input');
     inputElement.addEventListener('change', (e)=>{
-        Util.openFile(e, (image)=>{
+        Fs.openFile(e, (image)=>{
             Canvas.loadImage(sourceCanvas, image);
             Canvas.loadImage(outputCanvas, image);
             
@@ -14,4 +14,4 @@
             });
         });   
     }, false);
-})(App.Util, App.Canvas, App.Pixel, App.Threshold, App.Timer);
+})(App.Fs, App.Canvas, App.Pixel, App.Threshold, App.Timer);

@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Util = (function(){
+App.Fs = (function(){
     
     function openFile(e, imageLoadFunc) {
         var files = e.target.files;
