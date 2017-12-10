@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Threshold, Timer){
+(function(Vue, Fs, Canvas, Threshold, Timer, ErrorPropDither){
     
     var sourceCanvas = Canvas.create('source-canvas');
     var outputCanvas = Canvas.create('output-canvas');
@@ -34,12 +34,15 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                this.thresholdImage();
+                this.floydSteinbergDither();
             }
         },
         methods: {
             thresholdImage: function(){
                 Threshold.image(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
+            },
+            floydSteinbergDither: function(){
+                ErrorPropDither.floydSteinberg(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
             }
         }
     });
@@ -57,9 +60,9 @@
             app.imageWidth = image.width;
             app.isImageLoaded = true;
             
-            Timer.timeFunction('threshold', ()=>{
-               app.thresholdImage();
+            Timer.timeFunction('floydSteinbergDither', ()=>{
+               app.floydSteinbergDither();
             });
         });   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer);
+})(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither);
