@@ -19,8 +19,13 @@
                     <input type="file" id="file-input"/>
                 </label>
             </div>
-            <div>
+            <div id="controls" v-cloak>
+                <label>
+                    Lightness threshold
+                    <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
+                    <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
                 
+                </label>
             </div>
             <div>
                 <canvas id="source-canvas" class="hidden"></canvas>
