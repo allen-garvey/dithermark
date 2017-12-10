@@ -26,11 +26,6 @@ App.Image = (function(Pixel){
         }
         targetContext.putImageData(outputImageData, 0, 0);
     }
-    
-    // function drawPixel(context, fillStyle, x, y){
-    //     context.fillStyle = fillStyle;
-    //     context.fillRect(x, y, 1, 1);
-    // }
 
     
     return {

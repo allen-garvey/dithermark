@@ -15,10 +15,6 @@ App.Pixel = (function(){
         var min = Math.min(pixel.r, pixel.g, pixel.b);
         return Math.floor((max + min) / 2.0);
     }
-    
-    // function pixelToFillStyle(pixel){
-    //     return `rgba(${pixel.r}, ${pixel.g}, ${pixel.b}, ${pixel.a})`;
-    // }    
 
     
     return {
