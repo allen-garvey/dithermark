@@ -12,7 +12,7 @@ App.Timer = (function(){
         functionToTime();
         var end = timeInMilliseconds();
         var seconds = (end - start) / 1000;
-        console.log(name + 'took ' + seconds);
+        console.log(name + ' took ' + seconds);
     }
     
     return {
