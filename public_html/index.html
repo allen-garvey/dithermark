@@ -20,12 +20,18 @@
                 </label>
             </div>
             <div id="controls" v-cloak>
-                <label>
-                    Lightness threshold
-                    <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
-                    <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
-                
-                </label>
+                <div>
+                    <select v-model="selectedDitherAlgorithmIndex">
+                        <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
+                    </select>
+                </div>
+                <div>
+                    <label>
+                        Lightness threshold
+                        <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
+                        <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
+                    </label>
+                </div>
             </div>
             <div>
                 <canvas id="source-canvas" class="hidden"></canvas>

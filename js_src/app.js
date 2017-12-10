@@ -13,7 +13,22 @@
             thresholdMax: 255,
             isImageLoaded: false,
             imageHeight: 0,
-            imageWidth: 0
+            imageWidth: 0,
+            selectedDitherAlgorithmIndex: 0,
+            ditherAlgorithms: [
+                {
+                    title: "Threshold", 
+                    algorithm: Threshold.image
+                },
+                {
+                    title: "Atkinson", 
+                    algorithm: ErrorPropDither.atkinson
+                },
+                {
+                    title: "Floyd-Steinberg", 
+                    algorithm: ErrorPropDither.floydSteinberg
+                },
+            ]
         },
         watch: {
             threshold: function(newThreshold){
@@ -34,19 +49,21 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                this.atkinsonDither();
+                this.ditherImageWithSelectedAlgorithm();
+            },
+            selectedDitherAlgorithmIndex: function(newIndex){
+                this.ditherImageWithSelectedAlgorithm();
             }
         },
         methods: {
-            thresholdImage: function(){
-                Threshold.image(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
+            ditherImageWithSelectedAlgorithm: function(){
+                if(!this.isImageLoaded){
+                    return;
+                }
+                Timer.timeFunction(app.ditherAlgorithms[app.selectedDitherAlgorithmIndex].title, ()=>{
+                    this.ditherAlgorithms[this.selectedDitherAlgorithmIndex].algorithm(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
+                });
             },
-            floydSteinbergDither: function(){
-                ErrorPropDither.floydSteinberg(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
-            },
-            atkinsonDither: function(){
-                ErrorPropDither.atkinson(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
-            }
         }
     });
     
@@ -63,9 +80,7 @@
             app.imageWidth = image.width;
             app.isImageLoaded = true;
             
-            Timer.timeFunction('atkinson dither', ()=>{
-               app.atkinsonDither();
-            });
+            app.ditherImageWithSelectedAlgorithm();
         });   
     }, false);
 })(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither);
