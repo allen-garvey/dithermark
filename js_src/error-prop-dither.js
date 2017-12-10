@@ -41,7 +41,7 @@ App.ErrorPropDither = (function(Image, Pixel){
     ** Dithering algorithms
     */
     
-    function floydSteinbergDither(sourceContext, targetContext, imageWidth, imageHeight, threshold){
+    function errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc){
         var errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
         
         Image.transform(sourceContext, targetContext, imageWidth, imageHeight, (pixel, x, y)=>{
@@ -60,21 +60,46 @@ App.ErrorPropDither = (function(Image, Pixel){
                 currentError = lightness;
             }
             
-            var errorPart = currentError / 16.0;
-            
-            errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 7));
-            errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, Math.floor(errorPart));
-            errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart * 5));
-            errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart * 3));
+            errorPropagationFunc(errorPropMatrix, x, y, currentError);
             
             return ret;
             
         });
-    } 
+    }
+    
+    function createErrorPropagationDither(errorPropagationFunc){
+        return (sourceContext, targetContext, imageWidth, imageHeight, threshold)=>{
+            errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc);
+        };
+    }
+    
+    function floydSteinbergPropagation(errorPropMatrix, x, y, currentError){
+        var errorPart = currentError / 16.0;
+            
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 7));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, Math.floor(errorPart));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart * 5));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart * 3));
+    }
+    
+    function atkinsonPropagation(errorPropMatrix, x, y, currentError){
+        var errorPart = Math.floor(currentError / 8.0);
+
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, (errorPart));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y, (errorPart));
+
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, (errorPart));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, (errorPart));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, (errorPart));
+
+        errorMatrixIncrement(errorPropMatrix, x, y + 2, (errorPart));
+
+    }
     
     
     return{
-        floydSteinberg: floydSteinbergDither
+        floydSteinberg: createErrorPropagationDither(floydSteinbergPropagation),
+        atkinson: createErrorPropagationDither(atkinsonPropagation),
     };
     
     

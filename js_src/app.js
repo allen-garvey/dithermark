@@ -34,7 +34,7 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                this.floydSteinbergDither();
+                this.atkinsonDither();
             }
         },
         methods: {
@@ -43,6 +43,9 @@
             },
             floydSteinbergDither: function(){
                 ErrorPropDither.floydSteinberg(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
+            },
+            atkinsonDither: function(){
+                ErrorPropDither.atkinson(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
             }
         }
     });
@@ -60,8 +63,8 @@
             app.imageWidth = image.width;
             app.isImageLoaded = true;
             
-            Timer.timeFunction('floydSteinbergDither', ()=>{
-               app.floydSteinbergDither();
+            Timer.timeFunction('atkinson dither', ()=>{
+               app.atkinsonDither();
             });
         });   
     }, false);
