@@ -93,13 +93,111 @@ App.ErrorPropDither = (function(Image, Pixel){
         errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, (errorPart));
 
         errorMatrixIncrement(errorPropMatrix, x, y + 2, (errorPart));
-
+    }
+    
+    function javisJudiceNinkePropagation(errorPropMatrix, x, y, currentError){
+        var errorPart = currentError / 48.0;
+        
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 7));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y, Math.floor(errorPart * 5));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 2, y + 1, Math.floor(errorPart * 3));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart * 5));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart * 7));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, Math.floor(errorPart * 5));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y + 1, Math.floor(errorPart * 3));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 2, y + 2, Math.floor(errorPart * 1));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 2, Math.floor(errorPart * 3));
+        errorMatrixIncrement(errorPropMatrix, x, y + 2, Math.floor(errorPart * 5));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 2, Math.floor(errorPart * 3));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y + 2, Math.floor(errorPart * 1));
+    }
+    
+    function stuckiPropagation(errorPropMatrix, x, y, currentError){
+        var errorPart = currentError / 42.0;
+        
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 8));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y, Math.floor(errorPart * 4));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 2, y + 1, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart * 8));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y + 1, Math.floor(errorPart * 2));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 2, y + 2, Math.floor(errorPart * 1));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 2, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x, y + 2, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 2, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y + 2, Math.floor(errorPart * 1));
+    }
+    
+    function burkesPropagation(errorPropMatrix, x, y, currentError){
+        var errorPart = currentError / 32.0;
+        
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 8));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y, Math.floor(errorPart * 4));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 2, y + 1, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart * 8));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y + 1, Math.floor(errorPart * 2));
+    }
+    
+    function sierra3Propagation(errorPropMatrix, x, y, currentError){
+        var errorPart = currentError / 32.0;
+        
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 5));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y, Math.floor(errorPart * 3));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 2, y + 1, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart * 5));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y + 1, Math.floor(errorPart * 2));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 2, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x, y + 2, Math.floor(errorPart * 3));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 2, Math.floor(errorPart * 2));
+    }
+    
+    function sierra2Propagation(errorPropMatrix, x, y, currentError){
+        var errorPart = currentError / 16.0;
+        
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 4));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y, Math.floor(errorPart * 3));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 2, y + 1, Math.floor(errorPart));
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart * 3));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, Math.floor(errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y + 1, Math.floor(errorPart));
+    
+    
+    }
+    
+        function sierra1Propagation(errorPropMatrix, x, y, currentError){
+        var errorPart = currentError / 4.0;
+        
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, Math.floor(errorPart * 2));
+        
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, Math.floor(errorPart));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, Math.floor(errorPart));
+    
     }
     
     
     return{
         floydSteinberg: createErrorPropagationDither(floydSteinbergPropagation),
         atkinson: createErrorPropagationDither(atkinsonPropagation),
+        javisJudiceNinke: createErrorPropagationDither(javisJudiceNinkePropagation),
+        stucki: createErrorPropagationDither(stuckiPropagation),
+        burkes: createErrorPropagationDither(burkesPropagation),
+        sierra3: createErrorPropagationDither(sierra3Propagation),
+        sierra2: createErrorPropagationDither(sierra2Propagation),
+        sierra1: createErrorPropagationDither(sierra1Propagation),
     };
     
     

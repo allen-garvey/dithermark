@@ -18,16 +18,40 @@
             ditherAlgorithms: [
                 {
                     title: "Threshold", 
-                    algorithm: Threshold.image
+                    algorithm: Threshold.image,
                 },
                 {
                     title: "Atkinson", 
-                    algorithm: ErrorPropDither.atkinson
+                    algorithm: ErrorPropDither.atkinson,
                 },
                 {
                     title: "Floyd-Steinberg", 
-                    algorithm: ErrorPropDither.floydSteinberg
+                    algorithm: ErrorPropDither.floydSteinberg,
                 },
+                {
+            		title: "Javis-Judice-Ninke",
+            		algorithm: ErrorPropDither.javisJudiceNinke,
+            	},
+            	{
+            		title: "Stucki",
+            		algorithm: ErrorPropDither.stucki,
+            	},
+            	{
+            		title: "Burkes",
+            		algorithm: ErrorPropDither.burkes,
+            	},
+            	{
+            		title: "Sierra3",
+            		algorithm: ErrorPropDither.sierra3,
+            	},
+            	{
+            		title: "Sierra2",
+            		algorithm: ErrorPropDither.sierra2,
+            	},
+            	{
+            		title: "Sierra1",
+            		algorithm: ErrorPropDither.sierra1,
+            	},
             ]
         },
         watch: {
