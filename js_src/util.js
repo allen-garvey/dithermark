@@ -2,19 +2,6 @@ var App = App || {};
 
 App.Util = (function(){
     
-    function timeInMilliseconds(){
-        var d = new Date();
-        return d.getTime();
-    }
-    
-    function timeFunction(name, functionToTime){
-        var start = timeInMilliseconds();
-        functionToTime();
-        var end = timeInMilliseconds();
-        var seconds = (end - start) / 1000;
-        console.log(name + 'took ' + seconds);
-    }
-    
     function openFile(e, imageLoadFunc) {
         var files = e.target.files;
         if(files.length < 1){
@@ -34,7 +21,6 @@ App.Util = (function(){
     }
     
     return {
-        timeFunction: timeFunction,
         openFile: openFile
     };
 })();

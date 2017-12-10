@@ -1,4 +1,4 @@
-JS_SRC=js_src/util.js js_src/pixel.js js_src/canvas.js js_src/image.js js_src/threshold.js js_src/app.js
+JS_SRC=js_src/util.js js_src/timer.js js_src/pixel.js js_src/canvas.js js_src/image.js js_src/threshold.js js_src/app.js
 JS_OUTPUT=public_html/js/app.js
 
 CSS_OUTPUT = public_html/styles/style.css

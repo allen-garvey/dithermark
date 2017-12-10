@@ -1,4 +1,4 @@
-(function(Util, Canvas, Pixel, Threshold){
+(function(Util, Canvas, Pixel, Threshold, Timer){
     
     var sourceCanvas = Canvas.create('source-canvas');
     var outputCanvas = Canvas.create('output-canvas');
@@ -9,9 +9,9 @@
             Canvas.loadImage(sourceCanvas, image);
             Canvas.loadImage(outputCanvas, image);
             
-            Util.timeFunction('threshold', ()=>{
+            Timer.timeFunction('threshold', ()=>{
                Threshold.image(sourceCanvas.context, outputCanvas.context, image.width, image.height, 128); 
             });
         });   
     }, false);
-})(App.Util, App.Canvas, App.Pixel, App.Threshold);
+})(App.Util, App.Canvas, App.Pixel, App.Threshold, App.Timer);
