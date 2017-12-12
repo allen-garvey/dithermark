@@ -4,7 +4,7 @@ App.ErrorPropDither = (function(Image, Pixel){
     ** Error propagation matrix stuff
     */
     function createErrorMaxtrix(width, height){
-        //needs to be multiplied by 2 because 16 bit ints take 2 bytes each
+        //needs to be multiplied by 2 because 16 byte ints take 2 bytes each
         var bufferDimensions = width * height * 2;
         var buffer = new ArrayBuffer(bufferDimensions);
         var bufferView = new Int16Array(buffer);
@@ -52,11 +52,11 @@ App.ErrorPropDither = (function(Image, Pixel){
             var currentError = 0;
             
             if(adjustedLightness > threshold){
-                ret = Pixel.create(255, 255, 255, 255);
+                ret = Pixel.create(255, 255, 255, pixel.a);
                 currentError = -1 * (255 - lightness);
             }
             else{
-                ret = Pixel.create(0, 0, 0, 255);
+                ret = Pixel.create(0, 0, 0, pixel.a);
                 currentError = lightness;
             }
             

@@ -7,9 +7,9 @@ App.Threshold = (function(Image, Pixel){
             var lightness = Pixel.lightness(pixel);
             
             if(lightness > threshold){
-                return Pixel.create(255, 255, 255, 255);
+                return Pixel.create(255, 255, 255, pixel.a);
             }
-            return Pixel.create(0, 0, 0, 255);
+            return Pixel.create(0, 0, 0, pixel.a);
             
         });
     }    
