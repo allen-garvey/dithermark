@@ -11,7 +11,9 @@
             threshold: 127,
             thresholdMin: 0,
             thresholdMax: 255,
-            isImageLoaded: false,
+            //loadedImage has properties: width, height, fileName, fileType, fileSize
+            loadedImage: null,
+            isLivePreviewEnabled: true,
             imageHeight: 0,
             imageWidth: 0,
             selectedDitherAlgorithmIndex: 0,
@@ -52,7 +54,12 @@
             		title: "Sierra1",
             		algorithm: ErrorPropDither.sierra1,
             	},
-            ]
+            ],
+        },
+        computed: {
+            isImageLoaded: function(){
+              return this.loadedImage != null;  
+            },
         },
         watch: {
             threshold: function(newThreshold){
@@ -70,13 +77,14 @@
                     return;
                 }
                 this.threshold = newThreshold;
-                if(!this.isImageLoaded){
-                    return;
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
                 }
-                this.ditherImageWithSelectedAlgorithm();
             },
             selectedDitherAlgorithmIndex: function(newIndex){
-                this.ditherImageWithSelectedAlgorithm();
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
             }
         },
         methods: {
@@ -85,24 +93,39 @@
                     return;
                 }
                 Timer.timeFunction(app.ditherAlgorithms[app.selectedDitherAlgorithmIndex].title, ()=>{
-                    this.ditherAlgorithms[this.selectedDitherAlgorithmIndex].algorithm(sourceCanvas.context, outputCanvas.context, this.imageWidth, this.imageHeight, this.threshold);
+                    this.ditherAlgorithms[this.selectedDitherAlgorithmIndex].algorithm(sourceCanvas.context, outputCanvas.context, this.loadedImage.width, this.loadedImage.height, this.threshold);
                 });
+            },
+            loadImageTrigger: function(){
+                fileInput.click();
+            },
+            //downloads image
+            //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
+            saveImage: function(){
+                var dataURL = outputCanvas.canvas.toDataURL(this.loadedImage.fileType);
+                saveImageLink.href = dataURL;
+                saveImageLink.download = this.loadedImage.fileName;
+                saveImageLink.click();
             },
         }
     });
     
     
     
-    
-    var inputElement = document.getElementById('file-input');
-    inputElement.addEventListener('change', (e)=>{
-        Fs.openFile(e, (image)=>{
+    var saveImageLink = document.getElementById('save-image-link');
+    var fileInput = document.getElementById('file-input');
+    fileInput.addEventListener('change', (e)=>{
+        Fs.openImageFile(e, (file, image)=>{
             Canvas.loadImage(sourceCanvas, image);
             Canvas.loadImage(outputCanvas, image);
             
-            app.imageHeight = image.height;
-            app.imageWidth = image.width;
-            app.isImageLoaded = true;
+            app.loadedImage = {
+                width: image.width,
+                height: image.height,
+                fileName: file.name,
+                fileSize: file.size,
+                fileType: file.type,
+            };
             
             app.ditherImageWithSelectedAlgorithm();
         });   

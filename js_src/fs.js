@@ -2,7 +2,7 @@ var App = App || {};
 
 App.Fs = (function(){
     
-    function openFile(e, imageLoadFunc) {
+    function openImageFile(e, imageLoadFunc) {
         var files = e.target.files;
         if(files.length < 1){
             return;
@@ -15,12 +15,12 @@ App.Fs = (function(){
         var image = new window.Image();
         image.onload = ()=> {
             
-            imageLoadFunc(image);
+            imageLoadFunc(file, image);
         };
         image.src = window.URL.createObjectURL(file);
     }
     
     return {
-        openFile: openFile
+        openImageFile: openImageFile
     };
 })();
