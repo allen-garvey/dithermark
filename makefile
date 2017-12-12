@@ -16,3 +16,9 @@ $(JS_OUTPUT): $(JS_SRC)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
+	
+watch_js:
+	while true; do \
+        make $(JS_OUTPUT); \
+        inotifywait --quiet --recursive --event create --event modify --event move ./js_src/; \
+    done
