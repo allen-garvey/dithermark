@@ -7,15 +7,30 @@ App.Timer = (function(){
         return d.getTime();
     }
     
-    function timeFunction(name, functionToTime){
+    function timeFunctionBase(functionToTime, done){
         var start = timeInMilliseconds();
         functionToTime();
         var end = timeInMilliseconds();
         var seconds = (end - start) / 1000;
-        console.log(name + ' took ' + seconds);
+        done(seconds);
+    }
+    
+    function timeFunction(name, functionToTime){
+        timeFunctionBase(functionToTime, (seconds)=>{
+            console.log(name + ' took ' + seconds);
+        });
+    }
+    
+    function timeFunctionMegapixels(name, numPixels, functionToTime){
+        timeFunctionBase(functionToTime, (seconds)=>{
+            var megapixels = numPixels / 1000000;
+            var megapixelsPerSecond = megapixels / seconds;
+            console.log(`${name}: ${seconds}s, ${megapixelsPerSecond.toFixed(2)} megapixels/s`);
+        });
     }
     
     return {
-        timeFunction: timeFunction
+        timeFunction: timeFunction,
+        megapixelsPerSecond: timeFunctionMegapixels,
     };
 })();

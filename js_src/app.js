@@ -92,7 +92,7 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                Timer.timeFunction(app.ditherAlgorithms[app.selectedDitherAlgorithmIndex].title, ()=>{
+                Timer.megapixelsPerSecond(app.ditherAlgorithms[app.selectedDitherAlgorithmIndex].title, this.loadedImage.width * this.loadedImage.height, ()=>{
                     this.ditherAlgorithms[this.selectedDitherAlgorithmIndex].algorithm(sourceCanvas.context, outputCanvas.context, this.loadedImage.width, this.loadedImage.height, this.threshold);
                 });
             },
