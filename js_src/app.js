@@ -60,6 +60,12 @@
             isImageLoaded: function(){
               return this.loadedImage != null;  
             },
+            selectedDitherAlgorithm: function(){
+                return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
+            },
+            loadedImagePixelDimensions: function(){
+                return this.loadedImage.width * this.loadedImage.height;
+            },
         },
         watch: {
             threshold: function(newThreshold){
@@ -92,8 +98,8 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                Timer.megapixelsPerSecond(app.ditherAlgorithms[app.selectedDitherAlgorithmIndex].title, this.loadedImage.width * this.loadedImage.height, ()=>{
-                    this.ditherAlgorithms[this.selectedDitherAlgorithmIndex].algorithm(sourceCanvas.context, outputCanvas.context, this.loadedImage.width, this.loadedImage.height, this.threshold);
+                Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title, this.loadedImagePixelDimensions, ()=>{
+                    this.selectedDitherAlgorithm.algorithm(sourceCanvas.context, outputCanvas.context, this.loadedImage.width, this.loadedImage.height, this.threshold);
                 });
             },
             loadImageTrigger: function(){
