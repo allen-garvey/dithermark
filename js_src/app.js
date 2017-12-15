@@ -17,6 +17,7 @@
             imageHeight: 0,
             imageWidth: 0,
             selectedDitherAlgorithmIndex: 0,
+            isCurrentlyLoadingRandomImage: false,
             ditherAlgorithms: [
                 {
                     title: "Threshold", 
@@ -94,6 +95,21 @@
             }
         },
         methods: {
+            loadImage: function(image, file){
+                Canvas.loadImage(sourceCanvas, image);
+                Canvas.loadImage(outputCanvas, image);
+                
+                this.loadedImage = {
+                    width: image.width,
+                    height: image.height,
+                    fileName: file.name,
+                    fileSize: file.size,
+                    fileType: file.type,
+                };
+                
+                this.ditherImageWithSelectedAlgorithm();
+                
+            },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
                     return;
@@ -113,6 +129,14 @@
                 saveImageLink.download = this.loadedImage.fileName;
                 saveImageLink.click();
             },
+            loadRandomImage: function(){
+                this.isCurrentlyLoadingRandomImage = true;
+                var randomImageUrl = 'https://source.unsplash.com/random/400x300';
+                Fs.openRandomImage(randomImageUrl, (image, file)=>{
+                    this.loadImage(image, file);
+                    this.isCurrentlyLoadingRandomImage = false;
+                });
+            },
         }
     });
     
@@ -121,19 +145,6 @@
     var saveImageLink = document.getElementById('save-image-link');
     var fileInput = document.getElementById('file-input');
     fileInput.addEventListener('change', (e)=>{
-        Fs.openImageFile(e, (file, image)=>{
-            Canvas.loadImage(sourceCanvas, image);
-            Canvas.loadImage(outputCanvas, image);
-            
-            app.loadedImage = {
-                width: image.width,
-                height: image.height,
-                fileName: file.name,
-                fileSize: file.size,
-                fileType: file.type,
-            };
-            
-            app.ditherImageWithSelectedAlgorithm();
-        });   
+        Fs.openImageFile(e, app.loadImage);   
     }, false);
 })(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither);

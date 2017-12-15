@@ -24,6 +24,7 @@
                 <div>
                     <button v-on:click="loadImageTrigger()">Open image file</button>
                     <button v-on:click="saveImage()" v-show="isImageLoaded">Save image</button>
+                    <button v-on:click="loadRandomImage()" v-bind:disabled="isCurrentlyLoadingRandomImage">Load random Unsplash image</button>
                 </div>
                 <div v-show="isImageLoaded">
                     <h3 v-if="isImageLoaded">{{loadedImage.fileName}}</h3>

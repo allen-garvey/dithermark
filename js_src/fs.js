@@ -1,6 +1,9 @@
 var App = App || {};
 
 App.Fs = (function(){
+    var URL = window.URL;
+    var Image = window.Image;
+    
     
     function openImageFile(e, imageLoadFunc) {
         var files = e.target.files;
@@ -12,15 +15,31 @@ App.Fs = (function(){
             return;
         }
         
-        var image = new window.Image();
+        var image = new Image();
         image.onload = ()=> {
-            
-            imageLoadFunc(file, image);
+            imageLoadFunc(image, file);
         };
-        image.src = window.URL.createObjectURL(file);
+        image.src = URL.createObjectURL(file);
+    }
+    
+    function openRandomImage(url, imageLoadFunc){
+        var fetch = window.fetch;
+        
+        var image = new Image();
+        image.onload = ()=> {
+            imageLoadFunc(image, {});
+        };
+        
+        //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+        fetch(url).then((res)=>{ return fetch(res.url); }).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
+            var objectURL = URL.createObjectURL(imageBlob);
+            image.src = objectURL;
+        });
     }
     
     return {
-        openImageFile: openImageFile
+        openImageFile: openImageFile,
+        openRandomImage: openRandomImage,
     };
+    
 })();
