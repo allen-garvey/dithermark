@@ -31,7 +31,7 @@ App.Fs = (function(){
         };
         
         //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        fetch(url).then((res)=>{ return fetch(res.url); }).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
+        fetch(url).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
             var objectURL = URL.createObjectURL(imageBlob);
             image.src = objectURL;
         });
