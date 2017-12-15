@@ -69,6 +69,11 @@
             },
         },
         watch: {
+            isLivePreviewEnabled: function(newValue){
+                if(newValue){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
             threshold: function(newThreshold){
                 newThreshold = Math.floor(newThreshold);
                 if(isNaN(newThreshold)){
