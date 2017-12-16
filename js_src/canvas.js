@@ -15,6 +15,10 @@ App.Canvas = (function(){
             context: context,
         };
     }
+    
+    function copyCanvasImage(sourceCanvas, targetContext){
+        targetContext.drawImage(sourceCanvas, 0, 0);
+    }
 
     
     return {
