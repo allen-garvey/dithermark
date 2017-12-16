@@ -1,9 +1,2 @@
-.hidden, [v-cloak]{
-    display: none;
-}
-
-.controls, .image-canvas-container{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
+@import "base.scss";
+@import "controls.scss";

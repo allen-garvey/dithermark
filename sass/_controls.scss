@@ -1,0 +1,25 @@
+$controlsWidth: 900px;
+
+.controls .controls-toplevel-container, .controls .controls-secondlevel-container{
+    display: flex;
+    justify-content: space-between;
+    width: $controlsWidth;
+    max-width: 100%;
+}
+
+.controls{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
+.image-canvas-container{
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.image-canvas-container canvas + canvas{
+    margin-left: 25px;
+}
