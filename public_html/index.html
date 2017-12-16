@@ -74,8 +74,8 @@
                     </div>
                     
                 </div>
-                <div class="image-canvas-container">
-                    <canvas id="source-canvas" v-bind:class="{hidden: numPanels === 1}"></canvas>
+                <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
+                    <canvas id="source-canvas" v-show="numPanels > 1"></canvas>
                     <canvas id="output-canvas"></canvas>
                 </div>    
             </div>
