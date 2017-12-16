@@ -1,12 +1,16 @@
 (function(Vue, Fs, Canvas, Threshold, Timer, ErrorPropDither){
     
-    var sourceCanvas = Canvas.create('source-canvas');
-    var outputCanvas = Canvas.create('output-canvas');
+    var sourceCanvas;
+    var outputCanvas;
     
     
     
     var app = new Vue({
-        el: '#controls',
+        el: '#app',
+        mounted: function(){
+            sourceCanvas = Canvas.create('source-canvas');
+            outputCanvas = Canvas.create('output-canvas');
+        },
         data: {
             threshold: 127,
             thresholdMin: 0,
@@ -18,6 +22,7 @@
             imageWidth: 0,
             selectedDitherAlgorithmIndex: 0,
             isCurrentlyLoadingRandomImage: false,
+            numPanels: 2,
             ditherAlgorithms: [
                 {
                     title: "Threshold", 
@@ -67,11 +72,25 @@
             loadedImagePixelDimensions: function(){
                 return this.loadedImage.width * this.loadedImage.height;
             },
+            imageTitle: function(){
+                if(this.loadedImage){
+                    return this.loadedImage.fileName || '';
+                }
+                return '';
+            },
         },
         watch: {
             isLivePreviewEnabled: function(newValue){
                 if(newValue){
                     this.ditherImageWithSelectedAlgorithm();
+                }
+            },
+            isDitherPluginEnabled: function(newValue){
+                if(newValue && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+                else{
+                    this.displaySourceImage();
                 }
             },
             threshold: function(newThreshold){

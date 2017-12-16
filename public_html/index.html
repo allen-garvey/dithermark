@@ -12,7 +12,7 @@
         <header>
             <h1>jsdither</h1>
         </header>
-        <main id="main">
+        <main>
             <div class="hidden">
                 <label>
                     Open image file
@@ -20,40 +20,66 @@
                 </label>
                 <a id="save-image-link">Save image</a>
             </div>
-            <div class="controls" id="controls" v-cloak>
-                <div>
-                    <button v-on:click="loadImageTrigger()">Open image file</button>
-                    <button v-on:click="saveImage()" v-show="isImageLoaded">Save image</button>
-                    <button v-on:click="loadRandomImage()" v-bind:disabled="isCurrentlyLoadingRandomImage">Load random Unsplash image</button>
+            <div id="app">
+                <div class="controls" v-cloak>
+                    <div class="controls-toplevel-container">
+                        <div>
+                            <button v-on:click="loadImageTrigger()">Open image file</button>
+                            <button v-on:click="loadRandomImage()" v-bind:disabled="isCurrentlyLoadingRandomImage">Load random image</button>    
+                        </div>
+                        <div>
+                            <button v-on:click="saveImage()" v-show="isImageLoaded">Save image</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>{{imageTitle}}</h3>
+                    </div>
+                    <div class="controls-secondlevel-container" v-show="isImageLoaded">
+                        <div>
+                            <div>
+                                <label class="super-label">Panel Style</label>
+                                <label>Single
+                                    <input type="radio" v-model="numPanels" v-bind:value="1"/>
+                                </label>
+                                <label>Side by side
+                                    <input type="radio" v-model="numPanels" v-bind:value="2"/>
+                                </label>
+                            </div>
+                            
+                            <div>
+                                <label>Live preview
+                                    <input type="checkbox" v-model="isLivePreviewEnabled"/>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="dither-controls-container">
+                             <div>
+                                <select v-model="selectedDitherAlgorithmIndex">
+                                    <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label>
+                                    Lightness threshold
+                                    <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
+                                    <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
+                                </label>
+                            </div>
+                            <div>
+                                <button v-on:click="ditherImageWithSelectedAlgorithm()" v-show="!isLivePreviewEnabled">Transform</button>
+                            </div>
+                        </div>    
+                        
+                    </div>
+                    
                 </div>
-                <div v-show="isImageLoaded">
-                    <h3 v-if="isImageLoaded">{{loadedImage.fileName}}</h3>
-                    <div>
-                        <label>Live preview
-                            <input type="checkbox" v-model="isLivePreviewEnabled"/>
-                        </label>
-                    </div>
-                     <div>
-                        <select v-model="selectedDitherAlgorithmIndex">
-                            <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label>
-                            Lightness threshold
-                            <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
-                            <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
-                        </label>
-                    </div>
-                    <div>
-                        <button v-on:click="ditherImageWithSelectedAlgorithm()" v-show="!isLivePreviewEnabled">Transform</button>
-                    </div>
-                </div>
+                <div class="image-canvas-container">
+                    <canvas id="source-canvas" v-bind:class="{hidden: numPanels === 1}"></canvas>
+                    <canvas id="output-canvas"></canvas>
+                </div>    
             </div>
-            <div class="image-canvas-container">
-                <canvas id="source-canvas" class="hidden"></canvas>
-                <canvas id="output-canvas"></canvas>
-            </div>
+            
             
         </main>
         <script type="text/javascript" src="/js/vue.min.js"></script>
