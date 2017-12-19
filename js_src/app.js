@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Threshold, Timer, ErrorPropDither){
+(function(Vue, Fs, Canvas, Threshold, Timer, ErrorPropDither, OrderedDither){
     
     var sourceCanvas;
     var outputCanvas;
@@ -59,6 +59,18 @@
             	{
             		title: "Sierra1",
             		algorithm: ErrorPropDither.sierra1,
+            	},
+            	{
+            	    title: "Ordered Dither 2x2",
+            	    algorithm: OrderedDither.dither2,
+            	},
+            	{
+            	    title: "Ordered Dither 4x4",
+            	    algorithm: OrderedDither.dither4,
+            	},
+            	{
+            	    title: "Ordered Dither 8x8",
+            	    algorithm: OrderedDither.dither8,
             	},
             ],
         },
@@ -171,4 +183,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither);
+})(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither, App.OrderedDither);
