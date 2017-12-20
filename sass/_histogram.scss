@@ -1,0 +1,26 @@
+.histogram-super-container{
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.histogram-container{
+    position: relative;
+    border: 1px solid magenta;
+    
+    canvas{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+
+#histogram-canvas-indicator{
+    z-index: 10;
+}
+
+#histogram-canvas{
+    z-index: 1;
+}
