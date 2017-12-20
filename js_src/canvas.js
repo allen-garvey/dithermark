@@ -16,13 +16,27 @@ App.Canvas = (function(){
         };
     }
     
-    function copyCanvasImage(sourceCanvas, targetContext){
-        targetContext.drawImage(sourceCanvas, 0, 0);
+    function copyCanvasImage(sourceCanvasObject, targetCanvasObject){
+        targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0);
+    }
+    
+    function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount){
+        var sourceWidth = sourceCanvasObject.canvas.width;
+        var sourceHeight = sourceCanvasObject.canvas.height;
+        var scaledWidth = Math.ceil(sourceWidth * scaleAmount);
+        var scaledHeight = Math.ceil(sourceHeight * scaleAmount);
+        
+        targetCanvasObject.canvas.width = scaledWidth;
+        targetCanvasObject.canvas.height = scaledHeight;
+        
+        targetCanvasObject.context.drawImage(sourceCanvasObject.canvas , 0 , 0 , sourceWidth, sourceHeight, 0, 0, scaledWidth, scaledHeight);
+        
     }
 
     
     return {
        create: createCanvasObject,
        loadImage: canvasObjectLoadImage,
+       scale: scaleCanvasImage,
     };
 })();
