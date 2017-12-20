@@ -11,12 +11,6 @@ App.Histogram = (function(Pixel){
         return histogramArray;
     }
     
-    
-    function initHistorgram(targetCanvasObject){
-        targetCanvasObject.canvas.width = histogramWidth;
-        targetCanvasObject.canvas.height = histogramHeight;
-    }
-    
     function drawHistorgram(sourceContext, targetCanvasObject, imageWidth, imageHeight){
         var histogramArray = createHistogramArray();
         
@@ -34,13 +28,17 @@ App.Histogram = (function(Pixel){
                 max = element;
             }
         });
-        //normalize values as percentage of 100, from 0 to 1
         histogramArray = histogramArray.map(function(element){
+            //normalize values as percentage of 100, from 0 to 1
+            var percentage = 0;
             //dividing by 0 will be infinity
-            if(max === 0){
-                return 0;
+            if(max > 0){
+                percentage = element / max;
             }
-            return element / max;
+            //now figure out histogram height for that x coodinate
+            let barLength = Math.ceil(percentage * histogramHeight);
+            //now figure out at which y coordinate histogram should start with 0,0 being top left
+            return histogramHeight - barLength;
         });
         
         var outputImageData = targetCanvasObject.context.createImageData(histogramWidth, histogramHeight);
@@ -49,13 +47,12 @@ App.Histogram = (function(Pixel){
         var x = 0;
         var y = 0;
         for(let i=0;i<outputData.length;i+=4){
-            let barLength = Math.ceil(histogramArray[x] * histogramHeight);
             let outputPixel;
-            if(y <= barLength){
-                outputPixel = Pixel.create(255, 255, 255, 255);
+            if(y >= histogramArray[x]){
+                outputPixel = Pixel.create(0, 0, 0);
             }
             else{
-                outputPixel = Pixel.create(0, 0, 0, 255);
+                outputPixel = Pixel.create(255, 255, 255);
             }
             outputData[i] = outputPixel.r;
             outputData[i+1] = outputPixel.g;
@@ -68,14 +65,20 @@ App.Histogram = (function(Pixel){
                 y++;
             }
         }
-        
-        
-        console.log(outputImageData);
         targetCanvasObject.context.putImageData(outputImageData, 0, 0);
     }
     
+    function drawIndicator(targetCanvasObject, threshold){
+        //clear indicator
+        targetCanvasObject.context.clearRect(0, 0, targetCanvasObject.canvas.width, targetCanvasObject.canvas.height);
+        targetCanvasObject.context.fillStyle = "magenta";
+        targetCanvasObject.context.fillRect(threshold, 0, 1, histogramHeight);
+    }
+    
     return {
-        initHistorgram: initHistorgram,
         drawHistorgram: drawHistorgram,
+        height: histogramHeight,
+        width: histogramWidth,
+        drawIndicator: drawIndicator,
     };
 })(App.Pixel);
