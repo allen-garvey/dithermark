@@ -55,7 +55,7 @@ App.ErrorPropDither = (function(Image, Pixel){
     */
     
     function errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc, errorMatrixRows){
-        var errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
+        var errorPropMatrix = createErrorMaxtrix(imageWidth, errorMatrixRows);
         
         Image.transform(sourceContext, targetContext, imageWidth, imageHeight, (pixel, x, y)=>{
             var lightness = Pixel.lightness(pixel);
