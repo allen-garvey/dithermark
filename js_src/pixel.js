@@ -1,7 +1,7 @@
 var App = App || {};
 
 App.Pixel = (function(){
-    function createPixel(r, g, b, a){
+    function createPixel(r, g, b, a = 255){
         return {
             r: r,
             g: g,
