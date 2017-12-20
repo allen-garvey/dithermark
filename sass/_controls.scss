@@ -1,5 +1,10 @@
 $controlsWidth: 900px;
 
+input[type="radio"]{
+    margin-right: 14px;
+    margin-left: 2px;
+}
+
 .controls .controls-toplevel-container, .controls .controls-secondlevel-container{
     display: flex;
     justify-content: space-between;
@@ -22,4 +27,8 @@ $controlsWidth: 900px;
 
 .image-canvas-container.panel-num2 canvas + canvas{
     margin-left: 25px;
+}
+
+.controls-secondlevel-container .controls-panel > *{
+    margin-bottom: 3px;
 }
