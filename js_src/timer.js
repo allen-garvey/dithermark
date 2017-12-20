@@ -30,7 +30,7 @@ App.Timer = (function(){
     }
     
     return {
-        timeFunction: timeFunction,
+        time: timeFunction,
         megapixelsPerSecond: timeFunctionMegapixels,
     };
 })();
