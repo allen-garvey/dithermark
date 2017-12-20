@@ -35,7 +35,15 @@
                         <h3>{{imageTitle}}</h3>
                     </div>
                     <div class="controls-secondlevel-container" v-show="isImageLoaded">
-                        <div>
+                        <div class="controls-panel">
+                            <div>
+                                <label class="super-label">Editor Theme</label>
+                                <template v-for="(theme, index) in editorThemes">
+                                    <label>{{theme.name}}
+                                        <input type="radio" v-model="currentEditorThemeIndex" v-bind:value="index" />
+                                    </label>
+                                </template>
+                            </div>
                             <div>
                                 <label class="super-label">Panel Style</label>
                                 <label>Single
@@ -51,9 +59,17 @@
                                     <input type="checkbox" v-model="isLivePreviewEnabled"/>
                                 </label>
                             </div>
+                            <div>
+                                <label>
+                                    Zoom
+                                    <input type="number" v-bind:min="zoomMin" v-bind:max="zoomMax" v-model="zoom"/>
+                                    <input type="range" v-bind:min="zoomMin" v-bind:max="zoomMax" v-model="zoom"/>
+                                    <button v-show="zoom !== 100" v-on:click="resetZoom()">Reset</button>
+                                </label>
+                            </div>
                         </div>
                         
-                        <div class="dither-controls-container">
+                        <div class="dither-controls-container controls-panel">
                              <div>
                                 <select v-model="selectedDitherAlgorithmIndex">
                                     <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
@@ -70,13 +86,17 @@
                                 <button v-on:click="ditherImageWithSelectedAlgorithm()" v-show="!isLivePreviewEnabled">Transform</button>
                             </div>
                         </div>    
-                        
                     </div>
-                    
+                </div>
+                <div class="histogram-container">
+                    <canvas id="histogram-canvas-indicator" class="hidden"></canvas>
+                    <canvas id="histogram-canvas"></canvas>
                 </div>
                 <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
-                    <canvas id="source-canvas" v-show="numPanels > 1"></canvas>
-                    <canvas id="output-canvas"></canvas>
+                    <canvas id="source-canvas" class="hidden"></canvas>
+                    <canvas id="transform-canvas" class="hidden"></canvas>
+                    <canvas id="source-canvas-output" v-show="numPanels > 1"></canvas>
+                    <canvas id="transform-canvas-output"></canvas>
                 </div>    
             </div>
             

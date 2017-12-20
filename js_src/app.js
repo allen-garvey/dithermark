@@ -1,15 +1,23 @@
-(function(Vue, Fs, Canvas, Threshold, Timer, ErrorPropDither, OrderedDither){
+(function(Vue, Fs, Canvas, Threshold, Timer, ErrorPropDither, OrderedDither, Histogram){
     
     var sourceCanvas;
-    var outputCanvas;
-    
-    
+    var transformCanvas;
+    var sourceCanvasOutput;
+    var transformCanvasOutput;
+    var histogramCanvas;
+    var histogramCanvasIndicator;
     
     var app = new Vue({
         el: '#app',
         mounted: function(){
+            this.currentEditorThemeIndex = 0;
             sourceCanvas = Canvas.create('source-canvas');
-            outputCanvas = Canvas.create('output-canvas');
+            transformCanvas = Canvas.create('transform-canvas');
+            sourceCanvasOutput = Canvas.create('source-canvas-output');
+            transformCanvasOutput = Canvas.create('transform-canvas-output');
+            histogramCanvas = Canvas.create('histogram-canvas');
+            histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
+            Histogram.initHistorgram(histogramCanvas);
         },
         data: {
             threshold: 127,
@@ -18,15 +26,22 @@
             //loadedImage has properties: width, height, fileName, fileType, fileSize
             loadedImage: null,
             isLivePreviewEnabled: true,
-            imageHeight: 0,
-            imageWidth: 0,
             selectedDitherAlgorithmIndex: 0,
             isCurrentlyLoadingRandomImage: false,
+            zoom: 100,
+            zoomMin: 10,
+            zoomMax: 400,
             numPanels: 2,
+            editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Gray', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
+            currentEditorThemeIndex: null,
             ditherAlgorithms: [
                 {
                     title: "Threshold", 
                     algorithm: Threshold.image,
+                },
+                {
+                    title: "Random", 
+                    algorithm: Threshold.randomDither,
                 },
                 {
                     title: "Atkinson", 
@@ -72,6 +87,10 @@
             	    title: "Ordered Dither 8x8",
             	    algorithm: OrderedDither.dither8,
             	},
+            	{
+            	    title: "Ordered Dither 16x16",
+            	    algorithm: OrderedDither.dither16,
+            	},
             ],
         },
         computed: {
@@ -92,6 +111,9 @@
             },
         },
         watch: {
+            currentEditorThemeIndex: function(newThemeIndex){
+                document.documentElement.className = this.editorThemes[newThemeIndex].className;
+            },
             isLivePreviewEnabled: function(newValue){
                 if(newValue){
                     this.ditherImageWithSelectedAlgorithm();
@@ -124,6 +146,20 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
+            zoom: function(newZoom){
+                newZoom = Math.floor(newZoom);
+                if(isNaN(newZoom)){
+                    return;
+                }
+                if(newZoom < this.zoomMin){
+                    newZoom = this.zoomMin;
+                }
+                else if(newZoom > this.zoomMax){
+                    newZoom = this.zoomMax;
+                }
+                this.zoom = newZoom;
+                this.zoomImage();
+            },
             selectedDitherAlgorithmIndex: function(newIndex){
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
@@ -131,9 +167,12 @@
             }
         },
         methods: {
+            resetZoom: function(){
+                this.zoom = 100;
+            },
             loadImage: function(image, file){
                 Canvas.loadImage(sourceCanvas, image);
-                Canvas.loadImage(outputCanvas, image);
+                Canvas.loadImage(transformCanvas, image);
                 
                 this.loadedImage = {
                     width: image.width,
@@ -142,17 +181,22 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
-                
-                this.ditherImageWithSelectedAlgorithm();
-                
+                Histogram.drawHistorgram(sourceCanvas.context, histogramCanvas, this.loadedImage.width, this.loadedImage.height);
+                this.ditherImageWithSelectedAlgorithm();   
+            },
+            zoomImage: function(){
+                var scaleAmount = this.zoom / 100;
+                Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
+                Canvas.scale(transformCanvas, transformCanvasOutput, scaleAmount);
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
                     return;
                 }
                 Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title, this.loadedImagePixelDimensions, ()=>{
-                    this.selectedDitherAlgorithm.algorithm(sourceCanvas.context, outputCanvas.context, this.loadedImage.width, this.loadedImage.height, this.threshold);
+                    this.selectedDitherAlgorithm.algorithm(sourceCanvas.context, transformCanvas.context, this.loadedImage.width, this.loadedImage.height, this.threshold);
                 });
+                this.zoomImage();
             },
             loadImageTrigger: function(){
                 fileInput.click();
@@ -160,7 +204,7 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
-                var dataURL = outputCanvas.canvas.toDataURL(this.loadedImage.fileType);
+                var dataURL = transformCanvas.canvas.toDataURL(this.loadedImage.fileType);
                 saveImageLink.href = dataURL;
                 saveImageLink.download = this.loadedImage.fileName;
                 saveImageLink.click();
@@ -183,4 +227,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither, App.OrderedDither);
+})(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither, App.OrderedDither, App.Histogram);
