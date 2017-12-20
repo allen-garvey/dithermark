@@ -36,30 +36,16 @@ App.ErrorPropDither = (function(Image, Pixel){
         return matrix.data[index];
     }
     
-    function errorMatrixShiftRowsUp(matrix){
-        var matrixTotalLength = matrix.data.length;
-        var lastRowStart = matrixTotalLength - matrix.width;
-        //copy over first row with previous rows
-        for(let i=0;i<lastRowStart;i++){
-            matrix.data[i] = matrix.data[i+matrix.width];
-        }
-        //0 out last row
-        for(let i=lastRowStart;i<matrixTotalLength;i++){
-            matrix.data[i] = 0;
-        }
-    }
-    
-    
     /*
     ** Dithering algorithms
     */
     
-    function errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc, errorMatrixRows){
-        var errorPropMatrix = createErrorMaxtrix(imageWidth, errorMatrixRows);
+    function errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc){
+        var errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
         
         Image.transform(sourceContext, targetContext, imageWidth, imageHeight, (pixel, x, y)=>{
             var lightness = Pixel.lightness(pixel);
-            var adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, 0);
+            var adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, y);
             
             var ret;
             var currentError = 0;
@@ -73,20 +59,16 @@ App.ErrorPropDither = (function(Image, Pixel){
                 currentError = lightness;
             }
             
-            errorPropagationFunc(errorPropMatrix, x, 0, currentError);
-            
-            if(x === imageWidth - 1){
-                errorMatrixShiftRowsUp(errorPropMatrix);
-            }
+            errorPropagationFunc(errorPropMatrix, x, y, currentError);
             
             return ret;
             
         });
     }
     
-    function createErrorPropagationDither(errorPropagationFunc, errorMatrixRows){
+    function createErrorPropagationDither(errorPropagationFunc){
         return (sourceContext, targetContext, imageWidth, imageHeight, threshold)=>{
-            errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc, errorMatrixRows);
+            errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc);
         };
     }
     
@@ -238,14 +220,14 @@ App.ErrorPropDither = (function(Image, Pixel){
     
     
     return{
-        floydSteinberg: createErrorPropagationDither(floydSteinbergPropagation, 2),
-        atkinson: createErrorPropagationDither(atkinsonPropagation, 3),
-        javisJudiceNinke: createErrorPropagationDither(javisJudiceNinkePropagation, 3),
-        stucki: createErrorPropagationDither(stuckiPropagation, 3),
-        burkes: createErrorPropagationDither(burkesPropagation, 2),
-        sierra3: createErrorPropagationDither(sierra3Propagation, 3),
-        sierra2: createErrorPropagationDither(sierra2Propagation, 2),
-        sierra1: createErrorPropagationDither(sierra1Propagation, 2),
+        floydSteinberg: createErrorPropagationDither(floydSteinbergPropagation),
+        atkinson: createErrorPropagationDither(atkinsonPropagation),
+        javisJudiceNinke: createErrorPropagationDither(javisJudiceNinkePropagation),
+        stucki: createErrorPropagationDither(stuckiPropagation),
+        burkes: createErrorPropagationDither(burkesPropagation),
+        sierra3: createErrorPropagationDither(sierra3Propagation),
+        sierra2: createErrorPropagationDither(sierra2Propagation),
+        sierra1: createErrorPropagationDither(sierra1Propagation),
     };
     
     
