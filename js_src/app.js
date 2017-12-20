@@ -17,7 +17,6 @@
             transformCanvasOutput = Canvas.create('transform-canvas-output');
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
-            Histogram.initHistorgram(histogramCanvas);
         },
         data: {
             threshold: 127,
@@ -34,6 +33,8 @@
             numPanels: 2,
             editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Gray', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
             currentEditorThemeIndex: null,
+            histogramHeight: Histogram.height,
+            histogramWidth: Histogram.width,
             ditherAlgorithms: [
                 {
                     title: "Threshold", 
@@ -142,6 +143,8 @@
                     return;
                 }
                 this.threshold = newThreshold;
+                
+                Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
@@ -182,6 +185,9 @@
                     fileType: file.type,
                 };
                 Histogram.drawHistorgram(sourceCanvas.context, histogramCanvas, this.loadedImage.width, this.loadedImage.height);
+                //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
+                //it's not worth it to check
+                Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
                 this.ditherImageWithSelectedAlgorithm();   
             },
             zoomImage: function(){
@@ -211,7 +217,7 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
-                var randomImageUrl = 'https://source.unsplash.com/random/400x300';
+                var randomImageUrl = 'https://source.unsplash.com/random/3200x2400';
                 Fs.openRandomImage(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
