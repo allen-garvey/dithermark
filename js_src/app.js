@@ -1,9 +1,10 @@
-(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil){
+(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl){
 
     var ditherWorker = new Worker('/js/dither-worker.js');
     
     var sourceCanvas;
     var transformCanvas;
+    var transformCanvasWebGl;
     var sourceCanvasOutput;
     var transformCanvasOutput;
     var histogramCanvas;
@@ -17,6 +18,7 @@
             transformCanvas = Canvas.create('transform-canvas');
             sourceCanvasOutput = Canvas.create('source-canvas-output');
             transformCanvasOutput = Canvas.create('transform-canvas-output');
+            transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
             ditherWorker.onmessage = this.ditherWorkerMessageReceived;
@@ -179,6 +181,8 @@
             loadImage: function(image, file){
                 Canvas.loadImage(sourceCanvas, image);
                 Canvas.loadImage(transformCanvas, image);
+                transformCanvasWebGl.canvas.width = image.width;
+                transformCanvasWebGl.canvas.height = image.height;
                 
                 this.loadedImage = {
                     width: image.width,
@@ -202,9 +206,15 @@
                 if(!this.isImageLoaded){
                     return;
                 }
+                Timer.megapixelsPerSecond('webgl threshold', this.loadedImage.width * this.loadedImage.height, ()=>{
+                   WebGl.threshold(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height), this.threshold); 
+                });
+                this.zoomImage();
+                /*
                 ditherWorker.postMessage(WorkerUtil.createDitherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 ditherWorker.postMessage(buffer);
+                */
             },
             ditherWorkerMessageReceived: function(e){
                 var messageData = e.data;
@@ -228,7 +238,7 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
-                var randomImageUrl = 'https://source.unsplash.com/random/800x600';
+                var randomImageUrl = 'https://source.unsplash.com/random/3200x2400';
                 Fs.openRandomImage(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
@@ -244,4 +254,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil, App.WebGl);

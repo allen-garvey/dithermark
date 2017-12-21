@@ -98,6 +98,7 @@
                 <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
                     <canvas id="source-canvas" class="hidden"></canvas>
                     <canvas id="transform-canvas" class="hidden"></canvas>
+                    <canvas id="transform-canvas-webgl" class=""></canvas>
                     <canvas id="source-canvas-output" v-show="numPanels > 1"></canvas>
                     <canvas id="transform-canvas-output"></canvas>
                 </div>    
@@ -106,6 +107,47 @@
             
         </main>
         <script type="text/javascript" src="/js/vue.min.js"></script>
+        
+        
+        <script type="webgl/vertex-shader" id="webgl-threshold-vertex-shader">
+            attribute vec4 a_position;
+            attribute vec2 a_texcoord;
+             
+            uniform mat4 u_matrix;
+            varying vec2 v_texcoord;
+             
+            void main() {
+               gl_Position = u_matrix * a_position;
+               v_texcoord = a_texcoord;
+            }
+        </script>
+        <script type="webgl/fragment-shader" id="webgl-threshold-fragment-shader">
+            precision mediump float;
+ 
+            varying vec2 v_texcoord;
+            uniform sampler2D u_texture;
+            uniform float u_threshold;
+            
+            float lightness(vec4 pixel){
+                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
+                float minVal = min(min(pixel.r, pixel.g), pixel.b);
+                return (maxVal + minVal) / 2.0;
+            }
+            
+            void main(){
+               vec4 pixel = texture2D(u_texture, v_texcoord);
+               float pixelLightness = lightness(pixel);
+               vec4 outputPixel;
+               if(pixelLightness < u_threshold){
+                   outputPixel = vec4(0.0, 0.0, 0.0, 1.0);
+               }
+               else{
+                   outputPixel = vec4(1.0, 1.0, 1.0, 1.0);
+               }
+               //gl_FragColor = texture2D(u_texture, v_texcoord);
+               gl_FragColor = outputPixel;
+            }
+        </script>
         <script type="text/javascript" src="/js/app.js"></script>
     </body>
 </html>

@@ -1,7 +1,7 @@
 JS_SRC_DIR=js_src
 JS_OUTPUT_DIR=public_html/js
 
-JS_SRC=$(JS_SRC_DIR)/fs.js $(JS_SRC_DIR)/worker-util.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(JS_SRC_DIR)/canvas.js $(JS_SRC_DIR)/histogram.js $(JS_SRC_DIR)/app.js
+JS_SRC=$(JS_SRC_DIR)/fs.js $(JS_SRC_DIR)/worker-util.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(JS_SRC_DIR)/canvas.js $(JS_SRC_DIR)/webgl.js $(JS_SRC_DIR)/histogram.js $(JS_SRC_DIR)/app.js
 JS_OUTPUT=$(JS_OUTPUT_DIR)/app.js
 
 
