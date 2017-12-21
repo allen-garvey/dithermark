@@ -1,17 +1,5 @@
-(function(Vue, Fs, Canvas, Timer, Histogram, Pixel){
-    function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId){
-        var buffer = new SharedArrayBuffer(4 * 2);
-        var bufferView = new Uint16Array(buffer);
-        
-        bufferView[0] = imageWidth;
-        bufferView[1] = imageHeight;
-        bufferView[2] = threshold;
-        bufferView[3] = algorithmId;
-        
-        return bufferView;
-    }
-    
-    
+(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil){
+
     var ditherWorker = new Worker('/js/dither-worker.js');
     
     var sourceCanvas;
@@ -214,7 +202,7 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                ditherWorker.postMessage(createDitherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                ditherWorker.postMessage(WorkerUtil.createDitherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 ditherWorker.postMessage(buffer);
             },
@@ -240,7 +228,7 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
-                var randomImageUrl = 'https://source.unsplash.com/random/3200x2400';
+                var randomImageUrl = 'https://source.unsplash.com/random/800x600';
                 Fs.openRandomImage(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
@@ -256,4 +244,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil);
