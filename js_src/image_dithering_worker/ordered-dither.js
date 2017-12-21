@@ -406,12 +406,12 @@ App.OrderedDither = (function(Image, Pixel){
     }
     
     function createOrderedDither(matrixCreationFunc){
-        return function(sourceContext, targetContext, imageWidth, imageHeight, threshold){
+        return function(pixels, imageWidth, imageHeight, threshold){
             var matrix = matrixCreationFunc(255);
             normalizeOrderedMatrixValues(matrix, 256);
             var thresholdFraction = 255 / threshold;
             
-            Image.transform(sourceContext, targetContext, imageWidth, imageHeight, (pixel, x, y)=>{
+            return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 var lightness = Pixel.lightness(pixel);
                 var matrixThreshold = matrixValue(matrix, x % matrix.width, y % matrix.height);
                 var ret;

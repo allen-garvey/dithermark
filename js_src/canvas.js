@@ -30,7 +30,22 @@ App.Canvas = (function(){
         targetCanvasObject.canvas.height = scaledHeight;
         
         targetCanvasObject.context.drawImage(sourceCanvasObject.canvas , 0 , 0 , sourceWidth, sourceHeight, 0, 0, scaledWidth, scaledHeight);
+    }
+    
+    function createSharedImageBuffer(sourceCanvasObject){
+        var sourceWidth = sourceCanvasObject.canvas.width;
+        var sourceHeight = sourceCanvasObject.canvas.height;
         
+        var buffer = new SharedArrayBuffer(sourceWidth * sourceHeight * 4);
+        var bufferView = new Uint8ClampedArray(buffer);
+        
+        var pixels = sourceCanvasObject.context.getImageData(0, 0, sourceWidth, sourceHeight).data;
+        
+        for(let i=0;i<pixels.length;i++){
+            bufferView[i] = pixels[i];
+        }
+        
+        return buffer;
     }
 
     
@@ -38,5 +53,6 @@ App.Canvas = (function(){
        create: createCanvasObject,
        loadImage: canvasObjectLoadImage,
        scale: scaleCanvasImage,
+       createSharedImageBuffer: createSharedImageBuffer,
     };
 })();

@@ -40,10 +40,10 @@ App.ErrorPropDither = (function(Image, Pixel){
     ** Dithering algorithms
     */
     
-    function errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc){
+    function errorPropagationDither(pixels, imageWidth, imageHeight, threshold, errorPropagationFunc){
         var errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
         
-        Image.transform(sourceContext, targetContext, imageWidth, imageHeight, (pixel, x, y)=>{
+        return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
             var lightness = Pixel.lightness(pixel);
             var adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, y);
             
@@ -67,8 +67,8 @@ App.ErrorPropDither = (function(Image, Pixel){
     }
     
     function createErrorPropagationDither(errorPropagationFunc){
-        return (sourceContext, targetContext, imageWidth, imageHeight, threshold)=>{
-            errorPropagationDither(sourceContext, targetContext, imageWidth, imageHeight, threshold, errorPropagationFunc);
+        return (pixels, imageWidth, imageHeight, threshold)=>{
+            return errorPropagationDither(pixels, imageWidth, imageHeight, threshold, errorPropagationFunc);
         };
     }
     

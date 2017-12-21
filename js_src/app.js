@@ -1,4 +1,18 @@
-(function(Vue, Fs, Canvas, Threshold, Timer, ErrorPropDither, OrderedDither, Histogram){
+(function(Vue, Fs, Canvas, Timer, Histogram, Pixel){
+    function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId){
+        var buffer = new SharedArrayBuffer(4 * 2);
+        var bufferView = new Uint16Array(buffer);
+        
+        bufferView[0] = imageWidth;
+        bufferView[1] = imageHeight;
+        bufferView[2] = threshold;
+        bufferView[3] = algorithmId;
+        
+        return bufferView;
+    }
+    
+    
+    var ditherWorker = new Worker('/js/dither-worker.js');
     
     var sourceCanvas;
     var transformCanvas;
@@ -17,6 +31,7 @@
             transformCanvasOutput = Canvas.create('transform-canvas-output');
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
+            ditherWorker.onmessage = this.ditherWorkerMessageReceived;
         },
         data: {
             threshold: 127,
@@ -38,59 +53,59 @@
             ditherAlgorithms: [
                 {
                     title: "Threshold", 
-                    algorithm: Threshold.image,
+                    id: 1,
                 },
                 {
                     title: "Random", 
-                    algorithm: Threshold.randomDither,
+                    id: 2,
                 },
                 {
                     title: "Atkinson", 
-                    algorithm: ErrorPropDither.atkinson,
+                    id: 3,
                 },
                 {
                     title: "Floyd-Steinberg", 
-                    algorithm: ErrorPropDither.floydSteinberg,
+                    id: 4,
                 },
                 {
             		title: "Javis-Judice-Ninke",
-            		algorithm: ErrorPropDither.javisJudiceNinke,
+            		id: 5,
             	},
             	{
             		title: "Stucki",
-            		algorithm: ErrorPropDither.stucki,
+            		id: 6,
             	},
             	{
             		title: "Burkes",
-            		algorithm: ErrorPropDither.burkes,
+            		id: 7,
             	},
             	{
             		title: "Sierra3",
-            		algorithm: ErrorPropDither.sierra3,
+            		id: 8,
             	},
             	{
             		title: "Sierra2",
-            		algorithm: ErrorPropDither.sierra2,
+            		id: 9,
             	},
             	{
             		title: "Sierra1",
-            		algorithm: ErrorPropDither.sierra1,
+            		id: 10,
             	},
             	{
             	    title: "Ordered Dither 2x2",
-            	    algorithm: OrderedDither.dither2,
+            	    id: 11,
             	},
             	{
             	    title: "Ordered Dither 4x4",
-            	    algorithm: OrderedDither.dither4,
+            	    id: 12,
             	},
             	{
             	    title: "Ordered Dither 8x8",
-            	    algorithm: OrderedDither.dither8,
+            	    id: 13,
             	},
             	{
             	    title: "Ordered Dither 16x16",
-            	    algorithm: OrderedDither.dither16,
+            	    id: 14,
             	},
             ],
         },
@@ -184,11 +199,11 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
+                this.ditherImageWithSelectedAlgorithm(); 
                 Histogram.drawHistorgram(sourceCanvas.context, histogramCanvas, this.loadedImage.width, this.loadedImage.height);
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
-                this.ditherImageWithSelectedAlgorithm();   
             },
             zoomImage: function(){
                 var scaleAmount = this.zoom / 100;
@@ -199,9 +214,17 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title, this.loadedImagePixelDimensions, ()=>{
-                    this.selectedDitherAlgorithm.algorithm(sourceCanvas.context, transformCanvas.context, this.loadedImage.width, this.loadedImage.height, this.threshold);
-                });
+                ditherWorker.postMessage(createDitherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
+                ditherWorker.postMessage(buffer);
+            },
+            ditherWorkerMessageReceived: function(e){
+                var messageData = e.data;
+                var pixels = new Uint8ClampedArray(messageData);
+                var imageData = transformCanvas.context.createImageData(this.loadedImage.width, this.loadedImage.height);
+                imageData.data.set(pixels);
+                transformCanvas.context.putImageData(imageData, 0, 0);
+                
                 this.zoomImage();
             },
             loadImageTrigger: function(){
@@ -233,4 +256,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Threshold, App.Timer, App.ErrorPropDither, App.OrderedDither, App.Histogram);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel);

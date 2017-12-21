@@ -1,10 +1,8 @@
-var App = App || {};
-
 App.Threshold = (function(Image, Pixel){
     
     function thresholdTransformGenerator(thresholdFunc){
-        return function(sourceContext, targetContext, imageWidth, imageHeight, threshold){
-            Image.transform(sourceContext, targetContext, imageWidth, imageHeight, (pixel, x, y)=>{
+        return function(pixels, imageWidth, imageHeight, threshold){
+            return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 var lightness = Pixel.lightness(pixel);
                 
                 if(lightness > thresholdFunc(threshold)){
