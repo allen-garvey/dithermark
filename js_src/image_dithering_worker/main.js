@@ -85,7 +85,7 @@ onmessage = function(e) {
     
     var selectedAlgorithm = ditherAlgorithms[algorithmId - 1];
     App.Timer.time(selectedAlgorithm.title, ()=>{
-       imageDataBuffer = selectedAlgorithm.algorithm(pixels, imageHeight, imageWidth, threshold); 
+       imageDataBuffer = selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold); 
     });
     
     postMessage(imageDataBuffer);
