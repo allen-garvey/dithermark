@@ -35,11 +35,10 @@ App.Canvas = (function(){
     function createSharedImageBuffer(sourceCanvasObject){
         var sourceWidth = sourceCanvasObject.canvas.width;
         var sourceHeight = sourceCanvasObject.canvas.height;
-        
-        var buffer = new SharedArrayBuffer(sourceWidth * sourceHeight * 4);
-        var bufferView = new Uint8ClampedArray(buffer);
-        
         var pixels = sourceCanvasObject.context.getImageData(0, 0, sourceWidth, sourceHeight).data;
+        
+        var buffer = new SharedArrayBuffer(pixels.length);
+        var bufferView = new Uint8ClampedArray(buffer);
         
         for(let i=0;i<pixels.length;i++){
             bufferView[i] = pixels[i];
