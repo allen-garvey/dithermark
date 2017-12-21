@@ -21,6 +21,7 @@ input[type="radio"]{
 
 .image-canvas-container{
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     margin-top: 25px;
 }
