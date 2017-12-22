@@ -1,0 +1,12 @@
+.header{
+    padding: 0 16px;
+}
+
+.brand{
+    font-family: 'Bungee', sans-serif;
+    margin: 0;
+    display: inline-block;
+    &:hover{
+        text-shadow: 2px 2px magenta;
+    }
+}
