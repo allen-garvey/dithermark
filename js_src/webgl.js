@@ -251,7 +251,7 @@ App.WebGl = (function(){
     }
     
     
-    function createDrawImage(gl){
+    function createDrawImageThreshold(gl){
         // setup GLSL program
         var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, thresholdFragmentShaderText));
         
@@ -330,23 +330,124 @@ App.WebGl = (function(){
           // draw the quad (2 triangles, 6 vertices)
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         };
+    }
+    
+    function createDrawImageRandomThreshold(gl){
+        // setup GLSL program
+        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, randomThresholdFragmentShaderText));
+        
+        // look up where the vertex data needs to go.
+        var positionLocation = gl.getAttribLocation(program, 'a_position');
+        var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
+        
+        // lookup uniforms
+        var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
+        var textureLocation = gl.getUniformLocation(program, 'u_texture');
+        var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
+        var randomSeedLocation = gl.getUniformLocation(program, 'u_random_seed');
+        
+        // Create a buffer.
+        var positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        
+        // Put a unit quad in the buffer
+        var positions = [
+        0, 0,
+        0, 1,
+        1, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+        
+        // Create a buffer for texture coords
+        var texcoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+        
+        // Put texcoords in the buffer
+        var texcoords = [
+        0, 0,
+        0, 1,
+        1, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
+        
+        return function(gl, tex, texWidth, texHeight, threshold, dstX=0, dstY=0) {
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+         
+          // Tell WebGL to use our shader program pair
+          gl.useProgram(program);
+         
+          // Setup the attributes to pull data from our buffers
+          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+          gl.enableVertexAttribArray(positionLocation);
+          gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+          gl.enableVertexAttribArray(texcoordLocation);
+          gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+         
+          // this matrix will convert from pixels to clip space
+          var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+         
+          // this matrix will translate our quad to dstX, dstY
+          matrix = m4.translate(matrix, dstX, dstY, 0);
+         
+          // this matrix will scale our 1 unit quad
+          // from 1 unit to texWidth, texHeight units
+          matrix = m4.scale(matrix, texWidth, texHeight, 1);
+         
+          // Set the matrix.
+          gl.uniformMatrix4fv(matrixLocation, false, matrix);
+         
+          // Tell the shader to get the texture from texture unit 0
+          gl.uniform1i(textureLocation, 0);
+          
+          //set threshold
+          gl.uniform1f(thresholdLocation, threshold);
+          
+          //set random seed
+          var randomSeed = new Float32Array(2);
+          randomSeed[0] = Math.random();
+          randomSeed[1] = Math.random();
+          gl.uniform2f(randomSeedLocation, false, randomSeed);
+         
+          // draw the quad (2 triangles, 6 vertices)
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        };
         
     }
     
     
     var thresholdVertexShaderText = document.getElementById('webgl-threshold-vertex-shader').textContent;
     var thresholdFragmentShaderText = document.getElementById('webgl-threshold-fragment-shader').textContent;
-    var drawImage;
+    var randomThresholdFragmentShaderText = document.getElementById('webgl-random-threshold-fragment-shader').textContent;
+    var drawImageThreshold;
+    var drawImageRandomThreshold;
     
     function webGLThreshold(gl, imageData, threshold){
         //convert threshold to float
         threshold = threshold / 255.0;
         
-        drawImage = drawImage || createDrawImage(gl);
+        drawImageThreshold = drawImageThreshold || createDrawImageThreshold(gl);
         var texture = createAndLoadTexture(gl, imageData);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImage(gl, texture, imageData.width, imageData.height, threshold);
+        drawImageThreshold(gl, texture, imageData.width, imageData.height, threshold);
+    }
+    
+    function webGLRandomThreshold(gl, imageData, threshold){
+        //convert threshold to float
+        threshold = threshold / 255.0;
+        
+        drawImageRandomThreshold = drawImageRandomThreshold || createDrawImageRandomThreshold(gl);
+        var texture = createAndLoadTexture(gl, imageData);
+        // Tell WebGL how to convert from clip space to pixels
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        drawImageRandomThreshold(gl, texture, imageData.width, imageData.height, threshold);
     }
     
     
@@ -355,5 +456,6 @@ App.WebGl = (function(){
     return {
         createCanvas: createCanvas,
         threshold: webGLThreshold,
+        randomThreshold: webGLRandomThreshold,
     };    
 })();

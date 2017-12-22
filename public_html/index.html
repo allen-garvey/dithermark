@@ -98,7 +98,7 @@
                 <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
                     <canvas id="source-canvas" class="hidden"></canvas>
                     <canvas id="transform-canvas" class="hidden"></canvas>
-                    <canvas id="transform-canvas-webgl" class=""></canvas>
+                    <canvas id="transform-canvas-webgl" class="hidden"></canvas>
                     <canvas id="source-canvas-output" v-show="numPanels > 1"></canvas>
                     <canvas id="transform-canvas-output"></canvas>
                 </div>    
@@ -123,7 +123,7 @@
         </script>
         <script type="webgl/fragment-shader" id="webgl-threshold-fragment-shader">
             precision mediump float;
- 
+            
             varying vec2 v_texcoord;
             uniform sampler2D u_texture;
             uniform float u_threshold;
@@ -138,11 +138,57 @@
                vec4 pixel = texture2D(u_texture, v_texcoord);
                float pixelLightness = lightness(pixel);
                vec4 outputPixel;
+               
                if(pixelLightness < u_threshold){
-                   outputPixel = vec4(0.0, 0.0, 0.0, 1.0);
+                   outputPixel = vec4(0.0, 0.0, 0.0, pixel.a);
                }
                else{
-                   outputPixel = vec4(1.0, 1.0, 1.0, 1.0);
+                   outputPixel = vec4(1.0, 1.0, 1.0, pixel.a);
+               }
+               //gl_FragColor = texture2D(u_texture, v_texcoord);
+               gl_FragColor = outputPixel;
+            }
+        </script>
+        
+        <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader">
+            precision mediump float;
+            
+            varying vec2 v_texcoord;
+            uniform sampler2D u_texture;
+            uniform float u_threshold;
+            uniform vec2 u_random_seed;
+            
+            //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+            highp float rand(vec2 co){
+                highp float a = 12.9898;
+                highp float b = 78.233;
+                highp float c = 43758.5453;
+                highp float dt= dot(co.xy ,vec2(a,b));
+                highp float sn= mod(dt,3.14);
+                return fract(sin(sn) * c);
+            }
+            
+            float rand2(vec2 co){
+                return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
+            }
+            
+            float lightness(vec4 pixel){
+                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
+                float minVal = min(min(pixel.r, pixel.g), pixel.b);
+                return (maxVal + minVal) / 2.0;
+            }
+            
+            void main(){
+               vec4 pixel = texture2D(u_texture, v_texcoord);
+               float pixelLightness = lightness(pixel);
+               vec4 outputPixel;
+               float adjusted_threshold = u_threshold * rand2(v_texcoord.xy/u_random_seed.xy);
+               
+               if(pixelLightness < adjusted_threshold){
+                   outputPixel = vec4(0.0, 0.0, 0.0, pixel.a);
+               }
+               else{
+                   outputPixel = vec4(1.0, 1.0, 1.0, pixel.a);
                }
                //gl_FragColor = texture2D(u_texture, v_texcoord);
                gl_FragColor = outputPixel;

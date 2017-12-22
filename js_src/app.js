@@ -42,8 +42,18 @@
             histogramWidth: Histogram.width,
             ditherAlgorithms: [
                 {
+                    title: "Threshold WebGL", 
+                    id: 15,
+                    webGlFunc: WebGl.threshold,
+                },
+                {
                     title: "Threshold", 
                     id: 1,
+                },
+                {
+                    title: "Random WebGL", 
+                    id: 16,
+                    webGlFunc: WebGl.randomThreshold,
                 },
                 {
                     title: "Random", 
@@ -114,6 +124,9 @@
                     return this.loadedImage.fileName || '';
                 }
                 return '';
+            },
+            isSelectedAlgorithmWebGl: function(){
+                return !!this.selectedDitherAlgorithm.webGlFunc;
             },
         },
         watch: {
@@ -200,21 +213,30 @@
             zoomImage: function(){
                 var scaleAmount = this.zoom / 100;
                 Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
-                Canvas.scale(transformCanvas, transformCanvasOutput, scaleAmount);
+                var transformCanvasSource;
+                if(this.isSelectedAlgorithmWebGl){
+                    transformCanvasSource = transformCanvasWebGl;
+                }
+                else{
+                    transformCanvasSource = transformCanvas;
+                }
+                Canvas.scale(transformCanvasSource, transformCanvasOutput, scaleAmount);
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
                     return;
                 }
-                Timer.megapixelsPerSecond('webgl threshold', this.loadedImage.width * this.loadedImage.height, ()=>{
-                   WebGl.threshold(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height), this.threshold); 
-                });
-                this.zoomImage();
-                /*
+                if(this.isSelectedAlgorithmWebGl){
+                    Timer.megapixelsPerSecond('webgl threshold', this.loadedImage.width * this.loadedImage.height, ()=>{
+                        this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height), this.threshold); 
+                    });
+                    this.zoomImage();
+                    return;
+                }
+
                 ditherWorker.postMessage(WorkerUtil.createDitherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 ditherWorker.postMessage(buffer);
-                */
             },
             ditherWorkerMessageReceived: function(e){
                 var messageData = e.data;
@@ -238,7 +260,7 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
-                var randomImageUrl = 'https://source.unsplash.com/random/3200x2400';
+                var randomImageUrl = 'https://source.unsplash.com/random/800x600';
                 Fs.openRandomImage(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
