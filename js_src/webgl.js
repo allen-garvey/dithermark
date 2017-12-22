@@ -413,7 +413,7 @@ App.WebGl = (function(){
           var randomSeed = new Float32Array(2);
           randomSeed[0] = Math.random();
           randomSeed[1] = Math.random();
-          gl.uniform2f(randomSeedLocation, false, randomSeed);
+          gl.uniform2fv(randomSeedLocation, randomSeed);
          
           // draw the quad (2 triangles, 6 vertices)
           gl.drawArrays(gl.TRIANGLES, 0, 6);
