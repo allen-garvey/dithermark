@@ -250,7 +250,23 @@ App.WebGl = (function(){
         return texture;
     }
     
+    /*
+    * Ordered dither matrix stuff
+    */
     
+    function createOrderedBayer2(){
+        var bayer = new Float32Array(4);
+        bayer[0] = 0;
+        bayer[1] = 0.5;
+        bayer[2] = 0.75;
+        bayer[3] = 0.25;
+        return bayer;
+    }
+    
+    /*
+    * Actual webgl function creation
+    */
+
     function createDrawImageThreshold(gl){
         // setup GLSL program
         var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, thresholdFragmentShaderText));
@@ -418,15 +434,108 @@ App.WebGl = (function(){
           // draw the quad (2 triangles, 6 vertices)
           gl.drawArrays(gl.TRIANGLES, 0, 6);
         };
+    }
+    
+    function createDrawImageOrderedDither(gl, bayerDimensions, bayerMatrix){
+        var fragmentShaderSource = orderedDitherFragmentShaderText.replace('{{bayerMatrixDimensions}}', bayerDimensions).replace('{{bayerMatrixSize}}', bayerDimensions * bayerDimensions);
+        console.log( fragmentShaderSource);
+        // setup GLSL program
+        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, fragmentShaderSource));
         
+        // look up where the vertex data needs to go.
+        var positionLocation = gl.getAttribLocation(program, 'a_position');
+        var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
+        
+        // lookup uniforms
+        var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
+        var textureLocation = gl.getUniformLocation(program, 'u_texture');
+        var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
+        var imageWidthLocation = gl.getUniformLocation(program, 'u_image_pixel_width');
+        var imageHeightLocation = gl.getUniformLocation(program, 'u_image_pixel_height');
+        var bayerMatrixLocation = gl.getUniformLocation(program, 'u_bayer_matrix');
+        // Create a buffer.
+        var positionBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        
+        // Put a unit quad in the buffer
+        var positions = [
+        0, 0,
+        0, 1,
+        1, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+        
+        // Create a buffer for texture coords
+        var texcoordBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+        
+        // Put texcoords in the buffer
+        var texcoords = [
+        0, 0,
+        0, 1,
+        1, 0,
+        1, 0,
+        0, 1,
+        1, 1,
+        ];
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
+        
+        return function(gl, tex, texWidth, texHeight, threshold, dstX=0, dstY=0) {
+          gl.bindTexture(gl.TEXTURE_2D, tex);
+         
+          // Tell WebGL to use our shader program pair
+          gl.useProgram(program);
+         
+          // Setup the attributes to pull data from our buffers
+          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+          gl.enableVertexAttribArray(positionLocation);
+          gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+          gl.enableVertexAttribArray(texcoordLocation);
+          gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+         
+          // this matrix will convert from pixels to clip space
+          var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+         
+          // this matrix will translate our quad to dstX, dstY
+          matrix = m4.translate(matrix, dstX, dstY, 0);
+         
+          // this matrix will scale our 1 unit quad
+          // from 1 unit to texWidth, texHeight units
+          matrix = m4.scale(matrix, texWidth, texHeight, 1);
+         
+          // Set the matrix.
+          gl.uniformMatrix4fv(matrixLocation, false, matrix);
+         
+          // Tell the shader to get the texture from texture unit 0
+          gl.uniform1i(textureLocation, 0);
+          
+          //set threshold
+          gl.uniform1f(thresholdLocation, threshold);
+          
+          //set width and height
+          gl.uniform1f(imageWidthLocation, texWidth);
+          gl.uniform1f(imageHeightLocation, texHeight);
+          
+          //set bayer matrix
+          gl.uniform1fv(bayerMatrixLocation, bayerMatrix);
+         
+          // draw the quad (2 triangles, 6 vertices)
+          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        };
     }
     
     
     var thresholdVertexShaderText = document.getElementById('webgl-threshold-vertex-shader').textContent;
     var thresholdFragmentShaderText = document.getElementById('webgl-threshold-fragment-shader').textContent;
     var randomThresholdFragmentShaderText = document.getElementById('webgl-random-threshold-fragment-shader').textContent;
+    var orderedDitherFragmentShaderText = document.getElementById('webgl-ordered-dither-fragment-shader').textContent;
     var drawImageThreshold;
     var drawImageRandomThreshold;
+    var drawImageOrderedDither2;
     
     function webGLThreshold(gl, imageData, threshold){
         //convert threshold to float
@@ -450,6 +559,17 @@ App.WebGl = (function(){
         drawImageRandomThreshold(gl, texture, imageData.width, imageData.height, threshold);
     }
     
+     function webGLOrderedDither2(gl, imageData, threshold){
+        //convert threshold to float
+        threshold = threshold / 255.0;
+        
+        drawImageOrderedDither2 = drawImageOrderedDither2 || createDrawImageOrderedDither(gl, 2, createOrderedBayer2());
+        var texture = createAndLoadTexture(gl, imageData);
+        // Tell WebGL how to convert from clip space to pixels
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        drawImageOrderedDither2(gl, texture, imageData.width, imageData.height, threshold);
+    }
+    
     
     
     
@@ -457,5 +577,6 @@ App.WebGl = (function(){
         createCanvas: createCanvas,
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
+        orderedDither2: webGLOrderedDither2,
     };    
 })();

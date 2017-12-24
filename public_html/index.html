@@ -202,13 +202,13 @@
         <script type="webgl/fragment-shader" id="webgl-ordered-dither-fragment-shader">
             precision mediump float;
             
-            #define BAYER_MATRIX_SIDE {{bayerMatrixSide}}
-            
+            const float BAYER_MATRIX_DIMENSIONS =  {{bayerMatrixDimensions}}.0;
             varying vec2 v_texcoord;
             uniform sampler2D u_texture;
             uniform float u_threshold;
             uniform float u_image_pixel_width;
-            uniform float u_bayer_matrix[BAYER_MATRIX_SIDE * BAYER_MATRIX_SIDE];
+            uniform float u_image_pixel_height;
+            uniform float u_bayer_matrix[{{bayerMatrixSize}}];
             
             float lightness(vec4 pixel){
                 float maxVal = max(max(pixel.r, pixel.g), pixel.b);
@@ -219,9 +219,19 @@
             void main(){
                vec4 pixel = texture2D(u_texture, v_texcoord);
                float pixelLightness = lightness(pixel);
+               
+               //get pixel coordinates based on:
+               //http://www.txutxi.com/?p=182
+               // Converting (x,y) to range [0,1]
+               float x = gl_FragCoord.x/u_image_pixel_width;
+               float y = gl_FragCoord.y/u_image_pixel_height;
+               float bayer_value = u_bayer_matrix[int(mod(u_image_pixel_width * (x + y * u_image_pixel_width), BAYER_MATRIX_DIMENSIONS ))];
+            //   float bayer_value = u_bayer_matrix[1];
+               float adjusted_threshold = bayer_value * u_threshold;
+               
                vec4 outputPixel;
                
-               if(pixelLightness < u_threshold){
+               if(pixelLightness < bayer_value){
                    outputPixel = vec4(0.0, 0.0, 0.0, pixel.a);
                }
                else{
