@@ -16,8 +16,13 @@ App.WorkerUtil = (function(){
         return bufferView;
     }
     
+    function createDitherWorkerLoadImageHeader(imageWidth, imageHeight){
+        return createDitherWorkerHeader(imageWidth, imageHeight, 0, 0);
+    }
+    
     
     return {
-        createDitherWorkerHeader: createDitherWorkerHeader,
+        ditherWorkerHeader: createDitherWorkerHeader,
+        ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
     };
 })();

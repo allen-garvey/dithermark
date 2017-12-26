@@ -209,7 +209,18 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
-                this.ditherImageWithSelectedAlgorithm(); 
+                //copy image to web worker
+                ditherWorker.postMessage(WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height));
+                var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
+                ditherWorker.postMessage(buffer);
+                
+                if(this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();   
+                }
+                else{
+                    //todo display image in transform canvas, because as of now it will be empty
+                    this.zoomImage();
+                }
                 Histogram.drawHistorgram(sourceCanvas.context, histogramCanvas, this.loadedImage.width, this.loadedImage.height);
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not worth it to check
@@ -238,10 +249,9 @@
                     this.zoomImage();
                     return;
                 }
-
-                ditherWorker.postMessage(WorkerUtil.createDitherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
-                var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                ditherWorker.postMessage(buffer);
+                console.log('Started worker dithering:  ' + Timer.timeInMilliseconds());
+                ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                ditherWorker.postMessage(new SharedArrayBuffer(0));
             },
             ditherWorkerMessageReceived: function(e){
                 var messageData = e.data;
@@ -249,7 +259,7 @@
                 var imageData = transformCanvas.context.createImageData(this.loadedImage.width, this.loadedImage.height);
                 imageData.data.set(pixels);
                 transformCanvas.context.putImageData(imageData, 0, 0);
-                
+                console.log('Finished worker dithering: ' + Timer.timeInMilliseconds());
                 this.zoomImage();
             },
             loadImageTrigger: function(){
