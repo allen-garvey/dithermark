@@ -46,6 +46,14 @@ App.Canvas = (function(){
         
         return buffer;
     }
+    
+    //buffer should be ArrayBuffer or SharedArrayBuffer
+    function replaceImageWithBuffer(targetCanvasObject, imageWidth, imageHeight, buffer){
+        var pixels = new Uint8ClampedArray(buffer);
+        var imageData = targetCanvasObject.context.createImageData(imageWidth, imageHeight);
+        imageData.data.set(pixels);
+        targetCanvasObject.context.putImageData(imageData, 0, 0);
+    }
 
     
     return {
@@ -53,5 +61,6 @@ App.Canvas = (function(){
        loadImage: canvasObjectLoadImage,
        scale: scaleCanvasImage,
        createSharedImageBuffer: createSharedImageBuffer,
+       replaceImageWithBuffer: replaceImageWithBuffer,
     };
 })();

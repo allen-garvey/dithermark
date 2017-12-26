@@ -221,7 +221,9 @@
                     //todo display image in transform canvas, because as of now it will be empty
                     this.zoomImage();
                 }
-                Histogram.drawHistorgram(sourceCanvas.context, histogramCanvas, this.loadedImage.width, this.loadedImage.height);
+                Timer.time('draw histogram', ()=>{
+                   Histogram.drawHistorgram(sourceCanvas.context, histogramCanvas, this.loadedImage.width, this.loadedImage.height); 
+                });
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
@@ -255,10 +257,7 @@
             },
             ditherWorkerMessageReceived: function(e){
                 var messageData = e.data;
-                var pixels = new Uint8ClampedArray(messageData);
-                var imageData = transformCanvas.context.createImageData(this.loadedImage.width, this.loadedImage.height);
-                imageData.data.set(pixels);
-                transformCanvas.context.putImageData(imageData, 0, 0);
+                Canvas.replaceImageWithBuffer(transformCanvas, this.loadedImage.width, this.loadedImage.height, messageData);
                 console.log('Finished worker dithering: ' + Timer.timeInMilliseconds());
                 this.zoomImage();
             },
