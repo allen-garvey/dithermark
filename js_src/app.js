@@ -201,6 +201,7 @@
             loadImage: function(image, file){
                 Canvas.loadImage(sourceCanvas, image);
                 Canvas.loadImage(transformCanvas, image);
+                
                 transformCanvasWebGl.canvas.width = image.width;
                 transformCanvasWebGl.canvas.height = image.height;
                 
@@ -223,18 +224,19 @@
                     this.ditherImageWithSelectedAlgorithm();   
                 }
                 else{
-                    //todo display image in transform canvas, because as of now it will be empty
-                    this.zoomImage();
+                    //if live preview is not enabled, transform canvas will be blank
+                    //unless we do this
+                    this.zoomImage(true);
                 }
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not really worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
             },
-            zoomImage: function(){
+            zoomImage: function(isInitial){
                 var scaleAmount = this.zoom / 100;
                 Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 var transformCanvasSource;
-                if(this.isSelectedAlgorithmWebGl){
+                if(!isInitial && this.isSelectedAlgorithmWebGl){
                     transformCanvasSource = transformCanvasWebGl;
                 }
                 else{
