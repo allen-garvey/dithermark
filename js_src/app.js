@@ -1,6 +1,7 @@
 (function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl){
 
     var ditherWorker = new Worker('/js/dither-worker.js');
+    var histogramWorker = new Worker('/js/histogram-worker.js');
     
     var sourceCanvas;
     var transformCanvas;
@@ -22,6 +23,7 @@
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
             ditherWorker.onmessage = this.ditherWorkerMessageReceived;
+            histogramWorker.onmessage = this.histogramWorkerMessageReceived;
         },
         data: {
             threshold: 127,
@@ -214,6 +216,9 @@
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 ditherWorker.postMessage(buffer);
                 
+                histogramWorker.postMessage(WorkerUtil.histogramWorkerHeader(this.loadedImage.width, this.loadedImage.height));
+                histogramWorker.postMessage(buffer);
+                
                 if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();   
                 }
@@ -221,11 +226,8 @@
                     //todo display image in transform canvas, because as of now it will be empty
                     this.zoomImage();
                 }
-                Timer.time('draw histogram', ()=>{
-                   Histogram.drawHistorgram(sourceCanvas.context, histogramCanvas, this.loadedImage.width, this.loadedImage.height); 
-                });
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
-                //it's not worth it to check
+                //it's not really worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
             },
             zoomImage: function(){
@@ -260,6 +262,10 @@
                 Canvas.replaceImageWithBuffer(transformCanvas, this.loadedImage.width, this.loadedImage.height, messageData);
                 console.log('Finished worker dithering: ' + Timer.timeInMilliseconds());
                 this.zoomImage();
+            },
+            histogramWorkerMessageReceived: function(e){
+                var messageData = e.data;
+                Canvas.replaceImageWithBuffer(histogramCanvas, App.Histogram.width, App.Histogram.height, messageData);
             },
             loadImageTrigger: function(){
                 fileInput.click();

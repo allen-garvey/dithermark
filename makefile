@@ -10,13 +10,18 @@ DITHER_WORKER_DIR=$(JS_SRC_DIR)/image_dithering_worker
 DITHER_WORKER_SRC=$(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(DITHER_WORKER_DIR)/image.js $(DITHER_WORKER_DIR)/threshold.js $(DITHER_WORKER_DIR)/error-prop-dither.js $(DITHER_WORKER_DIR)/ordered-dither.js $(DITHER_WORKER_DIR)/algorithm-model.js $(DITHER_WORKER_DIR)/main.js
 DITHER_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/dither-worker.js
 
+HISTOGRAM_WORKER_DIR=$(JS_SRC_DIR)/histogram_worker
+
+HISTOGRAM_WORKER_SRC=$(JS_SRC_DIR)/pixel.js $(HISTOGRAM_WORKER_DIR)/histogram.js $(HISTOGRAM_WORKER_DIR)/histogram-main.js
+HISTOGRAM_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/histogram-worker.js
+
 
 VUE_SRC=node_modules/vue/dist/vue.min.js
 VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
 
 CSS_OUTPUT = public_html/styles/style.css
 
-all: $(JS_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(DITHER_WORKER_OUTPUT)
+all: $(JS_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(DITHER_WORKER_OUTPUT) $(HISTOGRAM_WORKER_OUTPUT)
 
 $(VUE_OUTPUT): $(VUE_SRC)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
@@ -26,6 +31,9 @@ $(JS_OUTPUT): $(JS_SRC)
 
 $(DITHER_WORKER_OUTPUT): $(DITHER_WORKER_SRC)
 	cat $(DITHER_WORKER_SRC) > $(DITHER_WORKER_OUTPUT)
+
+$(HISTOGRAM_WORKER_OUTPUT): $(HISTOGRAM_WORKER_SRC)
+	cat $(HISTOGRAM_WORKER_SRC) > $(HISTOGRAM_WORKER_OUTPUT)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
@@ -34,5 +42,6 @@ watch_js:
 	while true; do \
         make $(JS_OUTPUT); \
         make $(DITHER_WORKER_OUTPUT); \
+        make $(HISTOGRAM_WORKER_OUTPUT); \
         inotifywait --quiet --recursive --event create --event modify --event move ./js_src/; \
     done
