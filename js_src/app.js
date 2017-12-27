@@ -216,8 +216,6 @@
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height));
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 ditherWorker.postMessage(buffer);
-                
-                histogramWorker.postMessage(WorkerUtil.histogramWorkerHeader(this.loadedImage.width, this.loadedImage.height));
                 histogramWorker.postMessage(buffer);
                 
                 if(this.isLivePreviewEnabled){

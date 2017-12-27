@@ -20,20 +20,8 @@ App.WorkerUtil = (function(){
         return createDitherWorkerHeader(imageWidth, imageHeight, 0, 0);
     }
     
-    function createHistogramWorkerHeader(imageWidth, imageHeight,){
-        var buffer = new SharedArrayBuffer(2 * 2);
-        var bufferView = new Uint16Array(buffer);
-        
-        bufferView[0] = imageWidth;
-        bufferView[1] = imageHeight;
-        
-        return bufferView;
-    }
-    
-    
     return {
         ditherWorkerHeader: createDitherWorkerHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
-        histogramWorkerHeader: createHistogramWorkerHeader,
     };
 })();

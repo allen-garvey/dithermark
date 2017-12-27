@@ -16,7 +16,7 @@ App.Histogram = (function(Pixel){
         return histogramArray;
     }
     
-    function createHistogram(pixels, imageWidth, imageHeight){
+    function createHistogram(pixels){
         var histogramArray = createHistogramArray();
         
         for(let i=0;i<pixels.length;i+=4){
