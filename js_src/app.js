@@ -54,6 +54,21 @@
                     webGlFunc: WebGl.orderedDither2,
                 },
                 {
+                    title: "Ordered Dither 4x4 WebGL", 
+                    id: 18,
+                    webGlFunc: WebGl.orderedDither4,
+                },
+                {
+                    title: "Ordered Dither 8x8 WebGL", 
+                    id: 19,
+                    webGlFunc: WebGl.orderedDither8,
+                },
+                {
+                    title: "Ordered Dither 16x16 WebGL", 
+                    id: 20,
+                    webGlFunc: WebGl.orderedDither16,
+                },
+                {
                     title: "Threshold", 
                     id: 1,
                 },
