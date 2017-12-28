@@ -23,15 +23,20 @@ App.Timer = (function(){
     
     function timeFunctionMegapixels(name, numPixels, functionToTime){
         timeFunctionBase(functionToTime, (seconds)=>{
-            var megapixels = numPixels / 1000000;
-            var megapixelsPerSecond = megapixels / seconds;
-            console.log(`${name}: ${seconds}s, ${megapixelsPerSecond.toFixed(2)} megapixels/s`);
+            console.log(timeFunctionMegapixelsMessage(name, numPixels, seconds));
         });
+    }
+    
+    function timeFunctionMegapixelsMessage(name, numPixels, seconds){
+        var megapixels = numPixels / 1000000;
+        var megapixelsPerSecond = megapixels / seconds;
+        return `${name}: ${seconds}s, ${megapixelsPerSecond.toFixed(2)} megapixels/s`;
     }
     
     return {
         time: timeFunction,
         megapixelsPerSecond: timeFunctionMegapixels,
         timeInMilliseconds: timeInMilliseconds,
+        megapixelsMessage: timeFunctionMegapixelsMessage,
     };
 })();

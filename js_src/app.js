@@ -11,6 +11,8 @@
     var histogramCanvas;
     var histogramCanvasIndicator;
     
+    var webworkerStartTime;
+    
     var app = new Vue({
         el: '#app',
         mounted: function(){
@@ -262,20 +264,20 @@
                     return;
                 }
                 if(this.isSelectedAlgorithmWebGl){
-                    Timer.megapixelsPerSecond('webgl threshold', this.loadedImage.width * this.loadedImage.height, ()=>{
+                    Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height), this.threshold); 
                     });
                     this.zoomImage();
                     return;
                 }
-                console.log('Started worker dithering:  ' + Timer.timeInMilliseconds());
+                webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
                 ditherWorker.postMessage(new SharedArrayBuffer(0));
             },
             ditherWorkerMessageReceived: function(e){
                 var messageData = e.data;
                 Canvas.replaceImageWithBuffer(transformCanvas, this.loadedImage.width, this.loadedImage.height, messageData);
-                console.log('Finished worker dithering: ' + Timer.timeInMilliseconds());
+                console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.zoomImage();
             },
             histogramWorkerMessageReceived: function(e){

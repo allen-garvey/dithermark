@@ -49,7 +49,7 @@ onmessage = function(e) {
     }
     
     var selectedAlgorithm = ditherAlgorithms[normalizedAlgorithmId];
-    App.Timer.megapixelsPerSecond(selectedAlgorithm.title, imageHeight * imageWidth, ()=>{
+    App.Timer.megapixelsPerSecond(selectedAlgorithm.title + '          ', imageHeight * imageWidth, ()=>{
        imageDataBuffer = selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold); 
     });
     
