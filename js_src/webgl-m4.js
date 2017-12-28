@@ -29,10 +29,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
+//used for webgl
+//based on: https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
 App.M4 = (function(){
-    //based on: https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
-    
     /**
    * Multiply by a scaling matrix
    * @param {Matrix4} m matrix to multiply
