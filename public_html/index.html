@@ -145,41 +145,13 @@
                 return (maxVal + minVal) / 2.0;
             }
         </script>
-        <script type="webgl/fragment-shader" id="webgl-threshold-fragment-shader">
-            precision mediump float;
-            
-            varying vec2 v_texcoord;
-            uniform sampler2D u_texture;
-            uniform float u_threshold;
-            uniform vec3 u_black_pixel;
-            uniform vec3 u_white_pixel;
-            
-            #{{lightnessFunction}}
-            
-            void main(){
-               vec4 pixel = texture2D(u_texture, v_texcoord);
-               float pixelLightness = lightness(pixel);
-               vec4 outputPixel;
-               
-               if(pixelLightness < u_threshold){
-                   outputPixel = vec4(u_black_pixel.rgb, pixel.a);
-               }
-               else{
-                   outputPixel = vec4(u_white_pixel.rgb, pixel.a);
-               }
-               gl_FragColor = outputPixel;
-            }
+        
+        <script type="webgl/fragment-shader" id="webgl-threshold-fragment-shader-adjusted-threshold">
+            float adjustedThreshold = u_threshold;
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader">
-            precision mediump float;
-            
-            varying vec2 v_texcoord;
-            uniform sampler2D u_texture;
-            uniform float u_threshold;
+        <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader-declaration">
             uniform vec2 u_random_seed;
-            uniform vec3 u_black_pixel;
-            uniform vec3 u_white_pixel;
             
             //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
             highp float rand(vec2 co){
@@ -194,38 +166,34 @@
             float rand2(vec2 co){
                 return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
             }
-            
-            #{{lightnessFunction}}
-            
-            void main(){
-               vec4 pixel = texture2D(u_texture, v_texcoord);
-               float pixelLightness = lightness(pixel);
-               
-               float adjusted_threshold = abs(u_threshold * rand2(v_texcoord.xy/u_random_seed.xy));
-               
-               vec4 outputPixel;
-               if(pixelLightness < adjusted_threshold){
-                   outputPixel = vec4(u_black_pixel.rgb, pixel.a);
-               }
-               else{
-                   outputPixel = vec4(u_white_pixel.rgb, pixel.a);
-               }
-               
-               gl_FragColor = outputPixel;
-               
-            }
         </script>
-        <script type="webgl/fragment-shader" id="webgl-ordered-dither-fragment-shader">
+        
+        <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader-adjusted-threshold">
+            float adjustedThreshold = abs(u_threshold * rand(v_texcoord.xy/u_random_seed.xy));
+        </script>
+        
+        <script type="webgl/fragment-shader" id="webgl-ordered-dither-fragment-shader-declaration">
+            uniform sampler2D u_bayer_texture;
+            uniform float u_bayer_texture_dimensions;
+        </script>
+        
+        <script type="webgl/fragment-shader" id="webgl-ordered-dither-fragment-shader-adjusted-threshold">
+           vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
+           vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+           float bayerValue = bayerPixel.r;
+           float adjustedThreshold = bayerValue * u_threshold;
+        </script>
+        
+        <script type="webgl/fragment-shader" id="webgl-fragment-shader-template">
             precision mediump float;
             
             varying vec2 v_texcoord;
             uniform sampler2D u_texture;
-            uniform sampler2D u_bayer_texture;
-            
-            uniform float u_bayer_texture_dimensions;
             uniform float u_threshold;
             uniform vec3 u_black_pixel;
             uniform vec3 u_white_pixel;
+            
+            #{{customDeclaration}}
             
             #{{lightnessFunction}}
             
@@ -233,10 +201,7 @@
                vec4 pixel = texture2D(u_texture, v_texcoord);
                float pixelLightness = lightness(pixel);
                
-               vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
-               vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
-               float bayerValue = bayerPixel.r;
-               float adjustedThreshold = bayerValue * u_threshold;
+               #{{adjustedThreshold}}
                
                vec4 outputPixel;
                

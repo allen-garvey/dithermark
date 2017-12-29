@@ -436,9 +436,13 @@ App.WebGl = (function(m4, Bayer){
     var thresholdVertexShaderText = getShaderScriptText('webgl-threshold-vertex-shader');
     //fragment shaders
     var fragmentLightnessFunctionText = getShaderScriptText('webgl-fragment-shader-lightness-function');
-    var thresholdFragmentShaderText = getShaderScriptText('webgl-threshold-fragment-shader').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
-    var randomThresholdFragmentShaderText = getShaderScriptText('webgl-random-threshold-fragment-shader').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
-    var orderedDitherFragmentShaderText = getShaderScriptText('webgl-ordered-dither-fragment-shader').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    var fragmentShaderTemplate = getShaderScriptText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    
+    var thresholdFragmentShaderText = fragmentShaderTemplate.replace('#{{customDeclaration}}', '').replace('#{{adjustedThreshold}}', getShaderScriptText('webgl-threshold-fragment-shader-adjusted-threshold'));
+    var randomThresholdFragmentShaderText = fragmentShaderTemplate.replace('#{{customDeclaration}}', getShaderScriptText('webgl-random-threshold-fragment-shader-declaration')).replace('#{{adjustedThreshold}}', getShaderScriptText('webgl-random-threshold-fragment-shader-adjusted-threshold'));
+    var orderedDitherFragmentShaderText = fragmentShaderTemplate.replace('#{{customDeclaration}}', getShaderScriptText('webgl-ordered-dither-fragment-shader-declaration')).replace('#{{adjustedThreshold}}', getShaderScriptText('webgl-ordered-dither-fragment-shader-adjusted-threshold'));
+    
+    //draw image created functions
     var drawImageThreshold;
     var drawImageRandomThreshold;
     var drawImageOrderedDither;
