@@ -129,6 +129,20 @@ App.WebGl = (function(m4, Bayer){
     }
     
     /*
+    * Pixel stuff
+    */
+    
+    function pixelToVec(pixel, rgbOnly=true){
+        let length = rgbOnly ? 3 : pixel.length;
+        let vec = new Float32Array(length);
+        
+        for(let i=0;i<length;i++){
+            vec[i] = pixel[i] / 255.0;
+        }
+        return vec;
+    }
+    
+    /*
     * Actual webgl function creation
     */
 
@@ -144,6 +158,8 @@ App.WebGl = (function(m4, Bayer){
         var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
         var textureLocation = gl.getUniformLocation(program, 'u_texture');
         var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
+        var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
+        var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
         
         // Create a buffer.
         var positionBuffer = gl.createBuffer();
@@ -175,7 +191,7 @@ App.WebGl = (function(m4, Bayer){
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         
-        return function(gl, tex, texWidth, texHeight, threshold, dstX=0, dstY=0) {
+        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, dstX=0, dstY=0) {
           gl.bindTexture(gl.TEXTURE_2D, tex);
          
           // Tell WebGL to use our shader program pair
@@ -207,6 +223,10 @@ App.WebGl = (function(m4, Bayer){
           
           //set threshold
           gl.uniform1f(thresholdLocation, threshold);
+          
+          //set pixels
+          gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
+          gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
          
           // draw the quad (2 triangles, 6 vertices)
           gl.drawArrays(gl.TRIANGLES, 0, 6);
@@ -226,6 +246,8 @@ App.WebGl = (function(m4, Bayer){
         var textureLocation = gl.getUniformLocation(program, 'u_texture');
         var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
         var randomSeedLocation = gl.getUniformLocation(program, 'u_random_seed');
+        var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
+        var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
         
         // Create a buffer.
         var positionBuffer = gl.createBuffer();
@@ -257,7 +279,7 @@ App.WebGl = (function(m4, Bayer){
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         
-        return function(gl, tex, texWidth, texHeight, threshold, dstX=0, dstY=0) {
+        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, dstX=0, dstY=0) {
           gl.bindTexture(gl.TEXTURE_2D, tex);
          
           // Tell WebGL to use our shader program pair
@@ -289,6 +311,10 @@ App.WebGl = (function(m4, Bayer){
           
           //set threshold
           gl.uniform1f(thresholdLocation, threshold);
+          
+          //set pixels
+          gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
+          gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
           
           //set random seed
           var randomSeed = new Float32Array(2);
@@ -315,6 +341,8 @@ App.WebGl = (function(m4, Bayer){
         var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
         var textureLocation = gl.getUniformLocation(program, 'u_texture');
         var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
+        var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
+        var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
         var bayerTextureDimensionsLocation = gl.getUniformLocation(program, 'u_bayer_texture_dimensions');
         var bayerTextureLocation = gl.getUniformLocation(program, 'u_bayer_texture');
         // Create a buffer.
@@ -347,7 +375,7 @@ App.WebGl = (function(m4, Bayer){
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         
-        return function(gl, tex, texWidth, texHeight, threshold, bayerTex, bayerArrayDimensions, dstX=0, dstY=0) {
+        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, bayerTex, bayerArrayDimensions, dstX=0, dstY=0) {
          
           // Tell WebGL to use our shader program pair
           gl.useProgram(program);
@@ -385,6 +413,10 @@ App.WebGl = (function(m4, Bayer){
           //set threshold
           gl.uniform1f(thresholdLocation, threshold);
           
+          //set pixels
+          gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
+          gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
+          
           //set bayer texture dimensions
           gl.uniform1f(bayerTextureDimensionsLocation, bayerArrayDimensions);
           
@@ -405,7 +437,7 @@ App.WebGl = (function(m4, Bayer){
     var drawImageRandomThreshold;
     var drawImageOrderedDither;
     
-    function webGLThreshold(gl, imageData, threshold){
+    function webGLThreshold(gl, imageData, threshold, blackPixel, whitePixel){
         //convert threshold to float
         threshold = threshold / 255.0;
         
@@ -413,10 +445,10 @@ App.WebGl = (function(m4, Bayer){
         var texture = createAndLoadTexture(gl, imageData);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageThreshold(gl, texture, imageData.width, imageData.height, threshold);
+        drawImageThreshold(gl, texture, imageData.width, imageData.height, threshold, blackPixel, whitePixel);
     }
     
-    function webGLRandomThreshold(gl, imageData, threshold){
+    function webGLRandomThreshold(gl, imageData, threshold, blackPixel, whitePixel){
         //convert threshold to float
         threshold = threshold / 255.0;
         
@@ -424,10 +456,10 @@ App.WebGl = (function(m4, Bayer){
         var texture = createAndLoadTexture(gl, imageData);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageRandomThreshold(gl, texture, imageData.width, imageData.height, threshold);
+        drawImageRandomThreshold(gl, texture, imageData.width, imageData.height, threshold, blackPixel, whitePixel);
     }
     
-    function webGLOrderedDither(gl, imageData, threshold, bayerArray, bayerArrayDimensions){
+    function webGLOrderedDither(gl, imageData, threshold, blackPixel, whitePixel, bayerArray, bayerArrayDimensions){
         //convert threshold to float
         threshold = threshold / 255.0;
         //4 UInts per pixel * 2 dimensions = 8
@@ -437,24 +469,24 @@ App.WebGl = (function(m4, Bayer){
         var bayerTexture = createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageOrderedDither(gl, texture, imageData.width, imageData.height, threshold, bayerTexture, bayerArrayDimensions);
+        drawImageOrderedDither(gl, texture, imageData.width, imageData.height, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions);
     }
     
     
-     function webGLOrderedDither2(gl, imageData, threshold){
-        webGLOrderedDither(gl, imageData, threshold, Bayer.create(2), 2);
+     function webGLOrderedDither2(gl, imageData, threshold, blackPixel, whitePixel){
+        webGLOrderedDither(gl, imageData, threshold, blackPixel, whitePixel, Bayer.create(2), 2);
     }
     
-    function webGLOrderedDither4(gl, imageData, threshold){
-       webGLOrderedDither(gl, imageData, threshold, Bayer.create(4), 4);
+    function webGLOrderedDither4(gl, imageData, threshold, blackPixel, whitePixel){
+       webGLOrderedDither(gl, imageData, threshold, blackPixel, whitePixel, Bayer.create(4), 4);
     }
     
-    function webGLOrderedDither8(gl, imageData, threshold){
-       webGLOrderedDither(gl, imageData, threshold, Bayer.create(8), 8);
+    function webGLOrderedDither8(gl, imageData, threshold, blackPixel, whitePixel){
+       webGLOrderedDither(gl, imageData, threshold, blackPixel, whitePixel, Bayer.create(8), 8);
     }
     
-    function webGLOrderedDither16(gl, imageData, threshold){
-       webGLOrderedDither(gl, imageData, threshold, Bayer.create(16), 16);
+    function webGLOrderedDither16(gl, imageData, threshold, blackPixel, whitePixel){
+       webGLOrderedDither(gl, imageData, threshold, blackPixel, whitePixel, Bayer.create(16), 16);
     }
     
     

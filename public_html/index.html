@@ -144,6 +144,8 @@
             varying vec2 v_texcoord;
             uniform sampler2D u_texture;
             uniform float u_threshold;
+            uniform vec3 u_black_pixel;
+            uniform vec3 u_white_pixel;
             
             float lightness(vec4 pixel){
                 float maxVal = max(max(pixel.r, pixel.g), pixel.b);
@@ -157,12 +159,11 @@
                vec4 outputPixel;
                
                if(pixelLightness < u_threshold){
-                   outputPixel = vec4(0.0, 0.0, 0.0, pixel.a);
+                   outputPixel = vec4(u_black_pixel.rgb, pixel.a);
                }
                else{
-                   outputPixel = vec4(1.0, 1.0, 1.0, pixel.a);
+                   outputPixel = vec4(u_white_pixel.rgb, pixel.a);
                }
-               //gl_FragColor = texture2D(u_texture, v_texcoord);
                gl_FragColor = outputPixel;
             }
         </script>
@@ -174,6 +175,8 @@
             uniform sampler2D u_texture;
             uniform float u_threshold;
             uniform vec2 u_random_seed;
+            uniform vec3 u_black_pixel;
+            uniform vec3 u_white_pixel;
             
             //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
             highp float rand(vec2 co){
@@ -203,10 +206,10 @@
                
                vec4 outputPixel;
                if(pixelLightness < adjusted_threshold){
-                   outputPixel = vec4(0.0, 0.0, 0.0, pixel.a);
+                   outputPixel = vec4(u_black_pixel.rgb, pixel.a);
                }
                else{
-                   outputPixel = vec4(1.0, 1.0, 1.0, pixel.a);
+                   outputPixel = vec4(u_white_pixel.rgb, pixel.a);
                }
                
                gl_FragColor = outputPixel;
@@ -222,6 +225,8 @@
             
             uniform float u_bayer_texture_dimensions;
             uniform float u_threshold;
+            uniform vec3 u_black_pixel;
+            uniform vec3 u_white_pixel;
             
             float lightness(vec4 pixel){
                 float maxVal = max(max(pixel.r, pixel.g), pixel.b);
@@ -241,10 +246,10 @@
                vec4 outputPixel;
                
                if(pixelLightness < adjustedThreshold){
-                   outputPixel = vec4(0.0, 0.0, 0.0, pixel.a);
+                   outputPixel = vec4(u_black_pixel.rgb, pixel.a);
                }
                else{
-                   outputPixel = vec4(1.0, 1.0, 1.0, pixel.a);
+                   outputPixel = vec4(u_white_pixel.rgb, pixel.a);
                }
                gl_FragColor = outputPixel;
             }
