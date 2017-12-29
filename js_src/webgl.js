@@ -822,7 +822,7 @@ App.WebGl = (function(m4, Bayer){
     }
     
     
-    // console.log(Bayer.create(16));
+    console.log(Bayer.create(16));
     
     return {
         createCanvas: createCanvas,

@@ -58,10 +58,10 @@ App.Histogram = (function(Pixel){
             else{
                 outputPixel = Pixel.create(255, 255, 255);
             }
-            histogramPixels[i] = outputPixel.r;
-            histogramPixels[i+1] = outputPixel.g;
-            histogramPixels[i+2] = outputPixel.b;
-            histogramPixels[i+3] = outputPixel.a;
+            histogramPixels[i] = outputPixel[Pixel.R_INDEX];
+            histogramPixels[i+1] = outputPixel[Pixel.G_INDEX];
+            histogramPixels[i+2] = outputPixel[Pixel.B_INDEX];
+            histogramPixels[i+3] = outputPixel[Pixel.A_INDEX];
             
             x++;
             if(x >= histogramWidth){

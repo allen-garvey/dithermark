@@ -51,11 +51,11 @@ App.ErrorPropDither = (function(Image, Pixel){
             var currentError = 0;
             
             if(adjustedLightness > threshold){
-                ret = Pixel.create(255, 255, 255, pixel.a);
+                ret = Pixel.create(255, 255, 255, pixel[Pixel.A_INDEX]);
                 currentError = -1 * (255 - lightness);
             }
             else{
-                ret = Pixel.create(0, 0, 0, pixel.a);
+                ret = Pixel.create(0, 0, 0, pixel[Pixel.A_INDEX]);
                 currentError = lightness;
             }
             

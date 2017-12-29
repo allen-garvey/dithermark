@@ -417,10 +417,10 @@ App.OrderedDither = (function(Image, Pixel){
                 var ret;
                 
                 if(lightness > (matrixThreshold * thresholdFraction)){
-                    ret = Pixel.create(255, 255, 255, pixel.a);
+                    ret = Pixel.create(255, 255, 255, pixel[Pixel.A_INDEX]);
                 }
                 else{
-                    ret = Pixel.create(0, 0, 0, pixel.a);
+                    ret = Pixel.create(0, 0, 0, pixel[Pixel.A_INDEX]);
                 }
                 
                 return ret;
