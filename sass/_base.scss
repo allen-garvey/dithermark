@@ -1,6 +1,9 @@
 html, body{
-    margin: 0;
     font-family: sans-serif;
+}
+
+html, body, h1, h2, h3, h4, h5, h6{
+    margin: 0;
 }
 
 .hidden, [v-cloak]{
@@ -12,6 +15,10 @@ canvas{
     image-rendering: -webkit-crisp-edges;
     image-rendering: pixelated;
     image-rendering: crisp-edges;
+}
+
+input[disabled="disabled"], button[disabled="disabled"]{
+    cursor: not-allowed;
 }
 
 .super-label{

@@ -94,6 +94,20 @@
                                     <canvas id="histogram-canvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
                                 </div>
                             </div>
+                            
+                            <div class="color-replace-super-container" v-bind:class="{'color-replace-disabled': !isColorReplaceEnabled}">
+                                <div class="color-replace-title-container">
+                                    <h5 class="color-replace-title">Color Replace</h5>
+                                    <div>
+                                        <label class="color-replace-enable-label">Enable
+                                            <input type="checkbox" v-model="isColorReplaceEnabled"/>
+                                        </label>
+                                    </div>
+                                </div>
+                                <label>Black<input type="color" v-bind:disabled="!isColorReplaceEnabled" v-model="colorReplaceBlack" /></label>
+                                <label>White<input type="color" v-bind:disabled="!isColorReplaceEnabled" v-model="colorReplaceWhite" /></label>
+                                <button v-bind:disabled="!isColorReplaceEnabled" v-on:click="resetColorReplace()">Reset</button>
+                            </div>
                         </div>    
                     </div>
                 </div>

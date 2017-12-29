@@ -1,4 +1,12 @@
 (function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl){
+    
+    //takes hex in form #ffffff and returns pixel
+    function pixelFromColorPicker(hex){
+        let r = parseInt(hex.substring(1, 3), 16);
+        let g = parseInt(hex.substring(3, 5), 16);
+        let b = parseInt(hex.substring(5, 7), 16);
+        return Pixel.create(r, g, b);
+    }
 
     var ditherWorker = new Worker('/js/dither-worker.js');
     var histogramWorker = new Worker('/js/histogram-worker.js');
@@ -13,6 +21,9 @@
     
     var webworkerStartTime;
     
+    const COLOR_REPLACE_DEFAULT_BLACK_VALUE = '#000000';
+    const COLOR_REPLACE_DEFAULT_WHITE_VALUE = '#ffffff';
+    
     var app = new Vue({
         el: '#app',
         mounted: function(){
@@ -26,6 +37,7 @@
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
             ditherWorker.onmessage = this.ditherWorkerMessageReceived;
             histogramWorker.onmessage = this.histogramWorkerMessageReceived;
+            this.resetColorReplace();
         },
         data: {
             threshold: 127,
@@ -44,6 +56,9 @@
             currentEditorThemeIndex: null,
             histogramHeight: Histogram.height,
             histogramWidth: Histogram.width,
+            colorReplaceBlack: '',
+            colorReplaceWhite: '',
+            isColorReplaceEnabled: true,
             ditherAlgorithms: [
                 {
                     title: "Threshold WebGL", 
@@ -152,6 +167,14 @@
             isSelectedAlgorithmWebGl: function(){
                 return !!this.selectedDitherAlgorithm.webGlFunc;
             },
+            colorReplaceBlackPixel: function(){
+                let blackHex = this.isColorReplaceEnabled ? this.colorReplaceBlack : COLOR_REPLACE_DEFAULT_BLACK_VALUE;
+                return pixelFromColorPicker(blackHex);
+            },
+            colorReplaceWhitePixel: function(){
+                let whiteHex = this.isColorReplaceEnabled ? this.colorReplaceWhite : COLOR_REPLACE_DEFAULT_WHITE_VALUE;
+                return pixelFromColorPicker(whiteHex);
+            },
         },
         watch: {
             currentEditorThemeIndex: function(newThemeIndex){
@@ -209,9 +232,28 @@
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
-            }
+            },
+            isColorReplaceEnabled: function(newValue){
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
+            colorReplaceWhite: function(newValue){
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
+            colorReplaceBlack: function(newValue){
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
         },
         methods: {
+            resetColorReplace: function(){
+                this.colorReplaceWhite = COLOR_REPLACE_DEFAULT_WHITE_VALUE;
+                this.colorReplaceBlack = COLOR_REPLACE_DEFAULT_BLACK_VALUE;
+            },
             resetZoom: function(){
                 this.zoom = 100;
             },
@@ -271,7 +313,7 @@
                     return;
                 }
                 webworkerStartTime = Timer.timeInMilliseconds();
-                ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 ditherWorker.postMessage(new SharedArrayBuffer(0));
             },
             ditherWorkerMessageReceived: function(e){

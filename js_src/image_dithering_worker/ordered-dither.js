@@ -406,7 +406,7 @@ App.OrderedDither = (function(Image, Pixel){
     }
     
     function createOrderedDither(matrixCreationFunc){
-        return function(pixels, imageWidth, imageHeight, threshold){
+        return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
             var matrix = matrixCreationFunc(255);
             normalizeOrderedMatrixValues(matrix, 256);
             var thresholdFraction = 255 / threshold;
@@ -414,16 +414,15 @@ App.OrderedDither = (function(Image, Pixel){
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 var lightness = Pixel.lightness(pixel);
                 var matrixThreshold = matrixValue(matrix, x % matrix.width, y % matrix.height);
-                var ret;
                 
                 if(lightness > (matrixThreshold * thresholdFraction)){
-                    ret = Pixel.create(255, 255, 255, pixel[Pixel.A_INDEX]);
+                    whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                    return whitePixel;
                 }
                 else{
-                    ret = Pixel.create(0, 0, 0, pixel[Pixel.A_INDEX]);
+                    blackPixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                    return blackPixel;
                 }
-                
-                return ret;
                 
             });
         };

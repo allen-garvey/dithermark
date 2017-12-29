@@ -1,4 +1,5 @@
 $controlsWidth: 900px;
+$superContainerMargin: 16px;
 
 input[type="radio"]{
     margin-right: 14px;
@@ -32,4 +33,32 @@ input[type="radio"]{
 
 .controls-secondlevel-container .controls-panel > *{
     margin-bottom: 3px;
+}
+
+
+/*
+* Color replace stuff
+*/
+.color-replace-super-container{
+    margin-top: $superContainerMargin;
+    padding: 5px;
+    
+    &.color-replace-disabled{
+        color: #666;
+        background-color: #ddd;
+        .color-replace-enable-label{
+            color: black;
+            font-weight: bold;
+        }
+    }
+}
+.color-replace-title-container{
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    margin-bottom: 2px;
+}
+input[type="color"]{
+    margin-left: 14px;
+    margin-right: 24px;
 }

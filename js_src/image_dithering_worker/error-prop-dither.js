@@ -40,7 +40,7 @@ App.ErrorPropDither = (function(Image, Pixel){
     ** Dithering algorithms
     */
     
-    function errorPropagationDither(pixels, imageWidth, imageHeight, threshold, errorPropagationFunc){
+    function errorPropagationDither(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel, errorPropagationFunc){
         var errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
         
         return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
@@ -51,11 +51,13 @@ App.ErrorPropDither = (function(Image, Pixel){
             var currentError = 0;
             
             if(adjustedLightness > threshold){
-                ret = Pixel.create(255, 255, 255, pixel[Pixel.A_INDEX]);
+                whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                ret = whitePixel;
                 currentError = -1 * (255 - lightness);
             }
             else{
-                ret = Pixel.create(0, 0, 0, pixel[Pixel.A_INDEX]);
+                blackPixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                ret = blackPixel;
                 currentError = lightness;
             }
             
@@ -67,8 +69,8 @@ App.ErrorPropDither = (function(Image, Pixel){
     }
     
     function createErrorPropagationDither(errorPropagationFunc){
-        return (pixels, imageWidth, imageHeight, threshold)=>{
-            return errorPropagationDither(pixels, imageWidth, imageHeight, threshold, errorPropagationFunc);
+        return (pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
+            return errorPropagationDither(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel, errorPropagationFunc);
         };
     }
     
