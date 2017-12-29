@@ -138,6 +138,13 @@
                v_texcoord = a_texcoord;
             }
         </script>
+        <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">
+            float lightness(vec4 pixel){
+                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
+                float minVal = min(min(pixel.r, pixel.g), pixel.b);
+                return (maxVal + minVal) / 2.0;
+            }
+        </script>
         <script type="webgl/fragment-shader" id="webgl-threshold-fragment-shader">
             precision mediump float;
             
@@ -147,11 +154,7 @@
             uniform vec3 u_black_pixel;
             uniform vec3 u_white_pixel;
             
-            float lightness(vec4 pixel){
-                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
-                float minVal = min(min(pixel.r, pixel.g), pixel.b);
-                return (maxVal + minVal) / 2.0;
-            }
+            #{{lightnessFunction}}
             
             void main(){
                vec4 pixel = texture2D(u_texture, v_texcoord);
@@ -192,11 +195,7 @@
                 return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
             }
             
-            float lightness(vec4 pixel){
-                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
-                float minVal = min(min(pixel.r, pixel.g), pixel.b);
-                return (maxVal + minVal) / 2.0;
-            }
+            #{{lightnessFunction}}
             
             void main(){
                vec4 pixel = texture2D(u_texture, v_texcoord);
@@ -228,11 +227,7 @@
             uniform vec3 u_black_pixel;
             uniform vec3 u_white_pixel;
             
-            float lightness(vec4 pixel){
-                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
-                float minVal = min(min(pixel.r, pixel.g), pixel.b);
-                return (maxVal + minVal) / 2.0;
-            }
+            #{{lightnessFunction}}
             
             void main(){
                vec4 pixel = texture2D(u_texture, v_texcoord);

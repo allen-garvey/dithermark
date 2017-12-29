@@ -428,11 +428,17 @@ App.WebGl = (function(m4, Bayer){
         };
     }
     
+    function getShaderScriptText(id){
+        return document.getElementById(id).textContent;
+    }
     
-    var thresholdVertexShaderText = document.getElementById('webgl-threshold-vertex-shader').textContent;
-    var thresholdFragmentShaderText = document.getElementById('webgl-threshold-fragment-shader').textContent;
-    var randomThresholdFragmentShaderText = document.getElementById('webgl-random-threshold-fragment-shader').textContent;
-    var orderedDitherFragmentShaderText = document.getElementById('webgl-ordered-dither-fragment-shader').textContent;
+    //vertex shader
+    var thresholdVertexShaderText = getShaderScriptText('webgl-threshold-vertex-shader');
+    //fragment shaders
+    var fragmentLightnessFunctionText = getShaderScriptText('webgl-fragment-shader-lightness-function');
+    var thresholdFragmentShaderText = getShaderScriptText('webgl-threshold-fragment-shader').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    var randomThresholdFragmentShaderText = getShaderScriptText('webgl-random-threshold-fragment-shader').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    var orderedDitherFragmentShaderText = getShaderScriptText('webgl-ordered-dither-fragment-shader').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
     var drawImageThreshold;
     var drawImageRandomThreshold;
     var drawImageOrderedDither;
