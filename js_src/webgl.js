@@ -39,10 +39,6 @@ App.WebGl = (function(m4, Bayer){
         if (!gl) {
             gl = canvasObject.canvas.getContext('experimental-webgl');
         }
-        if(!gl){
-            console.log('WebGL not enabled!');
-            return;
-        }
         canvasObject.gl = gl;
         
         return canvasObject;

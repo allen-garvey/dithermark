@@ -24,3 +24,9 @@ input[disabled="disabled"], button[disabled="disabled"]{
 .super-label{
     margin-right: 30px;
 }
+
+.spread-content{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}

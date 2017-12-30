@@ -45,9 +45,13 @@
             transformCanvas = Canvas.create('transform-canvas');
             sourceCanvasOutput = Canvas.create('source-canvas-output');
             transformCanvasOutput = Canvas.create('transform-canvas-output');
-            transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
+            
+            transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
+            //check for webgl support
+            this.isWebglSupported = !!transformCanvasWebGl.gl;
+            this.isWebglEnabled = this.isWebglSupported;
             
             ditherWorkers.forEach((ditherWorker)=>{
                ditherWorker.onmessage = this.ditherWorkerMessageReceived; 
@@ -64,6 +68,8 @@
             isLivePreviewEnabled: true,
             selectedDitherAlgorithmIndex: 0,
             isCurrentlyLoadingRandomImage: false,
+            isWebglSupported: false,
+            isWebglEnabled: false,
             zoom: 100,
             zoomMin: 10,
             zoomMax: 400,
@@ -76,42 +82,14 @@
             colorReplaceWhite: '',
             ditherAlgorithms: [
                 {
-                    title: "Threshold WebGL", 
-                    id: 15,
+                    title: "Threshold", 
+                    id: 1,
                     webGlFunc: WebGl.threshold,
                 },
                 {
-                    title: "Ordered Dither 2x2 WebGL", 
-                    id: 17,
-                    webGlFunc: WebGl.orderedDither2,
-                },
-                {
-                    title: "Ordered Dither 4x4 WebGL", 
-                    id: 18,
-                    webGlFunc: WebGl.orderedDither4,
-                },
-                {
-                    title: "Ordered Dither 8x8 WebGL", 
-                    id: 19,
-                    webGlFunc: WebGl.orderedDither8,
-                },
-                {
-                    title: "Ordered Dither 16x16 WebGL", 
-                    id: 20,
-                    webGlFunc: WebGl.orderedDither16,
-                },
-                {
-                    title: "Threshold", 
-                    id: 1,
-                },
-                {
-                    title: "Random WebGL", 
-                    id: 16,
-                    webGlFunc: WebGl.randomThreshold,
-                },
-                {
-                    title: "Random", 
+                    title: "Random Threshold", 
                     id: 2,
+                    webGlFunc: WebGl.randomThreshold,
                 },
                 {
                     title: "Atkinson", 
@@ -148,18 +126,22 @@
             	{
             	    title: "Ordered Dither 2x2",
             	    id: 11,
+            	    webGlFunc: WebGl.orderedDither2,
             	},
             	{
             	    title: "Ordered Dither 4x4",
             	    id: 12,
+            	    webGlFunc: WebGl.orderedDither4,
             	},
             	{
             	    title: "Ordered Dither 8x8",
             	    id: 13,
+            	    webGlFunc: WebGl.orderedDither8,
             	},
             	{
             	    title: "Ordered Dither 16x16",
             	    id: 14,
+            	    webGlFunc: WebGl.orderedDither16,
             	},
             ],
         },
@@ -304,7 +286,7 @@
                 var scaleAmount = this.zoom / 100;
                 Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 var transformCanvasSource;
-                if(!isInitial && this.isSelectedAlgorithmWebGl){
+                if(!isInitial && this.isWebglEnabled && this.isSelectedAlgorithmWebGl){
                     transformCanvasSource = transformCanvasWebGl;
                 }
                 else{
@@ -316,7 +298,7 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                if(this.isSelectedAlgorithmWebGl){
+                if(this.isWebglEnabled && this.isSelectedAlgorithmWebGl){
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height), this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                     });

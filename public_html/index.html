@@ -39,7 +39,7 @@
                     </div>
                     <div class="controls-secondlevel-container" v-show="isImageLoaded">
                         <div class="controls-panel">
-                            <div>
+                            <div class="spread-content">
                                 <label class="super-label">Editor Theme</label>
                                 <template v-for="(theme, index) in editorThemes">
                                     <label>{{theme.name}}
@@ -47,7 +47,7 @@
                                     </label>
                                 </template>
                             </div>
-                            <div>
+                            <div class="spread-content">
                                 <label class="super-label">Panel Style</label>
                                 <label>Single
                                     <input type="radio" v-model="numPanels" v-bind:value="1"/>
@@ -57,9 +57,13 @@
                                 </label>
                             </div>
                             
-                            <div>
+                            <div class="spread-content">
                                 <label>Live preview
                                     <input type="checkbox" v-model="isLivePreviewEnabled"/>
+                                </label>
+                                
+                                <label>Enable WebGL
+                                    <input type="checkbox" v-bind:disabled="!isWebglSupported" v-model="isWebglEnabled"/>
                                 </label>
                             </div>
                             <div>
