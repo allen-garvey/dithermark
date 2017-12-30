@@ -6,6 +6,10 @@ input[type="radio"]{
     margin-left: 2px;
 }
 
+.controls .controls-toplevel-container{
+    margin-bottom: 16px;
+}
+
 .controls .controls-toplevel-container, .controls .controls-secondlevel-container{
     display: flex;
     justify-content: space-between;
