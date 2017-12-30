@@ -8,8 +8,21 @@
         return Pixel.create(r, g, b);
     }
 
-    var ditherWorker = new Worker('/js/dither-worker.js');
     var histogramWorker = new Worker('/js/histogram-worker.js');
+    
+    var ditherWorkers = (function(){
+        var numWorkers = 1;
+        var navigator = window.navigator;
+        if(navigator.hardwareConcurrency){
+            numWorkers = navigator.hardwareConcurrency * 2;
+        }
+        var workers = new Array(numWorkers);
+        for(let i=0;i<numWorkers;i++){
+            workers[i] = new Worker('/js/dither-worker.js');
+        }
+        return workers;
+    })();
+    var ditherWorkerCurrentIndex = 0;
     
     var sourceCanvas;
     var transformCanvas;
@@ -35,7 +48,10 @@
             transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
-            ditherWorker.onmessage = this.ditherWorkerMessageReceived;
+            
+            ditherWorkers.forEach((ditherWorker)=>{
+               ditherWorker.onmessage = this.ditherWorkerMessageReceived; 
+            });
             histogramWorker.onmessage = this.histogramWorkerMessageReceived;
             this.resetColorReplace();
         },
@@ -263,11 +279,14 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
-                //copy image to web worker
-                ditherWorker.postMessage(WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height));
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                ditherWorker.postMessage(buffer);
                 histogramWorker.postMessage(buffer);
+                
+                ditherWorkers.forEach((ditherWorker)=>{
+                    //copy image to web workers
+                    ditherWorker.postMessage(WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height));
+                    ditherWorker.postMessage(buffer);
+                });
                 
                 if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();   
@@ -304,9 +323,15 @@
                     this.zoomImage();
                     return;
                 }
+                var ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
                 webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 ditherWorker.postMessage(new SharedArrayBuffer(0));
+                
+                ditherWorkerCurrentIndex++;
+                if(ditherWorkerCurrentIndex == ditherWorkers.length){
+                    ditherWorkerCurrentIndex = 0;
+                }
             },
             ditherWorkerMessageReceived: function(e){
                 var messageData = e.data;
