@@ -10,18 +10,7 @@
 
     var histogramWorker = new Worker('/js/histogram-worker.js');
     
-    var ditherWorkers = (function(){
-        var numWorkers = 1;
-        var navigator = window.navigator;
-        if(navigator.hardwareConcurrency){
-            numWorkers = navigator.hardwareConcurrency * 2;
-        }
-        var workers = new Array(numWorkers);
-        for(let i=0;i<numWorkers;i++){
-            workers[i] = new Worker('/js/dither-worker.js');
-        }
-        return workers;
-    })();
+    var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
     var ditherWorkerCurrentIndex = 0;
     
     var sourceCanvas;
