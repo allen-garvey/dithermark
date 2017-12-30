@@ -105,7 +105,7 @@
                                 </div>
                                 <label>Black<input type="color" v-model="colorReplaceBlack" /></label>
                                 <label>White<input type="color" v-model="colorReplaceWhite" /></label>
-                                <button v-on:click="resetColorReplace()">Reset colors</button>
+                                <button v-on:click="resetColorReplace()" v-show="areColorReplaceColorsChangedFromDefaults">Reset colors</button>
                             </div>
                         </div>    
                     </div>

@@ -170,6 +170,9 @@
             colorReplaceWhitePixel: function(){
                 return pixelFromColorPicker(this.colorReplaceWhite);
             },
+            areColorReplaceColorsChangedFromDefaults: function(){
+                return this.colorReplaceBlack !== COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceWhite !== COLOR_REPLACE_DEFAULT_WHITE_VALUE;
+            },
         },
         watch: {
             currentEditorThemeIndex: function(newThemeIndex){
