@@ -58,7 +58,6 @@
             histogramWidth: Histogram.width,
             colorReplaceBlack: '',
             colorReplaceWhite: '',
-            isColorReplaceEnabled: true,
             ditherAlgorithms: [
                 {
                     title: "Threshold WebGL", 
@@ -168,12 +167,10 @@
                 return !!this.selectedDitherAlgorithm.webGlFunc;
             },
             colorReplaceBlackPixel: function(){
-                let blackHex = this.isColorReplaceEnabled ? this.colorReplaceBlack : COLOR_REPLACE_DEFAULT_BLACK_VALUE;
-                return pixelFromColorPicker(blackHex);
+                return pixelFromColorPicker(this.colorReplaceBlack);
             },
             colorReplaceWhitePixel: function(){
-                let whiteHex = this.isColorReplaceEnabled ? this.colorReplaceWhite : COLOR_REPLACE_DEFAULT_WHITE_VALUE;
-                return pixelFromColorPicker(whiteHex);
+                return pixelFromColorPicker(this.colorReplaceWhite);
             },
         },
         watch: {
@@ -229,11 +226,6 @@
                 this.zoomImage();
             },
             selectedDitherAlgorithmIndex: function(newIndex){
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
-                    this.ditherImageWithSelectedAlgorithm();
-                }
-            },
-            isColorReplaceEnabled: function(newValue){
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }

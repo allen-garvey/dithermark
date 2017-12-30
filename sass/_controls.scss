@@ -42,21 +42,9 @@ input[type="radio"]{
 .color-replace-super-container{
     margin-top: $superContainerMargin;
     padding: 5px;
-    
-    &.color-replace-disabled{
-        color: #666;
-        background-color: #ddd;
-        .color-replace-enable-label{
-            color: black;
-            font-weight: bold;
-        }
-    }
 }
 .color-replace-title-container{
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 input[type="color"]{
     margin-left: 14px;
