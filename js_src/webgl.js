@@ -602,21 +602,10 @@ App.WebGl = (function(m4, Bayer){
         drawImageOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions);
     }
     
-    
-     function webGLOrderedDither2(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, Bayer.create(2), 2);
-    }
-    
-    function webGLOrderedDither4(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-       webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, Bayer.create(4), 4);
-    }
-    
-    function webGLOrderedDither8(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-       webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, Bayer.create(8), 8);
-    }
-    
-    function webGLOrderedDither16(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-       webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, Bayer.create(16), 16);
+    function createWebGLOrderedDither(dimensions){
+        return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
+            webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, Bayer.create(dimensions), dimensions);
+        };
     }
     
     function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel, oldBlackPixel){
@@ -635,10 +624,10 @@ App.WebGl = (function(m4, Bayer){
         createCanvas: createCanvas,
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
-        orderedDither2: webGLOrderedDither2,
-        orderedDither4: webGLOrderedDither4,
-        orderedDither8: webGLOrderedDither8,
-        orderedDither16: webGLOrderedDither16,
+        orderedDither2: createWebGLOrderedDither(2),
+        orderedDither4: createWebGLOrderedDither(4),
+        orderedDither8: createWebGLOrderedDither(8),
+        orderedDither16: createWebGLOrderedDither(16),
         colorReplace: webGLColorReplace,
         createAndLoadTexture: createAndLoadTexture,
         createAndLoadTextureFromGl: createAndLoadTextureFromGl,
