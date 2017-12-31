@@ -13,6 +13,10 @@
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
     var ditherWorkerCurrentIndex = 0;
     
+    var ditherWorkerBw = new Worker('/js/dither-worker.js');
+    var isDitherWorkerBwWorking = false;
+    var transformedImageBwTexture = null;
+    
     var sourceCanvas;
     var transformCanvas;
     var transformCanvasWebGl;
@@ -47,6 +51,7 @@
             ditherWorkers.forEach((ditherWorker)=>{
                ditherWorker.onmessage = this.ditherWorkerMessageReceived; 
             });
+            ditherWorkerBw.onmessage = this.ditherWorkerBwMessageReceived;
             histogramWorker.onmessage = this.histogramWorkerMessageReceived;
             this.resetColorReplace();
         },
@@ -62,7 +67,6 @@
             isWebglSupported: true,
             isWebglEnabled: false,
             hasImageBeenTransformedAtLeastOnce: false,
-            hasColorReplaceRunLast: false,
             zoom: 100,
             zoomMin: 10,
             zoomMax: 400,
@@ -114,6 +118,9 @@
                 }
             },
             threshold: function(newThreshold, oldThreshold){
+                //reset bw texture
+                this.freeTransformedImageBwTexture();
+                
                 let newThresholdCleaned = Math.floor(newThreshold);
                 if(isNaN(newThresholdCleaned)){
                     this.threshold = oldThreshold;
@@ -156,52 +163,47 @@
                 this.zoomImage();
             },
             selectedDitherAlgorithmIndex: function(newIndex){
+                //reset bw texture
+                this.freeTransformedImageBwTexture();
+                
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
             colorReplaceWhite: function(newValue){
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
-                    if(this.isWebglEnabled && !this.isSelectedAlgorithmWebGl){
-                        this.webglColorReplace(this.colorReplaceBlackPixel);
-                    }
-                    else{
-                        this.ditherImageWithSelectedAlgorithm();   
-                    }
-                }
+                this.colorReplaceColorsChanged(this.colorReplaceBlackPixel);
             },
             colorReplaceBlack: function(newValue, oldValue){
-                if(this.isImageLoaded && this.hasImageBeenTransformedAtLeastOnce){
-                    if(this.isWebglEnabled && !this.isSelectedAlgorithmWebGl){
-                        this.webglColorReplace(pixelFromColorPicker(oldValue));
-                    }
-                    else{
-                        this.ditherImageWithSelectedAlgorithm();   
-                    }
-                }
+                this.colorReplaceColorsChanged(pixelFromColorPicker(oldValue));
             },
         },
         methods: {
-            webglColorReplace: function(oldBlackPixel){
-                console.log('webgl color replace running');
-                var texture;
-                if(this.hasColorReplaceRunLast || this.isSelectedAlgorithmWebGl){
-                    var sourceContext = transformCanvasWebGl.gl;
-                    var pixels = new Uint8Array(this.loadedImage.width * this.loadedImage.height * 4);
-                    sourceContext.readPixels(0, 0, this.loadedImage.width, this.loadedImage.height, sourceContext.RGBA, sourceContext.UNSIGNED_BYTE, pixels);
-                    texture = WebGl.createAndLoadTextureFromGl(transformCanvasWebGl.gl, sourceContext, this.loadedImage.width, this.loadedImage.height);
+            colorReplaceColorsChanged: function(oldBlackPixel){
+                if(!this.isImageLoaded || !this.hasImageBeenTransformedAtLeastOnce){
+                    return;
                 }
-                else{
-                    var sourceContext = transformCanvas.context;
-                    var pixels = sourceContext.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height);
-                    texture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, pixels);
+                if(!this.isWebglEnabled || this.isSelectedAlgorithmWebGl){
+                    this.ditherImageWithSelectedAlgorithm();
+                    return;
+                }
+                
+                //if we're here we know that webgl is enabled, and that the selected algorithm is NOT webgl
+                //so send message to create BW texture if necessary
+                if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
+                    isDitherWorkerBwWorking = true;
+                    ditherWorkerBw.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, Pixel.create(0,0,0), Pixel.create(255,255,255)));
+                    ditherWorkerBw.postMessage(new SharedArrayBuffer(0));
+                }
+                //see if texture was created already, or has been created in time here
+                if(!transformedImageBwTexture){
+                    this.ditherImageWithSelectedAlgorithm();
+                    return;
                 }
                 
                 Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                    WebGl.colorReplace(transformCanvasWebGl.gl, texture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, oldBlackPixel); 
+                    WebGl.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
-                this.hasColorReplaceRunLast = true;
-                this.zoomImage();
+                this.zoomImage(true);
             },
             resetColorReplace: function(){
                 this.colorReplaceWhite = COLOR_REPLACE_DEFAULT_WHITE_VALUE;
@@ -229,9 +231,10 @@
                 histogramWorker.postMessage(buffer);
                 
                 //todo probably shouldn't do this if webgl is enabled
-                ditherWorkers.forEach((ditherWorker)=>{
+                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);
+                ditherWorkers.concat([ditherWorkerBw]).forEach((ditherWorker)=>{
                     //copy image to web workers
-                    ditherWorker.postMessage(WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height));
+                    ditherWorker.postMessage(ditherWorkerHeader);
                     ditherWorker.postMessage(buffer);
                 });
                 //todo probably shouldn't do this if webgl isn't enabled
@@ -251,9 +254,12 @@
                 //it's not really worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
             },
-            zoomImage: function(){
+            zoomImage: function(forceWebgl){
                 var canvasSource;
-                if(this.isWebglEnabled && (this.hasColorReplaceRunLast || (this.hasImageBeenTransformedAtLeastOnce && this.isSelectedAlgorithmWebGl))){
+                if(forceWebgl){
+                    canvasSource = transformCanvasWebGl;
+                }
+                else if(this.isWebglEnabled && (this.hasImageBeenTransformedAtLeastOnce && this.isSelectedAlgorithmWebGl)){
                     canvasSource = transformCanvasWebGl;
                 }
                 else{
@@ -268,7 +274,6 @@
                     return;
                 }
                 this.hasImageBeenTransformedAtLeastOnce = true;
-                this.hasColorReplaceRunLast = false;
                 if(this.isSelectedAlgorithmWebGl){
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
@@ -291,6 +296,18 @@
                 Canvas.replaceImageWithBuffer(transformCanvas, this.loadedImage.width, this.loadedImage.height, messageData);
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.zoomImage();
+            },
+            ditherWorkerBwMessageReceived: function(e){
+                var messageData = e.data;
+                var gl = transformCanvasWebGl.gl;
+                this.freeTransformedImageBwTexture();
+                transformedImageBwTexture = WebGl.createAndLoadTextureFromBuffer(gl, messageData, this.loadedImage.width, this.loadedImage.height);
+            },
+            freeTransformedImageBwTexture: function(){
+                var gl = transformCanvasWebGl.gl;
+                gl.deleteTexture(transformedImageBwTexture);
+                transformedImageBwTexture = null;
+                isDitherWorkerBwWorking = false;
             },
             histogramWorkerMessageReceived: function(e){
                 var messageData = e.data;

@@ -178,12 +178,8 @@
            bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-declaration">
-            uniform vec3 u_old_black_pixel;
-        </script>
-        
         <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
-            bool shouldUseBlackPixel = pixel.rgb == u_old_black_pixel.rgb;
+            bool shouldUseBlackPixel = pixel.rgb == vec3(0.0, 0.0, 0.0);
         </script>
         
         <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">

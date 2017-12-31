@@ -113,6 +113,23 @@ App.WebGl = (function(m4, Bayer){
         return texture;
     }
     
+    function createAndLoadTextureFromBuffer(gl, buffer, imageWidth, imageHeight) {
+        var texture = gl.createTexture();
+        
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        
+       let pixels = new Uint8Array(buffer);
+        
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    
+        // let's assume all images are not a power of 2
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        
+        return texture;
+    }
+    
     /*
     * Ordered dither stuff
     */
@@ -293,7 +310,7 @@ App.WebGl = (function(m4, Bayer){
     var thresholdFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, null, 'webgl-threshold-fshader-body');
     var randomThresholdFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-random-threshold-fshader-declaration', 'webgl-random-threshold-fshader-body');
     var orderedDitherFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body');
-    var colorReplaceFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-color-replace-fshader-declaration', 'webgl-color-replace-fshader-body');
+    var colorReplaceFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, null, 'webgl-color-replace-fshader-body');
     
     //draw image created functions
     var drawImageThreshold;
@@ -356,12 +373,10 @@ App.WebGl = (function(m4, Bayer){
     
     function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel, oldBlackPixel){
         
-        drawImageColorReplace = drawImageColorReplace || createWebGLDrawImageFunc(gl, colorReplaceFragmentShaderText, ['u_old_black_pixel']);
+        drawImageColorReplace = drawImageColorReplace || createWebGLDrawImageFunc(gl, colorReplaceFragmentShaderText);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageColorReplace(gl, texture, imageWidth, imageHeight, 0, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-            gl.uniform3fv(customUniformLocations['u_old_black_pixel'], pixelToVec(oldBlackPixel));
-        });
+        drawImageColorReplace(gl, texture, imageWidth, imageHeight, 0, blackPixel, whitePixel);
     }
     
     
@@ -378,5 +393,6 @@ App.WebGl = (function(m4, Bayer){
         colorReplace: webGLColorReplace,
         createAndLoadTexture: createAndLoadTexture,
         createAndLoadTextureFromGl: createAndLoadTextureFromGl,
+        createAndLoadTextureFromBuffer: createAndLoadTextureFromBuffer,
     };    
 })(App.M4, App.BayerMatrix);
