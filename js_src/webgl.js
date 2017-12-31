@@ -53,7 +53,7 @@ App.WebGl = (function(m4, Bayer){
         if (success) {
             return shader;
         }
-        
+        //something went wrong
         console.log(gl.getShaderInfoLog(shader));
         gl.deleteShader(shader);
     }
@@ -65,7 +65,6 @@ App.WebGl = (function(m4, Bayer){
     function createFragmentShader(gl, fragmentShaderSource){
         return createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
     }
-    
     
     
     function createProgram(gl, vertexShader, fragmentShader) {
@@ -80,20 +79,6 @@ App.WebGl = (function(m4, Bayer){
         
         console.log(gl.getProgramInfoLog(program));
         gl.deleteProgram(program);
-    }
-    
-    function createAndLoadTexture(gl, imageData) {
-        var texture = gl.createTexture();
-        
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
-    
-        // let's assume all images are not a power of 2
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        
-        return texture;
     }
     
     function createAndLoadTexture(gl, imageData) {
@@ -173,193 +158,11 @@ App.WebGl = (function(m4, Bayer){
     /*
     * Actual webgl function creation
     */
-
-    function createDrawImageThreshold(gl){
-        // setup GLSL program
-        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, thresholdFragmentShaderText));
-        
-        // look up where the vertex data needs to go.
-        var positionLocation = gl.getAttribLocation(program, 'a_position');
-        var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
-        
-        // lookup uniforms
-        var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
-        var textureLocation = gl.getUniformLocation(program, 'u_texture');
-        var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
-        var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
-        var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
-        
-        // Create a buffer.
-        var positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        
-        // Put a unit quad in the buffer
-        var positions = [
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-        
-        // Create a buffer for texture coords
-        var texcoordBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-        
-        // Put texcoords in the buffer
-        var texcoords = [
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
-        
-        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, dstX=0, dstY=0) {
-          gl.bindTexture(gl.TEXTURE_2D, tex);
-         
-          // Tell WebGL to use our shader program pair
-          gl.useProgram(program);
-         
-          // Setup the attributes to pull data from our buffers
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-          gl.enableVertexAttribArray(positionLocation);
-          gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-          gl.enableVertexAttribArray(texcoordLocation);
-          gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
-         
-          // this matrix will convert from pixels to clip space
-          var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
-         
-          // this matrix will translate our quad to dstX, dstY
-          matrix = m4.translate(matrix, dstX, dstY, 0);
-         
-          // this matrix will scale our 1 unit quad
-          // from 1 unit to texWidth, texHeight units
-          matrix = m4.scale(matrix, texWidth, texHeight, 1);
-         
-          // Set the matrix.
-          gl.uniformMatrix4fv(matrixLocation, false, matrix);
-         
-          // Tell the shader to get the texture from texture unit 0
-          gl.uniform1i(textureLocation, 0);
-          
-          //set threshold
-          gl.uniform1f(thresholdLocation, threshold);
-          
-          //set pixels
-          gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
-          gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
-         
-          // draw the quad (2 triangles, 6 vertices)
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        };
-    }
-    
-    function createDrawImageRandomThreshold(gl){
-        // setup GLSL program
-        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, randomThresholdFragmentShaderText));
-        
-        // look up where the vertex data needs to go.
-        var positionLocation = gl.getAttribLocation(program, 'a_position');
-        var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
-        
-        // lookup uniforms
-        var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
-        var textureLocation = gl.getUniformLocation(program, 'u_texture');
-        var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
-        var randomSeedLocation = gl.getUniformLocation(program, 'u_random_seed');
-        var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
-        var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
-        
-        // Create a buffer.
-        var positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        
-        // Put a unit quad in the buffer
-        var positions = [
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-        
-        // Create a buffer for texture coords
-        var texcoordBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-        
-        // Put texcoords in the buffer
-        var texcoords = [
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
-        
-        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, dstX=0, dstY=0) {
-          gl.bindTexture(gl.TEXTURE_2D, tex);
-         
-          // Tell WebGL to use our shader program pair
-          gl.useProgram(program);
-         
-          // Setup the attributes to pull data from our buffers
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-          gl.enableVertexAttribArray(positionLocation);
-          gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-          gl.enableVertexAttribArray(texcoordLocation);
-          gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
-         
-          // this matrix will convert from pixels to clip space
-          var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
-         
-          // this matrix will translate our quad to dstX, dstY
-          matrix = m4.translate(matrix, dstX, dstY, 0);
-         
-          // this matrix will scale our 1 unit quad
-          // from 1 unit to texWidth, texHeight units
-          matrix = m4.scale(matrix, texWidth, texHeight, 1);
-         
-          // Set the matrix.
-          gl.uniformMatrix4fv(matrixLocation, false, matrix);
-         
-          // Tell the shader to get the texture from texture unit 0
-          gl.uniform1i(textureLocation, 0);
-          
-          //set threshold
-          gl.uniform1f(thresholdLocation, threshold);
-          
-          //set pixels
-          gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
-          gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
-          
-          //set random seed
-          var randomSeed = new Float32Array(2);
-          randomSeed[0] = Math.random();
-          randomSeed[1] = Math.random();
-          gl.uniform2fv(randomSeedLocation, randomSeed);
-         
-          // draw the quad (2 triangles, 6 vertices)
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        };
-    }
     
     //multiple textures based on: https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html
-    function createDrawImageOrderedDither(gl){
-        var fragmentShaderSource = orderedDitherFragmentShaderText;
+    function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames){
         // setup GLSL program
-        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, fragmentShaderSource));
+        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, fragmentShaderText));
         
         // look up where the vertex data needs to go.
         var positionLocation = gl.getAttribLocation(program, 'a_position');
@@ -371,106 +174,14 @@ App.WebGl = (function(m4, Bayer){
         var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
         var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
         var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
-        var bayerTextureDimensionsLocation = gl.getUniformLocation(program, 'u_bayer_texture_dimensions');
-        var bayerTextureLocation = gl.getUniformLocation(program, 'u_bayer_texture');
-        // Create a buffer.
-        var positionBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         
-        // Put a unit quad in the buffer
-        var positions = [
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
-        
-        // Create a buffer for texture coords
-        var texcoordBuffer = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-        
-        // Put texcoords in the buffer
-        var texcoords = [
-        0, 0,
-        0, 1,
-        1, 0,
-        1, 0,
-        0, 1,
-        1, 1,
-        ];
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
-        
-        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, bayerTex, bayerArrayDimensions, dstX=0, dstY=0) {
-         
-          // Tell WebGL to use our shader program pair
-          gl.useProgram(program);
-         
-          // Setup the attributes to pull data from our buffers
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-          gl.enableVertexAttribArray(positionLocation);
-          gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-          gl.enableVertexAttribArray(texcoordLocation);
-          gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
-         
-          // this matrix will convert from pixels to clip space
-          var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
-         
-          // this matrix will translate our quad to dstX, dstY
-          matrix = m4.translate(matrix, dstX, dstY, 0);
-         
-          // this matrix will scale our 1 unit quad
-          // from 1 unit to texWidth, texHeight units
-          matrix = m4.scale(matrix, texWidth, texHeight, 1);
-         
-          // Set the matrix.
-          gl.uniformMatrix4fv(matrixLocation, false, matrix);
-         
-          // Tell the shader to get the texture from texture unit 0
-          gl.uniform1i(textureLocation, 0);
-          gl.uniform1i(bayerTextureLocation, 1);
-          
-          gl.activeTexture(gl.TEXTURE0);
-          gl.bindTexture(gl.TEXTURE_2D, tex);
-          gl.activeTexture(gl.TEXTURE1);
-          gl.bindTexture(gl.TEXTURE_2D, bayerTex);
-          
-          //set threshold
-          gl.uniform1f(thresholdLocation, threshold);
-          
-          //set pixels
-          gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
-          gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
-          
-          //set bayer texture dimensions
-          gl.uniform1f(bayerTextureDimensionsLocation, bayerArrayDimensions);
-          
-          //set bayer matrix
-        //   gl.uniform1fv(bayerMatrixLocation, bayerMatrix);
-         
-          // draw the quad (2 triangles, 6 vertices)
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
-        };
-    }
-    
-    function createDrawImageColorReplace(gl){
-        // setup GLSL program
-        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, colorReplaceFragmentShaderText));
-        
-        // look up where the vertex data needs to go.
-        var positionLocation = gl.getAttribLocation(program, 'a_position');
-        var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
-        
-        // lookup uniforms
-        var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
-        var textureLocation = gl.getUniformLocation(program, 'u_texture');
-        var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
-        var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
-        var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
-        var oldBlackPixelLocation = gl.getUniformLocation(program, 'u_old_black_pixel');
+        //lookup custom uniforms
+        var customUniformLocations = {};
+        if(customUniformNames){
+            customUniformNames.forEach((customUniformName)=>{
+                customUniformLocations[customUniformName] = gl.getUniformLocation(program, customUniformName);
+            });
+        }
         
         // Create a buffer.
         var positionBuffer = gl.createBuffer();
@@ -502,46 +213,54 @@ App.WebGl = (function(m4, Bayer){
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         
-        return function(gl, tex, texWidth, texHeight, blackPixel, whitePixel, oldBlackPixel, dstX=0, dstY=0) {
-          gl.bindTexture(gl.TEXTURE_2D, tex);
-         
-          // Tell WebGL to use our shader program pair
-          gl.useProgram(program);
-         
-          // Setup the attributes to pull data from our buffers
-          gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-          gl.enableVertexAttribArray(positionLocation);
-          gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-          gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-          gl.enableVertexAttribArray(texcoordLocation);
-          gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
-         
-          // this matrix will convert from pixels to clip space
-          var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
-         
-          // this matrix will translate our quad to dstX, dstY
-          matrix = m4.translate(matrix, dstX, dstY, 0);
-         
-          // this matrix will scale our 1 unit quad
-          // from 1 unit to texWidth, texHeight units
-          matrix = m4.scale(matrix, texWidth, texHeight, 1);
-         
-          // Set the matrix.
-          gl.uniformMatrix4fv(matrixLocation, false, matrix);
-         
-          // Tell the shader to get the texture from texture unit 0
-          gl.uniform1i(textureLocation, 0);
-          
-          //set threshold
-          gl.uniform1f(thresholdLocation, 0);
-          
-          //set pixels
-          gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
-          gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
-          gl.uniform3fv(oldBlackPixelLocation, pixelToVec(oldBlackPixel));
-         
-          // draw the quad (2 triangles, 6 vertices)
-          gl.drawArrays(gl.TRIANGLES, 0, 6);
+        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, setCustomUniformsFunc) {
+            var dstX = 0; 
+            var dstY = 0;
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            
+            // Tell WebGL to use our shader program pair
+            gl.useProgram(program);
+            
+            // Setup the attributes to pull data from our buffers
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            gl.enableVertexAttribArray(positionLocation);
+            gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
+            gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+            gl.enableVertexAttribArray(texcoordLocation);
+            gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
+            
+            // this matrix will convert from pixels to clip space
+            var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+            
+            // this matrix will translate our quad to dstX, dstY
+            matrix = m4.translate(matrix, dstX, dstY, 0);
+            
+            // this matrix will scale our 1 unit quad
+            // from 1 unit to texWidth, texHeight units
+            matrix = m4.scale(matrix, texWidth, texHeight, 1);
+            
+            // Set the matrix.
+            gl.uniformMatrix4fv(matrixLocation, false, matrix);
+            
+            // Tell the shader to get the texture from texture unit 0
+            gl.uniform1i(textureLocation, 0);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, tex);
+            
+            //set threshold
+            gl.uniform1f(thresholdLocation, threshold);
+            
+            //set pixels
+            gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
+            gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
+            
+            //set custom uniform values
+            if(setCustomUniformsFunc){
+                setCustomUniformsFunc(gl, customUniformLocations);
+            }
+            
+            // draw the quad (2 triangles, 6 vertices)
+            gl.drawArrays(gl.TRIANGLES, 0, 6);
         };
     }
     
@@ -574,7 +293,7 @@ App.WebGl = (function(m4, Bayer){
         //convert threshold to float
         threshold = threshold / 255.0;
         
-        drawImageThreshold = drawImageThreshold || createDrawImageThreshold(gl);
+        drawImageThreshold = drawImageThreshold || createWebGLDrawImageFunc(gl, thresholdFragmentShaderText);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawImageThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
@@ -584,10 +303,16 @@ App.WebGl = (function(m4, Bayer){
         //convert threshold to float
         threshold = threshold / 255.0;
         
-        drawImageRandomThreshold = drawImageRandomThreshold || createDrawImageRandomThreshold(gl);
+        drawImageRandomThreshold = drawImageRandomThreshold || createWebGLDrawImageFunc(gl, randomThresholdFragmentShaderText, ['u_random_seed']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
+        drawImageRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
+            //set random seed
+            var randomSeed = new Float32Array(2);
+            randomSeed[0] = Math.random();
+            randomSeed[1] = Math.random();
+            gl.uniform2fv(customUniformLocations['u_random_seed'], randomSeed);
+        });
     }
     
     function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerArray, bayerArrayDimensions){
@@ -595,11 +320,20 @@ App.WebGl = (function(m4, Bayer){
         threshold = threshold / 255.0;
         //4 UInts per pixel * 2 dimensions = 8
         
-        drawImageOrderedDither = drawImageOrderedDither || createDrawImageOrderedDither(gl);
+        drawImageOrderedDither = drawImageOrderedDither || createWebGLDrawImageFunc(gl, orderedDitherFragmentShaderText, ['u_bayer_texture_dimensions', 'u_bayer_texture']);
         var bayerTexture = createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions);
+        drawImageOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
+            //bind bayer texture to second texture unit
+            gl.uniform1i(customUniformLocations['u_bayer_texture'], 1);
+          
+            gl.activeTexture(gl.TEXTURE1);
+            gl.bindTexture(gl.TEXTURE_2D, bayerTexture);
+            
+            //set bayer texture dimensions
+            gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerArrayDimensions);
+        });
     }
     
     function createWebGLOrderedDither(dimensions){
@@ -610,11 +344,12 @@ App.WebGl = (function(m4, Bayer){
     
     function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel, oldBlackPixel){
         
-        drawImageColorReplace = drawImageColorReplace || createDrawImageColorReplace(gl);
-        // var texture = createAndLoadTexture(gl, imageData);
+        drawImageColorReplace = drawImageColorReplace || createWebGLDrawImageFunc(gl, colorReplaceFragmentShaderText, ['u_old_black_pixel']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel, oldBlackPixel);
+        drawImageColorReplace(gl, texture, imageWidth, imageHeight, 0, blackPixel, whitePixel, (gl, customUniformLocations)=>{
+            gl.uniform3fv(customUniformLocations['u_old_black_pixel'], pixelToVec(oldBlackPixel));
+        });
     }
     
     
