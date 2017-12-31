@@ -112,6 +112,7 @@
             threshold: function(newThreshold, oldThreshold){
                 let newThresholdCleaned = Math.floor(newThreshold);
                 if(isNaN(newThresholdCleaned)){
+                    this.threshold = oldThreshold;
                     return;
                 }
                 if(newThresholdCleaned < this.thresholdMin){
@@ -120,7 +121,7 @@
                 else if(newThresholdCleaned > this.thresholdMax){
                     newThresholdCleaned = this.thresholdMax;
                 }
-                if(oldThreshold === newThreshold){
+                if(oldThreshold === newThresholdCleaned){
                     return;
                 }
                 if(newThresholdCleaned !== newThreshold){
