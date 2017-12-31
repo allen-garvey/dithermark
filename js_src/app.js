@@ -109,47 +109,45 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
-            isDitherPluginEnabled: function(newValue){
-                if(newValue && this.isLivePreviewEnabled){
-                    this.ditherImageWithSelectedAlgorithm();
-                }
-                else{
-                    this.displaySourceImage();
-                }
-            },
-            threshold: function(newThreshold){
-                newThreshold = Math.floor(newThreshold);
-                if(isNaN(newThreshold)){
+            threshold: function(newThreshold, oldThreshold){
+                let newThresholdCleaned = Math.floor(newThreshold);
+                if(isNaN(newThresholdCleaned)){
                     return;
                 }
-                if(newThreshold < this.thresholdMin){
-                    newThreshold = this.thresholdMin;
+                if(newThresholdCleaned < this.thresholdMin){
+                    newThresholdCleaned = this.thresholdMin;
                 }
-                else if(newThreshold > this.thresholdMax){
-                    newThreshold = this.thresholdMax;
+                else if(newThresholdCleaned > this.thresholdMax){
+                    newThresholdCleaned = this.thresholdMax;
                 }
-                if(this.threshold === newThreshold){
+                if(oldThreshold === newThreshold){
                     return;
                 }
-                this.threshold = newThreshold;
+                if(newThresholdCleaned !== newThreshold){
+                    this.threshold = newThresholdCleaned;   
+                }
                 
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
-            zoom: function(newZoom){
-                newZoom = Math.floor(newZoom);
-                if(isNaN(newZoom)){
+            zoom: function(newZoom, oldZoom){
+                let newZoomCleaned = Math.floor(newZoom);
+                if(isNaN(newZoomCleaned)){
+                    this.zoom = oldZoom;
                     return;
                 }
-                if(newZoom < this.zoomMin){
-                    newZoom = this.zoomMin;
+                
+                if(newZoomCleaned < this.zoomMin){
+                    newZoomCleaned = this.zoomMin;
                 }
-                else if(newZoom > this.zoomMax){
-                    newZoom = this.zoomMax;
+                else if(newZoomCleaned > this.zoomMax){
+                    newZoomCleaned = this.zoomMax;
                 }
-                this.zoom = newZoom;
+                if(newZoomCleaned !== newZoom){
+                    this.zoom = newZoomCleaned;   
+                }
                 this.zoomImage();
             },
             selectedDitherAlgorithmIndex: function(newIndex){
@@ -157,7 +155,9 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
-            colorReplaceWhite: function(newValue){
+            colorReplaceWhite: function(newValue, oldValue){
+                console.log('new white ' + newValue);
+                console.log('old white ' + oldValue);
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
@@ -203,8 +203,7 @@
                     this.ditherImageWithSelectedAlgorithm();   
                 }
                 else{
-                    //if live preview is not enabled, transform canvas will be blank
-                    //unless we do this
+                    //if live preview is not enabled, transform canvas will be blank unless we do this
                     this.zoomImage(true);
                 }
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
