@@ -137,16 +137,9 @@
                v_texcoord = a_texcoord;
             }
         </script>
-        <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">
-            float lightness(vec4 pixel){
-                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
-                float minVal = min(min(pixel.r, pixel.g), pixel.b);
-                return (maxVal + minVal) / 2.0;
-            }
-        </script>
         
         <script type="webgl/fragment-shader" id="webgl-threshold-fragment-shader-adjusted-threshold">
-            float adjustedThreshold = u_threshold;
+            bool shouldUseBlackPixel = pixelLightness < u_threshold;
         </script>
         
         <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader-declaration">
@@ -169,6 +162,7 @@
         
         <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader-adjusted-threshold">
             float adjustedThreshold = abs(u_threshold * rand(v_texcoord.xy/u_random_seed.xy));
+            bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
         </script>
         
         <script type="webgl/fragment-shader" id="webgl-ordered-dither-fragment-shader-declaration">
@@ -181,6 +175,15 @@
            vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
            float bayerValue = bayerPixel.r;
            float adjustedThreshold = bayerValue * u_threshold;
+           bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
+        </script>
+        
+        <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">
+            float lightness(vec4 pixel){
+                float maxVal = max(max(pixel.r, pixel.g), pixel.b);
+                float minVal = min(min(pixel.r, pixel.g), pixel.b);
+                return (maxVal + minVal) / 2.0;
+            }
         </script>
         
         <script type="webgl/fragment-shader" id="webgl-fragment-shader-template">
@@ -204,7 +207,7 @@
                
                vec4 outputPixel;
                
-               if(pixelLightness < adjustedThreshold){
+               if(shouldUseBlackPixel){
                    outputPixel = vec4(u_black_pixel.rgb, pixel.a);
                }
                else{
