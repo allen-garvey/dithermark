@@ -236,6 +236,7 @@
                 });
                 //todo probably shouldn't do this if webgl isn't enabled
                 if(this.isWebglSupported){
+                    transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));   
                 }
                 
