@@ -178,6 +178,16 @@
            bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
         </script>
         
+        <script type="webgl/fragment-shader" id="webgl-color-replace-fragment-shader-declaration">
+            uniform vec3 u_old_black_pixel;
+        </script>
+        
+        <script type="webgl/fragment-shader" id="webgl-color-replace-fragment-shader-adjusted-threshold">
+            // bool shouldUseBlackPixel = pixel.r == u_old_black_pixel.r && pixel.g == u_old_black_pixel.g && pixel.b == u_old_black_pixel.b;
+            
+            bool shouldUseBlackPixel = pixel.rgb == u_old_black_pixel.rgb;
+        </script>
+        
         <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">
             float lightness(vec4 pixel){
                 float maxVal = max(max(pixel.r, pixel.g), pixel.b);

@@ -21,6 +21,8 @@
     var histogramCanvas;
     var histogramCanvasIndicator;
     
+    var sourceWebglTexture = null;
+    
     var webworkerStartTime;
     
     const COLOR_REPLACE_DEFAULT_BLACK_VALUE = '#000000';
@@ -59,6 +61,8 @@
             isCurrentlyLoadingRandomImage: false,
             isWebglSupported: true,
             isWebglEnabled: false,
+            hasImageBeenTransformedAtLeastOnce: false,
+            hasColorReplaceRunLast: false,
             zoom: 100,
             zoomMin: 10,
             zoomMax: 400,
@@ -88,7 +92,7 @@
                 return '';
             },
             isSelectedAlgorithmWebGl: function(){
-                return !!this.selectedDitherAlgorithm.webGlFunc & this.isWebglEnabled;
+                return !!this.selectedDitherAlgorithm.webGlFunc && this.isWebglEnabled;
             },
             colorReplaceBlackPixel: function(){
                 return pixelFromColorPicker(this.colorReplaceBlack);
@@ -156,20 +160,49 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
-            colorReplaceWhite: function(newValue, oldValue){
-                console.log('new white ' + newValue);
-                console.log('old white ' + oldValue);
+            colorReplaceWhite: function(newValue){
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
-                    this.ditherImageWithSelectedAlgorithm();
+                    if(this.isWebglEnabled && !this.isSelectedAlgorithmWebGl){
+                        this.webglColorReplace(this.colorReplaceBlackPixel);
+                    }
+                    else{
+                        this.ditherImageWithSelectedAlgorithm();   
+                    }
                 }
             },
-            colorReplaceBlack: function(newValue){
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
-                    this.ditherImageWithSelectedAlgorithm();
+            colorReplaceBlack: function(newValue, oldValue){
+                if(this.isImageLoaded && this.hasImageBeenTransformedAtLeastOnce){
+                    if(this.isWebglEnabled && !this.isSelectedAlgorithmWebGl){
+                        this.webglColorReplace(pixelFromColorPicker(oldValue));
+                    }
+                    else{
+                        this.ditherImageWithSelectedAlgorithm();   
+                    }
                 }
             },
         },
         methods: {
+            webglColorReplace: function(oldBlackPixel){
+                console.log('webgl color replace running');
+                var texture;
+                if(this.hasColorReplaceRunLast || this.isSelectedAlgorithmWebGl){
+                    var sourceContext = transformCanvasWebGl.gl;
+                    var pixels = new Uint8Array(this.loadedImage.width * this.loadedImage.height * 4);
+                    sourceContext.readPixels(0, 0, this.loadedImage.width, this.loadedImage.height, sourceContext.RGBA, sourceContext.UNSIGNED_BYTE, pixels);
+                    texture = WebGl.createAndLoadTextureFromGl(transformCanvasWebGl.gl, sourceContext, this.loadedImage.width, this.loadedImage.height);
+                }
+                else{
+                    var sourceContext = transformCanvas.context;
+                    var pixels = sourceContext.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height);
+                    texture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, pixels);
+                }
+                
+                Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
+                    WebGl.colorReplace(transformCanvasWebGl.gl, texture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, oldBlackPixel); 
+                });
+                this.hasColorReplaceRunLast = true;
+                this.zoomImage();
+            },
             resetColorReplace: function(){
                 this.colorReplaceWhite = COLOR_REPLACE_DEFAULT_WHITE_VALUE;
                 this.colorReplaceBlack = COLOR_REPLACE_DEFAULT_BLACK_VALUE;
@@ -178,6 +211,7 @@
                 this.zoom = 100;
             },
             loadImage: function(image, file){
+                this.hasImageBeenTransformedAtLeastOnce = false;
                 Canvas.loadImage(sourceCanvas, image);
                 Canvas.loadImage(transformCanvas, image);
                 
@@ -194,42 +228,49 @@
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 histogramWorker.postMessage(buffer);
                 
+                //todo probably shouldn't do this if webgl is enabled
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
                     ditherWorker.postMessage(WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height));
                     ditherWorker.postMessage(buffer);
                 });
+                //todo probably shouldn't do this if webgl isn't enabled
+                if(this.isWebglSupported){
+                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));   
+                }
                 
                 if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();   
                 }
                 else{
                     //if live preview is not enabled, transform canvas will be blank unless we do this
-                    this.zoomImage(true);
+                    this.zoomImage();
                 }
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not really worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
             },
-            zoomImage: function(isInitial){
-                var scaleAmount = this.zoom / 100;
-                Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
-                var transformCanvasSource;
-                if(!isInitial && this.isSelectedAlgorithmWebGl){
-                    transformCanvasSource = transformCanvasWebGl;
+            zoomImage: function(){
+                var canvasSource;
+                if(this.isWebglEnabled && (this.hasColorReplaceRunLast || (this.hasImageBeenTransformedAtLeastOnce && this.isSelectedAlgorithmWebGl))){
+                    canvasSource = transformCanvasWebGl;
                 }
                 else{
-                    transformCanvasSource = transformCanvas;
+                    canvasSource = transformCanvas;   
                 }
-                Canvas.scale(transformCanvasSource, transformCanvasOutput, scaleAmount);
+                var scaleAmount = this.zoom / 100;
+                Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
+                Canvas.scale(canvasSource, transformCanvasOutput, scaleAmount);
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
                     return;
                 }
+                this.hasImageBeenTransformedAtLeastOnce = true;
+                this.hasColorReplaceRunLast = false;
                 if(this.isSelectedAlgorithmWebGl){
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                        this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height), this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                        this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                     });
                     this.zoomImage();
                     return;
