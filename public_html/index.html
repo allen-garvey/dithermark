@@ -138,11 +138,11 @@
             }
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-threshold-fragment-shader-adjusted-threshold">
+        <script type="webgl/fragment-shader" id="webgl-threshold-fshader-body">
             bool shouldUseBlackPixel = pixelLightness < u_threshold;
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader-declaration">
+        <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-declaration">
             uniform vec2 u_random_seed;
             
             //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
@@ -160,17 +160,17 @@
             }
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-random-threshold-fragment-shader-adjusted-threshold">
+        <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
             float adjustedThreshold = abs(u_threshold * rand(v_texcoord.xy/u_random_seed.xy));
             bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-ordered-dither-fragment-shader-declaration">
+        <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-declaration">
             uniform sampler2D u_bayer_texture;
             uniform float u_bayer_texture_dimensions;
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-ordered-dither-fragment-shader-adjusted-threshold">
+        <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-body">
            vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
            vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
            float bayerValue = bayerPixel.r;
@@ -178,13 +178,11 @@
            bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-color-replace-fragment-shader-declaration">
+        <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-declaration">
             uniform vec3 u_old_black_pixel;
         </script>
         
-        <script type="webgl/fragment-shader" id="webgl-color-replace-fragment-shader-adjusted-threshold">
-            // bool shouldUseBlackPixel = pixel.r == u_old_black_pixel.r && pixel.g == u_old_black_pixel.g && pixel.b == u_old_black_pixel.b;
-            
+        <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
             bool shouldUseBlackPixel = pixel.rgb == u_old_black_pixel.rgb;
         </script>
         
@@ -213,7 +211,7 @@
                vec4 pixel = texture2D(u_texture, v_texcoord);
                float pixelLightness = lightness(pixel);
                
-               #{{adjustedThreshold}}
+               #{{customBody}}
                
                vec4 outputPixel;
                

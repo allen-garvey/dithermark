@@ -272,16 +272,28 @@ App.WebGl = (function(m4, Bayer){
         return document.getElementById(id).textContent;
     }
     
+    function generateFragmentShader(fragmentShaderTemplate, customDeclarationId, customBodyId){
+        var customDeclaration = '';
+        if(customDeclarationId){
+            customDeclaration = getShaderScriptText(customDeclarationId);
+        }
+        var customBody = '';
+        if(customBodyId){
+            customBody = getShaderScriptText(customBodyId);
+        }
+        return fragmentShaderTemplate.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
+    }
+    
     //vertex shader
     var thresholdVertexShaderText = getShaderScriptText('webgl-threshold-vertex-shader');
     //fragment shaders
     var fragmentLightnessFunctionText = getShaderScriptText('webgl-fragment-shader-lightness-function');
     var fragmentShaderTemplate = getShaderScriptText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
     
-    var thresholdFragmentShaderText = fragmentShaderTemplate.replace('#{{customDeclaration}}', '').replace('#{{adjustedThreshold}}', getShaderScriptText('webgl-threshold-fragment-shader-adjusted-threshold'));
-    var randomThresholdFragmentShaderText = fragmentShaderTemplate.replace('#{{customDeclaration}}', getShaderScriptText('webgl-random-threshold-fragment-shader-declaration')).replace('#{{adjustedThreshold}}', getShaderScriptText('webgl-random-threshold-fragment-shader-adjusted-threshold'));
-    var orderedDitherFragmentShaderText = fragmentShaderTemplate.replace('#{{customDeclaration}}', getShaderScriptText('webgl-ordered-dither-fragment-shader-declaration')).replace('#{{adjustedThreshold}}', getShaderScriptText('webgl-ordered-dither-fragment-shader-adjusted-threshold'));
-    var colorReplaceFragmentShaderText = fragmentShaderTemplate.replace('#{{customDeclaration}}', getShaderScriptText('webgl-color-replace-fragment-shader-declaration')).replace('#{{adjustedThreshold}}', getShaderScriptText('webgl-color-replace-fragment-shader-adjusted-threshold'));
+    var thresholdFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, null, 'webgl-threshold-fshader-body');
+    var randomThresholdFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-random-threshold-fshader-declaration', 'webgl-random-threshold-fshader-body');
+    var orderedDitherFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body');
+    var colorReplaceFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-color-replace-fshader-declaration', 'webgl-color-replace-fshader-body');
     
     //draw image created functions
     var drawImageThreshold;
