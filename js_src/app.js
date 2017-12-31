@@ -57,7 +57,7 @@
             isLivePreviewEnabled: true,
             selectedDitherAlgorithmIndex: 0,
             isCurrentlyLoadingRandomImage: false,
-            isWebglSupported: false,
+            isWebglSupported: true,
             isWebglEnabled: false,
             zoom: 100,
             zoomMin: 10,
@@ -88,7 +88,7 @@
                 return '';
             },
             isSelectedAlgorithmWebGl: function(){
-                return !!this.selectedDitherAlgorithm.webGlFunc;
+                return !!this.selectedDitherAlgorithm.webGlFunc & this.isWebglEnabled;
             },
             colorReplaceBlackPixel: function(){
                 return pixelFromColorPicker(this.colorReplaceBlack);
@@ -215,7 +215,7 @@
                 var scaleAmount = this.zoom / 100;
                 Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 var transformCanvasSource;
-                if(!isInitial && this.isWebglEnabled && this.isSelectedAlgorithmWebGl){
+                if(!isInitial && this.isSelectedAlgorithmWebGl){
                     transformCanvasSource = transformCanvasWebGl;
                 }
                 else{
@@ -227,7 +227,7 @@
                 if(!this.isImageLoaded){
                     return;
                 }
-                if(this.isWebglEnabled && this.isSelectedAlgorithmWebGl){
+                if(this.isSelectedAlgorithmWebGl){
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height), this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                     });

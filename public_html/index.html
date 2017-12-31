@@ -62,8 +62,8 @@
                                     <input type="checkbox" v-model="isLivePreviewEnabled"/>
                                 </label>
                                 
-                                <label>Enable WebGL
-                                    <input type="checkbox" v-bind:disabled="!isWebglSupported" v-model="isWebglEnabled"/>
+                                <label v-if="isWebglSupported">Enable WebGL
+                                    <input type="checkbox" v-model="isWebglEnabled"/>
                                 </label>
                             </div>
                             <div>
