@@ -107,6 +107,10 @@
                                 <label>White<input type="color" v-model="colorReplaceWhite" /></label>
                                 <button v-on:click="resetColorReplace()" v-show="areColorReplaceColorsChangedFromDefaults">Reset colors</button>
                             </div>
+                            <div>
+                                <button v-on:click="saveTexture()">Save texture</button>
+                                <button v-show="savedTextures.length >= 3" v-on:click="combineDitherTextures()">Combine textures</button>
+                            </div>
                         </div>    
                     </div>
                 </div>
@@ -180,6 +184,26 @@
         
         <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
             bool shouldUseBlackPixel = pixel.rgb == vec3(0.0, 0.0, 0.0);
+        </script>
+        
+        <script type="webgl/fragment-shader" id="webgl-combine-dither-fshader-declaration">
+            uniform sampler2D u_texture_2;
+            uniform sampler2D u_texture_3;
+        </script>
+        
+        <script type="webgl/fragment-shader" id="webgl-combine-dither-fshader-body">
+           vec4 pixel2 = texture2D(u_texture_2, v_texcoord);
+           vec4 pixel3 = texture2D(u_texture_3, v_texcoord);
+           
+           vec3 majorityPixel;
+          if(pixel == pixel2 || pixel == pixel3){
+              majorityPixel = pixel.rgb;
+          }
+          else{
+              majorityPixel = pixel2.rbg;
+          }
+           
+           bool shouldUseBlackPixel = majorityPixel == u_black_pixel;
         </script>
         
         <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">

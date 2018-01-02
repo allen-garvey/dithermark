@@ -80,6 +80,7 @@
             colorReplaceBlack: '',
             colorReplaceWhite: '',
             ditherAlgorithms: AlgorithmModel.ditherAlgorithms,
+            savedTextures: [],
         },
         computed: {
             isImageLoaded: function(){
@@ -340,6 +341,26 @@
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
                 });
+            },
+            saveTexture: function(){
+                let sourceCanvas = this.transformedImageCanvasSource;
+                let gl = transformCanvasWebGl.gl;
+                let texture;
+                if(this.transformedImageCanvasType === TRANSFORMED_IMAGE_CANVAS_WEBGL){
+                    texture = WebGl.createAndLoadTextureFromGl(gl, sourceCanvas.gl, this.loadedImage.width, this.loadedImage.height);
+                }
+                else{
+                    console.log('webworker texture');
+                    texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
+                }
+                this.savedTextures.push(texture);
+            },
+            combineDitherTextures: function(){
+                let textures = this.savedTextures.splice(0,3);
+                let gl = transformCanvasWebGl.gl;
+                this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBGL;
+                WebGl.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
+                this.zoomImage();
             },
         }
     });

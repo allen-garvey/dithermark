@@ -311,12 +311,14 @@ App.WebGl = (function(m4, Bayer){
     var randomThresholdFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-random-threshold-fshader-declaration', 'webgl-random-threshold-fshader-body');
     var orderedDitherFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body');
     var colorReplaceFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, null, 'webgl-color-replace-fshader-body');
+    var textureCombineFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-combine-dither-fshader-declaration', 'webgl-combine-dither-fshader-body');
     
     //draw image created functions
     var drawImageThreshold;
     var drawImageRandomThreshold;
     var drawImageOrderedDither;
     var drawImageColorReplace;
+    var drawImage3TextureCombine;
     
     function webGLThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
         //convert threshold to float
@@ -379,6 +381,23 @@ App.WebGl = (function(m4, Bayer){
         drawImageColorReplace(gl, texture, imageWidth, imageHeight, 0, blackPixel, whitePixel);
     }
     
+    function webGL3TextureCombine(gl, imageWidth, imageHeight, blackPixel, whitePixel, textures){
+        let threshold = 0.0;
+        drawImage3TextureCombine = drawImage3TextureCombine || createWebGLDrawImageFunc(gl, textureCombineFragmentShaderText, ['u_texture_2', 'u_texture_3']);
+        // Tell WebGL how to convert from clip space to pixels
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        drawImage3TextureCombine(gl, textures[0], imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
+            //bind textures
+            gl.activeTexture(gl.TEXTURE1);
+            gl.uniform1i(customUniformLocations['u_texture_2'], 1);
+            gl.bindTexture(gl.TEXTURE_2D, textures[1]);
+            
+            gl.activeTexture(gl.TEXTURE2);
+            gl.uniform1i(customUniformLocations['u_texture_3'], 2);
+            gl.bindTexture(gl.TEXTURE_2D, textures[2]);
+        });
+    }
+    
     
     // console.log(Bayer.create2(16));
     
@@ -391,6 +410,7 @@ App.WebGl = (function(m4, Bayer){
         orderedDither8: createWebGLOrderedDither(8),
         orderedDither16: createWebGLOrderedDither(16),
         colorReplace: webGLColorReplace,
+        textureCombine: webGL3TextureCombine,
         createAndLoadTexture: createAndLoadTexture,
         createAndLoadTextureFromGl: createAndLoadTextureFromGl,
         createAndLoadTextureFromBuffer: createAndLoadTextureFromBuffer,
