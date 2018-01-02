@@ -319,7 +319,9 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
-                var dataURL = transformCanvas.canvas.toDataURL(this.loadedImage.fileType);
+                var transformCanvas = this.isSelectedAlgorithmWebGl ? transformCanvasWebGl.canvas : transformCanvas.canvas;
+                
+                var dataURL = transformCanvas.toDataURL(this.loadedImage.fileType);
                 saveImageLink.href = dataURL;
                 saveImageLink.download = this.loadedImage.fileName;
                 saveImageLink.click();
