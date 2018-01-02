@@ -7,6 +7,8 @@
         let b = parseInt(hex.substring(5, 7), 16);
         return Pixel.create(r, g, b);
     }
+    const TRANSFORMED_IMAGE_CANVAS_WEBWORKER = 1;
+    const TRANSFORMED_IMAGE_CANVAS_WEBGL = 2;
 
     var histogramWorker = new Worker('/js/histogram-worker.js');
     
@@ -66,7 +68,7 @@
             isCurrentlyLoadingRandomImage: false,
             isWebglSupported: true,
             isWebglEnabled: false,
-            hasImageBeenTransformedAtLeastOnce: false,
+            transformedImageCanvasType: null, //used to store the type of canvas which contains the source of the transformed image for saving and zooming
             zoom: 100,
             zoomMin: 10,
             zoomMax: 400,
@@ -106,6 +108,20 @@
             },
             areColorReplaceColorsChangedFromDefaults: function(){
                 return this.colorReplaceBlack !== COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceWhite !== COLOR_REPLACE_DEFAULT_WHITE_VALUE;
+            },
+            //returns the canvas that should be currently used for image transform drawing based on current settings
+            activeTransformCanvas: function(){
+                if(this.isWebglEnabled && this.isSelectedAlgorithmWebGl){
+                    return transformCanvasWebGl;
+                }
+                return transformCanvas;
+            },
+            //returns the canvas that is the output of the most recent image transform
+            transformedImageCanvasSource: function(){
+                if(this.transformedImageCanvasType === TRANSFORMED_IMAGE_CANVAS_WEBGL){
+                    return transformCanvasWebGl;
+                }
+                return transformCanvas;
             },
         },
         watch: {
@@ -171,15 +187,15 @@
                 }
             },
             colorReplaceWhite: function(newValue){
-                this.colorReplaceColorsChanged(this.colorReplaceBlackPixel);
+                this.colorReplaceColorsChanged();
             },
             colorReplaceBlack: function(newValue, oldValue){
-                this.colorReplaceColorsChanged(pixelFromColorPicker(oldValue));
+                this.colorReplaceColorsChanged();
             },
         },
         methods: {
-            colorReplaceColorsChanged: function(oldBlackPixel){
-                if(!this.isImageLoaded || !this.hasImageBeenTransformedAtLeastOnce){
+            colorReplaceColorsChanged: function(){
+                if(this.transformedImageCanvasType === null){
                     return;
                 }
                 if(!this.isWebglEnabled || this.isSelectedAlgorithmWebGl){
@@ -199,11 +215,11 @@
                     this.ditherImageWithSelectedAlgorithm();
                     return;
                 }
-                
+                this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBGL;
                 Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                     WebGl.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
-                this.zoomImage(true);
+                this.zoomImage();
             },
             resetColorReplace: function(){
                 this.colorReplaceWhite = COLOR_REPLACE_DEFAULT_WHITE_VALUE;
@@ -213,7 +229,7 @@
                 this.zoom = 100;
             },
             loadImage: function(image, file){
-                this.hasImageBeenTransformedAtLeastOnce = false;
+                this.transformedImageCanvasType = null;
                 Canvas.loadImage(sourceCanvas, image);
                 Canvas.loadImage(transformCanvas, image);
                 
@@ -254,34 +270,26 @@
                 //it's not really worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
             },
-            zoomImage: function(forceWebgl){
-                var canvasSource;
-                if(forceWebgl){
-                    canvasSource = transformCanvasWebGl;
-                }
-                else if(this.isWebglEnabled && (this.hasImageBeenTransformedAtLeastOnce && this.isSelectedAlgorithmWebGl)){
-                    canvasSource = transformCanvasWebGl;
-                }
-                else{
-                    canvasSource = transformCanvas;   
-                }
+            zoomImage: function(){
+                let trasformCanvasSource = this.transformedImageCanvasSource;
                 var scaleAmount = this.zoom / 100;
                 Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
-                Canvas.scale(canvasSource, transformCanvasOutput, scaleAmount);
+                Canvas.scale(trasformCanvasSource, transformCanvasOutput, scaleAmount);
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
                     return;
                 }
-                this.hasImageBeenTransformedAtLeastOnce = true;
                 if(this.isSelectedAlgorithmWebGl){
+                    this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBGL;
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                     });
                     this.zoomImage();
                     return;
                 }
-                var ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
+                this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBWORKER;
+                let ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
                 webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 ditherWorker.postMessage(new SharedArrayBuffer(0));
@@ -319,8 +327,7 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
-                let outputCanvas = this.isSelectedAlgorithmWebGl ? transformCanvasWebGl.canvas : transformCanvas.canvas;
-                
+                let outputCanvas = this.transformedImageCanvasSource.canvas;
                 let dataURL = outputCanvas.toDataURL(this.loadedImage.fileType);
                 saveImageLink.href = dataURL;
                 saveImageLink.download = this.loadedImage.fileName;
