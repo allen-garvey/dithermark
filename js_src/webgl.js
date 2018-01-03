@@ -361,6 +361,7 @@ App.WebGl = (function(m4, Bayer){
           
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, bayerTexture);
+            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             
             //set bayer texture dimensions
             gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerArrayDimensions);
