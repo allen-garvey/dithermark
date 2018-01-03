@@ -7,8 +7,6 @@
         let b = parseInt(hex.substring(5, 7), 16);
         return Pixel.create(r, g, b);
     }
-    const TRANSFORMED_IMAGE_CANVAS_WEBWORKER = 1;
-    const TRANSFORMED_IMAGE_CANVAS_WEBGL = 2;
 
     var histogramWorker = new Worker('/js/histogram-worker.js');
     
@@ -68,7 +66,7 @@
             isCurrentlyLoadingRandomImage: false,
             isWebglSupported: true,
             isWebglEnabled: false,
-            transformedImageCanvasType: null, //used to store the type of canvas which contains the source of the transformed image for saving and zooming
+            hasImageBeenTransformed: false,
             zoom: 100,
             zoomMin: 10,
             zoomMax: 400,
@@ -119,9 +117,6 @@
             },
             //returns the canvas that is the output of the most recent image transform
             transformedImageCanvasSource: function(){
-                if(this.transformedImageCanvasType === TRANSFORMED_IMAGE_CANVAS_WEBGL){
-                    return transformCanvasWebGl;
-                }
                 return transformCanvas;
             },
         },
@@ -196,7 +191,7 @@
         },
         methods: {
             colorReplaceColorsChanged: function(){
-                if(this.transformedImageCanvasType === null){
+                if(!this.hasImageBeenTransformed){
                     return;
                 }
                 if(!this.isWebglEnabled || this.isSelectedAlgorithmWebGl){
@@ -216,7 +211,6 @@
                     this.ditherImageWithSelectedAlgorithm();
                     return;
                 }
-                this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBGL;
                 Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                     WebGl.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
@@ -230,7 +224,7 @@
                 this.zoom = 100;
             },
             loadImage: function(image, file){
-                this.transformedImageCanvasType = null;
+                this.hasImageBeenTransformed = false;
                 Canvas.loadImage(sourceCanvas, image);
                 Canvas.loadImage(transformCanvas, image);
                 
@@ -282,14 +276,16 @@
                     return;
                 }
                 if(this.isSelectedAlgorithmWebGl){
-                    this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBGL;
+                    this.hasImageBeenTransformed = true;
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                     });
+                    //have to copy to 2d context, since chrome will clear webgl context after switching tabs
+                    //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
+                    transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                     this.zoomImage();
                     return;
                 }
-                this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBWORKER;
                 let ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
                 webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
@@ -301,6 +297,7 @@
                 }
             },
             ditherWorkerMessageReceived: function(e){
+                this.hasImageBeenTransformed = true;
                 var messageData = e.data;
                 Canvas.replaceImageWithBuffer(transformCanvas, this.loadedImage.width, this.loadedImage.height, messageData);
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
@@ -345,21 +342,14 @@
             saveTexture: function(){
                 let sourceCanvas = this.transformedImageCanvasSource;
                 let gl = transformCanvasWebGl.gl;
-                let texture;
-                if(this.transformedImageCanvasType === TRANSFORMED_IMAGE_CANVAS_WEBGL){
-                    texture = WebGl.createAndLoadTextureFromGl(gl, sourceCanvas.gl, this.loadedImage.width, this.loadedImage.height);
-                }
-                else{
-                    console.log('webworker texture');
-                    texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
-                }
+                let texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
                 this.savedTextures.push(texture);
             },
             combineDitherTextures: function(){
                 let textures = this.savedTextures.splice(0,3);
                 let gl = transformCanvasWebGl.gl;
-                this.transformedImageCanvasType = TRANSFORMED_IMAGE_CANVAS_WEBGL;
                 WebGl.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
+                transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 this.zoomImage();
             },
         }
