@@ -214,6 +214,7 @@
                 Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                     WebGl.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
+                transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 this.zoomImage();
             },
             resetColorReplace: function(){
