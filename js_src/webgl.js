@@ -100,9 +100,12 @@ App.WebGl = (function(m4, Bayer){
         
         gl.bindTexture(gl.TEXTURE_2D, texture);
         
-       let pixels = new Uint8Array(imageWidth * imageHeight * 4);
-       sourceGl.readPixels(0, 0, imageWidth, imageHeight, sourceGl.RGBA, sourceGl.UNSIGNED_BYTE, pixels);
+        let pixels = new Uint8Array(imageWidth * imageHeight * 4);
+        sourceGl.readPixels(0, 0, imageWidth, imageHeight, sourceGl.RGBA, sourceGl.UNSIGNED_BYTE, pixels);
         
+        //read pixels reverses y-axis, so we have to correct this so that
+        //textures created from webgl and non-webgl contexts can co-exist
+        Bayer.reverseYAxis(pixels, imageWidth, imageHeight);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     
         // let's assume all images are not a power of 2
@@ -361,7 +364,6 @@ App.WebGl = (function(m4, Bayer){
           
             gl.activeTexture(gl.TEXTURE1);
             gl.bindTexture(gl.TEXTURE_2D, bayerTexture);
-            gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
             
             //set bayer texture dimensions
             gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerArrayDimensions);

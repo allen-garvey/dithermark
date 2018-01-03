@@ -31,6 +31,30 @@ App.BayerMatrix = (function(){
     }
     
     
+    //Utility stuff
+    
+    //based on: https://stackoverflow.com/questions/41969562/how-can-i-flip-the-result-of-webglrenderingcontext-readpixels
+    function reverseYAxis(pixels, width, height, bytesPerItem=4){
+        var halfHeight = Math.floor(height / 2);
+        var bytesPerRow = width * bytesPerItem;
+        
+        // make a temp buffer to hold one row
+        var temp = new Uint8Array(width * bytesPerItem);
+        for (var y = 0; y < halfHeight; ++y) {
+          var topOffset = y * bytesPerRow;
+          var bottomOffset = (height - y - 1) * bytesPerRow;
+        
+          // make copy of a row on the top half
+          temp.set(pixels.subarray(topOffset, topOffset + bytesPerRow));
+        
+          // copy a row from the bottom half to the top
+          pixels.copyWithin(topOffset, bottomOffset, bottomOffset + bytesPerRow);
+        
+          // copy the copy of the top half row to the bottom half 
+          pixels.set(temp, bottomOffset);
+        }
+    }
+    
     /*
     * Webgl Ordered dither matrix stuff
     */
@@ -397,16 +421,23 @@ App.BayerMatrix = (function(){
     
     
     function createBayerWebgl(dimensions){
+        let ret;
         switch(dimensions){
             case 2:
-                return createOrderedBayer2();
+                ret = createOrderedBayer2();
+                break;
             case 4:
-                return createOrderedBayer4();
+                ret = createOrderedBayer4();
+                break;
             case 8:
-                return createOrderedBayer8();
+                ret = createOrderedBayer8();
+                break;
             default:
-                return createOrderedBayer16();
+                ret = createOrderedBayer16();
+                break;
         }
+        reverseYAxis(ret, dimensions, dimensions);
+        return ret;
     }
     
     
@@ -414,6 +445,7 @@ App.BayerMatrix = (function(){
     
     
     return {
+        reverseYAxis: reverseYAxis,
         create2: createBayerHelper,
         create: createBayerWebgl,
     };
