@@ -376,7 +376,7 @@ App.WebGl = (function(m4, Bayer){
         };
     }
     
-    function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel, oldBlackPixel){
+    function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel){
         
         drawImageColorReplace = drawImageColorReplace || createWebGLDrawImageFunc(gl, colorReplaceFragmentShaderText);
         // Tell WebGL how to convert from clip space to pixels
