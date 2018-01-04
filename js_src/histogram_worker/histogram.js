@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Histogram = (function(Pixel){
+App.Histogram = (function(Pixel, Polyfills){
     var histogramHeight = 64;
     var histogramWidth = 256;
     
@@ -45,7 +45,7 @@ App.Histogram = (function(Pixel){
             return histogramHeight - barLength;
         });
         
-        var histogramBuffer = new SharedArrayBuffer(histogramWidth * histogramHeight * 4);
+        var histogramBuffer = new Polyfills.SharedArrayBuffer(histogramWidth * histogramHeight * 4);
         var histogramPixels = new Uint8ClampedArray(histogramBuffer);
         
         var x = 0;
@@ -77,4 +77,4 @@ App.Histogram = (function(Pixel){
         height: histogramHeight,
         width: histogramWidth,
     };
-})(App.Pixel);
+})(App.Pixel, App.Polyfills);

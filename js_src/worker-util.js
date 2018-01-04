@@ -1,12 +1,9 @@
 var App = App || {};
 
-App.WorkerUtil = (function(){
-    //polyfill for Chrome older than version 60
-    var SharedArrayBuffer = window.SharedArrayBuffer || ArrayBuffer;
-    
+App.WorkerUtil = (function(Polyfills){
     function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
         //(4 + (3 * 2)) * 2
-        var buffer = new SharedArrayBuffer(20);
+        var buffer = new Polyfills.SharedArrayBuffer(20);
         var bufferView = new Uint16Array(buffer);
         
         bufferView[0] = imageWidth;
@@ -51,4 +48,4 @@ App.WorkerUtil = (function(){
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
         createDitherWorkers: createDitherWorkers,
     };
-})();
+})(App.Polyfills);

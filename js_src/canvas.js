@@ -1,6 +1,6 @@
 var App = App || {};
 
-App.Canvas = (function(){
+App.Canvas = (function(Polyfills){
     function canvasObjectLoadImage(canvasObject, image){
         canvasObject.canvas.width = image.width;
         canvasObject.canvas.height = image.height;
@@ -37,7 +37,7 @@ App.Canvas = (function(){
         var sourceHeight = sourceCanvasObject.canvas.height;
         var pixels = sourceCanvasObject.context.getImageData(0, 0, sourceWidth, sourceHeight).data;
         
-        var buffer = new SharedArrayBuffer(pixels.length);
+        var buffer = new Polyfills.SharedArrayBuffer(pixels.length);
         var bufferView = new Uint8ClampedArray(buffer);
         
         for(let i=0;i<pixels.length;i++){
@@ -63,4 +63,4 @@ App.Canvas = (function(){
        createSharedImageBuffer: createSharedImageBuffer,
        replaceImageWithBuffer: replaceImageWithBuffer,
     };
-})();
+})(App.Polyfills);

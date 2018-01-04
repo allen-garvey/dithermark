@@ -1,18 +1,18 @@
 JS_SRC_DIR=js_src
 JS_OUTPUT_DIR=public_html/js
 
-JS_SRC=$(JS_SRC_DIR)/fs.js $(JS_SRC_DIR)/worker-util.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(JS_SRC_DIR)/canvas.js $(JS_SRC_DIR)/bayer-matrix.js $(JS_SRC_DIR)/webgl-m4.js $(JS_SRC_DIR)/webgl.js $(JS_SRC_DIR)/histogram.js $(JS_SRC_DIR)/algorithm-model.js $(JS_SRC_DIR)/app.js
+JS_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/fs.js $(JS_SRC_DIR)/worker-util.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(JS_SRC_DIR)/canvas.js $(JS_SRC_DIR)/bayer-matrix.js $(JS_SRC_DIR)/webgl-m4.js $(JS_SRC_DIR)/webgl.js $(JS_SRC_DIR)/histogram.js $(JS_SRC_DIR)/algorithm-model.js $(JS_SRC_DIR)/app.js
 JS_OUTPUT=$(JS_OUTPUT_DIR)/app.js
 
 
 DITHER_WORKER_DIR=$(JS_SRC_DIR)/image_dithering_worker
 
-DITHER_WORKER_SRC=$(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(DITHER_WORKER_DIR)/image.js $(DITHER_WORKER_DIR)/threshold.js $(DITHER_WORKER_DIR)/error-prop-dither.js $(DITHER_WORKER_DIR)/ordered-dither.js $(DITHER_WORKER_DIR)/algorithm-model.js $(DITHER_WORKER_DIR)/main.js
+DITHER_WORKER_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(DITHER_WORKER_DIR)/image.js $(DITHER_WORKER_DIR)/threshold.js $(DITHER_WORKER_DIR)/error-prop-dither.js $(DITHER_WORKER_DIR)/ordered-dither.js $(DITHER_WORKER_DIR)/algorithm-model.js $(DITHER_WORKER_DIR)/main.js
 DITHER_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/dither-worker.js
 
 HISTOGRAM_WORKER_DIR=$(JS_SRC_DIR)/histogram_worker
 
-HISTOGRAM_WORKER_SRC=$(JS_SRC_DIR)/pixel.js $(HISTOGRAM_WORKER_DIR)/histogram.js $(HISTOGRAM_WORKER_DIR)/histogram-main.js
+HISTOGRAM_WORKER_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/pixel.js $(HISTOGRAM_WORKER_DIR)/histogram.js $(HISTOGRAM_WORKER_DIR)/histogram-main.js
 HISTOGRAM_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/histogram-worker.js
 
 

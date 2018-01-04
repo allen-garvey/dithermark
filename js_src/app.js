@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl, AlgorithmModel){
+(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl, AlgorithmModel, Polyfills){
     
     //takes hex in form #ffffff and returns pixel
     function pixelFromColorPicker(hex){
@@ -204,7 +204,7 @@
                 if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
                     isDitherWorkerBwWorking = true;
                     ditherWorkerBw.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, Pixel.create(0,0,0), Pixel.create(255,255,255)));
-                    ditherWorkerBw.postMessage(new SharedArrayBuffer(0));
+                    ditherWorkerBw.postMessage(new Polyfills.SharedArrayBuffer(0));
                 }
                 //see if texture was created already, or has been created in time here
                 if(!transformedImageBwTexture){
@@ -290,7 +290,7 @@
                 let ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
                 webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
-                ditherWorker.postMessage(new SharedArrayBuffer(0));
+                ditherWorker.postMessage(new Polyfills.SharedArrayBuffer(0));
                 
                 ditherWorkerCurrentIndex++;
                 if(ditherWorkerCurrentIndex == ditherWorkers.length){
@@ -363,4 +363,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil, App.WebGl, App.AlgorithmModel);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills);
