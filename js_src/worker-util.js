@@ -43,9 +43,43 @@ App.WorkerUtil = (function(Polyfills){
         return workers;
     }
     
+    function createQueue(){
+        function Queue(){
+            this.length = 0;
+            this.lowestIndex = 0;
+            this.queue = {};
+        }
+        
+        Queue.prototype.insert = function(item){
+            let index = this.lowestIndex + this.length;
+            this.queue[index] = item;
+            this.length++;
+        };
+        
+        Queue.prototype.getNext = function(defaultValue=null){
+            if(this.length === 0){
+                return defaultValue;
+            }
+            let ret = this.queue[this.lowestIndex];
+            this.queue[this.lowestIndex] = null;
+            this.length--;
+            if(this.length === 0){
+                this.lowestIndex = 0;
+            }
+            else{
+                this.lowestIndex++;
+            }
+            return ret;
+        };
+        
+        let ret = new Queue();
+        return ret;
+    }
+    
     return {
         ditherWorkerHeader: createDitherWorkerHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
         createDitherWorkers: createDitherWorkers,
+        createQueue: createQueue,
     };
 })(App.Polyfills);

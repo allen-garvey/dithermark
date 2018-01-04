@@ -13,7 +13,17 @@
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
     var ditherWorkerCurrentIndex = 0;
     
-    var ditherWorkerBw = new Worker('/js/dither-worker.js');
+    function getNextDitherWorker(){
+        let ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
+        ditherWorkerCurrentIndex++;
+        if(ditherWorkerCurrentIndex == ditherWorkers.length){
+            ditherWorkerCurrentIndex = 0;
+        }
+        return ditherWorker;
+        
+    }
+    var ditherWorkersCallbackQueue = WorkerUtil.createQueue();
+    
     var isDitherWorkerBwWorking = false;
     var transformedImageBwTexture = null;
     
@@ -49,9 +59,8 @@
             this.isWebglEnabled = this.isWebglSupported;
             
             ditherWorkers.forEach((ditherWorker)=>{
-               ditherWorker.onmessage = this.ditherWorkerMessageReceived; 
+               ditherWorker.onmessage = this.ditherWorkerMessageReceivedDispatcher; 
             });
-            ditherWorkerBw.onmessage = this.ditherWorkerBwMessageReceived;
             histogramWorker.onmessage = this.histogramWorkerMessageReceived;
             this.resetColorReplace();
         },
@@ -203,8 +212,10 @@
                 //so send message to create BW texture if necessary
                 if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
                     isDitherWorkerBwWorking = true;
-                    ditherWorkerBw.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, Pixel.create(0,0,0), Pixel.create(255,255,255)));
-                    ditherWorkerBw.postMessage(new Polyfills.SharedArrayBuffer(0));
+                    ditherWorkersCallbackQueue.insert(this.ditherWorkerBwMessageReceived);
+                    let ditherWorker = getNextDitherWorker();
+                    ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, Pixel.create(0,0,0), Pixel.create(255,255,255)));
+                    ditherWorker.postMessage(new Polyfills.SharedArrayBuffer(0));
                 }
                 //see if texture was created already, or has been created in time here
                 if(!transformedImageBwTexture){
@@ -244,7 +255,7 @@
                 
                 //todo probably shouldn't do this if webgl is enabled
                 let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);
-                ditherWorkers.concat([ditherWorkerBw]).forEach((ditherWorker)=>{
+                ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
                     ditherWorker.postMessage(ditherWorkerHeader);
                     ditherWorker.postMessage(buffer);
@@ -287,15 +298,15 @@
                     this.zoomImage();
                     return;
                 }
-                let ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
+                ditherWorkersCallbackQueue.insert(this.ditherWorkerMessageReceived);
+                let ditherWorker = getNextDitherWorker();
                 webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 ditherWorker.postMessage(new Polyfills.SharedArrayBuffer(0));
-                
-                ditherWorkerCurrentIndex++;
-                if(ditherWorkerCurrentIndex == ditherWorkers.length){
-                    ditherWorkerCurrentIndex = 0;
-                }
+            },
+            ditherWorkerMessageReceivedDispatcher: function(e){
+                let callback = ditherWorkersCallbackQueue.getNext(()=>{});
+                callback(e);
             },
             ditherWorkerMessageReceived: function(e){
                 this.hasImageBeenTransformed = true;
