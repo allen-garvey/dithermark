@@ -30,7 +30,8 @@ App.WorkerUtil = (function(Polyfills){
         return createDitherWorkerHeader(imageWidth, imageHeight);
     }
     
-    function createDitherWorkers(ditherWorkerUrl){
+    //creates queue of webworkers
+    function createWorkers(ditherWorkerUrl){
         var numWorkers = 1;
         var navigator = window.navigator;
         if(navigator.hardwareConcurrency){
@@ -40,7 +41,26 @@ App.WorkerUtil = (function(Polyfills){
         for(let i=0;i<numWorkers;i++){
             workers[i] = new Worker(ditherWorkerUrl);
         }
-        return workers;
+        
+        var workerCurrentIndex = 0;
+    
+        function getNextWorker(){
+            let worker = workers[workerCurrentIndex];
+            workerCurrentIndex++;
+            if(workerCurrentIndex === workers.length){
+                workerCurrentIndex = 0;
+            }
+            return worker;
+        }
+        
+        function forEach(callback){
+            workers.forEach(callback);
+        }
+        
+        return {
+            getNextWorker: getNextWorker,
+            forEach: forEach,
+        };
     }
     
     function createQueue(){
@@ -79,7 +99,7 @@ App.WorkerUtil = (function(Polyfills){
     return {
         ditherWorkerHeader: createDitherWorkerHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
-        createDitherWorkers: createDitherWorkers,
+        createDitherWorkers: createWorkers,
         createQueue: createQueue,
     };
 })(App.Polyfills);

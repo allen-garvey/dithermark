@@ -7,26 +7,21 @@
         let b = parseInt(hex.substring(5, 7), 16);
         return Pixel.create(r, g, b);
     }
-
+    
+    //webworker stuff
     var histogramWorker = new Worker('/js/histogram-worker.js');
     
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
-    var ditherWorkerCurrentIndex = 0;
-    
-    function getNextDitherWorker(){
-        let ditherWorker = ditherWorkers[ditherWorkerCurrentIndex];
-        ditherWorkerCurrentIndex++;
-        if(ditherWorkerCurrentIndex == ditherWorkers.length){
-            ditherWorkerCurrentIndex = 0;
-        }
-        return ditherWorker;
-        
-    }
     var ditherWorkersCallbackQueue = WorkerUtil.createQueue();
     
+    //used for creating BW texture for webgl color replace
     var isDitherWorkerBwWorking = false;
     var transformedImageBwTexture = null;
     
+    //used for calculating webworker performance
+    var webworkerStartTime;
+    
+    //canvas stuff
     var sourceCanvas;
     var transformCanvas;
     var transformCanvasWebGl;
@@ -36,8 +31,6 @@
     var histogramCanvasIndicator;
     
     var sourceWebglTexture = null;
-    
-    var webworkerStartTime;
     
     const COLOR_REPLACE_DEFAULT_BLACK_VALUE = '#000000';
     const COLOR_REPLACE_DEFAULT_WHITE_VALUE = '#ffffff';
@@ -213,7 +206,7 @@
                 if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
                     isDitherWorkerBwWorking = true;
                     ditherWorkersCallbackQueue.insert(this.ditherWorkerBwMessageReceived);
-                    let ditherWorker = getNextDitherWorker();
+                    let ditherWorker = ditherWorkers.getNextWorker();
                     ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, Pixel.create(0,0,0), Pixel.create(255,255,255)));
                     ditherWorker.postMessage(new Polyfills.SharedArrayBuffer(0));
                 }
@@ -263,7 +256,8 @@
                 //todo probably shouldn't do this if webgl isn't enabled
                 if(this.isWebglSupported){
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));   
+                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
+                    this.freeTransformedImageBwTexture();
                 }
                 
                 if(this.isLivePreviewEnabled){
@@ -299,7 +293,7 @@
                     return;
                 }
                 ditherWorkersCallbackQueue.insert(this.ditherWorkerMessageReceived);
-                let ditherWorker = getNextDitherWorker();
+                let ditherWorker = ditherWorkers.getNextWorker();
                 webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 ditherWorker.postMessage(new Polyfills.SharedArrayBuffer(0));
@@ -322,8 +316,16 @@
                 transformedImageBwTexture = WebGl.createAndLoadTextureFromBuffer(gl, messageData, this.loadedImage.width, this.loadedImage.height);
             },
             freeTransformedImageBwTexture: function(){
-                var gl = transformCanvasWebGl.gl;
+                //deleting textures doesn't seem to happen synchronously
+                //so webgl is deleting the wrong texture
+                //disable for now
+                /*
+                if(!this.isWebglSupported){
+                    return;
+                }
+                let gl = transformCanvasWebGl.gl;
                 gl.deleteTexture(transformedImageBwTexture);
+                */
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
             },
