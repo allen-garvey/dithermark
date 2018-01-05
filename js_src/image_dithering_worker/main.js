@@ -36,6 +36,11 @@ onmessage = function(e) {
             pixelBufferOriginal = messageData;
         }
     }
+    var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
+    if(!selectedAlgorithm){
+        return;
+    }
+    
     var pixelBufferCopy = copyBuffer(pixelBufferOriginal);
     var pixels = pixelBufferCopy.pixels;
     var imageDataBuffer = pixelBufferCopy.buffer;
@@ -43,11 +48,6 @@ onmessage = function(e) {
     var imageHeight = messageHeader.imageHeight;
     var imageWidth = messageHeader.imageWidth;
     var threshold = messageHeader.threshold;
-    var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
-    
-    if(!selectedAlgorithm){
-        return;
-    }
     
     App.Timer.megapixelsPerSecond(selectedAlgorithm.title + '          ', imageHeight * imageWidth, ()=>{
        imageDataBuffer = selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
