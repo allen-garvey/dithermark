@@ -183,7 +183,7 @@
         </script>
         
         <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
-            bool shouldUseBlackPixel = pixel.rgb == vec3(0.0, 0.0, 0.0);
+            bool shouldUseBlackPixel = pixel.r < 0.5;
         </script>
         
         <script type="webgl/fragment-shader" id="webgl-combine-dither-fshader-declaration">
