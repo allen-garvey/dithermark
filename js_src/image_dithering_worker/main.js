@@ -1,8 +1,17 @@
-(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders){
+(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders, Histogram){
     var ditherAlgorithms = Algorithms.model();
     var messageHeader = {};
     var pixelBufferOriginal;
     
+    
+    function histogramAction(messageHeader){
+        //don't need to copy the original imagedata, since we are not modifying it
+        var pixels = new Uint8ClampedArray(pixelBufferOriginal);
+        var histogramBuffer = Histogram.createHistogram(pixels, messageHeader.messageTypeId);
+        //add messageTypeId
+        var histogramBufferReturn = WorkerUtil.copyBufferWithMessageType(histogramBuffer, messageHeader.messageTypeId);
+        postMessage(histogramBufferReturn.buffer);
+    }
     
     function ditherAction(messageHeader){
         //dither the image
@@ -44,11 +53,13 @@
             case WorkerHeaders.DITHER:
             case WorkerHeaders.DITHER_BW:
                 ditherAction(messageHeader);
+            case WorkerHeaders.HISTOGRAM:
+                histogramAction(messageHeader);
             //LOAD_IMAGE just returns
             default:
                 return;
         }
         
     };
-})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders);
+})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders, App.Histogram);
 

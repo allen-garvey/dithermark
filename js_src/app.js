@@ -9,8 +9,6 @@
     }
     
     //webworker stuff
-    var histogramWorker = new Worker('/js/histogram-worker.js');
-    
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
     
     //used for creating BW texture for webgl color replace
@@ -53,7 +51,6 @@
             ditherWorkers.forEach((ditherWorker)=>{
                ditherWorker.onmessage = this.ditherWorkerMessageReceivedDispatcher; 
             });
-            histogramWorker.onmessage = this.histogramWorkerMessageReceived;
             this.resetColorReplace();
         },
         data: {
@@ -240,17 +237,19 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
+                //load image into the webworkers
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                histogramWorker.postMessage(buffer);
-                
-                //todo probably shouldn't do this if webgl is enabled
                 let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
                     ditherWorker.postMessage(ditherWorkerHeader);
                     ditherWorker.postMessage(buffer);
                 });
-                //todo probably shouldn't do this if webgl isn't enabled
+                //draw histogram
+                let ditherWorker = ditherWorkers.getNextWorker();
+                ditherWorker.postMessage(WorkerUtil.histogramWorkerHeader());
+                
+                //todo could wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
@@ -307,9 +306,14 @@
                     case WorkerHeaders.DITHER_BW:
                         this.ditherWorkerBwMessageReceived(pixels);
                         break;
+                    //histogram
                     default:
+                        this.histogramWorkerMessageReceived(pixels);
                         break;
                 }
+            },
+            histogramWorkerMessageReceived: function(pixels){
+                Canvas.replaceImageWithArray(histogramCanvas, App.Histogram.width, App.Histogram.height, pixels);
             },
             ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;
@@ -335,10 +339,6 @@
                 */
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
-            },
-            histogramWorkerMessageReceived: function(e){
-                var messageData = e.data;
-                Canvas.replaceImageWithBuffer(histogramCanvas, App.Histogram.width, App.Histogram.height, messageData);
             },
             loadImageTrigger: function(){
                 fileInput.click();

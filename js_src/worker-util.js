@@ -50,6 +50,15 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         return buffer;
     }
     
+    function createHistogramWorkerHeader(){
+        var buffer = new Polyfills.SharedArrayBuffer(2);
+        var bufferView = new Uint16Array(buffer);
+        
+        bufferView[0] = WorkerHeaders.HISTOGRAM;
+        
+        return buffer;
+    }
+    
     //creates queue of webworkers
     function createWorkers(ditherWorkerUrl){
         var numWorkers = 1;
@@ -87,6 +96,7 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         ditherWorkerHeader: createDitherWorkerHeader,
         ditherWorkerBwHeader: createDitherWorkerBwHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
+        histogramWorkerHeader: createHistogramWorkerHeader,
         createDitherWorkers: createWorkers,
     };
 })(App.Polyfills, App.WorkerHeaders);
