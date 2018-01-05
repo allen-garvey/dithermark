@@ -32,18 +32,15 @@ App.Canvas = (function(Polyfills){
         targetCanvasObject.context.drawImage(sourceCanvasObject.canvas , 0 , 0 , sourceWidth, sourceHeight, 0, 0, scaledWidth, scaledHeight);
     }
     
+    //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
     function createSharedImageBuffer(sourceCanvasObject){
         var sourceWidth = sourceCanvasObject.canvas.width;
         var sourceHeight = sourceCanvasObject.canvas.height;
         var pixels = sourceCanvasObject.context.getImageData(0, 0, sourceWidth, sourceHeight).data;
         
         var buffer = new Polyfills.SharedArrayBuffer(pixels.length);
-        var bufferView = new Uint8ClampedArray(buffer);
-        
-        for(let i=0;i<pixels.length;i++){
-            bufferView[i] = pixels[i];
-        }
-        
+        //faster than for loop
+        new Uint8ClampedArray(buffer).set(new Uint8ClampedArray(pixels.buffer));
         return buffer;
     }
     
