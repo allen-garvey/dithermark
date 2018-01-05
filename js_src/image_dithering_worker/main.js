@@ -43,14 +43,12 @@ onmessage = function(e) {
     var imageHeight = messageHeader.imageHeight;
     var imageWidth = messageHeader.imageWidth;
     var threshold = messageHeader.threshold;
-    var normalizedAlgorithmId = messageHeader.algorithmId - 1; //algorithmIds are 1 based
+    var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
     
-    //algorithmId will be 0 (normalized to -1) if we are only sending image data
-    if(normalizedAlgorithmId < 0 || normalizedAlgorithmId >= ditherAlgorithms.length){
+    if(!selectedAlgorithm){
         return;
     }
     
-    var selectedAlgorithm = ditherAlgorithms[normalizedAlgorithmId];
     App.Timer.megapixelsPerSecond(selectedAlgorithm.title + '          ', imageHeight * imageWidth, ()=>{
        imageDataBuffer = selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
     });
