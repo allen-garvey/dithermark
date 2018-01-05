@@ -4,17 +4,6 @@ var messageInSequence = 0;
 var messageHeader = {};
 var pixelBufferOriginal;
 
-
-function copyBuffer(pixelBufferOriginal){
-    var ditheredPixelBuffer = new App.Polyfills.SharedArrayBuffer(pixelBufferOriginal.byteLength);
-    var ditheredPixels = new Uint8ClampedArray(ditheredPixelBuffer);
-    var originalPixels = new Uint8ClampedArray(pixelBufferOriginal);
-    for(let i=0;i<originalPixels.length;i++){
-        ditheredPixels[i] = originalPixels[i];
-    }
-    return  {buffer: ditheredPixelBuffer, pixels: ditheredPixels};
-}
-
 onmessage = function(e) {
     messageInSequence++;
     var messageData = e.data;
@@ -41,7 +30,7 @@ onmessage = function(e) {
         return;
     }
     
-    var pixelBufferCopy = copyBuffer(pixelBufferOriginal);
+    var pixelBufferCopy = App.WorkerUtil.copyBuffer(pixelBufferOriginal);
     var pixels = pixelBufferCopy.pixels;
     var imageDataBuffer = pixelBufferCopy.buffer;
     
