@@ -1,4 +1,4 @@
-(function(Timer, WorkerUtil, Pixel, Algorithms){
+(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders){
     var ditherAlgorithms = Algorithms.model();
     var messageInSequence = 0;
     var messageHeader = {};
@@ -10,12 +10,7 @@
         
         //header
         if(messageInSequence === 1){
-            messageHeader.imageWidth = messageData[0];
-            messageHeader.imageHeight = messageData[1];
-            messageHeader.threshold = messageData[2];
-            messageHeader.algorithmId = messageData[3];
-            messageHeader.blackPixel = Pixel.create(messageData[4], messageData[5], messageData[6]);
-            messageHeader.whitePixel = Pixel.create(messageData[7], messageData[8], messageData[9]);
+            messageHeader = WorkerUtil.parseMessageHeader(messageData);
             return;
         }
         //buffer, or blank, if we have already received the image
@@ -25,10 +20,11 @@
                 pixelBufferOriginal = messageData;
             }
         }
-        var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
-        if(!selectedAlgorithm){
+        if(messageHeader.messageTypeId === WorkerHeaders.LOAD_IMAGE){
             return;
         }
+        
+        var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
         var pixelBufferCopy = WorkerUtil.copyBuffer(pixelBufferOriginal);
         var pixels = pixelBufferCopy.pixels;
@@ -44,5 +40,5 @@
         
         postMessage(imageDataBuffer);
     }
-})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms);
+})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders);
 

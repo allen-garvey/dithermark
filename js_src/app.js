@@ -207,7 +207,7 @@
                     isDitherWorkerBwWorking = true;
                     ditherWorkersCallbackQueue.insert(this.ditherWorkerBwMessageReceived);
                     let ditherWorker = ditherWorkers.getNextWorker();
-                    ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, Pixel.create(0,0,0), Pixel.create(255,255,255)));
+                    ditherWorker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
                     ditherWorker.postMessage(new Polyfills.SharedArrayBuffer(0));
                 }
                 //see if texture was created already, or has been created in time here

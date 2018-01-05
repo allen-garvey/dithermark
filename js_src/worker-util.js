@@ -1,33 +1,53 @@
 var App = App || {};
 
-App.WorkerUtil = (function(Polyfills){
+App.WorkerUtil = (function(Polyfills, WorkerHeaders){
     function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
-        //(4 + (3 * 2)) * 2
-        var buffer = new Polyfills.SharedArrayBuffer(20);
+        //(5 + (3 * 2)) * 2
+        var buffer = new Polyfills.SharedArrayBuffer(22);
         var bufferView = new Uint16Array(buffer);
         
-        bufferView[0] = imageWidth;
-        bufferView[1] = imageHeight;
+        bufferView[0] = WorkerHeaders.DITHER;
+        bufferView[1] = imageWidth;
+        bufferView[2] = imageHeight;
         
-        //createDitherWorkerLoadImageHeader only has first 2 arguments defined
-        if(threshold !== undefined){
-            bufferView[2] = threshold;
-            bufferView[3] = algorithmId;
-            
-            bufferView[4] = blackPixel[0];
-            bufferView[5] = blackPixel[1];
-            bufferView[6] = blackPixel[2];
-            
-            bufferView[7] = whitePixel[0];
-            bufferView[8] = whitePixel[1];
-            bufferView[9] = whitePixel[2];
-        }
+        bufferView[3] = algorithmId;
+        bufferView[4] = threshold;
         
-        return bufferView;
+        bufferView[5] = blackPixel[0];
+        bufferView[6] = blackPixel[1];
+        bufferView[7] = blackPixel[2];
+        
+        bufferView[8] = whitePixel[0];
+        bufferView[9] = whitePixel[1];
+        bufferView[10] = whitePixel[2];
+
+        return buffer;
+    }
+    
+    function createDitherWorkerBwHeader(imageWidth, imageHeight, threshold, algorithmId){
+        //5 * 2
+        var buffer = new Polyfills.SharedArrayBuffer(10);
+        var bufferView = new Uint16Array(buffer);
+        
+        bufferView[0] = WorkerHeaders.DITHER_BW;
+        bufferView[1] = imageWidth;
+        bufferView[2] = imageHeight;
+        
+        bufferView[3] = algorithmId;
+        bufferView[4] = threshold;
+
+        return buffer;
     }
     
     function createDitherWorkerLoadImageHeader(imageWidth, imageHeight){
-        return createDitherWorkerHeader(imageWidth, imageHeight);
+        var buffer = new Polyfills.SharedArrayBuffer(6);
+        var bufferView = new Uint16Array(buffer);
+        
+        bufferView[0] = WorkerHeaders.LOAD_IMAGE;
+        bufferView[1] = imageWidth;
+        bufferView[2] = imageHeight;
+        
+        return buffer;
     }
     
     //creates queue of webworkers
@@ -98,8 +118,9 @@ App.WorkerUtil = (function(Polyfills){
     
     return {
         ditherWorkerHeader: createDitherWorkerHeader,
+        ditherWorkerBwHeader: createDitherWorkerBwHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
         createDitherWorkers: createWorkers,
         createQueue: createQueue,
     };
-})(App.Polyfills);
+})(App.Polyfills, App.WorkerHeaders);
