@@ -1,29 +1,11 @@
 (function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders){
     var ditherAlgorithms = Algorithms.model();
-    var messageInSequence = 0;
     var messageHeader = {};
     var pixelBufferOriginal;
     
-    onmessage = function(e) {
-        messageInSequence++;
-        var messageData = e.data;
-        
-        //header
-        if(messageInSequence === 1){
-            messageHeader = WorkerUtil.parseMessageHeader(messageData);
-            return;
-        }
-        //buffer, or blank, if we have already received the image
-        else{
-            messageInSequence = 0;
-            if(messageData.byteLength > 0){
-                pixelBufferOriginal = messageData;
-            }
-        }
-        if(messageHeader.messageTypeId === WorkerHeaders.LOAD_IMAGE){
-            return;
-        }
-        
+    
+    function ditherAction(messageHeader){
+        //dither the image
         var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
         var pixelBufferCopy = WorkerUtil.copyBuffer(pixelBufferOriginal);
@@ -40,5 +22,33 @@
         
         postMessage(imageDataBuffer);
     }
+    
+    
+    
+    onmessage = function(e){
+        var messageData = e.data;
+        
+        //previous message was load image header, so load image
+        if(messageHeader.messageTypeId === WorkerHeaders.LOAD_IMAGE){
+            if(messageData.byteLength > 0){
+                pixelBufferOriginal = messageData;
+            }
+            messageHeader = {};
+            return;
+        }
+        //get new headers
+        messageHeader = WorkerUtil.parseMessageHeader(messageData);
+        
+        //perform action based on headers
+        switch(messageHeader.messageTypeId){
+            case WorkerHeaders.DITHER:
+            case WorkerHeaders.DITHER_BW:
+                ditherAction(messageHeader);
+            //LOAD_IMAGE just returns
+            default:
+                return;
+        }
+        
+    };
 })(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders);
 
