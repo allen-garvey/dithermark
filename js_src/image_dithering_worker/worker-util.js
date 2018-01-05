@@ -1,4 +1,5 @@
 App.WorkerUtil = (function(WorkerHeaders, Pixel){
+    /*
     //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
     function copyBuffer(pixelBufferOriginal){
         //faster than using for loop
@@ -7,6 +8,21 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel){
         copiedPixels.set(new Uint8Array(pixelBufferOriginal));
         
         return {buffer: copiedBuffer, pixels: copiedPixels};
+    }
+    */
+    
+    //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
+    function copyBufferWithMessageType(pixelBufferOriginal, messageTypeId){
+        //faster than using for loop
+        var copiedBuffer = new ArrayBuffer(pixelBufferOriginal.byteLength + 1);
+        var copiedPixels = new Uint8Array(copiedBuffer);
+        
+        //add messagetypeid to start of pixelbuffer
+        copiedPixels[0] = messageTypeId;
+        var copiedPixelsSubarray = copiedPixels.subarray(1, copiedPixels.length);
+        copiedPixelsSubarray.set(new Uint8Array(pixelBufferOriginal));
+        
+        return {buffer: copiedBuffer, pixels: copiedPixelsSubarray};
     }
     
     
@@ -58,7 +74,8 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel){
     
     
     return {
-        copyBuffer: copyBuffer,
+        // copyBuffer: copyBuffer,
+        copyBufferWithMessageType: copyBufferWithMessageType,
         parseMessageHeader: parseMessageHeader,
     };
 })(App.WorkerHeaders, App.Pixel);

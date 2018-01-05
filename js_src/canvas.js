@@ -47,6 +47,10 @@ App.Canvas = (function(Polyfills){
     //buffer should be ArrayBuffer or SharedArrayBuffer
     function replaceImageWithBuffer(targetCanvasObject, imageWidth, imageHeight, buffer){
         var pixels = new Uint8ClampedArray(buffer);
+        replaceImageWithArray(targetCanvasObject, imageWidth, imageHeight, pixels);
+    }
+    
+    function replaceImageWithArray(targetCanvasObject, imageWidth, imageHeight, pixels){
         var imageData = targetCanvasObject.context.createImageData(imageWidth, imageHeight);
         imageData.data.set(pixels);
         targetCanvasObject.context.putImageData(imageData, 0, 0);
@@ -59,5 +63,6 @@ App.Canvas = (function(Polyfills){
        scale: scaleCanvasImage,
        createSharedImageBuffer: createSharedImageBuffer,
        replaceImageWithBuffer: replaceImageWithBuffer,
+       replaceImageWithArray: replaceImageWithArray,
     };
 })(App.Polyfills);

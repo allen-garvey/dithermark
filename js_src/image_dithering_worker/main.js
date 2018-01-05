@@ -8,7 +8,7 @@
         //dither the image
         var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
-        var pixelBufferCopy = WorkerUtil.copyBuffer(pixelBufferOriginal);
+        var pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
         var pixels = pixelBufferCopy.pixels;
         var imageDataBuffer = pixelBufferCopy.buffer;
         
@@ -17,7 +17,7 @@
         var threshold = messageHeader.threshold;
         
         Timer.megapixelsPerSecond(selectedAlgorithm.title + '          ', imageHeight * imageWidth, ()=>{
-           imageDataBuffer = selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
+           selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
         });
         
         postMessage(imageDataBuffer);

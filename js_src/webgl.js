@@ -116,12 +116,15 @@ App.WebGl = (function(m4, Bayer){
         return texture;
     }
     
-    function createAndLoadTextureFromBuffer(gl, buffer, imageWidth, imageHeight) {
+    // function createAndLoadTextureFromBuffer(gl, buffer, imageWidth, imageHeight) {
+    //     let pixels = new Uint8Array(buffer);
+    //     return createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight);
+    // }
+    
+    function createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight) {
         var texture = gl.createTexture();
         
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        
-       let pixels = new Uint8Array(buffer);
         
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     
@@ -416,6 +419,7 @@ App.WebGl = (function(m4, Bayer){
         textureCombine: webGL3TextureCombine,
         createAndLoadTexture: createAndLoadTexture,
         createAndLoadTextureFromGl: createAndLoadTextureFromGl,
-        createAndLoadTextureFromBuffer: createAndLoadTextureFromBuffer,
+        // createAndLoadTextureFromBuffer: createAndLoadTextureFromBuffer,
+        createAndLoadTextureFromArray: createAndLoadTextureFromArray,
     };    
 })(App.M4, App.BayerMatrix);

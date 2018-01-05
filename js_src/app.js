@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl, AlgorithmModel, Polyfills){
+(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders){
     
     //takes hex in form #ffffff and returns pixel
     function pixelFromColorPicker(hex){
@@ -12,7 +12,6 @@
     var histogramWorker = new Worker('/js/histogram-worker.js');
     
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
-    var ditherWorkersCallbackQueue = WorkerUtil.createQueue();
     
     //used for creating BW texture for webgl color replace
     var isDitherWorkerBwWorking = false;
@@ -205,7 +204,6 @@
                 //so send message to create BW texture if necessary
                 if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
                     isDitherWorkerBwWorking = true;
-                    ditherWorkersCallbackQueue.insert(this.ditherWorkerBwMessageReceived);
                     let ditherWorker = ditherWorkers.getNextWorker();
                     ditherWorker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
                 }
@@ -291,27 +289,38 @@
                     this.zoomImage();
                     return;
                 }
-                ditherWorkersCallbackQueue.insert(this.ditherWorkerMessageReceived);
                 let ditherWorker = ditherWorkers.getNextWorker();
                 webworkerStartTime = Timer.timeInMilliseconds();
                 ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
             },
             ditherWorkerMessageReceivedDispatcher: function(e){
-                let callback = ditherWorkersCallbackQueue.getNext(()=>{});
-                callback(e);
+                let messageData = e.data;
+                let pixelsFull = new Uint8Array(messageData);
+                //get messageTypeId from start of buffer
+                let messageTypeId = pixelsFull[0];
+                //rest of the buffer is the actual pixel data
+                let pixels = pixelsFull.subarray(1, pixelsFull.length);
+                switch(messageTypeId){
+                    case WorkerHeaders.DITHER:
+                        this.ditherWorkerMessageReceived(pixels);
+                        break;
+                    case WorkerHeaders.DITHER_BW:
+                        this.ditherWorkerBwMessageReceived(pixels);
+                        break;
+                    default:
+                        break;
+                }
             },
-            ditherWorkerMessageReceived: function(e){
+            ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;
-                var messageData = e.data;
-                Canvas.replaceImageWithBuffer(transformCanvas, this.loadedImage.width, this.loadedImage.height, messageData);
+                Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.zoomImage();
             },
-            ditherWorkerBwMessageReceived: function(e){
-                var messageData = e.data;
+            ditherWorkerBwMessageReceived: function(pixels){
                 var gl = transformCanvasWebGl.gl;
                 this.freeTransformedImageBwTexture();
-                transformedImageBwTexture = WebGl.createAndLoadTextureFromBuffer(gl, messageData, this.loadedImage.width, this.loadedImage.height);
+                transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(gl, pixels, this.loadedImage.width, this.loadedImage.height);
             },
             freeTransformedImageBwTexture: function(){
                 //deleting textures doesn't seem to happen synchronously
@@ -374,4 +383,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders);
