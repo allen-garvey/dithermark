@@ -34,6 +34,7 @@ App.BayerMatrix = (function(){
     //Utility stuff
     
     //based on: https://stackoverflow.com/questions/41969562/how-can-i-flip-the-result-of-webglrenderingcontext-readpixels
+    //pixels is a Uint8Array
     function reverseYAxis(pixels, width, height, bytesPerItem=4){
         var halfHeight = Math.floor(height / 2);
         var bytesPerRow = width * bytesPerItem;
