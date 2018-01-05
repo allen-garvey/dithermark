@@ -183,6 +183,7 @@
         </script>
         
         <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
+            //we are comparing to 0.0, but can't use == because of floating point precision
             bool shouldUseBlackPixel = pixel.r < 0.5;
         </script>
         
