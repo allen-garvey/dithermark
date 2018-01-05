@@ -26,7 +26,7 @@
         var threshold = messageHeader.threshold;
         
         Timer.megapixelsPerSecond(selectedAlgorithm.title + '          ', imageHeight * imageWidth, ()=>{
-           selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
+          selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
         });
         
         postMessage(imageDataBuffer);
@@ -53,8 +53,10 @@
             case WorkerHeaders.DITHER:
             case WorkerHeaders.DITHER_BW:
                 ditherAction(messageHeader);
+                break;
             case WorkerHeaders.HISTOGRAM:
                 histogramAction(messageHeader);
+                break;
             //LOAD_IMAGE just returns
             default:
                 return;
