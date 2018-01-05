@@ -327,16 +327,11 @@
                 transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(gl, pixels, this.loadedImage.width, this.loadedImage.height);
             },
             freeTransformedImageBwTexture: function(){
-                //deleting textures doesn't seem to happen synchronously
-                //so webgl is deleting the wrong texture
-                //disable for now
-                /*
-                if(!this.isWebglSupported){
+                if(!this.isWebglSupported || !transformedImageBwTexture){
                     return;
                 }
                 let gl = transformCanvasWebGl.gl;
                 gl.deleteTexture(transformedImageBwTexture);
-                */
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
             },
