@@ -217,7 +217,19 @@ App.ErrorPropDither = (function(Image, Pixel){
         
         errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, error1);
         errorMatrixIncrement(errorPropMatrix, x, y + 1, error1);
+    }
     
+    function garveyPropagation(errorPropMatrix, x, y, currentError){
+        var errorPart = Math.floor(currentError / 16.0);
+
+        errorMatrixIncrement(errorPropMatrix, x + 1, y, (errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x + 2, y, (errorPart));
+
+        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, (errorPart));
+        errorMatrixIncrement(errorPropMatrix, x, y + 1, (errorPart * 2));
+        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, (errorPart));
+
+        errorMatrixIncrement(errorPropMatrix, x, y + 2, (errorPart));
     }
     
     
@@ -230,6 +242,7 @@ App.ErrorPropDither = (function(Image, Pixel){
         sierra3: createErrorPropagationDither(sierra3Propagation),
         sierra2: createErrorPropagationDither(sierra2Propagation),
         sierra1: createErrorPropagationDither(sierra1Propagation),
+        garvey: createErrorPropagationDither(garveyPropagation),
     };
     
     

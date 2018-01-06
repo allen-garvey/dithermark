@@ -43,6 +43,10 @@ App.AlgorithmModel = (function(WebGl){
             		id: 10,
             	},
             	{
+            	    title: "Garvey",
+            	    id: 15,
+            	},
+            	{
             	    title: "Ordered Dither 2x2",
             	    id: 11,
             	    webGlFunc: WebGl.orderedDither2,

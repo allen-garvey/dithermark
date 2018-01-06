@@ -59,6 +59,10 @@ App.Algorithms = (function(){
             	    title: "Ordered Dither 16x16",
             	    algorithm: App.OrderedDither.dither16,
             	},
+            	15: {
+            	    title: "Garvey",
+            	    algorithm: App.ErrorPropDither.garvey,
+            	},
             };
     }
     
