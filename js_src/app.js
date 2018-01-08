@@ -237,6 +237,16 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
+                //adjust zoom
+                this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
+                this.zoomMin = Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, 200);
+                if(this.zoom > this.zoomMax){
+                    this.zoom = this.zoomMax;
+                }
+                else if(this.zoom < this.zoomMin){
+                    this.zoom = this.zoomMin;
+                }
+                
                 //load image into the webworkers
                 var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);

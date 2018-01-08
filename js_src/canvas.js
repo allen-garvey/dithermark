@@ -1,6 +1,8 @@
 var App = App || {};
 
 App.Canvas = (function(Polyfills){
+    var devicePixelRatio = window.devicePixelRatio || 1;
+    
     function canvasObjectLoadImage(canvasObject, image){
         canvasObject.canvas.width = image.width;
         canvasObject.canvas.height = image.height;
@@ -16,9 +18,9 @@ App.Canvas = (function(Polyfills){
         };
     }
     
-    function copyCanvasImage(sourceCanvasObject, targetCanvasObject){
-        targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0);
-    }
+    // function copyCanvasImage(sourceCanvasObject, targetCanvasObject){
+    //     targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0);
+    // }
     
     function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount){
         var sourceWidth = sourceCanvasObject.canvas.width;
@@ -55,6 +57,22 @@ App.Canvas = (function(Polyfills){
         imageData.data.set(pixels);
         targetCanvasObject.context.putImageData(imageData, 0, 0);
     }
+    
+    function maxScalePercentageForImage(imageWidth, imageHeight, maximumAllowedSize){
+        const largestDimension = Math.max(imageWidth, imageHeight);
+        const largestPercentage = Math.ceil(maximumAllowedSize * 100 / largestDimension);
+        
+        //make sure the maximum percentage is at least 200
+        return Math.max(largestPercentage, 200);
+    }
+    
+    function minScalePercentageForImage(imageWidth, imageHeight, minimumAllowedSize){
+        const smallestDimension = Math.min(imageWidth, imageHeight);
+        const smallestPercentage = Math.ceil(minimumAllowedSize * 100 / smallestDimension);
+        
+        //make sure at most 100 is returned
+        return Math.min(smallestPercentage, 100);
+    }
 
     
     return {
@@ -64,5 +82,8 @@ App.Canvas = (function(Polyfills){
        createSharedImageBuffer: createSharedImageBuffer,
        replaceImageWithBuffer: replaceImageWithBuffer,
        replaceImageWithArray: replaceImageWithArray,
+       maxScalePercentageForImage: maxScalePercentageForImage,
+       minScalePercentageForImage: minScalePercentageForImage,
+       devicePixelRatio: devicePixelRatio,
     };
 })(App.Polyfills);
