@@ -1,12 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, Histogram, Pixel, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders){
-    
-    //takes hex in form #ffffff and returns pixel
-    function pixelFromColorPicker(hex){
-        let r = parseInt(hex.substring(1, 3), 16);
-        let g = parseInt(hex.substring(3, 5), 16);
-        let b = parseInt(hex.substring(5, 7), 16);
-        return Pixel.create(r, g, b);
-    }
+(function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
     
     //webworker stuff
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
@@ -28,9 +20,6 @@
     var histogramCanvasIndicator;
     
     var sourceWebglTexture = null;
-    
-    const COLOR_REPLACE_DEFAULT_BLACK_VALUE = '#000000';
-    const COLOR_REPLACE_DEFAULT_WHITE_VALUE = '#ffffff';
     
     var app = new Vue({
         el: '#app',
@@ -98,13 +87,13 @@
                 return !!this.selectedDitherAlgorithm.webGlFunc && this.isWebglEnabled;
             },
             colorReplaceBlackPixel: function(){
-                return pixelFromColorPicker(this.colorReplaceBlack);
+                return ColorPicker.pixelFromHex(this.colorReplaceBlack);
             },
             colorReplaceWhitePixel: function(){
-                return pixelFromColorPicker(this.colorReplaceWhite);
+                return ColorPicker.pixelFromHex(this.colorReplaceWhite);
             },
             areColorReplaceColorsChangedFromDefaults: function(){
-                return this.colorReplaceBlack !== COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceWhite !== COLOR_REPLACE_DEFAULT_WHITE_VALUE;
+                return this.colorReplaceBlack !== ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceWhite !== ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
             },
             //returns the canvas that should be currently used for image transform drawing based on current settings
             activeTransformCanvas: function(){
@@ -216,8 +205,8 @@
                 this.zoomImage();
             },
             resetColorReplace: function(){
-                this.colorReplaceWhite = COLOR_REPLACE_DEFAULT_WHITE_VALUE;
-                this.colorReplaceBlack = COLOR_REPLACE_DEFAULT_BLACK_VALUE;
+                this.colorReplaceWhite = ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
+                this.colorReplaceBlack = ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE;
             },
             resetZoom: function(){
                 this.zoom = 100;
@@ -388,4 +377,4 @@
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.Pixel, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker);
