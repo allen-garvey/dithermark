@@ -24,7 +24,14 @@
                 <a id="save-image-link">Save image</a>
             </div>
             <div id="app">
-                <bw-dither-section />   
+                <bw-dither-section v-bind:transform-canvas-web-gl="transformCanvasWebGl" v-bind:transform-canvas="transformCanvas" v-bind:source-canvas="sourceCanvas" v-bind:source-canvas-output="sourceCanvasOutput" v-bind:transform-canvas-output="transformCanvasOutput" />   
+                <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
+                    <canvas id="source-canvas" class="hidden"></canvas>
+                    <canvas id="transform-canvas" class="hidden"></canvas>
+                    <canvas id="transform-canvas-webgl" class="hidden"></canvas>
+                    <canvas id="source-canvas-output" class="output-canvas" v-show="numPanels > 1"></canvas>
+                    <canvas id="transform-canvas-output" class="output-canvas"></canvas>
+                </div>
             </div>
             
             <div id="bw-dither-component" class="hidden">
@@ -118,14 +125,6 @@
                         </div>    
                     </div>
                 </div>
-                
-                <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
-                    <canvas data-dom-id="source-canvas" class="hidden"></canvas>
-                    <canvas data-dom-id="transform-canvas" class="hidden"></canvas>
-                    <canvas data-dom-id="transform-canvas-webgl" class="hidden"></canvas>
-                    <canvas data-dom-id="source-canvas-output" class="output-canvas" v-show="numPanels > 1"></canvas>
-                    <canvas data-dom-id="transform-canvas-output" class="output-canvas"></canvas>
-                </div>    
             </div>
             
             

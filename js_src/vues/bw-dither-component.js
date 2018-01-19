@@ -11,11 +11,11 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
     var webworkerStartTime;
     
     //canvas stuff
-    var sourceCanvas;
-    var transformCanvas;
-    var transformCanvasWebGl;
-    var sourceCanvasOutput;
-    var transformCanvasOutput;
+    // var sourceCanvas;
+    // var transformCanvas;
+    // var transformCanvasWebGl;
+    // var sourceCanvasOutput;
+    // var transformCanvasOutput;
     var histogramCanvas;
     var histogramCanvasIndicator;
     
@@ -24,19 +24,20 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
     var component = Vue.component('bw-dither-section', {
         //can't have elements with 2 ids in same html
         template: document.getElementById('bw-dither-component').innerHTML.replace(/\s+data-dom-id="/g, ' id="'),
+        props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'sourceCanvasOutput', 'transformCanvasOutput'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
-            sourceCanvas = Canvas.create('source-canvas');
-            transformCanvas = Canvas.create('transform-canvas');
-            transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
-            sourceCanvasOutput = Canvas.create('source-canvas-output');
-            transformCanvasOutput = Canvas.create('transform-canvas-output');
+            // sourceCanvas = Canvas.create('source-canvas');
+            // transformCanvas = Canvas.create('transform-canvas');
+            // transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
+            // sourceCanvasOutput = Canvas.create('source-canvas-output');
+            // transformCanvasOutput = Canvas.create('transform-canvas-output');
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
             
             this.currentEditorThemeIndex = 0;
             //check for webgl support
-            this.isWebglSupported = !!transformCanvasWebGl.gl;
+            this.isWebglSupported = !!this.transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported;
             
             ditherWorkers.forEach((ditherWorker)=>{
@@ -102,13 +103,13 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
             //returns the canvas that should be currently used for image transform drawing based on current settings
             activeTransformCanvas: function(){
                 if(this.isWebglEnabled && this.isSelectedAlgorithmWebGl){
-                    return transformCanvasWebGl;
+                    return this.transformCanvasWebGl;
                 }
-                return transformCanvas;
+                return this.transformCanvas;
             },
             //returns the canvas that is the output of the most recent image transform
             transformedImageCanvasSource: function(){
-                return transformCanvas;
+                return this.transformCanvas;
             },
         },
         watch: {
@@ -203,9 +204,9 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                     return;
                 }
                 Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                    WebGl.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                    WebGl.colorReplace(this.transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
-                transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
                 this.zoomImage();
             },
             resetColorReplace: function(){
@@ -217,11 +218,11 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
             },
             loadImage: function(image, file){
                 this.hasImageBeenTransformed = false;
-                Canvas.loadImage(sourceCanvas, image);
-                Canvas.loadImage(transformCanvas, image);
+                Canvas.loadImage(this.sourceCanvas, image);
+                Canvas.loadImage(this.transformCanvas, image);
                 
-                transformCanvasWebGl.canvas.width = image.width;
-                transformCanvasWebGl.canvas.height = image.height;
+                this.transformCanvasWebGl.canvas.width = image.width;
+                this.transformCanvasWebGl.canvas.height = image.height;
                 
                 this.loadedImage = {
                     width: image.width,
@@ -241,7 +242,7 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 }
                 
                 //load image into the webworkers
-                var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
+                var buffer = Canvas.createSharedImageBuffer(this.sourceCanvas);
                 let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
@@ -254,8 +255,8 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 
                 //todo could wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
-                    transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
+                    this.transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, this.sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
                     this.freeTransformedImageBwTexture();
                 }
                 
@@ -273,8 +274,8 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
             zoomImage: function(){
                 let trasformCanvasSource = this.transformedImageCanvasSource;
                 var scaleAmount = this.zoom / 100;
-                Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
-                Canvas.scale(trasformCanvasSource, transformCanvasOutput, scaleAmount);
+                Canvas.scale(this.sourceCanvas, this.sourceCanvasOutput, scaleAmount);
+                Canvas.scale(trasformCanvasSource, this.transformCanvasOutput, scaleAmount);
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
@@ -283,11 +284,11 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 if(this.isSelectedAlgorithmWebGl){
                     this.hasImageBeenTransformed = true;
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                        this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                        this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                     });
                     //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                     //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
-                    transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                    this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
                     this.zoomImage();
                     return;
                 }
@@ -320,12 +321,12 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
             },
             ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;
-                Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
+                Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.zoomImage();
             },
             ditherWorkerBwMessageReceived: function(pixels){
-                var gl = transformCanvasWebGl.gl;
+                var gl = this.transformCanvasWebGl.gl;
                 this.freeTransformedImageBwTexture();
                 transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(gl, pixels, this.loadedImage.width, this.loadedImage.height);
             },
@@ -333,7 +334,7 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 if(!this.isWebglSupported || !transformedImageBwTexture){
                     return;
                 }
-                let gl = transformCanvasWebGl.gl;
+                let gl = this.transformCanvasWebGl.gl;
                 gl.deleteTexture(transformedImageBwTexture);
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
@@ -360,15 +361,15 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
             },
             saveTexture: function(){
                 let sourceCanvas = this.transformedImageCanvasSource;
-                let gl = transformCanvasWebGl.gl;
+                let gl = this.transformCanvasWebGl.gl;
                 let texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
                 this.savedTextures.push(texture);
             },
             combineDitherTextures: function(){
                 let textures = this.savedTextures.splice(0,3);
-                let gl = transformCanvasWebGl.gl;
+                let gl = this.transformCanvasWebGl.gl;
                 WebGl.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
-                transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
                 this.zoomImage();
             },
         }

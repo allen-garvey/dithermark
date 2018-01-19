@@ -6,10 +6,18 @@
             //'bw-dither-section': BwDitherComponent,
         },
         mounted: function(){
-            
+            this.sourceCanvas = Canvas.create('source-canvas');
+            this.transformCanvas = Canvas.create('transform-canvas');
+            this.transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
+            this.sourceCanvasOutput = Canvas.create('source-canvas-output');
+            this.transformCanvasOutput = Canvas.create('transform-canvas-output');
         },
         data: {
-            
+            sourceCanvas: null,
+            transformCanvas: null,
+            transformCanvasWebGl: null,
+            sourceCanvasOutput: null,
+            transformCanvasOutput: null,
         },
         computed: {
             
