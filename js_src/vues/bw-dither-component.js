@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
+App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
     
     //webworker stuff
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
@@ -11,19 +11,28 @@
     var webworkerStartTime;
     
     //canvas stuff
-    var sourceCanvas = Canvas.create('source-canvas');
-    var transformCanvas = Canvas.create('transform-canvas');
-    var transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
-    var sourceCanvasOutput = Canvas.create('source-canvas-output');
-    var transformCanvasOutput = Canvas.create('transform-canvas-output');
-    var histogramCanvas = Canvas.create('histogram-canvas');
-    var histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
+    var sourceCanvas;
+    var transformCanvas;
+    var transformCanvasWebGl;
+    var sourceCanvasOutput;
+    var transformCanvasOutput;
+    var histogramCanvas;
+    var histogramCanvasIndicator;
     
     var sourceWebglTexture = null;
     
-    var app = new Vue({
-        el: '#app',
+    var component = Vue.component('bw-dither-section', {
+        template: document.getElementById('bw-dither-component').innerHTML,
         mounted: function(){
+            //have to get canvases here, because DOM manipulation needs to happen in mounted hook
+            sourceCanvas = Canvas.create('source-canvas');
+            transformCanvas = Canvas.create('transform-canvas');
+            transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
+            sourceCanvasOutput = Canvas.create('source-canvas-output');
+            transformCanvasOutput = Canvas.create('transform-canvas-output');
+            histogramCanvas = Canvas.create('histogram-canvas');
+            histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
+            
             this.currentEditorThemeIndex = 0;
             //check for webgl support
             this.isWebglSupported = !!transformCanvasWebGl.gl;
@@ -34,30 +43,32 @@
             });
             this.resetColorReplace();
         },
-        data: {
-            threshold: 127,
-            thresholdMin: 0,
-            thresholdMax: 255,
-            //loadedImage has properties: width, height, fileName, fileType, fileSize
-            loadedImage: null,
-            isLivePreviewEnabled: true,
-            selectedDitherAlgorithmIndex: 0,
-            isCurrentlyLoadingRandomImage: false,
-            isWebglSupported: false,
-            isWebglEnabled: false,
-            hasImageBeenTransformed: false,
-            zoom: 100,
-            zoomMin: 10,
-            zoomMax: 400,
-            numPanels: 2,
-            editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Gray', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
-            currentEditorThemeIndex: null,
-            histogramHeight: Histogram.height,
-            histogramWidth: Histogram.width,
-            colorReplaceBlack: '',
-            colorReplaceWhite: '',
-            ditherAlgorithms: AlgorithmModel.ditherAlgorithms,
-            savedTextures: [],
+        data: function(){ 
+            return{
+                threshold: 127,
+                thresholdMin: 0,
+                thresholdMax: 255,
+                //loadedImage has properties: width, height, fileName, fileType, fileSize
+                loadedImage: null,
+                isLivePreviewEnabled: true,
+                selectedDitherAlgorithmIndex: 0,
+                isCurrentlyLoadingRandomImage: false,
+                isWebglSupported: false,
+                isWebglEnabled: false,
+                hasImageBeenTransformed: false,
+                zoom: 100,
+                zoomMin: 10,
+                zoomMax: 400,
+                numPanels: 2,
+                editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Gray', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
+                currentEditorThemeIndex: null,
+                histogramHeight: Histogram.height,
+                histogramWidth: Histogram.width,
+                colorReplaceBlack: '',
+                colorReplaceWhite: '',
+                ditherAlgorithms: AlgorithmModel.ditherAlgorithms,
+                savedTextures: [],
+            };
         },
         computed: {
             isImageLoaded: function(){
@@ -367,6 +378,8 @@
     var saveImageLink = document.getElementById('save-image-link');
     var fileInput = document.getElementById('file-input');
     fileInput.addEventListener('change', (e)=>{
-        Fs.openImageFile(e, app.loadImage);   
+        Fs.openImageFile(e, component.loadImage);   
     }, false);
+    
+    return component;
 })(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker);
