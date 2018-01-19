@@ -22,7 +22,8 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
     var sourceWebglTexture = null;
     
     var component = Vue.component('bw-dither-section', {
-        template: document.getElementById('bw-dither-component').innerHTML,
+        //can't have elements with 2 ids in same html
+        template: document.getElementById('bw-dither-component').innerHTML.replace(/\s+data-dom-id="/g, ' id="'),
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             sourceCanvas = Canvas.create('source-canvas');

@@ -98,8 +98,8 @@
                             </div>
                             <div class="histogram-super-container">
                                 <div class="histogram-container" v-bind:style="{width: histogramWidth + 'px', height: histogramHeight + 'px'}">
-                                    <canvas id="histogram-canvas-indicator" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
-                                    <canvas id="histogram-canvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
+                                    <canvas data-dom-id="histogram-canvas-indicator" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
+                                    <canvas data-dom-id="histogram-canvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
                                 </div>
                             </div>
                             
@@ -120,11 +120,11 @@
                 </div>
                 
                 <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
-                    <canvas id="source-canvas" class="hidden"></canvas>
-                    <canvas id="transform-canvas" class="hidden"></canvas>
-                    <canvas id="transform-canvas-webgl" class="hidden"></canvas>
-                    <canvas id="source-canvas-output" class="output-canvas" v-show="numPanels > 1"></canvas>
-                    <canvas id="transform-canvas-output" class="output-canvas"></canvas>
+                    <canvas data-dom-id="source-canvas" class="hidden"></canvas>
+                    <canvas data-dom-id="transform-canvas" class="hidden"></canvas>
+                    <canvas data-dom-id="transform-canvas-webgl" class="hidden"></canvas>
+                    <canvas data-dom-id="source-canvas-output" class="output-canvas" v-show="numPanels > 1"></canvas>
+                    <canvas data-dom-id="transform-canvas-output" class="output-canvas"></canvas>
                 </div>    
             </div>
             
