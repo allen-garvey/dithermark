@@ -11,13 +11,13 @@
     var webworkerStartTime;
     
     //canvas stuff
-    var sourceCanvas;
-    var transformCanvas;
-    var transformCanvasWebGl;
-    var sourceCanvasOutput;
-    var transformCanvasOutput;
-    var histogramCanvas;
-    var histogramCanvasIndicator;
+    var sourceCanvas = Canvas.create('source-canvas');
+    var transformCanvas = Canvas.create('transform-canvas');
+    var transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
+    var sourceCanvasOutput = Canvas.create('source-canvas-output');
+    var transformCanvasOutput = Canvas.create('transform-canvas-output');
+    var histogramCanvas = Canvas.create('histogram-canvas');
+    var histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
     
     var sourceWebglTexture = null;
     
@@ -25,14 +25,6 @@
         el: '#app',
         mounted: function(){
             this.currentEditorThemeIndex = 0;
-            sourceCanvas = Canvas.create('source-canvas');
-            transformCanvas = Canvas.create('transform-canvas');
-            sourceCanvasOutput = Canvas.create('source-canvas-output');
-            transformCanvasOutput = Canvas.create('transform-canvas-output');
-            histogramCanvas = Canvas.create('histogram-canvas');
-            histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
-            
-            transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
             //check for webgl support
             this.isWebglSupported = !!transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported;
@@ -51,7 +43,7 @@
             isLivePreviewEnabled: true,
             selectedDitherAlgorithmIndex: 0,
             isCurrentlyLoadingRandomImage: false,
-            isWebglSupported: true,
+            isWebglSupported: false,
             isWebglEnabled: false,
             hasImageBeenTransformed: false,
             zoom: 100,
