@@ -1,4 +1,4 @@
-App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
+(function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
     
     //webworker stuff
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
@@ -11,11 +11,6 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
     var webworkerStartTime;
     
     //canvas stuff
-    // var sourceCanvas;
-    // var transformCanvas;
-    // var transformCanvasWebGl;
-    // var sourceCanvasOutput;
-    // var transformCanvasOutput;
     var histogramCanvas;
     var histogramCanvasIndicator;
     
@@ -24,21 +19,11 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
     var component = Vue.component('bw-dither-section', {
         //can't have elements with 2 ids in same html
         template: document.getElementById('bw-dither-component').innerHTML.replace(/\s+data-dom-id="/g, ' id="'),
-        props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'sourceCanvasOutput', 'transformCanvasOutput'],
+        props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
-            // sourceCanvas = Canvas.create('source-canvas');
-            // transformCanvas = Canvas.create('transform-canvas');
-            // transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
-            // sourceCanvasOutput = Canvas.create('source-canvas-output');
-            // transformCanvasOutput = Canvas.create('transform-canvas-output');
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
-            
-            this.currentEditorThemeIndex = 0;
-            //check for webgl support
-            this.isWebglSupported = !!this.transformCanvasWebGl.gl;
-            this.isWebglEnabled = this.isWebglSupported;
             
             ditherWorkers.forEach((ditherWorker)=>{
                ditherWorker.onmessage = this.ditherWorkerMessageReceivedDispatcher; 
@@ -50,46 +35,23 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 threshold: 127,
                 thresholdMin: 0,
                 thresholdMax: 255,
-                //loadedImage has properties: width, height, fileName, fileType, fileSize
-                loadedImage: null,
-                isLivePreviewEnabled: true,
                 selectedDitherAlgorithmIndex: 0,
-                isCurrentlyLoadingRandomImage: false,
-                isWebglSupported: false,
-                isWebglEnabled: false,
                 hasImageBeenTransformed: false,
-                zoom: 100,
-                zoomMin: 10,
-                zoomMax: 400,
-                numPanels: 2,
-                editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Gray', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
-                currentEditorThemeIndex: null,
                 histogramHeight: Histogram.height,
                 histogramWidth: Histogram.width,
                 colorReplaceBlack: '',
                 colorReplaceWhite: '',
                 ditherAlgorithms: AlgorithmModel.ditherAlgorithms,
                 savedTextures: [],
+                loadedImage: null,
             };
         },
         computed: {
-            isImageLoaded: function(){
-              return this.loadedImage != null;  
-            },
             selectedDitherAlgorithm: function(){
                 return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
             },
-            loadedImagePixelDimensions: function(){
-                return this.loadedImage.width * this.loadedImage.height;
-            },
-            imageTitle: function(){
-                if(this.loadedImage){
-                    return this.loadedImage.fileName || '';
-                }
-                return '';
-            },
             isSelectedAlgorithmWebGl: function(){
-                return !!this.selectedDitherAlgorithm.webGlFunc && this.isWebglEnabled;
+                return this.isWebglEnabled && !!this.selectedDitherAlgorithm.webGlFunc;
             },
             colorReplaceBlackPixel: function(){
                 return ColorPicker.pixelFromHex(this.colorReplaceBlack);
@@ -100,22 +62,11 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
             areColorReplaceColorsChangedFromDefaults: function(){
                 return this.colorReplaceBlack !== ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceWhite !== ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
             },
-            //returns the canvas that should be currently used for image transform drawing based on current settings
-            activeTransformCanvas: function(){
-                if(this.isWebglEnabled && this.isSelectedAlgorithmWebGl){
-                    return this.transformCanvasWebGl;
-                }
-                return this.transformCanvas;
-            },
-            //returns the canvas that is the output of the most recent image transform
-            transformedImageCanvasSource: function(){
-                return this.transformCanvas;
+            isImageLoaded: function(){
+              return this.loadedImage != null;  
             },
         },
         watch: {
-            currentEditorThemeIndex: function(newThemeIndex){
-                document.documentElement.className = this.editorThemes[newThemeIndex].className;
-            },
             isLivePreviewEnabled: function(newValue){
                 if(newValue){
                     this.ditherImageWithSelectedAlgorithm();
@@ -147,24 +98,6 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
-            },
-            zoom: function(newZoom, oldZoom){
-                let newZoomCleaned = Math.floor(newZoom);
-                if(isNaN(newZoomCleaned)){
-                    this.zoom = oldZoom;
-                    return;
-                }
-                
-                if(newZoomCleaned < this.zoomMin){
-                    newZoomCleaned = this.zoomMin;
-                }
-                else if(newZoomCleaned > this.zoomMax){
-                    newZoomCleaned = this.zoomMax;
-                }
-                if(newZoomCleaned !== newZoom){
-                    this.zoom = newZoomCleaned;   
-                }
-                this.zoomImage();
             },
             selectedDitherAlgorithmIndex: function(newIndex){
                 //reset bw texture
@@ -207,39 +140,15 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                     WebGl.colorReplace(this.transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                this.zoomImage();
+                this.$emit('display-transformed-image');
             },
             resetColorReplace: function(){
                 this.colorReplaceWhite = ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
                 this.colorReplaceBlack = ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE;
             },
-            resetZoom: function(){
-                this.zoom = 100;
-            },
-            loadImage: function(image, file){
+            imageLoaded: function(loadedImage){
+                this.loadedImage = loadedImage;
                 this.hasImageBeenTransformed = false;
-                Canvas.loadImage(this.sourceCanvas, image);
-                Canvas.loadImage(this.transformCanvas, image);
-                
-                this.transformCanvasWebGl.canvas.width = image.width;
-                this.transformCanvasWebGl.canvas.height = image.height;
-                
-                this.loadedImage = {
-                    width: image.width,
-                    height: image.height,
-                    fileName: file.name,
-                    fileSize: file.size,
-                    fileType: file.type,
-                };
-                //adjust zoom
-                this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
-                this.zoomMin = Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, 200);
-                if(this.zoom > this.zoomMax){
-                    this.zoom = this.zoomMax;
-                }
-                else if(this.zoom < this.zoomMin){
-                    this.zoom = this.zoomMin;
-                }
                 
                 //load image into the webworkers
                 var buffer = Canvas.createSharedImageBuffer(this.sourceCanvas);
@@ -265,17 +174,11 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 }
                 else{
                     //if live preview is not enabled, transform canvas will be blank unless we do this
-                    this.zoomImage();
+                    this.$emit('display-transformed-image');
                 }
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not really worth it to check
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
-            },
-            zoomImage: function(){
-                let trasformCanvasSource = this.transformedImageCanvasSource;
-                var scaleAmount = this.zoom / 100;
-                Canvas.scale(this.sourceCanvas, this.sourceCanvasOutput, scaleAmount);
-                Canvas.scale(trasformCanvasSource, this.transformCanvasOutput, scaleAmount);
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
@@ -289,7 +192,7 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                     //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                     //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
                     this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                    this.zoomImage();
+                    this.$emit('display-transformed-image');
                     return;
                 }
                 let ditherWorker = ditherWorkers.getNextWorker();
@@ -323,7 +226,7 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 this.hasImageBeenTransformed = true;
                 Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
-                this.zoomImage();
+                this.$emit('display-transformed-image');
             },
             ditherWorkerBwMessageReceived: function(pixels){
                 var gl = this.transformCanvasWebGl.gl;
@@ -339,28 +242,8 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
             },
-            loadImageTrigger: function(){
-                fileInput.click();
-            },
-            //downloads image
-            //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
-            saveImage: function(){
-                let outputCanvas = this.transformedImageCanvasSource.canvas;
-                let dataURL = outputCanvas.toDataURL(this.loadedImage.fileType);
-                saveImageLink.href = dataURL;
-                saveImageLink.download = this.loadedImage.fileName;
-                saveImageLink.click();
-            },
-            loadRandomImage: function(){
-                this.isCurrentlyLoadingRandomImage = true;
-                var randomImageUrl = 'https://source.unsplash.com/random/800x600';
-                Fs.openRandomImage(randomImageUrl, (image, file)=>{
-                    this.loadImage(image, file);
-                    this.isCurrentlyLoadingRandomImage = false;
-                });
-            },
             saveTexture: function(){
-                let sourceCanvas = this.transformedImageCanvasSource;
+                let sourceCanvas = this.transformCanvas;
                 let gl = this.transformCanvasWebGl.gl;
                 let texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
                 this.savedTextures.push(texture);
@@ -370,18 +253,9 @@ App.BwDitherComponent = (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil,
                 let gl = this.transformCanvasWebGl.gl;
                 WebGl.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                this.zoomImage();
+                this.$emit('display-transformed-image');
             },
         }
     });
     
-    
-    
-    var saveImageLink = document.getElementById('save-image-link');
-    var fileInput = document.getElementById('file-input');
-    fileInput.addEventListener('change', (e)=>{
-        Fs.openImageFile(e, component.loadImage);   
-    }, false);
-    
-    return component;
 })(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker);
