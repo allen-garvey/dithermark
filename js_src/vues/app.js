@@ -159,11 +159,13 @@
                 let pixelsFull = new Uint8Array(messageData);
                 //get messageTypeId from start of buffer
                 let messageTypeId = pixelsFull[0];
+                //rest of the buffer is the actual pixel data
+                let pixels = pixelsFull.subarray(1, pixelsFull.length);
                 switch(messageTypeId){
                     case WorkerHeaders.DITHER:
                     case WorkerHeaders.DITHER_BW:
                     case WorkerHeaders.HISTOGRAM:
-                        this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(e);
+                        this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
                         break;
                     default:
                         break;

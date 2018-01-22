@@ -187,13 +187,7 @@
                     worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 });
             },
-            ditherWorkerMessageReceivedDispatcher: function(e){
-                let messageData = e.data;
-                let pixelsFull = new Uint8Array(messageData);
-                //get messageTypeId from start of buffer
-                let messageTypeId = pixelsFull[0];
-                //rest of the buffer is the actual pixel data
-                let pixels = pixelsFull.subarray(1, pixelsFull.length);
+            ditherWorkerMessageReceivedDispatcher: function(messageTypeId, pixels){
                 switch(messageTypeId){
                     case WorkerHeaders.DITHER:
                         this.ditherWorkerMessageReceived(pixels);
