@@ -146,9 +146,10 @@
                 this.colorReplaceWhite = ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
                 this.colorReplaceBlack = ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE;
             },
-            imageLoaded: function(loadedImage){
+            imageLoaded: function(loadedImage, loadedWebglTexture){
                 this.loadedImage = loadedImage;
                 this.hasImageBeenTransformed = false;
+                sourceWebglTexture = loadedWebglTexture;
                 
                 //load image into the webworkers
                 var buffer = Canvas.createSharedImageBuffer(this.sourceCanvas);
@@ -162,10 +163,7 @@
                 let ditherWorker = ditherWorkers.getNextWorker();
                 ditherWorker.postMessage(WorkerUtil.histogramWorkerHeader());
                 
-                //todo could wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
-                    this.transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, this.sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
                     this.freeTransformedImageBwTexture();
                 }
                 

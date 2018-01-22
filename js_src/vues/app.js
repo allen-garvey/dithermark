@@ -1,4 +1,6 @@
 (function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders){
+    var sourceWebglTexture;
+    
     
     var app = new Vue({
         el: '#app',
@@ -117,8 +119,14 @@
                     this.zoom = this.zoomMin;
                 }
                 
+                //todo could potentially wait to create texture until first time webgl algorithm is called
+                if(this.isWebglSupported){
+                    this.transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, this.sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
+                }
+                
                 //call selected tab image loaded hook here
-                this.$refs.bwDitherSection.imageLoaded(this.loadedImage);
+                this.$refs.bwDitherSection.imageLoaded(this.loadedImage, sourceWebglTexture);
             },
             zoomImage: function(){
                 var scaleAmount = this.zoom / 100;
