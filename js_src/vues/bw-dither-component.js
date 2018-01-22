@@ -1,8 +1,5 @@
 (function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
     
-    //webworker stuff
-    var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
-    
     //used for creating BW texture for webgl color replace
     var isDitherWorkerBwWorking = false;
     var transformedImageBwTexture = null;
@@ -25,9 +22,6 @@
             histogramCanvas = Canvas.create('histogram-canvas');
             histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
             
-            ditherWorkers.forEach((ditherWorker)=>{
-               ditherWorker.onmessage = this.ditherWorkerMessageReceivedDispatcher; 
-            });
             this.resetColorReplace();
         },
         data: function(){ 
@@ -128,8 +122,10 @@
                 //so send message to create BW texture if necessary
                 if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
                     isDitherWorkerBwWorking = true;
-                    let ditherWorker = ditherWorkers.getNextWorker();
-                    ditherWorker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                    this.$emit('request-worker', (worker)=>{
+                        worker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                    });
+                    
                 }
                 //see if texture was created already, or has been created in time here
                 if(!transformedImageBwTexture){
@@ -151,17 +147,10 @@
                 this.hasImageBeenTransformed = false;
                 sourceWebglTexture = loadedWebglTexture;
                 
-                //load image into the webworkers
-                var buffer = Canvas.createSharedImageBuffer(this.sourceCanvas);
-                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);
-                ditherWorkers.forEach((ditherWorker)=>{
-                    //copy image to web workers
-                    ditherWorker.postMessage(ditherWorkerHeader);
-                    ditherWorker.postMessage(buffer);
-                });
                 //draw histogram
-                let ditherWorker = ditherWorkers.getNextWorker();
-                ditherWorker.postMessage(WorkerUtil.histogramWorkerHeader());
+                this.$emit('request-worker', (worker)=>{
+                    worker.postMessage(WorkerUtil.histogramWorkerHeader());
+                });
                 
                 if(this.isWebglSupported){
                     this.freeTransformedImageBwTexture();
@@ -193,9 +182,10 @@
                     this.$emit('display-transformed-image');
                     return;
                 }
-                let ditherWorker = ditherWorkers.getNextWorker();
-                webworkerStartTime = Timer.timeInMilliseconds();
-                ditherWorker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
+                this.$emit('request-worker', (worker)=>{
+                    webworkerStartTime = Timer.timeInMilliseconds();
+                    worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
+                });
             },
             ditherWorkerMessageReceivedDispatcher: function(e){
                 let messageData = e.data;

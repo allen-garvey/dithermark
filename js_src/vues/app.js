@@ -1,6 +1,8 @@
 (function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders){
-    var sourceWebglTexture;
+    //webworker stuff
+    var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
     
+    var sourceWebglTexture;
     
     var app = new Vue({
         el: '#app',
@@ -8,6 +10,10 @@
             //'bw-dither-section': BwDitherComponent,
         },
         mounted: function(){
+            ditherWorkers.forEach((ditherWorker)=>{
+               ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
+            });
+            
             this.sourceCanvas = Canvas.create('source-canvas');
             this.transformCanvas = Canvas.create('transform-canvas');
             this.transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
@@ -18,6 +24,7 @@
             //check for webgl support
             this.isWebglSupported = !!this.transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported;
+            
         },
         data: {
             sourceCanvas: null,
@@ -81,7 +88,7 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
-                let outputCanvas = this.transformedImageCanvasSource.canvas;
+                let outputCanvas = this.transformCanvas.canvas;
                 let dataURL = outputCanvas.toDataURL(this.loadedImage.fileType);
                 saveImageLink.href = dataURL;
                 saveImageLink.download = this.loadedImage.fileName;
@@ -119,6 +126,15 @@
                     this.zoom = this.zoomMin;
                 }
                 
+                //load image into the webworkers
+                var buffer = Canvas.createSharedImageBuffer(this.sourceCanvas);
+                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);
+                ditherWorkers.forEach((ditherWorker)=>{
+                    //copy image to web workers
+                    ditherWorker.postMessage(ditherWorkerHeader);
+                    ditherWorker.postMessage(buffer);
+                });
+                
                 //todo could potentially wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
                     this.transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
@@ -137,16 +153,34 @@
                 this.zoom = 100;
             },
             
+            //webworker stuff
+            workerMessageReceivedDispatcher: function(e){
+                let messageData = e.data;
+                let pixelsFull = new Uint8Array(messageData);
+                //get messageTypeId from start of buffer
+                let messageTypeId = pixelsFull[0];
+                switch(messageTypeId){
+                    case WorkerHeaders.DITHER:
+                    case WorkerHeaders.DITHER_BW:
+                    case WorkerHeaders.HISTOGRAM:
+                        this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(e);
+                        break;
+                    default:
+                        break;
+                }
+            },
+            onWorkerRequested: function(callback){
+                let worker = ditherWorkers.getNextWorker();
+                callback(worker);
+            },
         }
     });
-    
     
     var saveImageLink = document.getElementById('save-image-link');
     var fileInput = document.getElementById('file-input');
     fileInput.addEventListener('change', (e)=>{
         Fs.openImageFile(e, app.loadImage);   
     }, false);
-    
     
     
 })(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders);
