@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
     
     //used for creating BW texture for webgl color replace
     var isDitherWorkerBwWorking = false;
@@ -240,4 +240,4 @@
         }
     });
     
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker);

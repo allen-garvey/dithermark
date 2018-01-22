@@ -6,9 +6,6 @@
     
     var app = new Vue({
         el: '#app',
-        components: {
-            //'bw-dither-section': BwDitherComponent,
-        },
         mounted: function(){
             ditherWorkers.forEach((ditherWorker)=>{
                ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
