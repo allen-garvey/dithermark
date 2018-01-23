@@ -18,6 +18,19 @@ App.Canvas = (function(Polyfills){
         };
     }
     
+    function createWebglCanvas(canvasId){
+        var canvasObject = {
+            canvas: document.getElementById(canvasId)
+        };
+        var gl = canvasObject.canvas.getContext('webgl');
+        if (!gl) {
+            gl = canvasObject.canvas.getContext('experimental-webgl');
+        }
+        canvasObject.gl = gl;
+        
+        return canvasObject;
+    }
+    
     // function copyCanvasImage(sourceCanvasObject, targetCanvasObject){
     //     targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0);
     // }
@@ -77,6 +90,7 @@ App.Canvas = (function(Polyfills){
     
     return {
        create: createCanvasObject,
+       createWebgl: createWebglCanvas,
        loadImage: canvasObjectLoadImage,
        scale: scaleCanvasImage,
        createSharedImageBuffer: createSharedImageBuffer,

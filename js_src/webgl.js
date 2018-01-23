@@ -31,19 +31,6 @@
 
 App.WebGl = (function(m4, Bayer){
     
-    function createCanvas(canvasId){
-        var canvasObject = {
-            canvas: document.getElementById(canvasId)
-        };
-        var gl = canvasObject.canvas.getContext('webgl');
-        if (!gl) {
-            gl = canvasObject.canvas.getContext('experimental-webgl');
-        }
-        canvasObject.gl = gl;
-        
-        return canvasObject;
-    }
-    
     //based on: https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
     function createShader(gl, type, source) {
         var shader = gl.createShader(type);
@@ -408,7 +395,6 @@ App.WebGl = (function(m4, Bayer){
     // console.log(Bayer.create2(16));
     
     return {
-        createCanvas: createCanvas,
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
         orderedDither2: createWebGLOrderedDither(2),

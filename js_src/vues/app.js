@@ -17,7 +17,7 @@
             
             this.sourceCanvas = Canvas.create('source-canvas');
             this.transformCanvas = Canvas.create('transform-canvas');
-            this.transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
+            this.transformCanvasWebGl = Canvas.createWebgl('transform-canvas-webgl');
             sourceCanvasOutput = Canvas.create('source-canvas-output');
             transformCanvasOutput = Canvas.create('transform-canvas-output');
             
