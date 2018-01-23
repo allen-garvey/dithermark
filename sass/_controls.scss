@@ -27,6 +27,11 @@ input[type="checkbox"]{
 }
 
 
+.controls-secondlevel-container .controls-panel > *{
+    margin-bottom: 3px;
+}
+
+//canvases
 .image-canvas-container{
     display: flex;
     flex-wrap: wrap;
@@ -34,12 +39,8 @@ input[type="checkbox"]{
     margin-top: 25px;
 }
 
-.image-canvas-container.panel-num2 canvas.output-canvas + canvas.output-canvas{
+.image-canvas-container canvas.output-canvas + canvas.output-canvas{
     margin-left: 25px;
-}
-
-.controls-secondlevel-container .controls-panel > *{
-    margin-bottom: 3px;
 }
 
 

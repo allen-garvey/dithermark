@@ -40,7 +40,7 @@
             zoom: 100,
             zoomMin: 10,
             zoomMax: 400,
-            numPanels: 2,
+            showOriginalImage: true,
             editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Gray', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
             currentEditorThemeIndex: null,
         },

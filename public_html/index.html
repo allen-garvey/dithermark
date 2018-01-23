@@ -48,12 +48,8 @@
                                 </template>
                             </div>
                             <div class="spread-content">
-                                <label class="super-label">Panel Style</label>
-                                <label>Single
-                                    <input type="radio" v-model="numPanels" v-bind:value="1"/>
-                                </label>
-                                <label>Side by side
-                                    <input type="radio" v-model="numPanels" v-bind:value="2"/>
+                                <label>Show source image
+                                    <input type="checkbox" v-model="showOriginalImage"/>
                                 </label>
                             </div>
                             
@@ -80,11 +76,11 @@
                     </div>
                 </div>
                 
-                <div class="image-canvas-container" v-bind:class="{'panel-num2': numPanels === 2}">
+                <div class="image-canvas-container" v-bind:class="{'show-original': showOriginalImage}">
                     <canvas id="source-canvas" class="hidden"></canvas>
                     <canvas id="transform-canvas" class="hidden"></canvas>
                     <canvas id="transform-canvas-webgl" class="hidden"></canvas>
-                    <canvas id="source-canvas-output" class="output-canvas" v-show="numPanels > 1"></canvas>
+                    <canvas id="source-canvas-output" class="output-canvas" v-show="showOriginalImage"></canvas>
                     <canvas id="transform-canvas-output" class="output-canvas"></canvas>
                 </div>
             </div>
