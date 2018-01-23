@@ -2,6 +2,10 @@
     //webworker stuff
     var ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
     
+    //canvases
+    var sourceCanvasOutput = Canvas.create('source-canvas-output');
+    var transformCanvasOutput = Canvas.create('transform-canvas-output');
+    
     var sourceWebglTexture;
     
     var app = new Vue({
@@ -14,8 +18,8 @@
             this.sourceCanvas = Canvas.create('source-canvas');
             this.transformCanvas = Canvas.create('transform-canvas');
             this.transformCanvasWebGl = WebGl.createCanvas('transform-canvas-webgl');
-            this.sourceCanvasOutput = Canvas.create('source-canvas-output');
-            this.transformCanvasOutput = Canvas.create('transform-canvas-output');
+            sourceCanvasOutput = Canvas.create('source-canvas-output');
+            transformCanvasOutput = Canvas.create('transform-canvas-output');
             
             this.currentEditorThemeIndex = 0;
             //check for webgl support
@@ -27,8 +31,6 @@
             sourceCanvas: null,
             transformCanvas: null,
             transformCanvasWebGl: null,
-            sourceCanvasOutput: null,
-            transformCanvasOutput: null,
             //loadedImage has properties: width, height, fileName, fileType, fileSize
             loadedImage: null,
             isLivePreviewEnabled: true,
@@ -143,8 +145,8 @@
             },
             zoomImage: function(){
                 var scaleAmount = this.zoom / 100;
-                Canvas.scale(this.sourceCanvas, this.sourceCanvasOutput, scaleAmount);
-                Canvas.scale(this.transformCanvas, this.transformCanvasOutput, scaleAmount);
+                Canvas.scale(this.sourceCanvas, sourceCanvasOutput, scaleAmount);
+                Canvas.scale(this.transformCanvas, transformCanvasOutput, scaleAmount);
             },
             resetZoom: function(){
                 this.zoom = 100;
