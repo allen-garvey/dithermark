@@ -124,34 +124,6 @@ App.WebGl = (function(m4, Bayer){
     }
     
     /*
-    * Ordered dither stuff
-    */
-    //bayer array should be Uint8Array
-    //based on: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
-    function createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions){
-        
-        var texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        
-        const level = 0;
-        const internalFormat = gl.RGBA;
-        const width = bayerArrayDimensions;
-        const height = bayerArrayDimensions;
-        const border = 0;
-        const srcFormat = gl.RGBA;
-        const srcType = gl.UNSIGNED_BYTE;
-        
-        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, bayerArray);
-        // gl.generateMipmap(gl.TEXTURE_2D);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
-        
-        return texture;
-    }
-    
-    /*
     * Pixel stuff
     */
     
@@ -170,9 +142,9 @@ App.WebGl = (function(m4, Bayer){
     */
     
     //multiple textures based on: https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html
-    function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames){
+    function createWebGLDrawImageFunc(gl, vertexShaderText, fragmentShaderText, customUniformNames){
         // setup GLSL program
-        var program = createProgram(gl, createVertexShader(gl, thresholdVertexShaderText), createFragmentShader(gl, fragmentShaderText));
+        var program = createProgram(gl, createVertexShader(gl, vertexShaderText), createFragmentShader(gl, fragmentShaderText));
         
         // look up where the vertex data needs to go.
         var positionLocation = gl.getAttribLocation(program, 'a_position');
@@ -181,9 +153,6 @@ App.WebGl = (function(m4, Bayer){
         // lookup uniforms
         var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
         var textureLocation = gl.getUniformLocation(program, 'u_texture');
-        var thresholdLocation = gl.getUniformLocation(program, 'u_threshold');
-        var blackPixelLocation = gl.getUniformLocation(program, 'u_black_pixel');
-        var whitePixelLocation = gl.getUniformLocation(program, 'u_white_pixel');
         
         //lookup custom uniforms
         var customUniformLocations = {};
@@ -223,7 +192,7 @@ App.WebGl = (function(m4, Bayer){
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         
-        return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, setCustomUniformsFunc) {
+        return function(gl, tex, texWidth, texHeight, setCustomUniformsFunc) {
             var dstX = 0; 
             var dstY = 0;
             gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -257,13 +226,6 @@ App.WebGl = (function(m4, Bayer){
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, tex);
             
-            //set threshold
-            gl.uniform1f(thresholdLocation, threshold);
-            
-            //set pixels
-            gl.uniform3fv(blackPixelLocation, pixelToVec(blackPixel));
-            gl.uniform3fv(whitePixelLocation, pixelToVec(whitePixel));
-            
             //set custom uniform values
             if(setCustomUniformsFunc){
                 setCustomUniformsFunc(gl, customUniformLocations);
@@ -274,138 +236,16 @@ App.WebGl = (function(m4, Bayer){
         };
     }
     
-    /*
-    * Shader caching
-    */
-    
-    function getShaderScriptText(id){
-        return document.getElementById(id).textContent;
-    }
-    
-    function generateFragmentShader(fragmentShaderTemplate, customDeclarationId, customBodyId){
-        var customDeclaration = '';
-        if(customDeclarationId){
-            customDeclaration = getShaderScriptText(customDeclarationId);
-        }
-        var customBody = '';
-        if(customBodyId){
-            customBody = getShaderScriptText(customBodyId);
-        }
-        return fragmentShaderTemplate.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
-    }
-    
-    //vertex shader
-    var thresholdVertexShaderText = getShaderScriptText('webgl-threshold-vertex-shader');
-    //fragment shaders
-    var fragmentLightnessFunctionText = getShaderScriptText('webgl-fragment-shader-lightness-function');
-    var fragmentShaderTemplate = getShaderScriptText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
-    
-    var thresholdFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, null, 'webgl-threshold-fshader-body');
-    var randomThresholdFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-random-threshold-fshader-declaration', 'webgl-random-threshold-fshader-body');
-    var orderedDitherFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body');
-    var colorReplaceFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, null, 'webgl-color-replace-fshader-body');
-    var textureCombineFragmentShaderText = generateFragmentShader(fragmentShaderTemplate, 'webgl-combine-dither-fshader-declaration', 'webgl-combine-dither-fshader-body');
-    
-    //draw image created functions
-    var drawImageThreshold;
-    var drawImageRandomThreshold;
-    var drawImageOrderedDither;
-    var drawImageColorReplace;
-    var drawImage3TextureCombine;
-    
-    function webGLThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        //convert threshold to float
-        threshold = threshold / 255.0;
-        
-        drawImageThreshold = drawImageThreshold || createWebGLDrawImageFunc(gl, thresholdFragmentShaderText);
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
-    }
-    
-    function webGLRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        //convert threshold to float
-        threshold = threshold / 255.0;
-        
-        drawImageRandomThreshold = drawImageRandomThreshold || createWebGLDrawImageFunc(gl, randomThresholdFragmentShaderText, ['u_random_seed']);
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-            //set random seed
-            var randomSeed = new Float32Array(2);
-            randomSeed[0] = Math.random();
-            randomSeed[1] = Math.random();
-            gl.uniform2fv(customUniformLocations['u_random_seed'], randomSeed);
-        });
-    }
-    
-    function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerArray, bayerArrayDimensions){
-        //convert threshold to float
-        threshold = threshold / 255.0;
-        //4 UInts per pixel * 2 dimensions = 8
-        
-        drawImageOrderedDither = drawImageOrderedDither || createWebGLDrawImageFunc(gl, orderedDitherFragmentShaderText, ['u_bayer_texture_dimensions', 'u_bayer_texture']);
-        var bayerTexture = createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions);
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-            //bind bayer texture to second texture unit
-            gl.uniform1i(customUniformLocations['u_bayer_texture'], 1);
-          
-            gl.activeTexture(gl.TEXTURE1);
-            gl.bindTexture(gl.TEXTURE_2D, bayerTexture);
-            
-            //set bayer texture dimensions
-            gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerArrayDimensions);
-        });
-    }
-    
-    function createWebGLOrderedDither(dimensions){
-        return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
-            webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, Bayer.create(dimensions), dimensions);
-        };
-    }
-    
-    function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel){
-        
-        drawImageColorReplace = drawImageColorReplace || createWebGLDrawImageFunc(gl, colorReplaceFragmentShaderText);
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageColorReplace(gl, texture, imageWidth, imageHeight, 0, blackPixel, whitePixel);
-    }
-    
-    function webGL3TextureCombine(gl, imageWidth, imageHeight, blackPixel, whitePixel, textures){
-        let threshold = 0.0;
-        drawImage3TextureCombine = drawImage3TextureCombine || createWebGLDrawImageFunc(gl, textureCombineFragmentShaderText, ['u_texture_2', 'u_texture_3']);
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImage3TextureCombine(gl, textures[0], imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-            //bind textures
-            gl.activeTexture(gl.TEXTURE1);
-            gl.uniform1i(customUniformLocations['u_texture_2'], 1);
-            gl.bindTexture(gl.TEXTURE_2D, textures[1]);
-            
-            gl.activeTexture(gl.TEXTURE2);
-            gl.uniform1i(customUniformLocations['u_texture_3'], 2);
-            gl.bindTexture(gl.TEXTURE_2D, textures[2]);
-        });
-    }
-    
-    
-    // console.log(Bayer.create2(16));
     
     return {
-        threshold: webGLThreshold,
-        randomThreshold: webGLRandomThreshold,
-        orderedDither2: createWebGLOrderedDither(2),
-        orderedDither4: createWebGLOrderedDither(4),
-        orderedDither8: createWebGLOrderedDither(8),
-        orderedDither16: createWebGLOrderedDither(16),
-        colorReplace: webGLColorReplace,
-        textureCombine: webGL3TextureCombine,
+        createVertexShader: createVertexShader,
+        createFragmentShader: createFragmentShader,
+        createProgram: createProgram,
         createAndLoadTexture: createAndLoadTexture,
         createAndLoadTextureFromGl: createAndLoadTextureFromGl,
         // createAndLoadTextureFromBuffer: createAndLoadTextureFromBuffer,
         createAndLoadTextureFromArray: createAndLoadTextureFromArray,
+        pixelToVec: pixelToVec,
+        createDrawImageFunc: createWebGLDrawImageFunc,
     };    
 })(App.M4, App.BayerMatrix);

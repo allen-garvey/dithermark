@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, WebGlBwDither){
     
     //used for creating BW texture for webgl color replace
     var isDitherWorkerBwWorking = false;
@@ -233,11 +233,11 @@
             combineDitherTextures: function(){
                 let textures = this.savedTextures.splice(0,3);
                 let gl = this.transformCanvasWebGl.gl;
-                WebGl.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
+                WebGlBwDither.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
                 this.$emit('display-transformed-image');
             },
         }
     });
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.WebGlBwDither);

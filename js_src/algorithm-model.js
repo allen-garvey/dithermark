@@ -1,14 +1,14 @@
-App.AlgorithmModel = (function(WebGl){
+App.AlgorithmModel = (function(WebGlBwDither){
     var ditherAlgorithms = [
                 {
                     title: "Threshold", 
                     id: 1,
-                    webGlFunc: WebGl.threshold,
+                    webGlFunc: WebGlBwDither.threshold,
                 },
                 {
                     title: "Random Threshold", 
                     id: 2,
-                    webGlFunc: WebGl.randomThreshold,
+                    webGlFunc: WebGlBwDither.randomThreshold,
                 },
                 {
                     title: "Atkinson", 
@@ -49,22 +49,22 @@ App.AlgorithmModel = (function(WebGl){
             	{
             	    title: "Ordered Dither 2x2",
             	    id: 11,
-            	    webGlFunc: WebGl.orderedDither2,
+            	    webGlFunc: WebGlBwDither.orderedDither2,
             	},
             	{
             	    title: "Ordered Dither 4x4",
             	    id: 12,
-            	    webGlFunc: WebGl.orderedDither4,
+            	    webGlFunc: WebGlBwDither.orderedDither4,
             	},
             	{
             	    title: "Ordered Dither 8x8",
             	    id: 13,
-            	    webGlFunc: WebGl.orderedDither8,
+            	    webGlFunc: WebGlBwDither.orderedDither8,
             	},
             	{
             	    title: "Ordered Dither 16x16",
             	    id: 14,
-            	    webGlFunc: WebGl.orderedDither16,
+            	    webGlFunc: WebGlBwDither.orderedDither16,
             	},
             ];
     
@@ -72,4 +72,4 @@ App.AlgorithmModel = (function(WebGl){
         ditherAlgorithms: ditherAlgorithms,
     };
     
-})(App.WebGl);
+})(App.WebGlBwDither);
