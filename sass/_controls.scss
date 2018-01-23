@@ -31,16 +31,23 @@ input[type="checkbox"]{
     margin-bottom: 3px;
 }
 
-//canvases
+/*
+* Canvases
+*/
+$canvasMargin: 25px;
+//negative margin used to get margins between flex items
+//while still getting alignment when they wrap
+//https://stackoverflow.com/questions/20626685/better-way-to-set-distance-between-flexbox-items
 .image-canvas-container{
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    margin-top: 25px;
+    margin-top: $canvasMargin;
+    margin-right: -1 * $canvasMargin;
 }
-
-.image-canvas-container canvas.output-canvas + canvas.output-canvas{
-    margin-left: 25px;
+.image-canvas-container canvas{
+    margin-right: $canvasMargin;
+    margin-bottom: $canvasMargin;
 }
 
 
