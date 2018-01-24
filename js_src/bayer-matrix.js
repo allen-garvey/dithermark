@@ -486,7 +486,6 @@ App.BayerMatrix = (function(){
     
     return {
         reverseYAxis: reverseYAxis,
-        create2: createBayerHelper,
         create: createBayerWebgl,
     };
 })();
