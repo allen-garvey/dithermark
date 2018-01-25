@@ -6,19 +6,14 @@ App.BayerMatrix = (function(){
     */
     function createBayer(dimensions){
         const bayerBase = [0, 2, 3, 1];
-        let arrayTotalLength = dimensions * dimensions;
-        var bayerArray = new Array(arrayTotalLength);
-        
-        //copy base into bayer array
-        for(let i=0;i<bayerBase.length;i++){
-            bayerArray[i] = bayerBase[i];
-        }
+
         if(dimensions === 2){
-            return bayerArray;
+            return bayerBase;
         }
-        
+
+        let arrayTotalLength = dimensions * dimensions;
         let currentDimension = 2;
-        let subarraySource = bayerBase.slice(0, bayerBase.length);
+        let subarraySource = bayerBase.slice();
         
         while(currentDimension < dimensions){
             currentDimension *= 2;
@@ -37,6 +32,8 @@ App.BayerMatrix = (function(){
             }
             subarraySource = newSubarraySource;
         }
+
+        var bayerArray = new Array(arrayTotalLength);
         
         //now copy updated values to correct place in bayerArray
         //every 4 values in subarraySource is one 2x2 block in bayerArray
@@ -46,8 +43,8 @@ App.BayerMatrix = (function(){
         let sectionDimensions = Math.sqrt(numBlocksInSection);
         for(let i=0;i<4;i++){
             let yOffset = 0;
-            if(i >= 2){
-                yOffset = dimensions * dimensions / 2;
+            if(i > 1){
+                yOffset = arrayTotalLength / 2;
             }
             let xOffset = 0;
             if(i % 2 != 0){
@@ -98,6 +95,24 @@ App.BayerMatrix = (function(){
     /*
     * Webgl Ordered dither matrix stuff
     */
+    
+    function createBayerBuffer(dimensions){
+        var bayerArray = createBayer(dimensions);
+        var arrayLength = bayerArray.length;
+        const MAX_VALUE = 256;
+        const STEP = MAX_VALUE / arrayLength;
+        var retLength = 4 * arrayLength;
+        var ret = new Uint8Array(retLength);
+        
+        let index = 0;
+        for(let i=0;i<arrayLength;i++){
+            let value = bayerArray[i] * STEP;
+            ret[index] = value;
+            index += 4;
+        }
+        
+        return ret;
+    }
     
     function createOrderedBayer2(){
         var bayer = new Uint8Array(16);
@@ -460,23 +475,12 @@ App.BayerMatrix = (function(){
     }
     
     
+    var bayerMemoization = {};
+    
     function createBayerWebgl(dimensions){
-        let ret;
-        switch(dimensions){
-            case 2:
-                ret = createOrderedBayer2();
-                break;
-            case 4:
-                ret = createOrderedBayer4();
-                break;
-            case 8:
-                ret = createOrderedBayer8();
-                break;
-            default:
-                ret = createOrderedBayer16();
-                break;
-        }
-        reverseYAxis(ret, dimensions, dimensions);
+        bayerMemoization[dimensions] = bayerMemoization[dimensions] || createBayerBuffer(dimensions);
+        let ret = bayerMemoization[dimensions];
+        // reverseYAxis(ret, dimensions, dimensions);
         return ret;
     }
     
