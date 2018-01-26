@@ -2,67 +2,52 @@
 App.BayerMatrix = (function(){
     /* iterative version of recursive definition from
      * https://github.com/tromero/BayerMatrix/blob/master/MakeBayer.py
-     * @param dimensions = power of 2, length of 1 side of the matrix
+     * @param dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
     */
     function createBayer(dimensions){
         const bayerBase = [0, 2, 3, 1];
-
-        if(dimensions === 2){
+        
+        //guard against infinite loop
+        if(dimensions <= 2){
             return bayerBase;
         }
-
-        let arrayTotalLength = dimensions * dimensions;
+    
+        // let arrayTotalLength = dimensions * dimensions;
         let currentDimension = 2;
-        let subarraySource = bayerBase.slice();
+        let bayerArray = bayerBase.slice();
         
         while(currentDimension < dimensions){
+            let sectionDimensions = currentDimension;
             currentDimension *= 2;
             let subarrayLength = currentDimension * currentDimension;
-            let newSubarraySource = new Array(subarrayLength);
-            let sectionLength = subarrayLength / 4;
+            let newBayerArray = new Array(subarrayLength);
+            // let sectionLength = sectionDimensions * sectionDimensions;
             
+            //cycle through source in 4 equal blocks going clockwise starting from top left
             for(let i=0;i<4;i++){
-                let indexOffset = i * sectionLength;
                 
-                //create updated subarraySource
-                for(let j=0;j<sectionLength;j++){
-                    let destIndex = indexOffset + j;
-                    newSubarraySource[destIndex] = (subarraySource[j] * 4) + bayerBase[i];
+                let destOffset = 0;
+                //last 2 blocks are in bottom half of matrix
+                if(i > 1){
+                    destOffset += (subarrayLength / 2);
+                }
+                //2nd and 4th blocks are in right half of matrix
+                if(i % 2 != 0){
+                    destOffset += sectionDimensions;
+                }
+                
+                let j = 0;
+                for(let y=0;y<sectionDimensions;y++){
+                    for(let x=0;x<sectionDimensions;x++){
+                        let destIndex = x + destOffset;
+                        newBayerArray[destIndex] = (bayerArray[j] * 4) + bayerBase[i];
+                        j++;
+                    }
+                    destOffset += currentDimension;
                 }
             }
-            subarraySource = newSubarraySource;
+            bayerArray = newBayerArray;
         }
-
-        var bayerArray = new Array(arrayTotalLength);
-        
-        //now copy updated values to correct place in bayerArray
-        //every 4 values in subarraySource is one 2x2 block in bayerArray
-        let sourceIndex = 0;
-        const BLOCK_DIMENSIONS = 2;
-        let numBlocksInSection = subarraySource.length / 16;
-        let sectionDimensions = Math.sqrt(numBlocksInSection);
-        for(let i=0;i<4;i++){
-            let yOffset = 0;
-            if(i > 1){
-                yOffset = arrayTotalLength / 2;
-            }
-            let xOffset = 0;
-            if(i % 2 != 0){
-                xOffset = dimensions / 2;
-            }
-            for(let y=0;y<sectionDimensions;y++){
-                for(let x=0;x<sectionDimensions;x++){
-                    let baseIndex = (y * BLOCK_DIMENSIONS * dimensions) + (x * BLOCK_DIMENSIONS) + yOffset + xOffset;
-                    bayerArray[baseIndex] = subarraySource[sourceIndex];
-                    bayerArray[baseIndex+1] = subarraySource[sourceIndex+1];
-                    bayerArray[baseIndex+dimensions] = subarraySource[sourceIndex+2];
-                    bayerArray[baseIndex+dimensions+1] = subarraySource[sourceIndex+3];
-                    
-                    sourceIndex += 4;
-                }
-            }
-        }
-        
         return bayerArray;
     }
     
