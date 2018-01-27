@@ -93,6 +93,9 @@ App.WebGlBwDither = (function(m4, Bayer, WebGl){
     var drawImageColorReplace;
     var drawImage3TextureCombine;
     
+    //saved bayer textures
+    var bayerTextures = {};
+    
     function webGLThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
         //convert threshold to float
         threshold = threshold / 255.0;
@@ -119,13 +122,12 @@ App.WebGlBwDither = (function(m4, Bayer, WebGl){
         });
     }
     
-    function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerArray, bayerArrayDimensions){
+    function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions){
         //convert threshold to float
         threshold = threshold / 255.0;
         //4 UInts per pixel * 2 dimensions = 8
         
         drawImageOrderedDither = drawImageOrderedDither || createWebGLDrawImageFunc(gl, orderedDitherFragmentShaderText, ['u_bayer_texture_dimensions', 'u_bayer_texture']);
-        var bayerTexture = createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawImageOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
@@ -142,7 +144,12 @@ App.WebGlBwDither = (function(m4, Bayer, WebGl){
     
     function createWebGLOrderedDither(dimensions){
         return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
-            webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, Bayer.create(dimensions), dimensions);
+            let bayerTexture = bayerTextures[dimensions];
+            if(!bayerTexture){
+                bayerTexture = createAndLoadBayerTexture(gl, Bayer.create(dimensions), dimensions);
+                bayerTextures[dimensions] = bayerTexture;
+            }
+            webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
         };
     }
     
