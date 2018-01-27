@@ -49,22 +49,22 @@ App.AlgorithmModel = (function(WebGlBwDither){
             	{
             	    title: "Ordered Dither 2x2",
             	    id: 11,
-            	    webGlFunc: WebGlBwDither.orderedDither2,
+            	    webGlFunc: WebGlBwDither.creatOrderedDither(2),
             	},
             	{
             	    title: "Ordered Dither 4x4",
             	    id: 12,
-            	    webGlFunc: WebGlBwDither.orderedDither4,
+            	    webGlFunc: WebGlBwDither.creatOrderedDither(4),
             	},
             	{
             	    title: "Ordered Dither 8x8",
             	    id: 13,
-            	    webGlFunc: WebGlBwDither.orderedDither8,
+            	    webGlFunc: WebGlBwDither.creatOrderedDither(8),
             	},
             	{
             	    title: "Ordered Dither 16x16",
             	    id: 14,
-            	    webGlFunc: WebGlBwDither.orderedDither16,
+            	    webGlFunc: WebGlBwDither.creatOrderedDither(16),
             	},
             ];
     

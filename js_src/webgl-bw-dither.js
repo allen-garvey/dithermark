@@ -7,7 +7,6 @@ App.WebGlBwDither = (function(m4, Bayer, WebGl){
     //bayer array should be Uint8Array
     //based on: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
     function createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions){
-        
         var texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
         
@@ -178,10 +177,7 @@ App.WebGlBwDither = (function(m4, Bayer, WebGl){
     return {
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
-        orderedDither2: createWebGLOrderedDither(2),
-        orderedDither4: createWebGLOrderedDither(4),
-        orderedDither8: createWebGLOrderedDither(8),
-        orderedDither16: createWebGLOrderedDither(16),
+        creatOrderedDither: createWebGLOrderedDither,
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
