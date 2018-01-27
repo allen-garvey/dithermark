@@ -26,7 +26,8 @@ def InitBayerHelper(matrixSize):
 def printMatrix(matrix):
     for row in matrix:
         for column in row:
-            print(column)
+            print str(column).zfill(3),
+        print ""
             
 def printSortedMatrix(matrix):
     flat_list = [item for sublist in matrix for item in sublist]
