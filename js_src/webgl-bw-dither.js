@@ -188,4 +188,4 @@ App.WebGlBwDither = (function(m4, Bayer, WebGl){
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
-})(App.M4, App.BayerMatrix, App.WebGl);
+})(App.M4, App.BayerWebgl, App.WebGl);
