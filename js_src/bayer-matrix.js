@@ -1,6 +1,6 @@
 
 App.BayerMatrix = (function(){
-    /* iterative version of recursive definition from
+    /* iterative bayer matrix creation function based on recursive definition from
      * https://github.com/tromero/BayerMatrix/blob/master/MakeBayer.py
      * @param dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
     */
@@ -17,11 +17,11 @@ App.BayerMatrix = (function(){
         let bayerArray = new Uint8Array(bayerBase);
         
         while(currentDimension < dimensions){
+            //dimensions of 1 of the four blocks
             let sectionDimensions = currentDimension;
             currentDimension *= 2;
             let subarrayLength = currentDimension * currentDimension;
             let newBayerArray = new Uint8Array(subarrayLength);
-            // let sectionLength = sectionDimensions * sectionDimensions;
             
             //cycle through source in 4 equal blocks going clockwise starting from top left
             for(let i=0;i<4;i++){
