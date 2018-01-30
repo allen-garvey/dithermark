@@ -1,34 +1,20 @@
 App.OrderedDither = (function(Image, Pixel){
     
-    function createMaxtrix(width, height, maxValue){
-        var bufferDimensions = width * height;
-        if(maxValue > 255){
-            //needs to be multiplied by 2 because 16 byte ints take 2 bytes each
-            bufferDimensions = bufferDimensions * 2;
-        }
-        var buffer = new ArrayBuffer(bufferDimensions);
-        var bufferView;
-        if(maxValue > 255){
-            bufferView = new Uint16Array(buffer);
-        }
-        else{
-            bufferView = new Uint8Array(buffer);
-        }
-        
+    function createMaxtrix(dimensions){
+        var data = new Uint8Array(dimensions * dimensions);
+
         return {
-            width: width,
-            height: height,
-            maxValue: maxValue,
-            data: bufferView
+            dimensions: dimensions,
+            data: data
         };
     }
     
     function matrixIndexFor(matrix, x, y){
-        return (matrix.width * y) + x;
+        return (matrix.dimensions * y) + x;
     }
     
     function matrixValue(matrix, x, y){
-        if(x >= matrix.width || y >= matrix.height){
+        if(x >= matrix.dimensions || y >= matrix.dimensions){
             return 0;
         }
         var index = matrixIndexFor(matrix, x, y);
@@ -36,16 +22,16 @@ App.OrderedDither = (function(Image, Pixel){
     }
     
     function normalizeOrderedMatrixValues(matrix, fullValue){
-        var dimensions = matrix.width * matrix.height;
-        var fraction = Math.floor(fullValue / dimensions);
+        var length = matrix.data.length;
+        var fraction = Math.floor(fullValue / length);
         
-        for(let i=0;i<dimensions;i++){
+        for(let i=0;i<length;i++){
             matrix.data[i] = matrix.data[i] * fraction;
         }
     }
     
-    function createOrderedMatrix2(maxValue){
-        var matrix = createMaxtrix(2, 2, maxValue);
+    function createOrderedMatrix2(){
+        var matrix = createMaxtrix(2, 2);
         matrix.data[0] = 0;
         matrix.data[1] = 2;
         matrix.data[2] = 3;
@@ -54,8 +40,8 @@ App.OrderedDither = (function(Image, Pixel){
     }
     
 
-    function createOrderedMatrix4(maxValue){
-        var matrix = createMaxtrix(4, 4, maxValue);
+    function createOrderedMatrix4(){
+        var matrix = createMaxtrix(4);
         matrix.data[0] = 0;
         matrix.data[1] = 8;
         matrix.data[2] = 2;
@@ -75,8 +61,8 @@ App.OrderedDither = (function(Image, Pixel){
         return matrix;
     }
     
-    function createOrderedMatrix8(maxValue){
-        var matrix = createMaxtrix(8, 8, maxValue);
+    function createOrderedMatrix8(){
+        var matrix = createMaxtrix(8);
         matrix.data[0] = 0;
         matrix.data[1] = 48;
         matrix.data[2] = 12;
@@ -144,8 +130,8 @@ App.OrderedDither = (function(Image, Pixel){
         return matrix;
     }
     
-    function createOrderedMatrix16(maxValue){
-        var matrix = createMaxtrix(16, 16, maxValue);
+    function createOrderedMatrix16(){
+        var matrix = createMaxtrix(16);
         matrix.data[0] = 0;
         matrix.data[1] = 128;
         matrix.data[2] = 32;
@@ -407,7 +393,7 @@ App.OrderedDither = (function(Image, Pixel){
     
     function createOrderedDither(matrixCreationFunc){
         return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-            var matrix = matrixCreationFunc(255);
+            var matrix = matrixCreationFunc();
             normalizeOrderedMatrixValues(matrix, 256);
             var thresholdFraction = 255 / threshold;
             
