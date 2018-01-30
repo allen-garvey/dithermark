@@ -5,7 +5,7 @@ App.BayerMatrix = (function(){
      * @param dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
     */
     function createBayer(dimensions){
-        const bayerBase = [0, 2, 3, 1];
+        const bayerBase = new Uint8Array([0, 2, 3, 1]);
         
         //guard against infinite loop
         if(dimensions <= 2){
@@ -14,13 +14,13 @@ App.BayerMatrix = (function(){
     
         // let arrayTotalLength = dimensions * dimensions;
         let currentDimension = 2;
-        let bayerArray = bayerBase.slice();
+        let bayerArray = new Uint8Array(bayerBase);
         
         while(currentDimension < dimensions){
             let sectionDimensions = currentDimension;
             currentDimension *= 2;
             let subarrayLength = currentDimension * currentDimension;
-            let newBayerArray = new Array(subarrayLength);
+            let newBayerArray = new Uint8Array(subarrayLength);
             // let sectionLength = sectionDimensions * sectionDimensions;
             
             //cycle through source in 4 equal blocks going clockwise starting from top left
