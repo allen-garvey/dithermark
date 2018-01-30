@@ -63,4 +63,4 @@ App.BayerWebgl = (function(Bayer){
     return {
         create: createBayerWebgl,
     };
-})(App.Bayer);
+})(App.BayerMatrix);
