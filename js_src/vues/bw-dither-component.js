@@ -14,7 +14,6 @@
     var sourceWebglTexture = null;
     
     var component = Vue.component('bw-dither-section', {
-        //can't have elements with 2 ids in same html
         template: document.getElementById('bw-dither-component'),
         props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
         mounted: function(){

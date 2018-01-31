@@ -67,9 +67,21 @@ App.AlgorithmModel = (function(WebGlBwDither){
             	    webGlFunc: WebGlBwDither.creatOrderedDither(16),
             	},
             ];
+            
+    var colorDitherAlgorithms = [
+                {
+                    title: "Closest Color", 
+                    id: 16,
+                    webGlFunc: ()=>{},
+                },
+                
+            ];
+            
+    
     
     return {
         ditherAlgorithms: ditherAlgorithms,
+        colorDitherAlgorithms: colorDitherAlgorithms,
     };
     
 })(App.WebGlBwDither);

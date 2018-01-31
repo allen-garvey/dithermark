@@ -55,7 +55,12 @@
                 }
                 return '';
             },
-            
+            activeDitherSection: function(){
+                if(this.activeTab === 0){
+                    return this.$refs.bwDitherSection;
+                }
+                return this.$refs.colorDitherSection;
+            },
         },
         watch: {
             currentEditorThemeIndex: function(newThemeIndex){
@@ -154,7 +159,7 @@
                 }
                 
                 //call selected tab image loaded hook here
-                this.$refs.bwDitherSection.imageLoaded(this.loadedImage, sourceWebglTexture);
+                this.activeDitherSection.imageLoaded(this.loadedImage, sourceWebglTexture);
             },
             zoomImage: function(){
                 var scaleAmount = this.zoom / 100;
