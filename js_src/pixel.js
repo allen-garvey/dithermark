@@ -21,11 +21,38 @@ App.Pixel = (function(){
         var min = Math.min(pixel[0], pixel[1], pixel[2]);
         return Math.floor((max + min) / 2.0);
     }
+    
+    //based on wikipedia formulas: https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
+    function pixelHue(pixel){
+        var max = Math.max(pixel[0], pixel[1], pixel[2]);
+        var min = Math.min(pixel[0], pixel[1], pixel[2]);
+        var diff = max - min;
+        //white, black or gray
+        if(diff === 0){
+            if(pixel[0] >= 128){
+                return 360;
+            }
+            return 0;
+        }
+        let rawHue;
+        if(pixel[R_INDEX] === max){
+            rawHue = (pixel[G_INDEX] - pixel[B_INDEX]) / diff % 6;
+        }
+        else if(pixel[G_INDEX] === max){
+            rawHue = (pixel[B_INDEX] - pixel[R_INDEX]) / diff + 2;
+        }
+        else{
+            rawHue = (pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
+        }
+        //convert to 360 degrees
+        return rawHue * 60;
+    }
 
     
     return {
        create: createPixel,
        lightness: pixelLightness,
+       hue: pixelHue,
        R_INDEX: R_INDEX,
        G_INDEX: G_INDEX,
        B_INDEX: B_INDEX,

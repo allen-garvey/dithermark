@@ -68,6 +68,7 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel){
             case WorkerHeaders.DITHER_BW:
                 return parseDitherMessageHeader(messageData);
             case WorkerHeaders.HISTOGRAM:
+            case WorkerHeaders.HUE_HISTOGRAM:
                 return {messageTypeId: messageTypeId};
             default:
                 return null;

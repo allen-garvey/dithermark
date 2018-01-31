@@ -1,6 +1,7 @@
 App.Histogram = (function(Pixel){
     var histogramHeight = 64;
     var histogramWidth = 256;
+    var colorHistogramWidth = 360;
     
     function drawIndicator(targetCanvasObject, threshold){
         //clear indicator
@@ -12,6 +13,7 @@ App.Histogram = (function(Pixel){
     return {
         height: histogramHeight,
         width: histogramWidth,
+        colorWidth: colorHistogramWidth,
         drawIndicator: drawIndicator,
     };
 })(App.Pixel);

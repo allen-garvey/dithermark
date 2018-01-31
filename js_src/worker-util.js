@@ -59,6 +59,15 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         return buffer;
     }
     
+    function createColorHistogramWorkerHeader(){
+        var buffer = new Polyfills.SharedArrayBuffer(2);
+        var bufferView = new Uint16Array(buffer);
+        
+        bufferView[0] = WorkerHeaders.HUE_HISTOGRAM;
+        
+        return buffer;
+    }
+    
     //creates queue of webworkers
     function createWorkers(ditherWorkerUrl){
         var numWorkers = 1;
@@ -100,6 +109,7 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         ditherWorkerBwHeader: createDitherWorkerBwHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
         histogramWorkerHeader: createHistogramWorkerHeader,
+        colorHistogramWorkerHeader: createColorHistogramWorkerHeader,
         createDitherWorkers: createWorkers,
     };
 })(App.Polyfills, App.WorkerHeaders);

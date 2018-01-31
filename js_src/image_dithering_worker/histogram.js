@@ -80,7 +80,13 @@ App.Histogram = (function(Pixel, Polyfills){
         return createHistogram(pixels, 256, histogramHeight, Pixel.lightness, ()=>{return blackPixel;});
     }
     
+    function createHueHistogram(pixels){
+        let blackPixel = Pixel.create(0, 0, 0);
+        return createHistogram(pixels, 360, histogramHeight, Pixel.hue, ()=>{return blackPixel;});
+    }
+    
     return {
         createBwHistogram: createBwHistogram,
+        createHueHistogram: createHueHistogram,
     };
 })(App.Pixel, App.Polyfills);

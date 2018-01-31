@@ -201,7 +201,7 @@
                 }
             },
             histogramWorkerMessageReceived: function(pixels){
-                Canvas.replaceImageWithArray(histogramCanvas, App.Histogram.width, App.Histogram.height, pixels);
+                Canvas.replaceImageWithArray(histogramCanvas, this.histogramWidth, this.histogramHeight, pixels);
             },
             ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;

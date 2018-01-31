@@ -95,6 +95,10 @@
                     return;
                 }
                 this.activeTab = tabIndex;
+                //todo don't reload image if tab has already loaded it- instead create active tab hook
+                if(this.loadedImage){
+                    this.activeDitherSection.imageLoaded(this.loadedImage, sourceWebglTexture);   
+                }
             },
             /*
             * Loading and saving image stuff
@@ -183,6 +187,9 @@
                     case WorkerHeaders.DITHER_BW:
                     case WorkerHeaders.HISTOGRAM:
                         this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
+                        break;
+                    case WorkerHeaders.HUE_HISTOGRAM:
+                        this.$refs.colorDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
                         break;
                     default:
                         break;

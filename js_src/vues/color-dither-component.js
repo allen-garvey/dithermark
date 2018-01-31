@@ -25,7 +25,7 @@
                 selectedDitherAlgorithmIndex: 0,
                 hasImageBeenTransformed: false,
                 histogramHeight: Histogram.height,
-                histogramWidth: Histogram.width,
+                histogramWidth: Histogram.colorWidth,
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
                 colors: DEFAULT_COLORS,
@@ -67,9 +67,9 @@
                 sourceWebglTexture = loadedWebglTexture;
                 
                 //draw histogram
-                // this.$emit('request-worker', (worker)=>{
-                //     worker.postMessage(WorkerUtil.histogramWorkerHeader());
-                // });
+                this.$emit('request-worker', (worker)=>{
+                    worker.postMessage(WorkerUtil.colorHistogramWorkerHeader());
+                });
                 
                 if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();   
@@ -78,9 +78,6 @@
                     //if live preview is not enabled, transform canvas will be blank unless we do this
                     this.$emit('display-transformed-image');
                 }
-                //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
-                //it's not really worth it to check
-                // Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
@@ -117,7 +114,7 @@
                 }
             },
             histogramWorkerMessageReceived: function(pixels){
-                Canvas.replaceImageWithArray(histogramCanvas, App.Histogram.width, App.Histogram.height, pixels);
+                Canvas.replaceImageWithArray(histogramCanvas, this.histogramWidth, this.histogramHeight, pixels);
             },
             ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;

@@ -7,7 +7,13 @@
     function histogramAction(messageHeader){
         //don't need to copy the original imagedata, since we are not modifying it
         var pixels = new Uint8ClampedArray(pixelBufferOriginal);
-        var histogramBuffer = Histogram.createBwHistogram(pixels, messageHeader.messageTypeId);
+        var histogramBuffer;
+        if(messageHeader.messageTypeId === WorkerHeaders.HUE_HISTOGRAM){
+            histogramBuffer = Histogram.createHueHistogram(pixels, messageHeader.messageTypeId);
+        }
+        else{
+            histogramBuffer = Histogram.createBwHistogram(pixels, messageHeader.messageTypeId);   
+        }
         //add messageTypeId
         var histogramBufferReturn = WorkerUtil.copyBufferWithMessageType(histogramBuffer, messageHeader.messageTypeId);
         postMessage(histogramBufferReturn.buffer);
@@ -55,6 +61,7 @@
                 ditherAction(messageHeader);
                 break;
             case WorkerHeaders.HISTOGRAM:
+            case WorkerHeaders.HUE_HISTOGRAM:
                 histogramAction(messageHeader);
                 break;
             //LOAD_IMAGE just returns
