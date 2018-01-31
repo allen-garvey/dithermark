@@ -19,8 +19,6 @@
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create('histogram-color-canvas');
-            histogramCanvasIndicator = Canvas.create('histogram-color-canvas-indicator');
-            
         },
         data: function(){ 
             return{
