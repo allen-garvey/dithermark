@@ -19,6 +19,7 @@ $tabs_border_color: #dee2e6;
         &.active{
             cursor: auto;
             border-color: $tabs_border_color $tabs_border_color #fff;
+            border-bottom-color: var(--main-bg-color);
         }
     }
 }
