@@ -15,6 +15,7 @@ input[type="checkbox"]{
 
 .controls .controls-toplevel-container, .controls .controls-secondlevel-container{
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
     width: $controlsWidth;
     max-width: 100%;
