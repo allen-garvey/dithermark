@@ -45,19 +45,19 @@ App.Algorithms = (function(){
             	},
             	11: {
             	    title: "Ordered Dither 2x2",
-            	    algorithm: App.OrderedDither.dither2,
+            	    algorithm: App.OrderedDither.createOrderedDither(2),
             	},
             	12: {
             	    title: "Ordered Dither 4x4",
-            	    algorithm: App.OrderedDither.dither4,
+            	    algorithm: App.OrderedDither.createOrderedDither(4),
             	},
             	13: {
             	    title: "Ordered Dither 8x8",
-            	    algorithm: App.OrderedDither.dither8,
+            	    algorithm: App.OrderedDither.createOrderedDither(8),
             	},
             	14: {
             	    title: "Ordered Dither 16x16",
-            	    algorithm: App.OrderedDither.dither16,
+            	    algorithm: App.OrderedDither.createOrderedDither(16),
             	},
             	15: {
             	    title: "Garvey",

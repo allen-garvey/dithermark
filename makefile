@@ -7,7 +7,7 @@ JS_OUTPUT=$(JS_OUTPUT_DIR)/app.js
 
 DITHER_WORKER_DIR=$(JS_SRC_DIR)/image_dithering_worker
 
-DITHER_WORKER_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/worker-headers.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(DITHER_WORKER_DIR)/image.js $(DITHER_WORKER_DIR)/threshold.js $(DITHER_WORKER_DIR)/error-prop-dither.js $(DITHER_WORKER_DIR)/ordered-dither.js $(DITHER_WORKER_DIR)/algorithm-model.js $(DITHER_WORKER_DIR)/worker-util.js $(DITHER_WORKER_DIR)/histogram.js $(DITHER_WORKER_DIR)/main.js
+DITHER_WORKER_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/worker-headers.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(DITHER_WORKER_DIR)/image.js $(DITHER_WORKER_DIR)/threshold.js $(DITHER_WORKER_DIR)/error-prop-dither.js $(JS_SRC_DIR)/bayer-matrix.js $(DITHER_WORKER_DIR)/ordered-dither.js $(DITHER_WORKER_DIR)/algorithm-model.js $(DITHER_WORKER_DIR)/worker-util.js $(DITHER_WORKER_DIR)/histogram.js $(DITHER_WORKER_DIR)/main.js
 DITHER_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/dither-worker.js
 
 
