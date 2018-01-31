@@ -1,3 +1,7 @@
+.image-title-container{
+    margin-bottom: 20px;
+}
+
 $controlsWidth: 900px;
 $superContainerMargin: 16px;
 
@@ -9,16 +13,25 @@ input[type="checkbox"]{
     margin-right: 16px;
 }
 
-.controls .controls-toplevel-container{
+.controls-toplevel-container{
     margin-bottom: 16px;
 }
 
-.controls .controls-toplevel-container, .controls .controls-secondlevel-container{
+.controls-toplevel-container, .controls-secondlevel-container{
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     width: $controlsWidth;
     max-width: 100%;
+}
+
+$controls_gutter: 20px;
+
+.controls-secondlevel-container > div{
+    flex-basis: calc(50% - #{$controls_gutter});
+}
+.controls-secondlevel-container > div:first-of-type{
+    margin-right: $controls_gutter;
 }
 
 .controls{
@@ -65,4 +78,20 @@ $canvasMargin: 25px;
 input[type="color"]{
     margin-left: 14px;
     margin-right: 24px;
+}
+
+
+
+/*
+* Color dither component controls
+*/
+
+.colors-list-container{
+    display: flex;
+    flex-wrap: wrap;
+    
+    label{
+        flex-basis: 100px;
+        margin-bottom: 20px;
+    }
 }
