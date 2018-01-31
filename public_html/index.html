@@ -34,8 +34,8 @@
                             <button v-on:click="saveImage" v-show="isImageLoaded">Save image</button>
                         </div>
                     </div>
-                    <div>
-                        <h3>{{imageTitle}}</h3>
+                    <div class="image-title-container">
+                        <h3 class="image-title">{{imageTitle}}</h3>
                     </div>
                     <div class="controls-secondlevel-container" v-show="isImageLoaded">
                         <div class="controls-panel">
@@ -152,10 +152,21 @@
                             <canvas id="histogram-color-canvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
                         </div>
                     </div>
-                
+                    <div>
+                        <label>Number of colors
+                            <select v-model="numColors">
+                                <option v-for="n in (numColorsMax - numColorsMin + 1)">{{n + numColorsMin - 1}}</option>
+                            </select>
+                        </label>
+                    </div>
                     <div class="color-replace-super-container">
                         <div class="color-replace-title-container">
                             <h5 class="color-replace-title">Colors</h5>
+                        </div>
+                        <div class="colors-list-container">
+                            <template v-for="(color, i) in selectedColors">
+                                <label>{{i+1}}<input type="color" v-model="colors[i]" /></label>
+                            </template>
                         </div>
                     </div>
                 </div>   

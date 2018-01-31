@@ -9,6 +9,10 @@
     
     var sourceWebglTexture = null;
     
+    
+    //colors
+    const DEFAULT_COLORS = ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#ffff00', '#ff8800'];
+    
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
         props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
@@ -26,6 +30,10 @@
                 histogramWidth: Histogram.width,
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
+                colors: DEFAULT_COLORS,
+                numColors: 2,
+                numColorsMin: 2,
+                numColorsMax: 8,
             };
         },
         computed: {
@@ -37,6 +45,9 @@
             },
             isImageLoaded: function(){
               return this.loadedImage != null;  
+            },
+            selectedColors: function(){
+              return this.colors.slice(0, this.numColors);  
             },
         },
         watch: {
