@@ -15,7 +15,7 @@
     
     var component = Vue.component('bw-dither-section', {
         //can't have elements with 2 ids in same html
-        template: document.getElementById('bw-dither-component').innerHTML.replace(/\s+data-dom-id="/g, ' id="'),
+        template: document.getElementById('bw-dither-component'),
         props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
