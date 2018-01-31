@@ -94,9 +94,11 @@
             <div id="bw-dither-component" class="hidden">
                 <div class="dither-controls-container controls-panel">
                     <div>
-                        <select v-model="selectedDitherAlgorithmIndex">
-                            <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
-                        </select>
+                        <label>Dithering algorithm
+                            <select v-model="selectedDitherAlgorithmIndex">
+                                <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
+                            </select>
+                        </label>
                     </div>
                     <div>
                         <label>
@@ -117,7 +119,7 @@
                 
                     <div class="color-replace-super-container">
                         <div class="color-replace-title-container">
-                            <h5 class="color-replace-title">Color Replace</h5>
+                            <h5 class="color-replace-title">Color substitution</h5>
                         </div>
                         <label>Black<input type="color" v-model="colorReplaceBlack" /></label>
                         <label>White<input type="color" v-model="colorReplaceWhite" /></label>
