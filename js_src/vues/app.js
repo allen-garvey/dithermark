@@ -28,6 +28,7 @@
             
         },
         data: {
+            activeTab: 0,
             sourceCanvas: null,
             transformCanvas: null,
             transformCanvasWebGl: null,
@@ -81,6 +82,18 @@
             
         },
         methods: {
+            /*
+            * Tabs
+            */
+            loadTab: function(tabIndex){
+                if(tabIndex === this.activeTab){
+                    return;
+                }
+                this.activeTab = tabIndex;
+            },
+            /*
+            * Loading and saving image stuff
+            */
             loadImageTrigger: function(){
                 fileInput.click();
             },

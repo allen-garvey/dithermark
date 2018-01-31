@@ -71,8 +71,14 @@
                                 </label>
                             </div>
                         </div>
-                        
-                        <bw-dither-section ref="bwDitherSection" v-on:request-worker="onWorkerRequested" v-on:display-transformed-image="zoomImage" v-bind:transform-canvas-web-gl="transformCanvasWebGl" v-bind:transform-canvas="transformCanvas" v-bind:source-canvas="sourceCanvas" v-bind:is-webgl-enabled="isWebglEnabled" v-bind:is-webgl-supported="isWebglSupported" v-bind:is-live-preview-enabled="isLivePreviewEnabled" />  
+                        <div>
+                            <div class="tabs-container">
+                                <div class="tab" v-bind:class="{active: activeTab === 0}" v-on:click="loadTab(0)">BW Dither</div>
+                                <div class="tab" v-bind:class="{active: activeTab === 1}" v-on:click="loadTab(1)">Color Dither</div>
+                            </div>
+                            <bw-dither-section v-show="activeTab === 0" ref="bwDitherSection" v-on:request-worker="onWorkerRequested" v-on:display-transformed-image="zoomImage" v-bind:transform-canvas-web-gl="transformCanvasWebGl" v-bind:transform-canvas="transformCanvas" v-bind:source-canvas="sourceCanvas" v-bind:is-webgl-enabled="isWebglEnabled" v-bind:is-webgl-supported="isWebglSupported" v-bind:is-live-preview-enabled="isLivePreviewEnabled" />    
+                        </div>
+                          
                     </div>
                 </div>
                 
