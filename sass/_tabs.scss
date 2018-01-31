@@ -1,0 +1,24 @@
+//tab styles based on bootstrap v4 tabs
+//https://getbootstrap.com/docs/4.0/components/navs/
+
+$tabs_border_color: #dee2e6;
+
+.tabs-container{
+    display: flex;
+    border-bottom: 1px solid $tabs_border_color;
+    margin-bottom: 24px;
+    
+    .tab{
+        cursor: pointer;
+        padding: 0.75em;
+        border: 1px solid transparent;
+        border-top-left-radius: 6px;
+        border-top-right-radius: 6px;
+        margin-bottom: -1px; //to hide bottom border under active tab
+        
+        &.active{
+            cursor: auto;
+            border-color: $tabs_border_color $tabs_border_color #fff;
+        }
+    }
+}
