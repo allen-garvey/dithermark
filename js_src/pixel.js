@@ -47,12 +47,52 @@ App.Pixel = (function(){
         //convert to 360 degrees
         return rawHue * 60;
     }
+    
+    /**
+     * based on https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
+     * converts a hue in range 0-360 (saturation at 1 and lightness at 0.5) to an rgb Pixel
+     *
+     */
+    function hueToPixel(hue){
+        hue /= 360;
+        var s = 1;
+        var l = 0.5;
+        var r, g, b;
+    
+        var hue2rgb = function hue2rgb(p, q, t){
+            if(t < 0){
+                t += 1;   
+            }
+            else if(t > 1){
+                t -= 1;   
+            }
+            if(t < 1/6){ 
+                return p + (q - p) * 6 * t;
+            }
+            if(t < 1/2){
+                return q;
+            }
+            if(t < 2/3){
+                return p + (q - p) * (2/3 - t) * 6;
+            }
+            return p;
+        };
+    
+        var q = l + s - l * s;
+        var p = 2 * l - q;
+        r = hue2rgb(p, q, hue + 1/3);
+        g = hue2rgb(p, q, hue);
+        b = hue2rgb(p, q, hue - 1/3);
+        
+        return createPixel(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
+    }
 
     
     return {
        create: createPixel,
        lightness: pixelLightness,
        hue: pixelHue,
+       hueToPixel: hueToPixel,
        R_INDEX: R_INDEX,
        G_INDEX: G_INDEX,
        B_INDEX: B_INDEX,

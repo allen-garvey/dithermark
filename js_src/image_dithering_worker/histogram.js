@@ -81,9 +81,36 @@ App.Histogram = (function(Pixel, Polyfills){
     }
     
     function createHueHistogram(pixels){
-        let blackPixel = Pixel.create(0, 0, 0);
-        return createHistogram(pixels, 360, histogramHeight, Pixel.hue, ()=>{return blackPixel;});
+        hueArray = hueArray || createHueArray();
+        let retPixel = Pixel.create(0,0,0);
+        
+        return createHistogram(pixels, 360, histogramHeight, Pixel.hue, (hue)=>{
+            let baseIndex = hue * 4;
+            retPixel[0] = hueArray[baseIndex];
+            retPixel[1] = hueArray[baseIndex+1];
+            retPixel[2] = hueArray[baseIndex+2];
+            retPixel[3] = hueArray[baseIndex+3];
+            
+            return retPixel;
+        });
     }
+    
+    function createHueArray(){
+        let hueArray = new Uint8Array(360 * 4);
+        let baseIndex = 0;
+        for(let i=0;i<360;i++){
+            let pixel = Pixel.hueToPixel(i);
+            hueArray[baseIndex] = pixel[0];
+            hueArray[baseIndex+1] = pixel[1];
+            hueArray[baseIndex+2] = pixel[2];
+            hueArray[baseIndex+3] = pixel[3];
+            baseIndex += 4;
+        }
+        
+        return hueArray;
+    }
+    
+    var hueArray = null;
     
     return {
         createBwHistogram: createBwHistogram,
