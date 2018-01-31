@@ -2,27 +2,29 @@ var App = App || {};
 
 App.Histogram = (function(Pixel, Polyfills){
     var histogramHeight = 64;
-    var histogramWidth = 256;
     
-    
-    function createHistogramArray(){
+    function createHistogramArray(histogramWidth){
         //can't use typed array here,
         //since we don't know the maximum integer value
         //for each item
         var histogramArray = [];
-        for(let i=0;i<256;i++){
+        for(let i=0;i<histogramWidth;i++){
             histogramArray[i] = 0;
         }
         return histogramArray;
     }
     
-    function createHistogram(pixels){
-        var histogramArray = createHistogramArray();
+    /*
+    * @param pixelHashFunc - used to get index of pixel that is used for counting unique values for histogram - (@params pixel @returns int)
+    * @param histogramColorFunc - used to get color of pixel for non-white values in histogram output - (@params x coordinate: int, @returns pixel)
+    */
+    function createHistogram(pixels, histogramWidth, histogramHeight, pixelHashFunc, histogramColorFunc){
+        var histogramArray = createHistogramArray(histogramWidth);
         
         for(let i=0;i<pixels.length;i+=4){
             let pixel = Pixel.create(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
-            let lightness = Pixel.lightness(pixel);
-            histogramArray[lightness] = histogramArray[lightness] + 1;
+            let index = pixelHashFunc(pixel);
+            histogramArray[index] = histogramArray[index] + 1;
         }
         
         //find maximum value so we can normalize values
@@ -50,13 +52,14 @@ App.Histogram = (function(Pixel, Polyfills){
         
         var x = 0;
         var y = 0;
+        let whitePixel = Pixel.create(255, 255, 255);
         for(let i=0;i<histogramPixels.length;i+=4){
             let outputPixel;
             if(y >= histogramArray[x]){
-                outputPixel = Pixel.create(0, 0, 0);
+                outputPixel = histogramColorFunc(x);
             }
             else{
-                outputPixel = Pixel.create(255, 255, 255);
+                outputPixel = whitePixel;
             }
             histogramPixels[i] = outputPixel[Pixel.R_INDEX];
             histogramPixels[i+1] = outputPixel[Pixel.G_INDEX];
@@ -72,9 +75,12 @@ App.Histogram = (function(Pixel, Polyfills){
         return histogramBuffer;
     }
     
+    function createBwHistogram(pixels){
+        let blackPixel = Pixel.create(0, 0, 0);
+        return createHistogram(pixels, 256, histogramHeight, Pixel.lightness, ()=>{return blackPixel;});
+    }
+    
     return {
-        createHistogram: createHistogram,
-        height: histogramHeight,
-        width: histogramWidth,
+        createBwHistogram: createBwHistogram,
     };
 })(App.Pixel, App.Polyfills);

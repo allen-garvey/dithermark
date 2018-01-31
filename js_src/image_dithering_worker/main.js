@@ -7,7 +7,7 @@
     function histogramAction(messageHeader){
         //don't need to copy the original imagedata, since we are not modifying it
         var pixels = new Uint8ClampedArray(pixelBufferOriginal);
-        var histogramBuffer = Histogram.createHistogram(pixels, messageHeader.messageTypeId);
+        var histogramBuffer = Histogram.createBwHistogram(pixels, messageHeader.messageTypeId);
         //add messageTypeId
         var histogramBufferReturn = WorkerUtil.copyBufferWithMessageType(histogramBuffer, messageHeader.messageTypeId);
         postMessage(histogramBufferReturn.buffer);
