@@ -2,9 +2,12 @@ var App = App || {};
 
 App.Timer = (function(){
     
-    function timeInMilliseconds(){
-        var d = new Date();
-        return d.getTime();
+    var timeInMilliseconds;
+    if(performance){
+        timeInMilliseconds = ()=> {return performance.now();};
+    }
+    else{
+        timeInMilliseconds = ()=> {return Date.now();};
     }
     
     function timeFunctionBase(functionToTime, done){
