@@ -1,4 +1,4 @@
-App.AlgorithmModel = (function(WebGlBwDither){
+App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
     var ditherAlgorithms = [
                 {
                     title: "Threshold", 
@@ -72,7 +72,7 @@ App.AlgorithmModel = (function(WebGlBwDither){
                 {
                     title: "Closest Color", 
                     id: 16,
-                    webGlFunc: ()=>{},
+                    webGlFunc: WebGlColorDither.closestColor,
                 },
                 
             ];
@@ -84,4 +84,4 @@ App.AlgorithmModel = (function(WebGlBwDither){
         colorDitherAlgorithms: colorDitherAlgorithms,
     };
     
-})(App.WebGlBwDither);
+})(App.WebGlBwDither, App.WebGlColorDither);

@@ -47,6 +47,9 @@
             selectedColors: function(){
               return this.colors.slice(0, this.numColors);  
             },
+            selectedColorsVec: function(){
+                return ColorPicker.colorsToVecArray(this.selectedColors, this.numColorsMax);
+            },
         },
         watch: {
             isLivePreviewEnabled: function(newValue){
@@ -55,6 +58,16 @@
                 }
             },
             selectedDitherAlgorithmIndex: function(newIndex){
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
+            numColors: function(newValue){
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
+            colors: function(newValue){
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
@@ -86,7 +99,7 @@
                 if(this.isSelectedAlgorithmWebGl){
                     this.hasImageBeenTransformed = true;
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                        this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                        this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.selectedColorsVec, this.numColors); 
                     });
                     //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                     //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
