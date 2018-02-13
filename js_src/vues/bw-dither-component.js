@@ -132,7 +132,7 @@
                     return;
                 }
                 Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                    WebGl.colorReplace(this.transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                    WebGlBwDither.colorReplace(this.transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
                 this.$emit('display-transformed-image');
