@@ -1,5 +1,5 @@
 
-App.WebGlBwDither = (function(m4, Bayer, WebGl){
+App.WebGlBwDither = (function(Bayer, WebGl){
     
     /*
     * Ordered dither stuff
@@ -188,4 +188,4 @@ App.WebGlBwDither = (function(m4, Bayer, WebGl){
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
-})(App.M4, App.BayerWebgl, App.WebGl);
+})(App.BayerWebgl, App.WebGl);
