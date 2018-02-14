@@ -28,14 +28,21 @@ App.WebGlColorDither = (function(WebGl){
     * Shader caching
     */
     
-    function getShaderScriptText(id){
+    function shaderText(id){
         return document.getElementById(id).textContent;
     }
     
+    function fragmentShaderText(distanceFuncId){
+        return closestColorShaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
+    }
+    
+    //reused webgl fragment shader functions
+    var fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
     //vertex shader
-    var vertexShaderText = getShaderScriptText('webgl-threshold-vertex-shader');
+    var vertexShaderText = shaderText('webgl-threshold-vertex-shader');
     //fragment shaders
-    var closestColorShaderText = getShaderScriptText('webgl-closest-color-fshader');
+    var closestColorShaderBase = shaderText('webgl-closest-color-fshader');
+    var closestColorShaderText = fragmentShaderText('webgl-rgb-distance');
     
     
     //draw image created functions

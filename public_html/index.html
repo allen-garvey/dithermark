@@ -255,7 +255,7 @@
         </script>
         
         <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">
-            float lightness(vec4 pixel){
+            float lightness(vec3 pixel){
                 float maxVal = max(max(pixel.r, pixel.g), pixel.b);
                 float minVal = min(min(pixel.r, pixel.g), pixel.b);
                 return (maxVal + minVal) / 2.0;
@@ -277,7 +277,7 @@
             
             void main(){
                vec4 pixel = texture2D(u_texture, v_texcoord);
-               float pixelLightness = lightness(pixel);
+               float pixelLightness = lightness(pixel.rgb);
                
                #{{customBody}}
                
@@ -292,6 +292,12 @@
                gl_FragColor = outputPixel;
             }
         </script>
+        <script type="webgl/fragment-shader-function" id="webgl-rgb-distance">
+            float quick_distance(vec3 pixel1, vec3 pixel2){
+                vec3 distances = pixel1 - pixel2;
+                return abs(distances.r * distances.g * distances.b);
+            }
+        </script>
         <script type="webgl/fragment-shader" id="webgl-closest-color-fshader">
             precision mediump float;
             
@@ -301,10 +307,9 @@
             uniform int u_colors_array_length;
             uniform vec3 u_colors_array[8];
             
-            float quick_distance(vec3 pixel1, vec3 pixel2){
-                vec3 distances = pixel1 - pixel2;
-                return abs(distances.r * distances.g * distances.b);
-            }
+            #{{lightnessFunction}}
+            
+            #{{distanceFunction}}
             
             void main(){
                 vec4 pixel = texture2D(u_texture, v_texcoord);
