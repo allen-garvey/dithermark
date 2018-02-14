@@ -178,9 +178,6 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         });
     }
     
-    
-    // console.log(Bayer.create2(16));
-    
     return {
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
