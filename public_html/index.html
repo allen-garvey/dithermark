@@ -151,6 +151,14 @@
                             <canvas id="histogram-color-canvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
                         </div>
                     </div>
+                    <div class="spread-content">
+                        <label class="super-label">Color comparison mode</label>
+                        <template v-for="colorDitherMode in [...colorDitherModes.values()]">
+                            <label>{{colorDitherMode.title}}
+                                <input type="radio" v-model="selectedColorDitherModeId" v-bind:value="colorDitherMode.id"/>
+                            </label>
+                        </template>
+                    </div>
                     <div>
                         <label>Number of colors
                             <select v-model="numColors">

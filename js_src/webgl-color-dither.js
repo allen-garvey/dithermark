@@ -1,5 +1,5 @@
 
-App.WebGlColorDither = (function(WebGl){
+App.WebGlColorDither = (function(WebGl, ColorDitherModes){
     
     /*
     * Actual webgl function creation
@@ -42,19 +42,22 @@ App.WebGlColorDither = (function(WebGl){
     var vertexShaderText = shaderText('webgl-threshold-vertex-shader');
     //fragment shaders
     var closestColorShaderBase = shaderText('webgl-closest-color-fshader');
-    var closestColorShaderText = fragmentShaderText('webgl-rgb-distance');
-    
+    var closestColorShaderText = {};
+    closestColorShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText('webgl-rgb-distance');
     
     //draw image created functions
-    var drawImageClosestColor;
+    var drawImageClosestColor = {};
     
     
-    function closestColor(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength){
-        
-        drawImageClosestColor = drawImageClosestColor || createWebGLDrawImageFunc(gl, closestColorShaderText);
+    function closestColor(gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength){
+        let drawImageFunc = drawImageClosestColor[colorDitherModeId];
+        if(!drawImageFunc){
+            drawImageFunc = createWebGLDrawImageFunc(gl, closestColorShaderText[colorDitherModeId]);
+            drawImageClosestColor[colorDitherModeId] = drawImageFunc;
+        }
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawImageClosestColor(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength);
+        drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength);
     }
     
     
@@ -62,4 +65,4 @@ App.WebGlColorDither = (function(WebGl){
     return {
         closestColor: closestColor,
     };    
-})(App.WebGl);
+})(App.WebGl, App.ColorDitherModes);

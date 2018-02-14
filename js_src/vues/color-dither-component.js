@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes){
     
     //used for calculating webworker performance
     var webworkerStartTime;
@@ -32,6 +32,8 @@
                 numColors: 2,
                 numColorsMin: 2,
                 numColorsMax: 8,
+                colorDitherModes: ColorDitherModes,
+                selectedColorDitherModeId: 0,
             };
         },
         computed: {
@@ -72,6 +74,11 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
+            selectedColorDitherModeId: function(newValue){
+                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
         },
         methods: {
             imageLoaded: function(loadedImage, loadedWebglTexture){
@@ -99,7 +106,7 @@
                 if(this.isSelectedAlgorithmWebGl){
                     this.hasImageBeenTransformed = true;
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                        this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.selectedColorsVec, this.numColors); 
+                        this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.selectedColorDitherModeId, this.selectedColorsVec, this.numColors); 
                     });
                     //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                     //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
@@ -139,4 +146,4 @@
     });
     
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes);
