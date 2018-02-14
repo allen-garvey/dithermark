@@ -11,7 +11,8 @@
     
     
     //colors
-    const DEFAULT_COLORS = ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#ffff00', '#ff8800'];
+    // const DEFAULT_COLORS = ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#ffff00', '#ff8800'];
+    const DEFAULT_COLORS = ['#022e75', '#D2ebf0', '#763a70', '#facbf5', '#0000ff', '#ff00ff', '#ffff00', '#ff8800'];
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
@@ -29,7 +30,7 @@
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
                 colors: DEFAULT_COLORS,
-                numColors: 2,
+                numColors: 4,
                 numColorsMin: 2,
                 numColorsMax: 8,
                 colorDitherModes: ColorDitherModes,
