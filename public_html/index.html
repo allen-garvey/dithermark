@@ -306,13 +306,6 @@
                 return abs(distances.r * distances.g * distances.b);
             }
         </script>
-        <script type="webgl/fragment-shader-function" id="webgl-hue-distance">
-            float quick_distance(vec3 pixel1, vec3 pixel2){
-                float hue1 = hue(pixel1);
-                float hue2 = hue(pixel2);
-                return hue_distance(hue1, hue2);
-            }
-        </script>
         <script type="webgl/fragment-shader-function" id="webgl-hue-lightness-distance">
             float quick_distance(vec3 pixel1, vec3 pixel2){
                 float hue1 = hue(pixel1);
@@ -320,24 +313,6 @@
                 float lightness1 = lightness(pixel1);
                 float lightness2 = lightness(pixel2);
                 return hue_distance(hue1, hue2) + abs(lightness1 - lightness2);
-            }
-        </script>
-        <script type="webgl/fragment-shader-function" id="webgl-hue-saturation-distance">
-            float quick_distance(vec3 pixel1, vec3 pixel2){
-                float hue1 = hue(pixel1);
-                float hue2 = hue(pixel2);
-                float saturation1 = saturation(pixel1);
-                float saturation2 = saturation(pixel2);
-                return hue_distance(hue1, hue2) + abs(saturation1 - saturation2);
-            }
-        </script>
-        <script type="webgl/fragment-shader-function" id="webgl-hue-saturation-distance2">
-            float quick_distance(vec3 pixel1, vec3 pixel2){
-                float hue1 = hue(pixel1);
-                float hue2 = hue(pixel2);
-                float saturation1 = saturation(pixel1);
-                float saturation2 = saturation(pixel2);
-                return hue_distance(hue1, hue2) * 10.0 + abs(saturation1 - saturation2);
             }
         </script>
         <script type="webgl/fragment-shader-function" id="webgl-hue-saturation-lightness-distance">
