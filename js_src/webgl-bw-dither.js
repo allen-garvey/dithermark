@@ -154,7 +154,7 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     return {
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
-        creatOrderedDither: createWebGLOrderedDither,
+        createOrderedDither: createWebGLOrderedDither,
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
