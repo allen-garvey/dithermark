@@ -1,7 +1,29 @@
 
 App.BayerWebgl = (function(Bayer){
     
-    //Utility stuff
+    //bayer array should be Uint8Array
+    //based on: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
+    function createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions){
+        var texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        
+        const level = 0;
+        const internalFormat = gl.RGBA;
+        const width = bayerArrayDimensions;
+        const height = bayerArrayDimensions;
+        const border = 0;
+        const srcFormat = gl.RGBA;
+        const srcType = gl.UNSIGNED_BYTE;
+        
+        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, bayerArray);
+        // gl.generateMipmap(gl.TEXTURE_2D);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+        
+        return texture;
+    }
     
     //based on: https://stackoverflow.com/questions/41969562/how-can-i-flip-the-result-of-webglrenderingcontext-readpixels
     //pixels is a Uint8Array
@@ -62,5 +84,6 @@ App.BayerWebgl = (function(Bayer){
     
     return {
         create: createBayerWebgl,
+        createAndLoadTexture: createAndLoadBayerTexture,
     };
 })(App.BayerMatrix);
