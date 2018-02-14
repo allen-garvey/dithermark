@@ -306,6 +306,42 @@
                 return abs(distances.r * distances.g * distances.b);
             }
         </script>
+        <script type="webgl/fragment-shader-function" id="webgl-hue-distance">
+            float quick_distance(vec3 pixel1, vec3 pixel2){
+                float hue1 = hue(pixel1);
+                float hue2 = hue(pixel2);
+                return hue_distance(hue1, hue2);
+            }
+        </script>
+        <script type="webgl/fragment-shader-function" id="webgl-hsl-functions">
+            float hue_distance(float hue1, float hue2){
+                float distance = abs(hue1 - hue2);
+                //since hue is circular, we need to compare it with the inversion
+                return min(distance, 1.0 - distance);
+            }
+            
+            float hue(vec3 pixel){
+                float minValue = min(min(pixel.r, pixel.g), pixel.b);
+                float maxValue = max(max(pixel.r, pixel.g), pixel.b);
+                float diff = maxValue - minValue;
+                if(diff <= 0.001){
+                    return 0.0;
+                }
+                float rawHue;
+                
+                if(pixel.r == maxValue){
+                    rawHue = mod((pixel.g - pixel.b) / diff, 6.0);
+                }
+                else if(pixel.g == maxValue){
+                    rawHue = (pixel.b - pixel.r) / diff + 2.0;
+                }
+                else{
+                    rawHue = (pixel.r - pixel.g) / diff + 4.0;
+                }
+                
+                return rawHue / 60.0;
+            }
+        </script>
         <script type="webgl/fragment-shader" id="webgl-closest-color-fshader">
             precision mediump float;
             
@@ -314,6 +350,8 @@
             
             uniform int u_colors_array_length;
             uniform vec3 u_colors_array[8];
+            
+            #{{hslFunctions}}
             
             #{{lightnessFunction}}
             

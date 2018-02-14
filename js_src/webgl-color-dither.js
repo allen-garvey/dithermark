@@ -33,17 +33,19 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes){
     }
     
     function fragmentShaderText(distanceFuncId){
-        return closestColorShaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
+        return closestColorShaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
     }
     
     //reused webgl fragment shader functions
     var fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
+    var fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
     //vertex shader
     var vertexShaderText = shaderText('webgl-threshold-vertex-shader');
     //fragment shaders
     var closestColorShaderBase = shaderText('webgl-closest-color-fshader');
     var closestColorShaderText = {};
     closestColorShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText('webgl-rgb-distance');
+    closestColorShaderText[ColorDitherModes.get('HUE').id] = fragmentShaderText('webgl-hue-distance');
     
     //draw image created functions
     var drawImageClosestColor = {};
