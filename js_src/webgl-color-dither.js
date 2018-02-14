@@ -45,10 +45,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes){
     var closestColorShaderBase = shaderText('webgl-closest-color-fshader');
     var closestColorShaderText = {};
     closestColorShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText('webgl-rgb-distance');
-    closestColorShaderText[ColorDitherModes.get('HUE').id] = fragmentShaderText('webgl-hue-distance');
     closestColorShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText('webgl-hue-lightness-distance');
-    closestColorShaderText[ColorDitherModes.get('HUE_SATURATION').id] = fragmentShaderText('webgl-hue-saturation-distance');
-    closestColorShaderText[ColorDitherModes.get('EXPERIMENT').id] = fragmentShaderText('webgl-hue-saturation-distance2');
     closestColorShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText('webgl-hue-saturation-lightness-distance');
     
     //draw image created functions
