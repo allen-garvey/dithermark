@@ -35,6 +35,8 @@ App.ColorPicker = (function(Pixel){
         return [
             {title: 'Custom', isCustom: true},
             {title: 'Cosmic', colors: ['#022e75', '#D2ebf0', '#763a70', '#facbf5', '#0000ff', '#ff00ff', '#ffff00', '#ff8800']},
+            {title: 'Ketchup', colors: ['#064000', '#fed9ff', '#cf0e0e', '#e1fade', '#82119d', '#ff00ff', '#ffff71', '#ff8800']},
+            {title: 'Rust', colors: ['#060338', '#fadafe', '#bd6a2d', '#e4fafc', '#e2a867', '#203e8a', '#cd3232', '#3f7c62']},
             {title: 'Primaries', colors: ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#ffff00', '#ff8800']},
         ];
     }
