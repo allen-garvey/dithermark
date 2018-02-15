@@ -160,6 +160,13 @@
                         </template>
                     </div>
                     <div>
+                        <label>Color palette
+                            <select v-model="selectedPaletteIndex">
+                                <option v-for="(palette, index) in palettes" v-bind:value="index">{{palette.title}}</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div>
                         <label>Number of colors
                             <select v-model="numColors">
                                 <option v-for="n in (numColorsMax - numColorsMin + 1)">{{n + numColorsMin - 1}}</option>

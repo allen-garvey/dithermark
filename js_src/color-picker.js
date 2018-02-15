@@ -31,11 +31,27 @@ App.ColorPicker = (function(Pixel){
         return vec;
     }
     
+    function createPalettes(){
+        return [
+            {title: 'Custom', isCustom: true},
+            {title: 'Cosmic', colors: ['#022e75', '#D2ebf0', '#763a70', '#facbf5', '#0000ff', '#ff00ff', '#ffff00', '#ff8800']},
+            {title: 'Primaries', colors: ['#000000', '#ffffff', '#ff0000', '#00ff00', '#0000ff', '#ff00ff', '#ffff00', '#ff8800']},
+        ];
+    }
+    
+    //based on: https://stackoverflow.com/questions/7837456/how-to-compare-arrays-in-javascript?page=1&tab=votes#tab-top
+    //note will not work on nested arrays/objects or NaN
+    function areColorArraysIdentical(array1, array2){
+        return array1.length == array2.length && array1.every((v,i)=> v === array2[i]);
+    }
+    
     return {
         pixelFromHex: pixelFromColorPicker,
         COLOR_REPLACE_DEFAULT_BLACK_VALUE: '#000000',
         COLOR_REPLACE_DEFAULT_WHITE_VALUE: '#ffffff',
         colorsToVecArray: colorsToVecArray,
+        palettes: createPalettes(),
+        areColorArraysIdentical: areColorArraysIdentical,
     };
     
 })(App.Pixel);

@@ -20,6 +20,7 @@
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create('histogram-color-canvas');
+            this.selectedPaletteIndex = 1;
         },
         data: function(){ 
             return{
@@ -29,7 +30,9 @@
                 histogramWidth: Histogram.colorWidth,
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
-                colors: DEFAULT_COLORS,
+                colors: [],
+                palettes: ColorPicker.palettes,
+                selectedPaletteIndex: null,
                 numColors: 4,
                 numColorsMin: 2,
                 numColorsMax: 8,
@@ -73,6 +76,17 @@
             colors: function(newValue){
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
+                }
+                let currentPalette = this.palettes[this.selectedPaletteIndex];
+                //set palette to custom if a color is changed
+                if(!currentPalette.isCustom && !ColorPicker.areColorArraysIdentical(this.colors, currentPalette.colors)){
+                    this.selectedPaletteIndex = 0;
+                }
+            },
+            selectedPaletteIndex: function(newValue){
+                let palette = this.palettes[newValue];
+                if(!palette.isCustom){
+                    this.colors = palette.colors.slice();
                 }
             },
             selectedColorDitherModeId: function(newValue){
