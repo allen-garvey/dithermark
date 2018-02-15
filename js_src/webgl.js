@@ -145,6 +145,9 @@ App.WebGl = (function(m4, Bayer){
     function createWebGLDrawImageFunc(gl, vertexShaderText, fragmentShaderText, customUniformNames){
         // setup GLSL program
         var program = createProgram(gl, createVertexShader(gl, vertexShaderText), createFragmentShader(gl, fragmentShaderText));
+        if(typeof program === 'string'){
+            console.log(program);   
+        }
         
         // look up where the vertex data needs to go.
         var positionLocation = gl.getAttribLocation(program, 'a_position');
