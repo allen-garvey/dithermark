@@ -94,6 +94,11 @@ App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
                     id: 20,
                     webGlFunc: WebGlColorDither.createOrderedDither(16),
                 },
+                {
+                    title: "Hue-Lightness Ordered Dither 16x16", 
+                    id: 20,
+                    webGlFunc: WebGlColorDither.createHueLightnessOrderedDither(16),
+                },
             ];
             
     
