@@ -28,4 +28,5 @@ Thumbs.db
 *.zip
 public_html/js/*
 public_html/styles/*
+public_html/index.html
 *.rb

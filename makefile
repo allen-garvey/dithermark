@@ -16,7 +16,9 @@ VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
 
 CSS_OUTPUT = public_html/styles/style.css
 
-all: $(JS_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(DITHER_WORKER_OUTPUT)
+HTML_INDEX=public_html/index.html
+
+all: $(JS_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(DITHER_WORKER_OUTPUT) $(HTML_INDEX)
 
 $(VUE_OUTPUT): $(VUE_SRC)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
@@ -29,6 +31,14 @@ $(DITHER_WORKER_OUTPUT): $(DITHER_WORKER_SRC)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
+
+#based on: https://stackoverflow.com/questions/6790631/use-the-contents-of-a-file-to-replace-a-string-using-sed
+$(HTML_INDEX): $(shell find ./templates -type f -name '*.html')
+	cat templates/index.html | \
+	sed -e '/@{{include webgl-shaders}}/{r templates/webgl-shaders.html' -e 'd}' | \
+	sed -e '/@{{include color-dither-component}}/{r templates/color-dither-component.html' -e 'd}' | \
+	sed -e '/@{{include bw-dither-component}}/{r templates/bw-dither-component.html' -e 'd}' \
+	> $(HTML_INDEX)
 	
 watch_js:
 	while true; do \

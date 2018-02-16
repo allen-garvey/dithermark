@@ -1,0 +1,52 @@
+<div class="dither-controls-container controls-panel">
+    <div>
+        <label>Dithering algorithm
+            <select v-model="selectedDitherAlgorithmIndex">
+                <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
+            </select>
+        </label>
+    </div>
+    <div>
+        <button v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
+    </div>
+    <div class="histogram-super-container">
+        <div class="histogram-container" v-bind:style="{width: histogramWidth + 'px', height: histogramHeight + 'px'}">
+            <canvas id="histogram-color-canvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
+        </div>
+    </div>
+    <div class="spread-content">
+        <label class="super-label">Color comparison mode</label>
+        <template v-for="colorDitherMode in [...colorDitherModes.values()]">
+            <label>{{colorDitherMode.title}}
+                <input type="radio" v-model="selectedColorDitherModeId" v-bind:value="colorDitherMode.id"/>
+            </label>
+        </template>
+    </div>
+    <div>
+        <label>Color palette
+            <select v-model="selectedPaletteIndex">
+                <option v-for="(palette, index) in palettes" v-bind:value="index">{{palette.title}}</option>
+            </select>
+        </label>
+    </div>
+    <div>
+        <label>Number of colors
+            <select v-model="numColors">
+                <option v-for="n in (numColorsMax - numColorsMin + 1)">{{n + numColorsMin - 1}}</option>
+            </select>
+        </label>
+    </div>
+    <div class="color-replace-super-container">
+        <div class="color-replace-title-container">
+            <h5 class="color-replace-title">Colors</h5>
+        </div>
+        <div class="colors-list-container">
+            <template v-for="(color, i) in selectedColors">
+                <label>{{i+1}}<input type="color" v-model="colors[i]" /></label>
+            </template>
+        </div>
+    </div>
+    <div>
+        <button @click="printPalette">Print palette</button>
+    </div>
+</div>   
