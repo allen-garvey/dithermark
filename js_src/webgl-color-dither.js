@@ -65,6 +65,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     //draw image created functions
     var drawImageClosestColor = {};
     var drawImageOrderedDither = {};
+    var drawImageHueLightnessOrderedDither = {};
     
     //saved bayer textures
     var bayerTextures = {};
@@ -81,11 +82,11 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength);
     }
     
-    function orderedDither(shaderTextContainer, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, bayerDimensions){
-        let drawImageFunc = drawImageOrderedDither[colorDitherModeId];
+    function orderedDither(shaderTextContainer, drawImageFuncContainer, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, bayerDimensions){
+        let drawImageFunc = drawImageFuncContainer[colorDitherModeId];
         if(!drawImageFunc){
             drawImageFunc = createWebGLDrawImageFunc(gl, shaderTextContainer[colorDitherModeId], ['u_bayer_texture_dimensions', 'u_bayer_texture']);
-            drawImageOrderedDither[colorDitherModeId] = drawImageFunc;
+            drawImageFuncContainer[colorDitherModeId] = drawImageFunc;
         }
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -101,23 +102,23 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         });
     }
     
-    function createOrderedDitherBase(dimensions, shaderTextContainer){
+    function createOrderedDitherBase(dimensions, shaderTextContainer, drawImageFuncContainer){
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
             let bayerTexture = bayerTextures[dimensions];
             if(!bayerTexture){
                 bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.create(dimensions), dimensions);
                 bayerTextures[dimensions] = bayerTexture;
             }
-            orderedDither(shaderTextContainer, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
+            orderedDither(shaderTextContainer, drawImageFuncContainer, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
         };
     }
     
     function createOrderedDither(dimensions){
-        return createOrderedDitherBase(dimensions, orderedDitherShaderText);
+        return createOrderedDitherBase(dimensions, orderedDitherShaderText, drawImageOrderedDither);
     }
     
     function createHueLightnessOrderedDither(dimensions){
-        return createOrderedDitherBase(dimensions, hueLightnessOrderedDitherShaderText);
+        return createOrderedDitherBase(dimensions, hueLightnessOrderedDitherShaderText, drawImageHueLightnessOrderedDither);
     }
     
     return {
