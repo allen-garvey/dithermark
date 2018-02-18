@@ -1,5 +1,8 @@
+PUBLIC_HTML_DIR=public_html
+HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
+
 JS_SRC_DIR=js_src
-JS_OUTPUT_DIR=public_html/js
+JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
 
 JS_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/worker-headers.js $(JS_SRC_DIR)/color-dither-modes.js $(JS_SRC_DIR)/fs.js $(JS_SRC_DIR)/worker-util.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(JS_SRC_DIR)/color-picker.js $(JS_SRC_DIR)/canvas.js $(JS_SRC_DIR)/bayer-matrix.js $(JS_SRC_DIR)/bayer-webgl.js $(JS_SRC_DIR)/webgl-m4.js $(JS_SRC_DIR)/webgl.js $(JS_SRC_DIR)/webgl-bw-dither.js $(JS_SRC_DIR)/webgl-color-dither.js $(JS_SRC_DIR)/histogram.js $(JS_SRC_DIR)/algorithm-model.js $(JS_SRC_DIR)/vues/bw-dither-component.js $(JS_SRC_DIR)/vues/color-dither-component.js $(JS_SRC_DIR)/vues/app.js
 JS_OUTPUT=$(JS_OUTPUT_DIR)/app.js
@@ -14,26 +17,35 @@ DITHER_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/dither-worker.js
 VUE_SRC=node_modules/vue/dist/vue.min.js
 VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
 
-CSS_OUTPUT = public_html/styles/style.css
+CSS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/styles
+CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
-HTML_INDEX=public_html/index.html
 
 all: $(JS_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(DITHER_WORKER_OUTPUT) $(HTML_INDEX)
 
-$(VUE_OUTPUT): $(VUE_SRC)
+$(PUBLIC_HTML_DIR):
+	mkdir -p $(PUBLIC_HTML_DIR)
+
+$(JS_OUTPUT_DIR):
+	mkdir -p $(JS_OUTPUT_DIR)
+
+$(CSS_OUTPUT_DIR):
+	mkdir -p $(CSS_OUTPUT_DIR)
+
+$(VUE_OUTPUT): $(VUE_SRC) $(JS_OUTPUT_DIR)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
 
-$(JS_OUTPUT): $(JS_SRC)
+$(JS_OUTPUT): $(JS_SRC) $(JS_OUTPUT_DIR)
 	cat $(JS_SRC) > $(JS_OUTPUT)
 
-$(DITHER_WORKER_OUTPUT): $(DITHER_WORKER_SRC)
+$(DITHER_WORKER_OUTPUT): $(DITHER_WORKER_SRC) $(JS_OUTPUT_DIR)
 	cat $(DITHER_WORKER_SRC) > $(DITHER_WORKER_OUTPUT)
 	
-$(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
+$(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss') $(CSS_OUTPUT_DIR)
 	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
 
 #based on: https://stackoverflow.com/questions/6790631/use-the-contents-of-a-file-to-replace-a-string-using-sed
-$(HTML_INDEX): $(shell find ./templates -type f -name '*.html')
+$(HTML_INDEX): $(shell find ./templates -type f -name '*.html') $(PUBLIC_HTML_DIR)
 	cat templates/index.html | \
 	sed -e '/@{{include webgl-shaders}}/{r templates/webgl-shaders.html' -e 'd}' | \
 	sed -e '/@{{include color-dither-component}}/{r templates/color-dither-component.html' -e 'd}' | \
