@@ -145,13 +145,9 @@
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hue-saturation-lightness-distance">
     float quick_distance(vec3 pixel1, vec3 pixel2){
-        float hue1 = hue(pixel1);
-        float hue2 = hue(pixel2);
-        float saturation1 = saturation(pixel1);
-        float saturation2 = saturation(pixel2);
-        float lightness1 = lightness(pixel1);
-        float lightness2 = lightness(pixel2);
-        return hue_distance(hue1, hue2) * 10.0 + abs(saturation1 - saturation2) + abs(lightness1 - lightness2) * 10.0;
+        vec3 hsl1 = rgb2hsl(pixel1);
+        vec3 hsl2 = rgb2hsl(pixel2);
+        return hue_distance(hsl1.r, hsl2.r) * 4.0 + abs(hsl1.g - hsl2.g) + abs(hsl1.b - hsl2.b) * 8.0;
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hsl-functions">
