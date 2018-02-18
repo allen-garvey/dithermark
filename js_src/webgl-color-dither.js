@@ -50,16 +50,19 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     closestColorShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(closestColorShaderBase, 'webgl-rgb-distance');
     closestColorShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(closestColorShaderBase, 'webgl-hue-lightness-distance');
     closestColorShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(closestColorShaderBase, 'webgl-hue-saturation-lightness-distance');
+    closestColorShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(closestColorShaderBase, 'webgl-lightness-distance');
     
     var orderedDitherShaderText = {};
     orderedDitherShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-rgb-distance');
     orderedDitherShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-hue-lightness-distance');
     orderedDitherShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-hue-saturation-lightness-distance');
+    orderedDitherShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-lightness-distance');
     
     var hueLightnessOrderedDitherShaderText = {};
-    hueLightnessOrderedDitherShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-hue-distance');
+    hueLightnessOrderedDitherShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-rgb-distance');
     hueLightnessOrderedDitherShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-hue-lightness-distance');
     hueLightnessOrderedDitherShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-hue-saturation-lightness-distance');
+    hueLightnessOrderedDitherShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-lightness-distance');
     
     
     //draw image created functions
