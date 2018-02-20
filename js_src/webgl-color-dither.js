@@ -50,6 +50,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     var closestColorShaderBase = shaderText('webgl-closest-color-fshader');
     var orderedDitherSharedBase = compileColorDither(fragmentShaderBaseText, 'webgl-ordered-dither-color-declaration-fshader', 'webgl-ordered-dither-color-body-fshader');
     var hueLightnessOrderedDitherSharedBase = compileColorDither(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
+    var randomDitherShaderBase = compileColorDither(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
     
     var closestColorShaderText = {};
     closestColorShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(closestColorShaderBase, 'webgl-rgb-distance');
@@ -69,11 +70,17 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     hueLightnessOrderedDitherShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-hue-saturation-lightness-distance');
     hueLightnessOrderedDitherShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-lightness-distance');
     
+    var randomDitherShaderText = {};
+    randomDitherShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-rgb-distance');
+    randomDitherShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-hue-lightness-distance');
+    randomDitherShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-hue-saturation-lightness-distance');
+    randomDitherShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-lightness-distance');
     
     //draw image created functions
     var drawImageClosestColor = {};
     var drawImageOrderedDither = {};
     var drawImageHueLightnessOrderedDither = {};
+    var drawImageRandomDither = {};
     
     //saved bayer textures
     var bayerTextures = {};
@@ -88,6 +95,23 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength);
+    }
+    
+    function randomDither(gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength){
+        let drawImageFunc = drawImageRandomDither[colorDitherModeId];
+        if(!drawImageFunc){
+            drawImageFunc = createWebGLDrawImageFunc(gl, randomDitherShaderText[colorDitherModeId], ['u_random_seed']);
+            drawImageRandomDither[colorDitherModeId] = drawImageFunc;
+        }
+        // Tell WebGL how to convert from clip space to pixels
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength, (gl, customUniformLocations)=>{
+            //set random seed
+            var randomSeed = new Float32Array(2);
+            randomSeed[0] = Math.random();
+            randomSeed[1] = Math.random();
+            gl.uniform2fv(customUniformLocations['u_random_seed'], randomSeed);
+        });
     }
     
     function orderedDither(shaderTextContainer, drawImageFuncContainer, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, bayerDimensions){
@@ -131,6 +155,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     
     return {
         closestColor: closestColor,
+        randomClosestColor: randomDither,
         createOrderedDither: createOrderedDither,
         createHueLightnessOrderedDither: createHueLightnessOrderedDither,
     };    

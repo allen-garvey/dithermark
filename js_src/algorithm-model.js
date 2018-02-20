@@ -75,28 +75,33 @@ App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
                     webGlFunc: WebGlColorDither.closestColor,
                 },
                 {
-                    title: "Ordered Dither 2x2", 
+                    title: "Random Closest Color", 
                     id: 17,
+                    webGlFunc: WebGlColorDither.randomClosestColor,
+                },
+                {
+                    title: "Ordered Dither 2x2", 
+                    id: 18,
                     webGlFunc: WebGlColorDither.createOrderedDither(2),
                 },
                 {
                     title: "Ordered Dither 4x4", 
-                    id: 18,
+                    id: 19,
                     webGlFunc: WebGlColorDither.createOrderedDither(4),
                 },
                 {
                     title: "Ordered Dither 8x8", 
-                    id: 19,
+                    id: 20,
                     webGlFunc: WebGlColorDither.createOrderedDither(8),
                 },
                 {
                     title: "Ordered Dither 16x16", 
-                    id: 20,
+                    id: 21,
                     webGlFunc: WebGlColorDither.createOrderedDither(16),
                 },
                 {
                     title: "Hue-Lightness Ordered Dither 16x16", 
-                    id: 20,
+                    id: 22,
                     webGlFunc: WebGlColorDither.createHueLightnessOrderedDither(16),
                 },
             ];
