@@ -14,7 +14,7 @@
         props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
-            histogramCanvas = Canvas.create('histogram-color-canvas');
+            histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
             this.selectedPaletteIndex = 1;
         },
         data: function(){ 

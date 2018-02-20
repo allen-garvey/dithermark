@@ -18,8 +18,8 @@
         props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
-            histogramCanvas = Canvas.create('histogram-canvas');
-            histogramCanvasIndicator = Canvas.create('histogram-canvas-indicator');
+            histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
+            histogramCanvasIndicator = Canvas.create(this.$refs.histogramCanvasIndicator);
             
             this.resetColorReplace();
         },

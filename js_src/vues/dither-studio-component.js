@@ -11,20 +11,20 @@
     var app = Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         mounted: function(){
-            console.log(this.$refs);
             ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
             ditherWorkers.forEach((ditherWorker)=>{
                ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
             });
             
-            sourceCanvasOutput = Canvas.create('source-canvas-output');
-            transformCanvasOutput = Canvas.create('transform-canvas-output');
+            let refs = this.$refs;
+            sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
+            transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             
-            this.sourceCanvas = Canvas.create('source-canvas');
-            this.transformCanvas = Canvas.create('transform-canvas');
-            this.transformCanvasWebGl = Canvas.createWebgl('transform-canvas-webgl');
-            sourceCanvasOutput = Canvas.create('source-canvas-output');
-            transformCanvasOutput = Canvas.create('transform-canvas-output');
+            this.sourceCanvas = Canvas.create(refs.sourceCanvas);
+            this.transformCanvas = Canvas.create(refs.transformCanvas);
+            this.transformCanvasWebGl = Canvas.createWebgl(refs.transformCanvasWebgl);
+            sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
+            transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             
             this.currentEditorThemeIndex = 0;
             //check for webgl support
@@ -50,7 +50,7 @@
                 showOriginalImage: true,
                 editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Gray', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
                 currentEditorThemeIndex: null,
-            }
+            };
         },
         computed: {
             isImageLoaded: function(){

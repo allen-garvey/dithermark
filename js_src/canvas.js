@@ -9,26 +9,22 @@ App.Canvas = (function(Polyfills){
         canvasObject.context.drawImage(image, 0, 0);
     }
     
-    function createCanvasObject(id){
-        var canvas = document.getElementById(id);
-        var context = canvas.getContext('2d');
+    function createCanvasObject(canvas){
         return {
             canvas: canvas,
-            context: context,
+            context: canvas.getContext('2d'),
         };
     }
     
-    function createWebglCanvas(canvasId){
-        var canvasObject = {
-            canvas: document.getElementById(canvasId)
-        };
-        var gl = canvasObject.canvas.getContext('webgl');
+    function createWebglCanvas(canvas){
+        let gl = canvas.getContext('webgl');
         if (!gl) {
-            gl = canvasObject.canvas.getContext('experimental-webgl');
+            gl = canvas.getContext('experimental-webgl');
         }
-        canvasObject.gl = gl;
-        
-        return canvasObject;
+        return {
+            canvas: canvas,
+            gl: gl,
+        };
     }
     
     // function copyCanvasImage(sourceCanvasObject, targetCanvasObject){
