@@ -27,10 +27,6 @@
         highp float sn= mod(dt,3.14);
         return fract(sin(sn) * c);
     }
-    
-    float rand2(vec2 co){
-        return fract(sin(dot(co.xy, vec2(12.9898,78.233))) * 43758.5453);
-    }
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
