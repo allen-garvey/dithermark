@@ -61,10 +61,10 @@
         </div>
     </div>
     <div class="image-canvas-container" v-bind:class="{'show-original': showOriginalImage}">
-        <canvas ref="sourceCanvas" id="source-canvas" class="hidden"></canvas>
-        <canvas ref="transformCanvas" id="transform-canvas" class="hidden"></canvas>
-        <canvas ref="transformCanvasWebgl" id="transform-canvas-webgl" class="hidden"></canvas>
-        <canvas ref="sourceCanvasOutput" id="source-canvas-output" class="output-canvas" v-show="showOriginalImage"></canvas>
-        <canvas ref="transformCanvasOutput" id="transform-canvas-output" class="output-canvas"></canvas>
+        <canvas ref="sourceCanvas" class="hidden"></canvas>
+        <canvas ref="transformCanvas" class="hidden"></canvas>
+        <canvas ref="transformCanvasWebgl" class="hidden"></canvas>
+        <canvas ref="sourceCanvasOutput" class="output-canvas" v-show="showOriginalImage"></canvas>
+        <canvas ref="transformCanvasOutput" class="output-canvas"></canvas>
     </div>
 </div>
