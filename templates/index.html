@@ -26,19 +26,18 @@
             <div id="app">
                 <dither-studio/>
             </div>
-            <script type="vue/template" id="dither-studio-component">
-                @{{include dither-studio-component}}
-            </script>
-            <script type="vue/template" id="bw-dither-component">
-                @{{include bw-dither-component}}
-            </script>
-            <script type="vue/template" id="color-dither-component">
-                @{{include color-dither-component}}
-            </script>
-            
         </main>
-        <script type="text/javascript" src="/js/vue.min.js"></script>
+        <script type="vue/template" id="dither-studio-component">
+            @{{include dither-studio-component}}
+        </script>
+        <script type="vue/template" id="bw-dither-component">
+            @{{include bw-dither-component}}
+        </script>
+        <script type="vue/template" id="color-dither-component">
+            @{{include color-dither-component}}
+        </script>
         @{{include webgl-shaders}}
+        <script type="text/javascript" src="/js/vue.min.js"></script>
         <script type="text/javascript" src="/js/app.js"></script>
     </body>
 </html>
