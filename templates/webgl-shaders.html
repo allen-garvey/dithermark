@@ -236,7 +236,7 @@
         gl_FragColor = vec4(outputPixel, pixel.a);
     }
 </script>
-<script type="webgl/fragment-shader" id="webgl-ordered-dither-color-fshader">
+<script type="webgl/fragment-shader" id="webgl-color-dither-base-fshader">
     precision mediump float;
     
     varying vec2 v_texcoord;
@@ -245,14 +245,13 @@
     uniform int u_colors_array_length;
     uniform vec3 u_colors_array[8];
     
-    uniform sampler2D u_bayer_texture;
-    uniform float u_bayer_texture_dimensions;
-    
     #{{lightnessFunction}}
     
     #{{hslFunctions}}
     
     #{{distanceFunction}}
+    
+    #{{customDeclaration}}
     
     void main(){
         vec4 pixel = texture2D(u_texture, v_texcoord);
@@ -278,36 +277,30 @@
             }
         }
         
-        vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
-        vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
-        float bayerValue = bayerPixel.r;
-        
         vec3 outputPixel = closestPixel;
-        if(secondShortestDistance * bayerValue < shortestDistance){
-            outputPixel = secondClosestPixel;
-        }
+
+        #{{customBody}}
         
         gl_FragColor = vec4(outputPixel, pixel.a);
     }
 </script>
-<script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-fshader">
-    precision mediump float;
+<script type="webgl/fragment-shader" id="webgl-ordered-dither-color-declaration-fshader">
+    uniform sampler2D u_bayer_texture;
+    uniform float u_bayer_texture_dimensions;
+</script>
+<script type="webgl/fragment-shader" id="webgl-ordered-dither-color-body-fshader">
+    vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
+    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+    float bayerValue = bayerPixel.r;
     
-    varying vec2 v_texcoord;
-    uniform sampler2D u_texture;
-    
-    uniform int u_colors_array_length;
-    uniform vec3 u_colors_array[8];
-    
+    if(secondShortestDistance * bayerValue < shortestDistance){
+        outputPixel = secondClosestPixel;
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-declaration-fshader">
     uniform sampler2D u_bayer_texture;
     uniform float u_bayer_texture_dimensions;
     
-    #{{lightnessFunction}}
-    
-    #{{hslFunctions}}
-    
-    #{{distanceFunction}}
-
     float lightnessStep(float l) {
         float lightnessSteps = 4.0;
         //Quantize the lightness to one of `lightnessSteps` values
@@ -316,7 +309,7 @@
     
     vec3 hue_lightness_dither(vec3 pixel, float bayerValue){
         vec3 hsl = rgb2hsl(pixel);
-
+    
         float pixelLightness = hsl.b;
         float l1 = lightnessStep(max((pixelLightness - 0.125), 0.0));
         float l2 = lightnessStep(min((pixelLightness + 0.124), 1.0));
@@ -326,40 +319,14 @@
         
         return hsl2rgb(vec3(hsl.rg, adjustedLightness));
     }
+</script>
+<script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-body-fshader">
+    vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
+    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+    float bayerValue = bayerPixel.r;
     
-    void main(){
-        vec4 pixel = texture2D(u_texture, v_texcoord);
-        
-        float shortestDistance = 1000.0;
-        float secondShortestDistance = 1000.0;
-        vec3 closestPixel = pixel.rgb;
-        vec3 secondClosestPixel = pixel.rgb;
-        
-        for(int i=0;i<8;i++){
-            if(i >= u_colors_array_length){
-                break;
-            }
-            vec3 currentColor = u_colors_array[i];
-            float currentDistance = quick_distance(pixel.rgb, currentColor);
-            if(currentDistance < shortestDistance){
-                shortestDistance = currentDistance;
-                closestPixel = currentColor;
-            }
-            else if(currentDistance < secondShortestDistance){
-                secondShortestDistance = currentDistance;
-                secondClosestPixel = currentColor;
-            }
-        }
-        
-        vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
-        vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
-        float bayerValue = bayerPixel.r;
-        
-        vec3 outputPixel = closestPixel;
-        if(secondShortestDistance * bayerValue < shortestDistance){
-            outputPixel = secondClosestPixel;
-        }
-        
-        gl_FragColor = vec4(hue_lightness_dither(outputPixel, bayerValue), pixel.a);
+    if(secondShortestDistance * bayerValue < shortestDistance){
+        outputPixel = secondClosestPixel;
     }
+    outputPixel = hue_lightness_dither(outputPixel, bayerValue);
 </script>

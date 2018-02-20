@@ -32,19 +32,24 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         return document.getElementById(id).textContent;
     }
     
+    function compileColorDither(baseText, customDeclarationId, customBodyId){
+        return baseText.replace('#{{customDeclaration}}', shaderText(customDeclarationId)).replace('#{{customBody}}', shaderText(customBodyId));
+    }
+    
     function fragmentShaderText(shaderBase, distanceFuncId){
         return shaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
     }
     
-    //reused webgl fragment shader functions
+    //reused webgl fragment shader texts
+    var fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
     var fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
     var fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
     //vertex shader
     var vertexShaderText = shaderText('webgl-threshold-vertex-shader');
     //fragment shaders
     var closestColorShaderBase = shaderText('webgl-closest-color-fshader');
-    var orderedDitherSharedBase = shaderText('webgl-ordered-dither-color-fshader');
-    var hueLightnessOrderedDitherSharedBase = shaderText('webgl-hue-lightness-ordered-dither-color-fshader');
+    var orderedDitherSharedBase = compileColorDither(fragmentShaderBaseText, 'webgl-ordered-dither-color-declaration-fshader', 'webgl-ordered-dither-color-body-fshader');
+    var hueLightnessOrderedDitherSharedBase = compileColorDither(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
     
     var closestColorShaderText = {};
     closestColorShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(closestColorShaderBase, 'webgl-rgb-distance');
