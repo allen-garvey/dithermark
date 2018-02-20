@@ -2,9 +2,10 @@ PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
 JS_SRC_DIR=js_src
+VUES_DIR=$(JS_SRC_DIR)/vues
 JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
 
-JS_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/worker-headers.js $(JS_SRC_DIR)/color-dither-modes.js $(JS_SRC_DIR)/fs.js $(JS_SRC_DIR)/worker-util.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(JS_SRC_DIR)/color-picker.js $(JS_SRC_DIR)/canvas.js $(JS_SRC_DIR)/bayer-matrix.js $(JS_SRC_DIR)/bayer-webgl.js $(JS_SRC_DIR)/webgl-m4.js $(JS_SRC_DIR)/webgl.js $(JS_SRC_DIR)/webgl-bw-dither.js $(JS_SRC_DIR)/webgl-color-dither.js $(JS_SRC_DIR)/histogram.js $(JS_SRC_DIR)/algorithm-model.js $(JS_SRC_DIR)/vues/bw-dither-component.js $(JS_SRC_DIR)/vues/color-dither-component.js $(JS_SRC_DIR)/vues/app.js
+JS_SRC=$(JS_SRC_DIR)/polyfills.js $(JS_SRC_DIR)/worker-headers.js $(JS_SRC_DIR)/color-dither-modes.js $(JS_SRC_DIR)/fs.js $(JS_SRC_DIR)/worker-util.js $(JS_SRC_DIR)/timer.js $(JS_SRC_DIR)/pixel.js $(JS_SRC_DIR)/color-picker.js $(JS_SRC_DIR)/canvas.js $(JS_SRC_DIR)/bayer-matrix.js $(JS_SRC_DIR)/bayer-webgl.js $(JS_SRC_DIR)/webgl-m4.js $(JS_SRC_DIR)/webgl.js $(JS_SRC_DIR)/webgl-bw-dither.js $(JS_SRC_DIR)/webgl-color-dither.js $(JS_SRC_DIR)/histogram.js $(JS_SRC_DIR)/algorithm-model.js $(VUES_DIR)/bw-dither-component.js $(VUES_DIR)/color-dither-component.js $(VUES_DIR)/dither-studio-component.js $(VUES_DIR)/app.js
 JS_OUTPUT=$(JS_OUTPUT_DIR)/app.js
 
 
@@ -48,6 +49,7 @@ $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss') $(CSS_OUTPUT_DIR)
 $(HTML_INDEX): $(shell find ./templates -type f -name '*.html') $(PUBLIC_HTML_DIR)
 	cat templates/index.html | \
 	sed -e '/@{{include webgl-shaders}}/{r templates/webgl-shaders.html' -e 'd}' | \
+	sed -e '/@{{include dither-studio-component}}/{r templates/dither-studio-component.html' -e 'd}' | \
 	sed -e '/@{{include color-dither-component}}/{r templates/color-dither-component.html' -e 'd}' | \
 	sed -e '/@{{include bw-dither-component}}/{r templates/bw-dither-component.html' -e 'd}' \
 	> $(HTML_INDEX)
