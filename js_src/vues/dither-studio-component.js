@@ -30,7 +30,10 @@
             //check for webgl support
             this.isWebglSupported = !!this.transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported;
-            
+
+            fileInput.addEventListener('change', (e)=>{
+                Fs.openImageFile(e, this.loadImage);   
+            }, false);  
         },
         data: function(){
             return {
@@ -211,9 +214,5 @@
     
     var saveImageLink = document.getElementById('save-image-link');
     var fileInput = document.getElementById('file-input');
-    fileInput.addEventListener('change', (e)=>{
-        Fs.openImageFile(e, app.loadImage);   
-    }, false);
-    
     
 })(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders);
