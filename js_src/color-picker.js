@@ -34,9 +34,9 @@ App.ColorPicker = (function(Pixel){
     function createPalettes(){
         return [
             {title: 'Custom', isCustom: true},
-            {title: 'Primaries', colors: ['#000000', '#ffffff', '#c40000', '#000075', '#ffff8a', '#b513cc', '#54cf3f', '#ff8800']},
-            {title: 'Cosmic', colors: ['#022e75', '#D2ebf0', '#763a70', '#facbf5', '#0000ff', '#ff00ff', '#ffff00', '#ff8800']},
-            {title: 'Ketchup', colors: ['#064000', '#fed9ff', '#cf0e0e', '#e1fade', '#82119d', '#ff00ff', '#ffff71', '#ff8800']},
+            {title: 'Primaries', colors: ['#000000', '#ffffff', '#c40000', '#000075', '#ffff8a', '#6f207a', '#22531a', '#ff8800']},
+            {title: 'Galaxy', colors: ['#0d3677', '#D2ebf0', '#763a70', '#f9d2f4', '#242440', '#cd20cd', '#c5c565', '#b17633']},
+            {title: 'Ketchup', colors: ['#074400', '#fed9ff', '#ca0d0d', '#e1fade', '#7d3190', '#291a21', '#f5f5b6', '#153b21']},
             {title: 'Rust', colors: ['#060338', '#fadafe', '#bd6a2d', '#e4fafc', '#e2a867', '#203e8a', '#cd3232', '#3f7c62']},
             {title: 'Slime', colors: ['#28012e', '#fcfde1', '#eedb51', '#8ab32d', '#852d97', '#271784', '#a93e2e', '#613f4e']},
         ];
