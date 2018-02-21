@@ -15,7 +15,10 @@
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
+            //select first non-custom palette
             this.selectedPaletteIndex = 1;
+            //set color dither mode to first item in map
+            this.selectedColorDitherModeId = this.colorDitherModes.values().next().value.id;
         },
         data: function(){ 
             return{
