@@ -42,7 +42,7 @@
         </div>
         <div class="colors-list-container" @dragover="handleColorDragover" @drop="handleColorDrop">
             <template v-for="(color, i) in selectedColors">
-                <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i)}">
+                <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" @dragend="handleColorDragend" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i)}">
                     <label>{{i+1}}<input type="color" v-model="colors[i]" /></label>
                 </div>
             </template>

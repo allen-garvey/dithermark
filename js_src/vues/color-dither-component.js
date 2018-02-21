@@ -38,7 +38,6 @@
                 selectedColorDitherModeId: 0,
                 colorDrag: {
                     dragoverIndex: null,
-                    previousDragoverIndex: null,
                     draggedIndex: null,
                 },
             };
@@ -168,41 +167,33 @@
             handleColorDragover: function(e, colorIndex){
                 e.preventDefault();
                 if(colorIndex !== undefined){
-                    this.colorDrag.previousDragoverIndex = this.colorDrag.dragoverIndex;
                     this.colorDrag.dragoverIndex = colorIndex;   
                 }
             },
             handleColorDragstart: function(e, colorIndex){
                 this.colorDrag.draggedIndex = colorIndex;
-                this.colorDrag.previousDragoverIndex = colorIndex;
             },
             handleColorDrop: function(e, colorIndex){
                 e.preventDefault();
-                let swapIndex = this.colorDrag.dragoverIndex;
-                /*
-                //if we dropped on container, that means we are being moved to either at beginning or end of the array
+                e.stopPropagation();
                 let droppedOnContainer = colorIndex === undefined;
-                //find the direction we were dragging
-                let directionOffset = 0;
-                if(this.colorDrag.previousDragoverIndex > this.colorDrag.dragoverIndex){
-                    //moving to the left
-                    directionOffset = -1;
-                }
                 let swapIndex = this.colorDrag.dragoverIndex;
-                if(swapIndex === 0 && droppedOnContainer){
-                    
+                //if dropped on container, it means we want swap with last visible item
+                if(droppedOnContainer){
+                    swapIndex = this.numColors - 1;
                 }
-                */
-                if(this.colorDrag.draggedIndex != this.colorDrag.dragoverIndex){
+                if(this.colorDrag.draggedIndex != swapIndex){
                     let colorsCopy = this.colors.slice();
                     let draggedColor = colorsCopy.splice(this.colorDrag.draggedIndex, 1)[0];
                     colorsCopy.splice(swapIndex, 0, draggedColor);
                     this.colors = colorsCopy;   
                 }
+            },
+            //according to spec, must happen after drop
+            handleColorDragend: function(e){
                 //reset drag indexes
                 this.colorDrag.dragoverIndex = null;
                 this.colorDrag.draggedIndex = null;
-                this.colorDrag.previousDragoverIndex = null;
             },
             isBeingDragged: function(colorIndex){
                 return colorIndex === this.colorDrag.draggedIndex;
