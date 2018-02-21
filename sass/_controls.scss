@@ -90,8 +90,23 @@ input[type="color"]{
     display: flex;
     flex-wrap: wrap;
     
-    label{
+    .color-container{
         flex-basis: 100px;
-        margin-bottom: 20px;
+        margin: 0 16px 20px 0;
+        border: 1px solid $border_color;
+        border-radius: 5px;
+        padding: 4px;
+        cursor: move;
+        
+        &.dragged-over:before{
+            content: '';
+            display: block;
+            width: 32px;
+            height: 1em;
+            background: yellow;
+        }
+        &.dragged{
+            // display: none;
+        }
     }
 }

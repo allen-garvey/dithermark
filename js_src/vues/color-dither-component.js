@@ -36,6 +36,11 @@
                 numColorsMax: 8,
                 colorDitherModes: ColorDitherModes,
                 selectedColorDitherModeId: 0,
+                colorDrag: {
+                    dragoverIndex: null,
+                    previousDragoverIndex: null,
+                    draggedIndex: null,
+                },
             };
         },
         computed: {
@@ -158,6 +163,52 @@
             printPalette: function(){
                 //used to simplify palette creation
                 console.log(JSON.stringify(this.colors).replace(/"/g, '\'').replace(/,/g, ', '));
+            },
+            //drag functions based on: https://www.w3schools.com/html/html5_draganddrop.asp
+            handleColorDragover: function(e, colorIndex){
+                e.preventDefault();
+                if(colorIndex !== undefined){
+                    this.colorDrag.previousDragoverIndex = this.colorDrag.dragoverIndex;
+                    this.colorDrag.dragoverIndex = colorIndex;   
+                }
+            },
+            handleColorDragstart: function(e, colorIndex){
+                this.colorDrag.draggedIndex = colorIndex;
+                this.colorDrag.previousDragoverIndex = colorIndex;
+            },
+            handleColorDrop: function(e, colorIndex){
+                e.preventDefault();
+                let swapIndex = this.colorDrag.dragoverIndex;
+                /*
+                //if we dropped on container, that means we are being moved to either at beginning or end of the array
+                let droppedOnContainer = colorIndex === undefined;
+                //find the direction we were dragging
+                let directionOffset = 0;
+                if(this.colorDrag.previousDragoverIndex > this.colorDrag.dragoverIndex){
+                    //moving to the left
+                    directionOffset = -1;
+                }
+                let swapIndex = this.colorDrag.dragoverIndex;
+                if(swapIndex === 0 && droppedOnContainer){
+                    
+                }
+                */
+                if(this.colorDrag.draggedIndex != this.colorDrag.dragoverIndex){
+                    let colorsCopy = this.colors.slice();
+                    let draggedColor = colorsCopy.splice(this.colorDrag.draggedIndex, 1)[0];
+                    colorsCopy.splice(swapIndex, 0, draggedColor);
+                    this.colors = colorsCopy;   
+                }
+                //reset drag indexes
+                this.colorDrag.dragoverIndex = null;
+                this.colorDrag.draggedIndex = null;
+                this.colorDrag.previousDragoverIndex = null;
+            },
+            isBeingDragged: function(colorIndex){
+                return colorIndex === this.colorDrag.draggedIndex;
+            },
+            shouldShowDragoverStyle: function(colorIndex){
+                return colorIndex === this.colorDrag.dragoverIndex && this.colorDrag.draggedIndex != colorIndex;
             },
         }
     });
