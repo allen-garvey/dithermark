@@ -98,15 +98,13 @@ input[type="color"]{
         padding: 4px;
         cursor: move;
         
-        &.dragged-over:before{
-            content: '';
-            display: block;
-            width: 32px;
-            height: 1em;
-            background: yellow;
+        &.dragged-over{
+            border-color: $highlight_color;
+            padding: 16px 4px;
         }
+        
         &.dragged{
-            // display: none;
+            opacity: 0.4;
         }
     }
 }

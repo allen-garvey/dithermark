@@ -7,6 +7,6 @@
     margin: 0;
     display: inline-block;
     &:hover{
-        text-shadow: 2px 2px magenta;
+        text-shadow: 2px 2px $highlight_color;
     }
 }
