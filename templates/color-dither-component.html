@@ -15,12 +15,13 @@
         </div>
     </div>
     <div class="spread-content">
-        <label class="super-label">Color comparison mode</label>
-        <template v-for="colorDitherMode in [...colorDitherModes.values()]">
-            <label>{{colorDitherMode.title}}
-                <input type="radio" v-model="selectedColorDitherModeId" v-bind:value="colorDitherMode.id"/>
-            </label>
-        </template>
+        <label>Color comparison mode
+            <select v-model="selectedColorDitherModeId">
+                <template v-for="colorDitherMode in [...colorDitherModes.values()]">
+                    <option v-bind:value="colorDitherMode.id">{{colorDitherMode.title}}</option>
+                </template>
+            </select>
+        </label>
     </div>
     <div>
         <label>Color palette
