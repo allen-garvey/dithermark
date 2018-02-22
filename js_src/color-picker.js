@@ -40,6 +40,7 @@ App.ColorPicker = (function(Pixel){
             {title: 'Rose', colors: ['#200d10', '#fff2f2', '#c91837', '#f87263', '#790f47', '#4d2030', '#f1cdb8', '#ec2f13', '#ef3d4a', '#c1311c', '#371340', '#ffe1d5']},
             {title: 'Blue', colors: ['#00042b', '#fffff4', '#2459bd', '#649bf7', '#4d2266', '#2d1838', '#ede7bc', '#2d5b77', '#9e99dd', '#95fdb4', '#3a763c', '#fcd9b1']},
             {title: 'Hunter', colors: ['#151b12', '#f2fff0', '#89a240', '#bced8f', '#645c24', '#31291a', '#d9f0b9', '#bfc24b', '#936628', '#fafbca', '#743916', '#84792d']},
+            {title: 'Lava', colors: ['#e8d566', '#bf1c1c', '#df4f4f', '#500c0e', '#dfb34a', '#9b3737', '#2c3f1f', '#ddf2c6', '#292114', '#fdeefd', '#443858', '#ebb8f8']},    
         ];
     }
     
