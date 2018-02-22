@@ -90,6 +90,13 @@ input[type="color"]{
     display: flex;
     flex-wrap: wrap;
     
+    input[type="color"]{
+        margin: 0;
+    }
+    label{
+        min-width: 1.7em;
+    }
+    
     .color-container{
         flex-basis: 110px;
         margin: 0 16px 20px 0;

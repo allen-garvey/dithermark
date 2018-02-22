@@ -201,6 +201,9 @@
             shouldShowDragoverStyle: function(colorIndex){
                 return colorIndex === this.colorDrag.dragoverIndex && this.colorDrag.draggedIndex != colorIndex;
             },
+            idForColorPicker: function(i){
+                return `color_dither_colorpicker_${i}`;
+            },
         }
     });
     
