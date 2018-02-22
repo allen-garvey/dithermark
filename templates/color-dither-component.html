@@ -38,16 +38,17 @@
                 <option v-bind:value="n + numColorsMin - 1"></option>
             </template>
         </datalist>
-        <span>{{numColors}}</span>
+        <input type="number" v-model="numColors" v-bind:min="numColorsMin" v-bind:max="numColorsMax" step="1" />
     </div>
     <div class="color-replace-super-container">
         <div class="color-replace-title-container">
             <h5 class="color-replace-title">Colors</h5>
         </div>
         <div class="colors-list-container" @dragover="handleColorDragover" @drop="handleColorDrop">
-            <template v-for="(color, i) in selectedColors">
-                <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" @dragend="handleColorDragend" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i)}">
-                    <label v-bind:for="idForColorPicker(i)">{{i+1}}</label><input type="color" v-bind:id="idForColorPicker(i)" v-model="colors[i]" />
+            <template v-for="(color, i) in colors">
+                <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" @dragend="handleColorDragend" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i), 'color-disabled': i >= numColors}">
+                    <label v-bind:for="idForColorPicker(i)">{{i+1}}</label>
+                    <input type="color" v-bind:id="idForColorPicker(i)" v-model="colors[i]" v-bind:disabled="i >= numColors" />
                 </div>
             </template>
         </div>

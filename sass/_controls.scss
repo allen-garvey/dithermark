@@ -89,11 +89,13 @@ input[type="color"]{
 .color-dither-number-of-colors-container{
     margin-top: 24px;
     display: flex;
+    flex-wrap: wrap;
     & > *{
         margin-right: 1em;
+        align-self: center;
     }
     input[type="range"]{
-        width: 208px;
+        width: 178px;
         max-width: 100%;
     }
 }
@@ -124,6 +126,9 @@ input[type="color"]{
         }
         
         &.dragged{
+            opacity: 0.4;
+        }
+        &.color-disabled{
             opacity: 0.4;
         }
     }

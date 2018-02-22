@@ -70,7 +70,20 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
-            numColors: function(newValue){
+            numColors: function(newValue, oldValue){
+                let value = newValue;
+                if(value < this.numColorsMin){
+                    value = this.numColorsMin;
+                }
+                else if(value > this.numColorsMax){
+                    value = this.numColorsMax;
+                }
+                if(value !== this.numColors){
+                    this.numColors = value;
+                }
+                if(value === oldValue){
+                    return;
+                }
                 if(this.isImageLoaded && this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
