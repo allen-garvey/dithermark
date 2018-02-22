@@ -32,8 +32,7 @@
                 hasImageBeenTransformed: false,
                 histogramHeight: Histogram.height,
                 histogramWidth: Histogram.width,
-                colorReplaceBlack: '',
-                colorReplaceWhite: '',
+                colorReplaceColors: [],
                 ditherAlgorithms: AlgorithmModel.ditherAlgorithms,
                 savedTextures: [],
                 loadedImage: null,
@@ -47,13 +46,13 @@
                 return this.isWebglEnabled && !!this.selectedDitherAlgorithm.webGlFunc;
             },
             colorReplaceBlackPixel: function(){
-                return ColorPicker.pixelFromHex(this.colorReplaceBlack);
+                return ColorPicker.pixelFromHex(this.colorReplaceColors[0]);
             },
             colorReplaceWhitePixel: function(){
-                return ColorPicker.pixelFromHex(this.colorReplaceWhite);
+                return ColorPicker.pixelFromHex(this.colorReplaceColors[1]);
             },
             areColorReplaceColorsChangedFromDefaults: function(){
-                return this.colorReplaceBlack !== ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceWhite !== ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
+                return this.colorReplaceColors[0] !== ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceColors[1] !== ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
             },
             isImageLoaded: function(){
               return this.loadedImage != null;  
@@ -100,10 +99,7 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
-            colorReplaceWhite: function(newValue){
-                this.colorReplaceColorsChanged();
-            },
-            colorReplaceBlack: function(newValue, oldValue){
+            colorReplaceColors: function(newValue){
                 this.colorReplaceColorsChanged();
             },
         },
@@ -138,8 +134,7 @@
                 this.$emit('display-transformed-image');
             },
             resetColorReplace: function(){
-                this.colorReplaceWhite = ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
-                this.colorReplaceBlack = ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE;
+                this.colorReplaceColors = [ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE, ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE];
             },
             imageLoaded: function(loadedImage, loadedWebglTexture){
                 this.loadedImage = loadedImage;
