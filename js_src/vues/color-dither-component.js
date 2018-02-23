@@ -182,6 +182,9 @@
                 //used to simplify palette creation
                 console.log(JSON.stringify(this.colors).replace(/"/g, '\'').replace(/,/g, ', '));
             },
+            randomizePalette: function(){
+                this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
+            },
             handleColorDragstart: function(e, colorIndex){
                 this.colorDrag.draggedIndex = colorIndex;
             },
