@@ -38,8 +38,6 @@
                 colorDitherModes: ColorDitherModes,
                 selectedColorDitherModeId: 0,
                 colorDrag: {
-                    droppedIndex: null,
-                    dragoverIndex: null,
                     draggedIndex: null,
                 },
             };
@@ -184,44 +182,38 @@
                 //used to simplify palette creation
                 console.log(JSON.stringify(this.colors).replace(/"/g, '\'').replace(/,/g, ', '));
             },
-            //drag functions based on: https://www.w3schools.com/html/html5_draganddrop.asp
-            handleColorDragover: function(e, colorIndex){
-                e.preventDefault();
-                if(colorIndex !== undefined){
-                    this.colorDrag.dragoverIndex = colorIndex;   
-                }
-            },
             handleColorDragstart: function(e, colorIndex){
                 this.colorDrag.draggedIndex = colorIndex;
             },
-            handleColorDrop: function(e, colorIndex){
+            //drag functions based on: https://www.w3schools.com/html/html5_draganddrop.asp
+            handleColorDragover: function(e, colorIndex){
                 e.preventDefault();
                 e.stopPropagation();
-                this.colorDrag.droppedIndex = colorIndex;
+                //will be defined if we are over the container
+                if(colorIndex === undefined){
+                    return;
+                }
+                let swapIndex = colorIndex;
+
+                if(this.colorDrag.draggedIndex != swapIndex){
+                    let colorsCopy = this.colorsShadow.slice();
+                    let draggedColor = colorsCopy.splice(this.colorDrag.draggedIndex, 1)[0];
+                    colorsCopy.splice(swapIndex, 0, draggedColor);
+                    this.colorsShadow = colorsCopy;
+                    this.colorDrag.draggedIndex = swapIndex;
+                }
+                
+            },
+            handleColorDrop: function(e, colorIndex){
+                e.preventDefault();
             },
             //according to spec, must happen after drop
             handleColorDragend: function(e){
-                let droppedOnContainer = this.colorDrag.droppedIndex === undefined;
-                let swapIndex = this.colorDrag.dragoverIndex;
-                //if dropped on container, it means we want swap with last visible item
-                if(droppedOnContainer){
-                    swapIndex = this.numColors - 1;
-                }
-                let colorsCopy = null;
-                if(this.colorDrag.draggedIndex != swapIndex){
-                    colorsCopy = this.colorsShadow.slice();
-                    let draggedColor = colorsCopy.splice(this.colorDrag.draggedIndex, 1)[0];
-                    colorsCopy.splice(swapIndex, 0, draggedColor);
-                }
-                //reset drag indexes
-                this.colorDrag.droppedIndex = null;
-                this.colorDrag.dragoverIndex = null;
                 this.colorDrag.draggedIndex = null;
                 
                 //draggedIndex has to be null before resetting colorsShadow
-                if(colorsCopy){
-                    this.colorsShadow = colorsCopy;
-                }
+                //need to do this to trigger refresh
+                this.colorsShadow = this.colorsShadow.slice();
             },
             isBeingDragged: function(colorIndex){
                 return colorIndex === this.colorDrag.draggedIndex;
