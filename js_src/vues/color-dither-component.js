@@ -207,16 +207,21 @@
                 if(droppedOnContainer){
                     swapIndex = this.numColors - 1;
                 }
+                let colorsCopy = null;
                 if(this.colorDrag.draggedIndex != swapIndex){
-                    let colorsCopy = this.colors.slice();
+                    colorsCopy = this.colorsShadow.slice();
                     let draggedColor = colorsCopy.splice(this.colorDrag.draggedIndex, 1)[0];
                     colorsCopy.splice(swapIndex, 0, draggedColor);
-                    this.colors = colorsCopy;   
                 }
                 //reset drag indexes
                 this.colorDrag.droppedIndex = null;
                 this.colorDrag.dragoverIndex = null;
                 this.colorDrag.draggedIndex = null;
+                
+                //draggedIndex has to be null before resetting colorsShadow
+                if(colorsCopy){
+                    this.colorsShadow = colorsCopy;
+                }
             },
             isBeingDragged: function(colorIndex){
                 return colorIndex === this.colorDrag.draggedIndex;
