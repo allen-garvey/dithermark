@@ -29,6 +29,7 @@
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
                 colors: [],
+                colorsShadow: [],
                 palettes: ColorPicker.palettes,
                 selectedPaletteIndex: null,
                 numColors: 4,
@@ -37,6 +38,7 @@
                 colorDitherModes: ColorDitherModes,
                 selectedColorDitherModeId: 0,
                 colorDrag: {
+                    droppedIndex: null,
                     dragoverIndex: null,
                     draggedIndex: null,
                 },
@@ -88,8 +90,14 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
-            colors: function(newValue){
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+            colorsShadow: function(newValue){
+                if(this.colorDrag.draggedIndex === null){
+                    this.colors = this.colorsShadow.slice();   
+                }
+            },
+            colors: function(newValue, oldValue){
+                //don't dither image if colors changed are not enabled
+                if(this.isImageLoaded && this.isLivePreviewEnabled && !ColorPicker.areColorArraysIdentical(newValue.slice(0, this.numColors), oldValue.slice(0, this.numColors))){
                     this.ditherImageWithSelectedAlgorithm();
                 }
                 let currentPalette = this.palettes[this.selectedPaletteIndex];
@@ -101,7 +109,7 @@
             selectedPaletteIndex: function(newValue){
                 let palette = this.palettes[newValue];
                 if(!palette.isCustom){
-                    this.colors = palette.colors.slice();
+                    this.colorsShadow = palette.colors.slice();
                 }
             },
             selectedColorDitherModeId: function(newValue){
@@ -189,7 +197,11 @@
             handleColorDrop: function(e, colorIndex){
                 e.preventDefault();
                 e.stopPropagation();
-                let droppedOnContainer = colorIndex === undefined;
+                this.colorDrag.droppedIndex = colorIndex;
+            },
+            //according to spec, must happen after drop
+            handleColorDragend: function(e){
+                let droppedOnContainer = this.colorDrag.droppedIndex === undefined;
                 let swapIndex = this.colorDrag.dragoverIndex;
                 //if dropped on container, it means we want swap with last visible item
                 if(droppedOnContainer){
@@ -201,10 +213,8 @@
                     colorsCopy.splice(swapIndex, 0, draggedColor);
                     this.colors = colorsCopy;   
                 }
-            },
-            //according to spec, must happen after drop
-            handleColorDragend: function(e){
                 //reset drag indexes
+                this.colorDrag.droppedIndex = null;
                 this.colorDrag.dragoverIndex = null;
                 this.colorDrag.draggedIndex = null;
             },
