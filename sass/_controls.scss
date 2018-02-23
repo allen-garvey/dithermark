@@ -120,15 +120,7 @@ input[type="color"]{
         padding: 4px;
         cursor: move;
         
-        &.dragged-over{
-            border-color: $highlight_color;
-            padding: 16px 4px;
-        }
-        
-        &.dragged{
-            opacity: 0.4;
-        }
-        &.color-disabled{
+        &.dragged, &.color-disabled{
             opacity: 0.4;
         }
     }
