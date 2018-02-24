@@ -48,6 +48,7 @@ App.ColorPicker = (function(Pixel){
             {title: 'Purple Haze 2', colors: ['#9b656c', '#a201ef', '#a30528', '#19248d', '#d9eb89', '#96c6c5', '#9b1d2f', '#053646', '#6f6cf1', '#ec23ec', '#1332a2', '#b530fe']},
             {title: 'Blue Devil', colors: ['#648eae', '#ece50a', '#7c69d9', '#905b01', '#66f099', '#b66749', '#0621a2', '#3565e6', '#cee551', '#ad4f01', '#d9fa30', '#9ea9cc']},
             {title: 'Neon Dream', colors: ['#a101a9', '#a9a0f3', '#2c1a5e', '#8f269c', '#69ba2d', '#faa5cc', '#c5967b', '#feb180', '#51e00f', '#26c6c6', '#9ffd5d', '#bd1870']},
+            {title: 'Watermelon', colors: ['#8cc386', '#ce54d5', '#392f4e', '#be7dee', '#64b907', '#0c757b', '#fd0d0f', '#de2969', '#b9d4c3', '#d87a64', '#94d076', '#d47caf']},
         ];
     }
     
