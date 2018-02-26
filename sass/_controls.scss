@@ -86,6 +86,10 @@ input[type="color"]{
 * Color dither component controls
 */
 
+.shuffle-color-palette-button{
+    min-width: 60px;
+}
+
 .color-dither-number-of-colors-container{
     margin-top: 24px;
     display: flex;

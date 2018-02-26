@@ -185,6 +185,16 @@
             randomizePalette: function(){
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
             },
+            changePalette: function(index){
+                //start at 1 instead of 0, because we are not cycling through custom palette
+                if(index >= this.palettes.length){
+                    index = 1;
+                }
+                else if(index <= 0){
+                    index = this.palettes.length - 1;
+                }
+                this.selectedPaletteIndex = index;
+            },
             handleColorDragstart: function(e, colorIndex){
                 this.colorDrag.draggedIndex = colorIndex;
             },

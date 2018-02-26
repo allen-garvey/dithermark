@@ -29,6 +29,8 @@
                 <option v-for="(palette, index) in palettes" v-bind:value="index">{{palette.title}}</option>
             </select>
         </label>
+        <button class="shuffle-color-palette-button" title="Previous color palette" @click="changePalette(selectedPaletteIndex - 1)"><</button>
+        <button class="shuffle-color-palette-button" title="Next color palette" @click="changePalette(selectedPaletteIndex + 1)">></button>
     </div>
     <div class="color-dither-number-of-colors-container">
         <label for="color_dither_num_colors_input">Number of colors</label>
