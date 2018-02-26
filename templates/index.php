@@ -1,3 +1,7 @@
+<?php
+    require_once('config'.DIRECTORY_SEPARATOR.'config.php');
+?>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -25,15 +29,15 @@
             </div>
         </main>
         <script type="vue/template" id="dither-studio-component">
-            @{{include dither-studio-component}}
+            <?php require(TEMPLATES_PATH.'dither-studio-component.php') ?>
         </script>
         <script type="vue/template" id="bw-dither-component">
-            @{{include bw-dither-component}}
+            <?php require(TEMPLATES_PATH.'bw-dither-component.php') ?>
         </script>
         <script type="vue/template" id="color-dither-component">
-            @{{include color-dither-component}}
+            <?php require(TEMPLATES_PATH.'color-dither-component.php') ?>
         </script>
-        @{{include webgl-shaders}}
+        <?php require(TEMPLATES_PATH.'webgl-shaders.php') ?>
         <script type="text/javascript" src="/js/vue.min.js"></script>
         <script type="text/javascript" src="/js/app.js"></script>
     </body>

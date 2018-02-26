@@ -45,14 +45,9 @@ $(DITHER_WORKER_OUTPUT): $(DITHER_WORKER_SRC) $(JS_OUTPUT_DIR)
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss') $(CSS_OUTPUT_DIR)
 	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
 
-#based on: https://stackoverflow.com/questions/6790631/use-the-contents-of-a-file-to-replace-a-string-using-sed
-$(HTML_INDEX): $(shell find ./templates -type f -name '*.html') $(PUBLIC_HTML_DIR)
-	cat templates/index.html | \
-	sed -e '/@{{include webgl-shaders}}/{r templates/webgl-shaders.html' -e 'd}' | \
-	sed -e '/@{{include dither-studio-component}}/{r templates/dither-studio-component.html' -e 'd}' | \
-	sed -e '/@{{include color-dither-component}}/{r templates/color-dither-component.html' -e 'd}' | \
-	sed -e '/@{{include bw-dither-component}}/{r templates/bw-dither-component.html' -e 'd}' \
-	> $(HTML_INDEX)
+
+$(HTML_INDEX): $(shell find ./templates -type f -name '*.php') $(PUBLIC_HTML_DIR)
+	php templates/index.php > $(HTML_INDEX)
 	
 watch_js:
 	while true; do \
