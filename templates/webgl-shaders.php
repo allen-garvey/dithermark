@@ -17,8 +17,7 @@
 
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-declaration">
     uniform vec2 u_random_seed;
-    
-    //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+    <?php //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/ ?>
     highp float rand(vec2 co){
         highp float a = 12.9898;
         highp float b = 78.233;
@@ -48,7 +47,7 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
-    //we are comparing to 0.0, but can't use == because of floating point precision
+    <?php //we are comparing to 0.0, but can't use == because of floating point precision ?>
     bool shouldUseBlackPixel = pixel.r < 0.5;
 </script>
 
@@ -145,7 +144,7 @@
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hsl-functions">
-    //from: https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl
+    <?php //from: https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl ?>
     vec3 rgb2hsv(vec3 c){
         vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
         vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
@@ -162,7 +161,7 @@
         return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
     }
 
-    //from: https://codeitdown.com/hsl-hsb-hsv-color/
+    <?php //from: https://codeitdown.com/hsl-hsb-hsv-color/ ?>
     vec3 hsv2hsl(vec3 pixel){
         float l = 0.5 * pixel.b * (2.0 - pixel.g);
         float s = pixel.g * pixel.b / (1.0 - abs(2.0 * l - 1.0));
@@ -173,7 +172,7 @@
         return hsv2hsl(rgb2hsv(pixel));
     }
 
-    //from: https://codeitdown.com/hsl-hsb-hsv-color/
+    <?php //from: https://codeitdown.com/hsl-hsb-hsv-color/ ?>
     vec3 hsl2hsv(vec3 pixel){
         float b = (2.0 * pixel.b + pixel.g * (1.0 - abs(2.0 * pixel.b - 1.0))) / 2.0;
         float s = 2.0 * (b - pixel.b) / b;
@@ -191,7 +190,7 @@
     
     float hue_distance(float hue1, float hue2){
         float distance = abs(hue1 - hue2);
-        //since hue is circular, we need to compare it with the inversion
+        <?php //since hue is circular, we need to compare it with the inversion ?>
         return min(distance, 1.0 - distance);
     }
     
@@ -303,7 +302,7 @@
     
     float lightnessStep(float l) {
         float lightnessSteps = 4.0;
-        //Quantize the lightness to one of `lightnessSteps` values
+        <?php //Quantize the lightness to one of `lightnessSteps` values ?>
         return floor((0.5 + l * lightnessSteps)) / lightnessSteps;
     }
     
@@ -333,7 +332,7 @@
 <script type="webgl/fragment-shader" id="webgl-random-dither-color-declaration-fshader">
     uniform vec2 u_random_seed;
     
-    //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/
+    <?php //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/ ?>
     highp float rand(vec2 co){
         highp float a = 12.9898;
         highp float b = 78.233;
