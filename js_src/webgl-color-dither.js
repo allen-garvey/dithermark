@@ -40,6 +40,23 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         return shaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
     }
     
+    function shaderTextContainer(baseText){
+        let modeDistances = [
+            {id: ColorDitherModes.get('RGB').id, distanceFunc: 'webgl-rgb-distance'},
+            {id: ColorDitherModes.get('HUE_LIGHTNESS').id, distanceFunc: 'webgl-hue-lightness-distance'},
+            {id: ColorDitherModes.get('HSL').id, distanceFunc: 'webgl-hue-saturation-lightness-distance'},
+            {id: ColorDitherModes.get('LIGHTNESS').id, distanceFunc: 'webgl-lightness-distance'},
+            {id: ColorDitherModes.get('HUE').id, distanceFunc: 'webgl-hue-distance'},
+        ];
+        let ret = {};
+        
+        modeDistances.forEach((item)=>{
+            ret[item.id] = fragmentShaderText(baseText, item.distanceFunc);
+        });
+        
+        return ret; 
+    }
+    
     //reused webgl fragment shader texts
     var fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
     var fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
@@ -52,29 +69,11 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     var hueLightnessOrderedDitherSharedBase = compileColorDither(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
     var randomDitherShaderBase = compileColorDither(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
     
-    var closestColorShaderText = {};
-    closestColorShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(closestColorShaderBase, 'webgl-rgb-distance');
-    closestColorShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(closestColorShaderBase, 'webgl-hue-lightness-distance');
-    closestColorShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(closestColorShaderBase, 'webgl-hue-saturation-lightness-distance');
-    closestColorShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(closestColorShaderBase, 'webgl-lightness-distance');
-    
-    var orderedDitherShaderText = {};
-    orderedDitherShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-rgb-distance');
-    orderedDitherShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-hue-lightness-distance');
-    orderedDitherShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-hue-saturation-lightness-distance');
-    orderedDitherShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(orderedDitherSharedBase, 'webgl-lightness-distance');
-    
-    var hueLightnessOrderedDitherShaderText = {};
-    hueLightnessOrderedDitherShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-rgb-distance');
-    hueLightnessOrderedDitherShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-hue-lightness-distance');
-    hueLightnessOrderedDitherShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-hue-saturation-lightness-distance');
-    hueLightnessOrderedDitherShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(hueLightnessOrderedDitherSharedBase, 'webgl-lightness-distance');
-    
-    var randomDitherShaderText = {};
-    randomDitherShaderText[ColorDitherModes.get('RGB').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-rgb-distance');
-    randomDitherShaderText[ColorDitherModes.get('HUE_LIGHTNESS').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-hue-lightness-distance');
-    randomDitherShaderText[ColorDitherModes.get('HSL').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-hue-saturation-lightness-distance');
-    randomDitherShaderText[ColorDitherModes.get('LIGHTNESS').id] = fragmentShaderText(randomDitherShaderBase, 'webgl-lightness-distance');
+    //maps containing program source code
+    var closestColorShaderText = shaderTextContainer(closestColorShaderBase);
+    var orderedDitherShaderText = shaderTextContainer(orderedDitherSharedBase);
+    var hueLightnessOrderedDitherShaderText = shaderTextContainer(hueLightnessOrderedDitherSharedBase);
+    var randomDitherShaderText = shaderTextContainer(randomDitherShaderBase);
     
     //draw image created functions
     var drawImageClosestColor = {};
