@@ -50,6 +50,7 @@ App.ColorPicker = (function(Pixel){
             {title: 'Neon Dream', colors: ['#a101a9', '#a9a0f3', '#2c1a5e', '#8f269c', '#69ba2d', '#faa5cc', '#c5967b', '#feb180', '#51e00f', '#26c6c6', '#9ffd5d', '#bd1870']},
             {title: 'Watermelon', colors: ['#8cc386', '#ce54d5', '#392f4e', '#be7dee', '#64b907', '#0c757b', '#fd0d0f', '#de2969', '#b9d4c3', '#d87a64', '#94d076', '#d47caf']},
             {title: 'Kelp', colors: ['#22a828', '#f2e659', '#e56e48', '#181f32', '#b28fc3', '#99d09a', '#52774d', '#592234', '#d4124a', '#d1ded8', '#b77315', '#ce4c2a']},
+            {title: 'Crystals', colors: ['#a0d5c2', '#054b9c', '#013faf', '#bff698', '#52a297', '#d12b4c', '#4319aa', '#ea11a7', '#cb9045', '#fb7198', '#370107', '#107679']},
         ];
     }
     
