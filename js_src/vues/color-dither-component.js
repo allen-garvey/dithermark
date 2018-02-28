@@ -5,7 +5,6 @@
     
     //canvas stuff
     var histogramCanvas;
-    var histogramCanvasIndicator;
     
     var sourceWebglTexture = null;
     
