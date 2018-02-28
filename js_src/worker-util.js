@@ -72,7 +72,7 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         var numWorkers = 1;
         var navigator = window.navigator;
         if(navigator.hardwareConcurrency){
-            numWorkers = Math.min(navigator.hardwareConcurrency * 2, 8);
+            numWorkers = Math.min(navigator.hardwareConcurrency * 2, <?= MAX_WEBWORKERS; ?>);
         }
         var workers = new Array(numWorkers);
         for(let i=0;i<numWorkers;i++){
