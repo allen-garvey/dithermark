@@ -33,7 +33,7 @@
                 selectedPaletteIndex: null,
                 numColors: 4,
                 numColorsMin: 2,
-                numColorsMax: 12,
+                numColorsMax: <?= COLOR_DITHER_MAX_COLORS; ?>,
                 colorDitherModes: ColorDitherModes,
                 selectedColorDitherModeId: 0,
                 colorDrag: {
