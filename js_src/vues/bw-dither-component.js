@@ -28,6 +28,7 @@
                 threshold: 127,
                 thresholdMin: 0,
                 thresholdMax: 255,
+                serpentineDither: false,
                 selectedDitherAlgorithmIndex: 0,
                 hasImageBeenTransformed: false,
                 histogramHeight: Histogram.height,
@@ -87,7 +88,12 @@
                 }
                 
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                if(this.isLivePreviewEnabled){
+                    this.ditherImageWithSelectedAlgorithm();
+                }
+            },
+            serpentineDither: function(newValue){
+                if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
@@ -95,7 +101,7 @@
                 //reset bw texture
                 this.freeTransformedImageBwTexture();
                 
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
@@ -118,7 +124,7 @@
                 if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
                     isDitherWorkerBwWorking = true;
                     this.$emit('request-worker', (worker)=>{
-                        worker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                        worker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.serpentineDither));
                     });
                     
                 }
@@ -178,7 +184,7 @@
                 }
                 this.$emit('request-worker', (worker)=>{
                     webworkerStartTime = Timer.timeInMilliseconds();
-                    worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
+                    worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.serpentineDither, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 });
             },
             ditherWorkerMessageReceivedDispatcher: function(messageTypeId, pixels){

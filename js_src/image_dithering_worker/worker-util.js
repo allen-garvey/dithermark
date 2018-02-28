@@ -35,10 +35,11 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel){
             imageHeight : messageData[2],
             algorithmId : messageData[3],
             threshold : messageData[4],
+            serpentineDither: !!messageData[5], //convert to boolean
         };
         if(messageTypeId === WorkerHeaders.DITHER){
-            messageHeader.blackPixel = Pixel.create(messageData[5], messageData[6], messageData[7]);
-            messageHeader.whitePixel = Pixel.create(messageData[8], messageData[9], messageData[10]);   
+            messageHeader.blackPixel = Pixel.create(messageData[6], messageData[7], messageData[8]);
+            messageHeader.whitePixel = Pixel.create(messageData[9], messageData[10], messageData[11]);   
         }
         else{
             messageHeader.blackPixel = Pixel.create(0, 0, 0);

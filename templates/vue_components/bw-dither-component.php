@@ -22,7 +22,12 @@
             <canvas ref="histogramCanvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
         </div>
     </div>
-
+    <div v-show="!isSelectedAlgorithmWebGl">
+        <label>
+            Serpentine dither
+            <input type="checkbox" v-model="serpentineDither" />
+        </label>
+    </div>
     <div class="color-replace-super-container">
         <div class="color-replace-title-container">
             <h5 class="color-replace-title">Color substitution</h5>

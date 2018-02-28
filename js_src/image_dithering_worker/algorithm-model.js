@@ -13,34 +13,42 @@ App.Algorithms = (function(){
                 3: {
                     title: "Atkinson", 
                     algorithm: App.ErrorPropDither.atkinson,
+                    isErrorPropDither: true,
                 },
                 4: {
                     title: "Floyd-Steinberg", 
                     algorithm: App.ErrorPropDither.floydSteinberg,
+                    isErrorPropDither: true,
                 },
                 5: {
             		title: "Javis-Judice-Ninke",
             		algorithm: App.ErrorPropDither.javisJudiceNinke,
+            		isErrorPropDither: true,
             	},
             	6: {
             		title: "Stucki",
             		algorithm: App.ErrorPropDither.stucki,
+            		isErrorPropDither: true,
             	},
             	7: {
             		title: "Burkes",
             		algorithm: App.ErrorPropDither.burkes,
+            		isErrorPropDither: true,
             	},
             	8: {
             		title: "Sierra3",
             		algorithm: App.ErrorPropDither.sierra3,
+            		isErrorPropDither: true,
             	},
             	9: {
             		title: "Sierra2",
             		algorithm: App.ErrorPropDither.sierra2,
+            		isErrorPropDither: true,
             	},
             	10: {
             		title: "Sierra1",
             		algorithm: App.ErrorPropDither.sierra1,
+            		isErrorPropDither: true,
             	},
             	11: {
             	    title: "Ordered Dither 2x2",
@@ -61,6 +69,7 @@ App.Algorithms = (function(){
             	15: {
             	    title: "Garvey",
             	    algorithm: App.ErrorPropDither.garvey,
+            	    isErrorPropDither: true,
             	},
             };
     }
