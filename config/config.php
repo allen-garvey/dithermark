@@ -19,6 +19,8 @@
     * JS application constants
     */
     define('MAX_WEBWORKERS', 8);
+    define('RANDOM_IMAGE_MAX_WIDTH', 800);
+    define('RANDOM_IMAGE_MAX_HEIGHT', 600);
     
     //color dither stuff
     define('COLOR_DITHER_MAX_COLORS', 12);

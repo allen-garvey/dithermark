@@ -127,7 +127,10 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
-                var randomImageUrl = 'https://source.unsplash.com/random/800x600';
+                let imageWidth = Math.min(window.innerWidth, <?= RANDOM_IMAGE_MAX_WIDTH; ?>);
+                let imageHeight = Math.min(window.innerHeight, <?= RANDOM_IMAGE_MAX_HEIGHT; ?>);
+                
+                let randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
                 Fs.openRandomImage(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
