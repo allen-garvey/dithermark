@@ -39,7 +39,7 @@ App.ColorPicker = (function(Pixel){
             {title: 'Kelp', colors: ['#22a828', '#f2e659', '#e56e48', '#181f32', '#b28fc3', '#99d09a', '#52774d', '#592234', '#d4124a', '#d1ded8', '#b77315', '#ce4c2a']},
             {title: 'Seance', colors: ['#28012e', '#fcfde1', '#eedb51', '#8ab32d', '#852d97', '#271784', '#a93e2e', '#613f4e', '#332b80', '#4d1a1a', '#355a25', '#287177']},
             {title: 'Rose', colors: ['#200d10', '#fff2f2', '#c91837', '#f87263', '#790f47', '#4d2030', '#f1cdb8', '#ec2f13', '#ef3d4a', '#c1311c', '#371340', '#ffe1d5']},
-            {title: 'Lava', colors: ['#e8d566', '#bf1c1c', '#df4f4f', '#500c0e', '#dfb34a', '#9b3737', '#2c3f1f', '#ddf2c6', '#292114', '#fdeefd', '#443858', '#ebb8f8']},
+            {title: 'Wildfire', colors: ['#e8d566', '#bf1c1c', '#df4f4f', '#500c0e', '#dfb34a', '#9b3737', '#2c3f1f', '#ddf2c6', '#292114', '#fdeefd', '#443858', '#ebb8f8']},
             {title: 'Blueberry', colors: ['#00042b', '#fffff4', '#2459bd', '#649bf7', '#4d2266', '#2d1838', '#ede7bc', '#2d5b77', '#9e99dd', '#95fdb4', '#3a763c', '#fcd9b1']},
             {title: 'Lilac', colors: ['#1f1320', '#fae8fd', '#61679e', '#c49bd2', '#362f62', '#9bc8ca', '#d1ded3', '#ddf2c6', '#8b4766', '#e9e4cf', '#54456d', '#d9a659']},
             {title: 'Verdant', colors: ['#151b12', '#f2fff0', '#89a240', '#bced8f', '#645c24', '#31291a', '#d9f0b9', '#bfc24b', '#936628', '#fafbca', '#743916', '#84792d']},
