@@ -1,5 +1,3 @@
-var App = App || {};
-
 App.Fs = (function(){
     var URL = window.URL;
     var Image = window.Image;

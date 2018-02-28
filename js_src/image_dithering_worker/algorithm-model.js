@@ -1,4 +1,3 @@
-var App = App || {};
 
 App.Algorithms = (function(){
     function ditherAlgorithms(){

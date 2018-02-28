@@ -1,4 +1,3 @@
-var App = App || {};
 
 App.Histogram = (function(Pixel, Polyfills){
     var histogramHeight = 64;

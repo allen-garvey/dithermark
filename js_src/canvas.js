@@ -1,5 +1,3 @@
-var App = App || {};
-
 App.Canvas = (function(Polyfills){
     var devicePixelRatio = window.devicePixelRatio || 1;
     

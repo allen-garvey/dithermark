@@ -1,4 +1,3 @@
-var App = App || {};
 
 App.Image = (function(Pixel){
     function transformImage(pixels, imageWidth, imageHeight, pixelTransformFunc){

@@ -1,5 +1,3 @@
-var App = App || {};
-
 App.Timer = (function(){
     
     var timeInMilliseconds;

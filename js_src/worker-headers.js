@@ -1,4 +1,3 @@
-var App = App || {};
 App.WorkerHeaders = {
     LOAD_IMAGE: 0,
     DITHER: 1,

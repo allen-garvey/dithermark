@@ -1,5 +1,3 @@
-var App = App || {};
-
 App.Pixel = (function(){
     const R_INDEX = 0;
     const G_INDEX = 1;

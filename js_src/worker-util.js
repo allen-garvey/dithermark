@@ -1,4 +1,3 @@
-var App = App || {};
 
 App.WorkerUtil = (function(Polyfills, WorkerHeaders){
     function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
