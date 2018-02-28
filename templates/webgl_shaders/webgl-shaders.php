@@ -206,7 +206,7 @@
     uniform sampler2D u_texture;
     
     uniform int u_colors_array_length;
-    uniform vec3 u_colors_array[12];
+    uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
     
     #{{lightnessFunction}}
     
@@ -220,7 +220,7 @@
         float shortestDistance = 1000.0;
         vec3 outputPixel = pixel.rgb;
         
-        for(int i=0;i<12;i++){
+        for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
             if(i >= u_colors_array_length){
                 break;
             }
@@ -242,7 +242,7 @@
     uniform sampler2D u_texture;
     
     uniform int u_colors_array_length;
-    uniform vec3 u_colors_array[12];
+    uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
     
     #{{lightnessFunction}}
     
@@ -260,7 +260,7 @@
         vec3 closestPixel = pixel.rgb;
         vec3 secondClosestPixel = pixel.rgb;
         
-        for(int i=0;i<12;i++){
+        for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
             if(i >= u_colors_array_length){
                 break;
             }
