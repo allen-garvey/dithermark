@@ -25,5 +25,9 @@
     define('RANDOM_IMAGE_MAX_WIDTH', 800);
     define('RANDOM_IMAGE_MAX_HEIGHT', 600);
     
+    define('HISTOGRAM_HEIGHT', 64);
+    define('HISTOGRAM_BW_WIDTH', 256);
+    define('HISTOGRAM_COLOR_WIDTH', 360);
+    
     //color dither stuff
     define('COLOR_DITHER_MAX_COLORS', 12);
