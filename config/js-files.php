@@ -2,28 +2,28 @@
     
     function sharedJsFiles(): array{
         return [
-            JS_SRC_PATH.'polyfills.js',
-            JS_SRC_PATH.'worker-headers.js',
-            JS_SRC_PATH.'color-dither-modes.js',
-            JS_SRC_PATH.'timer.js',
-            JS_SRC_PATH.'pixel.js',
-            JS_SRC_PATH.'bayer-matrix.js',
+            JS_SHARED_PATH.'polyfills.js',
+            JS_SHARED_PATH.'worker-headers.js',
+            JS_SHARED_PATH.'color-dither-modes.js',
+            JS_SHARED_PATH.'timer.js',
+            JS_SHARED_PATH.'pixel.js',
+            JS_SHARED_PATH.'bayer-matrix.js',
         ];
     }
     
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
-            JS_SRC_PATH.'fs.js',
-            JS_SRC_PATH.'worker-util.js',
-            JS_SRC_PATH.'color-picker.js',
-            JS_SRC_PATH.'canvas.js',
-            JS_SRC_PATH.'bayer-webgl.js',
-            JS_SRC_PATH.'webgl-m4.js',
-            JS_SRC_PATH.'webgl.js',
-            JS_SRC_PATH.'webgl-bw-dither.js',
-            JS_SRC_PATH.'webgl-color-dither.js',
-            JS_SRC_PATH.'histogram.js',
-            JS_SRC_PATH.'algorithm-model.js',
+            JS_APP_PATH.'fs.js',
+            JS_APP_PATH.'worker-util.js',
+            JS_APP_PATH.'color-picker.js',
+            JS_APP_PATH.'canvas.js',
+            JS_APP_PATH.'bayer-webgl.js',
+            JS_APP_PATH.'webgl-m4.js',
+            JS_APP_PATH.'webgl.js',
+            JS_APP_PATH.'webgl-bw-dither.js',
+            JS_APP_PATH.'webgl-color-dither.js',
+            JS_APP_PATH.'histogram.js',
+            JS_APP_PATH.'algorithm-model.js',
             JS_VUES_PATH.'bw-dither-component.js',
             JS_VUES_PATH.'color-dither-component.js',
             JS_VUES_PATH.'dither-studio-component.js',

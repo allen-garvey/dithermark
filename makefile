@@ -1,7 +1,9 @@
 PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
-JS_SRC=$(shell find ./js_src -type f -name '*.js')
+JS_APP_SRC=$(shell find ./js_src/app -type f -name '*.js')
+JS_WORKER_SRC=$(shell find ./js_src/image_dithering_worker -type f -name '*.js')
+JS_SHARED_SRC=$(shell find ./js_src/shared -type f -name '*.js')
 JS_CONFIG=$(shell find ./config -type f -name '*.php')
 
 JS_APP_TEMPLATE=templates/app.js.php
@@ -35,10 +37,10 @@ $(CSS_OUTPUT_DIR):
 $(VUE_OUTPUT): $(VUE_SRC)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
 
-$(JS_APP_OUTPUT): $(JS_SRC) $(JS_CONFIG) $(JS_APP_TEMPLATE)
+$(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_APP_TEMPLATE)
 	php $(JS_APP_TEMPLATE) > $(JS_APP_OUTPUT)
 
-$(JS_WORKER_OUTPUT): $(JS_SRC) $(JS_CONFIG) $(JS_WORKER_TEMPLATE)
+$(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_WORKER_TEMPLATE)
 	php $(JS_WORKER_TEMPLATE) > $(JS_WORKER_OUTPUT)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss') $(CSS_OUTPUT_DIR)
