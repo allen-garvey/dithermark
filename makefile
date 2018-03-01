@@ -44,9 +44,8 @@ $(JS_WORKER_OUTPUT): $(JS_SRC) $(JS_CONFIG) $(JS_WORKER_TEMPLATE)
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss') $(CSS_OUTPUT_DIR)
 	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
 
-
-$(HTML_INDEX): $(shell find ./templates -type f -name '*.php') $(PUBLIC_HTML_DIR) config/config.php
-	php templates/index.php > $(HTML_INDEX)
+$(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') config/config.php
+	php templates/index/index.php > $(HTML_INDEX)
 	
 watch_js:
 	while true; do \
