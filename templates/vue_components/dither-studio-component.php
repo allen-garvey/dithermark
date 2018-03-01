@@ -2,8 +2,8 @@
     <div class="controls" v-cloak>
         <div class="controls-toplevel-container">
             <div>
-                <button v-on:click="loadImageTrigger">Open image file</button>
-                <button v-on:click="loadRandomImage" v-bind:disabled="isCurrentlyLoadingRandomImage">Load random image</button>    
+                <button v-on:click="loadImageTrigger" title="Open local image file">Open image</button>
+                <button v-on:click="loadRandomImage" v-bind:disabled="isCurrentlyLoadingRandomImage" title="Load random image from Unsplash">Random image</button>    
             </div>
             <div>
                 <button v-on:click="saveImage" v-show="isImageLoaded">Save image</button>
