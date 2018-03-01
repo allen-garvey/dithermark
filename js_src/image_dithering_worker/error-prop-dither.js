@@ -1,4 +1,4 @@
-App.ErrorPropDither = (function(Image, Pixel){
+App.ErrorPropDither = (function(Image, Pixel, PixelMath){
     
     /*
     ** Error propagation matrix stuff
@@ -44,7 +44,7 @@ App.ErrorPropDither = (function(Image, Pixel){
         var errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
         
         return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-            var lightness = Pixel.lightness(pixel);
+            var lightness = PixelMath.lightness(pixel);
             var adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, y);
             
             var ret;
@@ -246,4 +246,4 @@ App.ErrorPropDither = (function(Image, Pixel){
     };
     
     
-})(App.Image, App.Pixel);
+})(App.Image, App.Pixel, App.PixelMath);

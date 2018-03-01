@@ -1,9 +1,9 @@
-App.Threshold = (function(Image, Pixel){
+App.Threshold = (function(Image, Pixel, PixelMath){
     
     function thresholdTransformGenerator(thresholdFunc){
         return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-                var lightness = Pixel.lightness(pixel);
+                var lightness = PixelMath.lightness(pixel);
                 
                 if(lightness > thresholdFunc(threshold)){
                     whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
@@ -24,4 +24,4 @@ App.Threshold = (function(Image, Pixel){
        image: thresholdTransformGenerator((threshold)=>{ return threshold; }),
        randomDither: thresholdTransformGenerator(randomThresholdFunc),
     };
-})(App.Image, App.Pixel);
+})(App.Image, App.Pixel, App.PixelMath);

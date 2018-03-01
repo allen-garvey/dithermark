@@ -1,5 +1,5 @@
 
-App.Histogram = (function(Pixel, Polyfills){
+App.Histogram = (function(Pixel, Polyfills, PixelMath){
     var histogramHeight = 64;
     
     function createHistogramArray(histogramWidth){
@@ -76,14 +76,14 @@ App.Histogram = (function(Pixel, Polyfills){
     
     function createBwHistogram(pixels){
         let blackPixel = Pixel.create(0, 0, 0);
-        return createHistogram(pixels, 256, histogramHeight, Pixel.lightness, ()=>{return blackPixel;});
+        return createHistogram(pixels, 256, histogramHeight, PixelMath.lightness, ()=>{return blackPixel;});
     }
     
     function createHueHistogram(pixels){
         hueArray = hueArray || createHueArray();
         let retPixel = Pixel.create(0,0,0);
         
-        return createHistogram(pixels, 360, histogramHeight, Pixel.hue, (hue)=>{
+        return createHistogram(pixels, 360, histogramHeight, PixelMath.hue, (hue)=>{
             let baseIndex = hue * 4;
             retPixel[0] = hueArray[baseIndex];
             retPixel[1] = hueArray[baseIndex+1];
@@ -98,7 +98,7 @@ App.Histogram = (function(Pixel, Polyfills){
         let hueArray = new Uint8Array(360 * 4);
         let baseIndex = 0;
         for(let i=0;i<360;i++){
-            let pixel = Pixel.hueToPixel(i);
+            let pixel = PixelMath.hueToPixel(i);
             hueArray[baseIndex] = pixel[0];
             hueArray[baseIndex+1] = pixel[1];
             hueArray[baseIndex+2] = pixel[2];
@@ -115,4 +115,4 @@ App.Histogram = (function(Pixel, Polyfills){
         createBwHistogram: createBwHistogram,
         createHueHistogram: createHueHistogram,
     };
-})(App.Pixel, App.Polyfills);
+})(App.Pixel, App.Polyfills, App.PixelMath);

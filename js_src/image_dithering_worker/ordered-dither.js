@@ -1,4 +1,4 @@
-App.OrderedDither = (function(Image, Pixel, Bayer){
+App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
     
     function createMaxtrix(dimensions){
         return {
@@ -36,7 +36,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer){
             var thresholdFraction = 255 / threshold;
             
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-                var lightness = Pixel.lightness(pixel);
+                var lightness = PixelMath.lightness(pixel);
                 var matrixThreshold = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 
                 if(lightness > (matrixThreshold * thresholdFraction)){
@@ -56,4 +56,4 @@ App.OrderedDither = (function(Image, Pixel, Bayer){
         createOrderedDither: createOrderedDither,
     };
     
-})(App.Image, App.Pixel, App.BayerMatrix);
+})(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath);
