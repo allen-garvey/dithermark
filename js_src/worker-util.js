@@ -1,8 +1,8 @@
 
 App.WorkerUtil = (function(Polyfills, WorkerHeaders){
-    function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, serpentineDither, blackPixel, whitePixel){
-        //(6 + (3 * 2)) * 2
-        var buffer = new Polyfills.SharedArrayBuffer(24);
+    function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
+        //(5 + (3 * 2)) * 2
+        var buffer = new Polyfills.SharedArrayBuffer(22);
         var bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.DITHER;
@@ -11,22 +11,21 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         
         bufferView[3] = algorithmId;
         bufferView[4] = threshold;
-        bufferView[5] = serpentineDither;
         
-        bufferView[6] = blackPixel[0];
-        bufferView[7] = blackPixel[1];
-        bufferView[8] = blackPixel[2];
+        bufferView[5] = blackPixel[0];
+        bufferView[6] = blackPixel[1];
+        bufferView[7] = blackPixel[2];
         
-        bufferView[9] = whitePixel[0];
-        bufferView[10] = whitePixel[1];
-        bufferView[11] = whitePixel[2];
+        bufferView[8] = whitePixel[0];
+        bufferView[9] = whitePixel[1];
+        bufferView[10] = whitePixel[2];
 
         return buffer;
     }
     
-    function createDitherWorkerBwHeader(imageWidth, imageHeight, threshold, algorithmId, serpentineDither){
-        //6 * 2
-        var buffer = new Polyfills.SharedArrayBuffer(12);
+    function createDitherWorkerBwHeader(imageWidth, imageHeight, threshold, algorithmId){
+        //5 * 2
+        var buffer = new Polyfills.SharedArrayBuffer(10);
         var bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.DITHER_BW;
@@ -35,7 +34,6 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         
         bufferView[3] = algorithmId;
         bufferView[4] = threshold;
-        bufferView[5] = serpentineDither;
 
         return buffer;
     }

@@ -21,28 +21,18 @@
     
     function ditherAction(messageHeader){
         //dither the image
-        let selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
+        var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
-        let pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
-        let imageDataBuffer = pixelBufferCopy.buffer;
+        var pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
+        var pixels = pixelBufferCopy.pixels;
+        var imageDataBuffer = pixelBufferCopy.buffer;
         
-        let imageHeight = messageHeader.imageHeight;
-        let imageWidth = messageHeader.imageWidth;
-        
-        let args = [
-            pixelBufferCopy.pixels,
-            messageHeader.imageWidth,
-            messageHeader.imageHeight,
-            messageHeader.threshold,
-            messageHeader.blackPixel,
-            messageHeader.whitePixel,
-        ];
-        if(selectedAlgorithm.isErrorPropDither){
-            args.push(messageHeader.serpentineDither);
-        }
+        var imageHeight = messageHeader.imageHeight;
+        var imageWidth = messageHeader.imageWidth;
+        var threshold = messageHeader.threshold;
         
         Timer.megapixelsPerSecond(selectedAlgorithm.title + '          ', imageHeight * imageWidth, ()=>{
-          selectedAlgorithm.algorithm(...args); 
+          selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
         });
         
         postMessage(imageDataBuffer);
