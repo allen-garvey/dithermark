@@ -21,7 +21,7 @@ App.Threshold = (function(Image, Pixel){
     }
     
     return {
-       image: thresholdTransformGenerator(function(threshold){ return threshold; }),
+       image: thresholdTransformGenerator((threshold)=>{ return threshold; }),
        randomDither: thresholdTransformGenerator(randomThresholdFunc),
     };
 })(App.Image, App.Pixel);
