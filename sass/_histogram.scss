@@ -6,7 +6,7 @@
 
 .histogram-container{
     position: relative;
-    border: 1px solid $highlight_color;
+    border: 1px solid rgba(200, 200, 200, 0.5);
     
     canvas{
         position: absolute;
