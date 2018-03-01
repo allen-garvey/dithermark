@@ -18,8 +18,8 @@
     </div>
     <div class="histogram-super-container">
         <div class="histogram-container" v-bind:style="{width: histogramWidth + 'px', height: histogramHeight + 'px'}">
-            <canvas ref="histogramCanvasIndicator" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
-            <canvas ref="histogramCanvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
+            <canvas ref="histogramCanvasIndicator" class="histogram-canvas-indicator" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
+            <canvas ref="histogramCanvas" class="histogram-canvas" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
         </div>
     </div>
 
