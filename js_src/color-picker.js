@@ -48,7 +48,7 @@ App.ColorPicker = (function(Pixel){
             {title: 'Blue Devil', colors: ['#648eae', '#ece50a', '#7c69d9', '#905b01', '#66f099', '#b66749', '#0621a2', '#3565e6', '#cee551', '#ad4f01', '#d9fa30', '#9ea9cc']},
             {title: 'Purple Haze', colors: ['#e7bc66', '#f96226', '#82ded0', '#c8b983', '#96192d', '#7aa8d5', '#a503d1', '#3f066f', '#57043a', '#de8786', '#db516a', '#738199']},
             {title: 'Purple Haze 2', colors: ['#9b656c', '#a201ef', '#a30528', '#19248d', '#d9eb89', '#96c6c5', '#9b1d2f', '#053646', '#6f6cf1', '#ec23ec', '#1332a2', '#b530fe']},
-            {title: 'Neon Dream', colors: ['#a101a9', '#a9a0f3', '#2c1a5e', '#8f269c', '#69ba2d', '#faa5cc', '#c5967b', '#feb180', '#51e00f', '#26c6c6', '#9ffd5d', '#bd1870']},
+            {title: 'Neon', colors: ['#a101a9', '#a9a0f3', '#2c1a5e', '#8f269c', '#69ba2d', '#faa5cc', '#c5967b', '#feb180', '#51e00f', '#26c6c6', '#9ffd5d', '#bd1870']},
             {title: 'Watermelon', colors: ['#8cc386', '#ce54d5', '#392f4e', '#be7dee', '#64b907', '#0c757b', '#fd0d0f', '#de2969', '#b9d4c3', '#d87a64', '#94d076', '#d47caf']},
             {title: 'Crystals', colors: ['#a0d5c2', '#054b9c', '#013faf', '#bff698', '#52a297', '#d12b4c', '#4319aa', '#ea11a7', '#cb9045', '#fb7198', '#370107', '#107679']},
         ];
