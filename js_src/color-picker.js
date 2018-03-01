@@ -43,6 +43,7 @@ App.ColorPicker = (function(Pixel){
             {title: 'Blueberry', colors: ['#00042b', '#fffff4', '#2459bd', '#649bf7', '#4d2266', '#2d1838', '#ede7bc', '#2d5b77', '#9e99dd', '#95fdb4', '#3a763c', '#fcd9b1']},
             {title: 'Lilac', colors: ['#1f1320', '#fae8fd', '#61679e', '#c49bd2', '#362f62', '#9bc8ca', '#d1ded3', '#ddf2c6', '#8b4766', '#e9e4cf', '#54456d', '#d9a659']},
             {title: 'Lichen', colors: ['#151b12', '#f2fff0', '#89a240', '#bced8f', '#645c24', '#31291a', '#d9f0b9', '#bfc24b', '#936628', '#fafbca', '#743916', '#84792d']},
+            {title: 'Bronze', colors: ['#a98134', '#fffee6', '#6d4e2e', '#e4cfa3', '#212c1f', '#fbf5b5', '#d0d8ba', '#453621', '#d2d06a', '#1b1614', '#9f6835', '#85a277']},
             {title: 'Shamrock', colors: ['#a9a0a8', '#044040', '#c3b448', '#dcb3fd', '#19c778', '#c4f3d1', '#56e22f', '#cd814b', '#23afed', '#617b2f', '#17e681', '#1d9c4b']},
             {title: 'Sandcastle', colors: ['#111d84', '#daf9fe', '#db6b1a', '#4377d8', '#29106d', '#f8d792', '#c7c0d3', '#242626', '#dddb75', '#9ce4ca', '#426f50', '#fde0c1']},
             {title: 'Blue Devil', colors: ['#648eae', '#ece50a', '#7c69d9', '#905b01', '#66f099', '#b66749', '#0621a2', '#3565e6', '#cee551', '#ad4f01', '#d9fa30', '#9ea9cc']},
