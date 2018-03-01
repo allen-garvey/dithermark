@@ -25,7 +25,7 @@
     define('RANDOM_IMAGE_MAX_WIDTH', 800);
     define('RANDOM_IMAGE_MAX_HEIGHT', 600);
     
-    define('HISTOGRAM_HEIGHT', 64);
+    define('HISTOGRAM_HEIGHT', 96);
     //histogram widths cannot be safely changed without also changing the generation code as well
     define('HISTOGRAM_BW_WIDTH', 256);
     define('HISTOGRAM_COLOR_WIDTH', 360);
