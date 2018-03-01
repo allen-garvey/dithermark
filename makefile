@@ -43,7 +43,7 @@ $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_APP_TEMPLATE)
 $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_WORKER_TEMPLATE)
 	php $(JS_WORKER_TEMPLATE) > $(JS_WORKER_OUTPUT)
 	
-$(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss') $(CSS_OUTPUT_DIR)
+$(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
 
 $(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') config/config.php
