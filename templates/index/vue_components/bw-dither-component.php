@@ -17,9 +17,9 @@
         <button v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
     </div>
     <div class="histogram-super-container">
-        <div class="histogram-container" v-bind:style="{width: histogramWidth + 'px', height: histogramHeight + 'px'}">
-            <canvas ref="histogramCanvasIndicator" class="histogram-canvas-indicator" v-bind:width="histogramWidth" v-bind:height="histogramHeight"></canvas>
-            <canvas ref="histogramCanvas" class="histogram-canvas" width="histogramWidth" height="histogramHeight"></canvas>
+        <div class="histogram-container" style="width: <?= HISTOGRAM_BW_WIDTH.'px'; ?>; height: <?= HISTOGRAM_HEIGHT.'px'; ?>;">
+            <canvas ref="histogramCanvasIndicator" class="histogram-canvas-indicator" width="<?= HISTOGRAM_BW_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>"></canvas>
+            <canvas ref="histogramCanvas" class="histogram-canvas" width="<?= HISTOGRAM_BW_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>"></canvas>
         </div>
     </div>
 

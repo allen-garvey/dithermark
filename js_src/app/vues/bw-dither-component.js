@@ -30,8 +30,6 @@
                 thresholdMax: 255,
                 selectedDitherAlgorithmIndex: 0,
                 hasImageBeenTransformed: false,
-                histogramHeight: Histogram.height,
-                histogramWidth: Histogram.width,
                 colorReplaceColors: [],
                 ditherAlgorithms: AlgorithmModel.ditherAlgorithms,
                 savedTextures: [],
@@ -196,7 +194,7 @@
                 }
             },
             histogramWorkerMessageReceived: function(pixels){
-                Canvas.replaceImageWithArray(histogramCanvas, this.histogramWidth, this.histogramHeight, pixels);
+                Canvas.replaceImageWithArray(histogramCanvas, Histogram.width, Histogram.height, pixels);
             },
             ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;
