@@ -81,7 +81,8 @@
                     return;
                 }
                 if(newThresholdCleaned !== newThreshold){
-                    this.threshold = newThresholdCleaned;   
+                    this.threshold = newThresholdCleaned;
+                    return;
                 }
                 
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
