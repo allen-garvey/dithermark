@@ -1,11 +1,22 @@
 //color picker helper functionality
 App.ColorPicker = (function(Pixel){
-    //takes hex in form #ffffff and returns pixel
-    function pixelFromColorPicker(hex){
+    function parseHex(hex, callback){
         let r = parseInt(hex.substring(1, 3), 16);
         let g = parseInt(hex.substring(3, 5), 16);
         let b = parseInt(hex.substring(5, 7), 16);
-        return Pixel.create(r, g, b);
+        
+        callback(r, g, b);
+    }
+    
+    //takes hex in form #ffffff and returns pixel
+    function pixelFromColorPicker(hex){
+        let ret;
+        
+        parseHex(hex, (r, g, b)=>{
+           ret = Pixel.create(r, g, b); 
+        });
+        
+        return ret;
     }
     
     
@@ -16,13 +27,11 @@ App.ColorPicker = (function(Pixel){
         let offset = 0;
         
         hexColors.forEach((hex)=>{
-            let r = parseInt(hex.substring(1, 3), 16);
-            let g = parseInt(hex.substring(3, 5), 16);
-            let b = parseInt(hex.substring(5, 7), 16);
-            
-            vec[offset++]   = r / 255.0;
-            vec[offset++] = g / 255.0;
-            vec[offset++] = b / 255.0;
+            parseHex(hex, (r, g, b)=>{
+                vec[offset++]   = r / 255.0;
+                vec[offset++] = g / 255.0;
+                vec[offset++] = b / 255.0;
+            });
         });
         
         
