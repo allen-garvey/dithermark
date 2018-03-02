@@ -194,7 +194,7 @@
                 //get messageTypeId from start of buffer
                 let messageTypeId = pixelsFull[0];
                 //rest of the buffer is the actual pixel data
-                let pixels = pixelsFull.subarray(1, pixelsFull.length);
+                let pixels = pixelsFull.subarray(1);
                 switch(messageTypeId){
                     case WorkerHeaders.DITHER:
                     case WorkerHeaders.DITHER_BW:
