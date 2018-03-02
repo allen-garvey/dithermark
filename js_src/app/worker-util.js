@@ -1,5 +1,5 @@
 
-App.WorkerUtil = (function(Polyfills, WorkerHeaders){
+App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker){
     function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
         //(5 + (3 * 2)) * 2
         var buffer = new Polyfills.SharedArrayBuffer(22);
@@ -34,6 +34,23 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
         
         bufferView[3] = algorithmId;
         bufferView[4] = threshold;
+
+        return buffer;
+    }
+    
+    function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, colorDitherMode, selectedColors){
+        //(4 * 2) + selectedColors * 3
+        let buffer = new Polyfills.SharedArrayBuffer(8 + (selectedColors * 3));
+        let bufferView = new Uint16Array(buffer);
+        
+        bufferView[0] = WorkerHeaders.DITHER_COLOR;
+        bufferView[1] = imageWidth;
+        bufferView[2] = imageHeight;
+        
+        bufferView[3] = algorithmId;
+        bufferView[4] = colorDitherMode;
+        
+        ColorPicker.prepareForWorker(selectedColors, bufferView.subarray(5));
 
         return buffer;
     }
@@ -103,9 +120,10 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders){
     return {
         ditherWorkerHeader: createDitherWorkerHeader,
         ditherWorkerBwHeader: createDitherWorkerBwHeader,
+        ditherWorkerColorHeader: createDitherWorkerColorHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
         histogramWorkerHeader: createHistogramWorkerHeader,
         colorHistogramWorkerHeader: createColorHistogramWorkerHeader,
         createDitherWorkers: createWorkers,
     };
-})(App.Polyfills, App.WorkerHeaders);
+})(App.Polyfills, App.WorkerHeaders, App.ColorPicker);

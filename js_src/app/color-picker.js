@@ -19,6 +19,17 @@ App.ColorPicker = (function(Pixel){
         return ret;
     }
     
+    function prepareForWorker(hexColors, array){
+        let i = 0;
+        hexColors.forEach((hex)=>{
+            parseHex(hex, (r, g, b)=>{
+                array[i++] = r;
+                array[i++] = g;
+                array[i++] = b;
+            });
+        });
+    }
+    
     
     //takes array of hex colors in form #ffffff
     //and returns single Float32Array or rgb values (no alpha)
@@ -90,6 +101,7 @@ App.ColorPicker = (function(Pixel){
         palettes: createPalettes(),
         areColorArraysIdentical: areColorArraysIdentical,
         randomPalette: randomPalette,
+        prepareForWorker: prepareForWorker,
     };
     
 })(App.Pixel);
