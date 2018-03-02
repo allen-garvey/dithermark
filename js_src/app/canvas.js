@@ -19,9 +19,14 @@ App.Canvas = (function(Polyfills){
         if (!gl) {
             gl = canvas.getContext('experimental-webgl');
         }
+        let maxTextureSize = 0;
+        if(gl){
+            maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+        }
         return {
             canvas: canvas,
             gl: gl,
+            maxTextureSize: maxTextureSize,
         };
     }
     
