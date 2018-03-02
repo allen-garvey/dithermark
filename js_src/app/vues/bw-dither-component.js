@@ -86,7 +86,7 @@
                 }
                 
                 Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
@@ -94,7 +94,7 @@
                 //reset bw texture
                 this.freeTransformedImageBwTexture();
                 
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },

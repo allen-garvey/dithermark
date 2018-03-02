@@ -63,7 +63,7 @@
                 }
             },
             selectedDitherAlgorithmIndex: function(newIndex){
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
@@ -81,7 +81,7 @@
                 if(value === oldValue){
                     return;
                 }
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
@@ -92,7 +92,7 @@
             },
             colors: function(newValue, oldValue){
                 //don't dither image if colors changed are not enabled
-                if(this.isImageLoaded && this.isLivePreviewEnabled && !ColorPicker.areColorArraysIdentical(newValue.slice(0, this.numColors), oldValue.slice(0, this.numColors))){
+                if(this.isLivePreviewEnabled && !ColorPicker.areColorArraysIdentical(newValue.slice(0, this.numColors), oldValue.slice(0, this.numColors))){
                     this.ditherImageWithSelectedAlgorithm();
                 }
                 let currentPalette = this.palettes[this.selectedPaletteIndex];
@@ -108,7 +108,7 @@
                 }
             },
             selectedColorDitherModeId: function(newValue){
-                if(this.isImageLoaded && this.isLivePreviewEnabled){
+                if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
