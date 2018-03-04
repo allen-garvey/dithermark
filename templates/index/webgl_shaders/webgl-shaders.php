@@ -112,7 +112,7 @@
 <script type="webgl/fragment-shader-function" id="webgl-rgb-distance">
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 distances = pixel1 - pixel2;
-        return abs(distances.r * distances.g * distances.b);
+        return dot(vec3(1.0), distances * distances);
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hue-distance">
@@ -126,7 +126,9 @@
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 hsl1 = rgb2hsl(pixel1);
         vec3 hsl2 = rgb2hsl(pixel2);
-        return hue_distance(hsl1.r, hsl2.r) + abs(hsl1.b - hsl2.b);
+        float hDist = hue_distance(hsl1.r, hsl2.r);
+        float lDist = hsl1.b - hsl2.b;
+        return hDist * hDist + lDist * lDist;
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-lightness-distance">
@@ -140,7 +142,11 @@
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 hsl1 = rgb2hsl(pixel1);
         vec3 hsl2 = rgb2hsl(pixel2);
-        return hue_distance(hsl1.r, hsl2.r) * 4.0 + abs(hsl1.g - hsl2.g) + abs(hsl1.b - hsl2.b) * 8.0;
+        float hDist = hue_distance(hsl1.r, hsl2.r);
+        vec2 slDist = hsl1.gb - hsl2.gb;  
+        vec3 hslDist = vec3(hDist, slDist);  
+
+        return dot(vec3(4.0, 1.0, 8.0), hslDist * hslDist);
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hsl-functions">
