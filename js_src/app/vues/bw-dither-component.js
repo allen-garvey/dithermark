@@ -200,7 +200,7 @@
             ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;
                 Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
-                console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
+                console.log(Timer.megapixelsMessage(`${this.selectedDitherAlgorithm.title} total time            `, this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.$emit('display-transformed-image');
             },
             ditherWorkerBwMessageReceived: function(pixels){
