@@ -1,20 +1,28 @@
 :root{
     --main-bg-color: white;
+    --main-text-color: black;
+    --main-text-color-rgb: 0, 0, 0;
 }
 .editor-light{
     color: black;
     background-color: white;
     --main-bg-color: white;
+    --main-text-color: black;
+    --main-text-color-rgb: 0, 0, 0;
 }
 
 .editor-gray{
     color: black;
     background-color: #aaa;
     --main-bg-color: #aaa;
+    --main-text-color: black;
+    --main-text-color-rgb: 0, 0, 0;
 }
 
 .editor-dark{
     color: white;
     background-color: black;
     --main-bg-color: black;
+    --main-text-color: white;
+    --main-text-color-rgb: 255, 255, 255;
 }

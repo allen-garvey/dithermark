@@ -36,6 +36,10 @@
                     <label v-if="isWebglSupported">Enable WebGL
                         <input type="checkbox" v-model="isWebglEnabled"/>
                     </label>
+
+                    <label>Pin controls
+                        <input type="checkbox" v-model="areControlsPinned"/>
+                    </label>
                 </div>
                 <div>
                     <label>
@@ -46,7 +50,7 @@
                     </label>
                 </div>
             </div>
-            <div>
+            <div class="super-dither-controls-container">
                 <div class="tabs-container">
                     <div class="tab" v-bind:class="{active: activeTab === 0}" v-on:click="loadTab(0)">BW Dither</div>
                     <div class="tab" v-bind:class="{active: activeTab === 1}" v-on:click="loadTab(1)">Color Dither</div>

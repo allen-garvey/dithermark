@@ -47,6 +47,7 @@
                 isCurrentlyLoadingRandomImage: false,
                 isWebglSupported: false,
                 isWebglEnabled: false,
+                areControlsPinned: false,
                 zoom: 100,
                 zoomMin: 10,
                 zoomMax: 400,
@@ -73,8 +74,23 @@
             },
         },
         watch: {
-            currentEditorThemeIndex: function(newThemeIndex){
-                document.documentElement.className = this.editorThemes[newThemeIndex].className;
+            currentEditorThemeIndex: function(newThemeIndex, oldThemeIndex){
+                let classList = document.documentElement.classList;
+                if(oldThemeIndex !== null){
+                    let oldThemeClass = this.editorThemes[oldThemeIndex].className;
+                    classList.remove(oldThemeClass);
+                }
+                let newThemeClass = this.editorThemes[newThemeIndex].className;
+                classList.add(newThemeClass);
+            },
+            areControlsPinned: function(newValue){
+                let classList = document.documentElement.classList;
+                if(newValue){
+                    classList.add('fixed-controls');
+                }
+                else{
+                    classList.remove('fixed-controls');
+                }
             },
             zoom: function(newZoom, oldZoom){
                 let newZoomCleaned = Math.floor(newZoom);
