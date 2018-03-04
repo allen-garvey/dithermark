@@ -146,7 +146,7 @@
         vec2 slDist = hsl1.gb - hsl2.gb;  
         vec3 hslDist = vec3(hDist, slDist);  
 
-        return dot(vec3(4.0, 1.0, 8.0), hslDist * hslDist);
+        return dot(vec3(8.0, 1.0, 32.0), hslDist * hslDist);
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hsl-functions">
