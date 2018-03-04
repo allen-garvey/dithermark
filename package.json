@@ -4,7 +4,8 @@
   "description": "",
   "main": "public_html/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "gulp": "gulp"
   },
   "repository": {
     "type": "git",
@@ -18,5 +19,9 @@
   "homepage": "https://github.com/allen-garvey/jsdither#readme",
   "dependencies": {
     "vue": "^2.5.9"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-sass": "^3.1.0"
   }
 }

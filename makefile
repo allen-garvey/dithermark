@@ -44,7 +44,7 @@ $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_WORKER_
 	php $(JS_WORKER_TEMPLATE) > $(JS_WORKER_OUTPUT)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
-	sassc --style compressed sass/style.scss $(CSS_OUTPUT)
+	npm run gulp
 
 $(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') config/config.php
 	php templates/index/index.php > $(HTML_INDEX)
