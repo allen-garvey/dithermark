@@ -6,6 +6,7 @@
     var originalImageCanvas;
     var sourceCanvasOutput;
     var transformCanvasOutput;
+    var saveImageCanvas;
     
     var sourceWebglTexture;
     
@@ -27,6 +28,7 @@
             this.transformCanvasWebGl = Canvas.createWebgl(refs.transformCanvasWebgl);
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
+            saveImageCanvas = Canvas.create(refs.saveImageCanvas);
             
             this.currentEditorThemeIndex = 0;
             //check for webgl support
@@ -153,9 +155,8 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
-                let outputCanvas = this.transformCanvas.canvas;
-                let dataURL = outputCanvas.toDataURL(this.loadedImage.fileType);
-                saveImageLink.href = dataURL;
+                Canvas.scale(this.transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
+                saveImageLink.href = saveImageCanvas.canvas.toDataURL(this.loadedImage.fileType);
                 saveImageLink.download = this.loadedImage.fileName;
                 saveImageLink.click();
             },
