@@ -43,7 +43,11 @@ App.Canvas = (function(Polyfills){
         targetCanvasObject.canvas.width = scaledWidth;
         targetCanvasObject.canvas.height = scaledHeight;
         
-        targetCanvasObject.context.drawImage(sourceCanvasObject.canvas , 0 , 0 , sourceWidth, sourceHeight, 0, 0, scaledWidth, scaledHeight);
+        //has to be done each time we scale the image, or it will be smoothed
+        targetCanvasObject.context.webkitImageSmoothingEnabled = false;
+        targetCanvasObject.context.imageSmoothingEnabled = false;
+        
+        targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0, sourceWidth, sourceHeight, 0, 0, scaledWidth, scaledHeight);
     }
     
     //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
