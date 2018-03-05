@@ -34,13 +34,13 @@
     </div>
     <div class="color-dither-number-of-colors-container">
         <label for="color_dither_num_colors_input">Number of colors</label>
-            <input type="range" v-model="numColors" v-bind:min="numColorsMin" v-bind:max="numColorsMax" step="1" list="color_dither_num_colors_tickmarks" id="color_dither_num_colors_input" />
+            <input type="range" v-model.number="numColors" v-bind:min="numColorsMin" v-bind:max="numColorsMax" step="1" list="color_dither_num_colors_tickmarks" id="color_dither_num_colors_input" />
         <datalist id="color_dither_num_colors_tickmarks">
             <template v-for="n in (numColorsMax - numColorsMin + 1)">
                 <option v-bind:value="n + numColorsMin - 1"></option>
             </template>
         </datalist>
-        <input type="number" v-model="numColors" v-bind:min="numColorsMin" v-bind:max="numColorsMax" step="1" />
+        <input type="number" v-model.number="numColors" v-bind:min="numColorsMin" v-bind:max="numColorsMax" step="1" />
     </div>
     <div class="color-replace-super-container">
         <div class="color-replace-title-container">

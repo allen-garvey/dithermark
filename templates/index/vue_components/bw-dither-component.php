@@ -9,8 +9,8 @@
     <div>
         <label>
             Lightness threshold
-            <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
-            <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model="threshold"/>
+            <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
+            <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
         </label>
     </div>
     <div>
