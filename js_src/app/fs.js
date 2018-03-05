@@ -20,18 +20,21 @@ App.Fs = (function(){
         image.src = URL.createObjectURL(file);
     }
     
-    function openRandomImage(url, imageLoadFunc){
-        var fetch = window.fetch;
+    function openRandomImage(imageLoadFunc){
+        let fetch = window.fetch;
         
-        var image = new Image();
+        let image = new Image();
         image.onload = ()=> {
             imageLoadFunc(image, {});
         };
         
+        let imageWidth = Math.min(window.innerWidth, <?= RANDOM_IMAGE_MAX_WIDTH; ?>);
+        let imageHeight = Math.min(window.innerHeight, <?= RANDOM_IMAGE_MAX_HEIGHT; ?>);
+        let randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
+        
         //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        fetch(url).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
-            var objectURL = URL.createObjectURL(imageBlob);
-            image.src = objectURL;
+        fetch(randomImageUrl).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
+            image.src = URL.createObjectURL(imageBlob);
         });
     }
     

@@ -49,6 +49,16 @@
                         <button v-show="zoom !== 100" v-on:click="resetZoom">Reset</button>
                     </label>
                 </div>
+                <div>
+                    <label>Pixelate image
+                        <select v-model.number="pixelateImageZoom">
+                            <option value="100">None</option>
+                            <option value="50">Medium</option>
+                            <option value="25">High</option>
+                            <option value="15">Ultra</option>
+                        </select>
+                    </label>
+                </div>
             </div>
             <div class="super-dither-controls-container">
                 <div class="tabs-container">
@@ -65,6 +75,7 @@
         </div>
     </div>
     <div class="image-canvas-container" v-bind:class="{'show-original': showOriginalImage}">
+        <canvas ref="originalImageCanvas" class="hidden"></canvas>
         <canvas ref="sourceCanvas" class="hidden"></canvas>
         <canvas ref="transformCanvas" class="hidden"></canvas>
         <canvas ref="transformCanvasWebgl" class="hidden"></canvas>

@@ -3,6 +3,7 @@
     var ditherWorkers;
     
     //canvases
+    var originalImageCanvas;
     var sourceCanvasOutput;
     var transformCanvasOutput;
     
@@ -17,6 +18,7 @@
             });
             
             let refs = this.$refs;
+            originalImageCanvas = Canvas.create(refs.originalImageCanvas);
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             
@@ -49,6 +51,7 @@
                 isWebglEnabled: false,
                 areControlsPinned: false,
                 zoom: 100,
+                pixelateImageZoom: 100,
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
@@ -59,6 +62,17 @@
         computed: {
             isImageLoaded: function(){
               return this.loadedImage != null;  
+            },
+            imageHeader: function(){
+                if(!this.isImageLoaded){
+                    return null;
+                }
+                let width = Math.ceil(this.loadedImage.width * (this.pixelateImageZoom / 100));
+                let height = Math.ceil(this.loadedImage.height * (this.pixelateImageZoom / 100));
+                return {
+                    width: width,
+                    height: height,
+                };
             },
             imageTitle: function(){
                 if(this.loadedImage){
@@ -110,7 +124,11 @@
                 }
                 this.zoomImage();
             },
-            
+            pixelateImageZoom: function(newValue, oldValue){
+                if(newValue !== oldValue){
+                    this.imagePixelationChanged(originalImageCanvas, this.imageHeader);   
+                }
+            },
         },
         methods: {
             /*
@@ -122,8 +140,8 @@
                 }
                 this.activeTab = tabIndex;
                 //todo don't reload image if tab has already loaded it- instead create active tab hook
-                if(this.loadedImage){
-                    this.activeDitherSection.imageLoaded(this.loadedImage, sourceWebglTexture);   
+                if(this.isImageLoaded){
+                    this.activeDitherSection.imageLoaded(this.imageHeader, sourceWebglTexture);   
                 }
             },
             /*
@@ -143,22 +161,13 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
-                let imageWidth = Math.min(window.innerWidth, <?= RANDOM_IMAGE_MAX_WIDTH; ?>);
-                let imageHeight = Math.min(window.innerHeight, <?= RANDOM_IMAGE_MAX_HEIGHT; ?>);
                 
-                let randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
-                Fs.openRandomImage(randomImageUrl, (image, file)=>{
+                Fs.openRandomImage((image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
                 });
             },
             loadImage: function(image, file){
-                Canvas.loadImage(this.sourceCanvas, image);
-                Canvas.loadImage(this.transformCanvas, image);
-                
-                this.transformCanvasWebGl.canvas.width = image.width;
-                this.transformCanvasWebGl.canvas.height = image.height;
-                
                 this.loadedImage = {
                     width: image.width,
                     height: image.height,
@@ -166,6 +175,18 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
+                Canvas.loadImage(originalImageCanvas, image);
+                
+                this.imagePixelationChanged(originalImageCanvas, this.imageHeader);
+            },
+            imagePixelationChanged: function(canvas, imageHeader){
+                let scaleAmount = this.pixelateImageZoom / 100;
+                Canvas.scale(canvas, this.sourceCanvas, scaleAmount);
+                Canvas.scale(canvas, this.transformCanvas, scaleAmount);
+                
+                this.transformCanvasWebGl.canvas.width = imageHeader.width;
+                this.transformCanvasWebGl.canvas.height = imageHeader.height;
+                
                 //adjust zoom
                 this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
                 this.zoomMin = Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, 200);
@@ -178,7 +199,7 @@
                 
                 //load image into the webworkers
                 var buffer = Canvas.createSharedImageBuffer(this.sourceCanvas);
-                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.loadedImage.width, this.loadedImage.height);
+                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
                     ditherWorker.postMessage(ditherWorkerHeader);
@@ -188,14 +209,14 @@
                 //todo could potentially wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
                     this.transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, this.sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
+                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, this.sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
                 
                 //call selected tab image loaded hook here
-                this.activeDitherSection.imageLoaded(this.loadedImage, sourceWebglTexture);
+                this.activeDitherSection.imageLoaded(imageHeader, sourceWebglTexture);
             },
             zoomImage: function(){
-                var scaleAmount = this.zoom / 100;
+                let scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.scale(this.sourceCanvas, sourceCanvasOutput, scaleAmount);
                 Canvas.scale(this.transformCanvas, transformCanvasOutput, scaleAmount);
             },
