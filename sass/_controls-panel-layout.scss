@@ -2,7 +2,8 @@
 .fixed-controls .super-dither-controls-container{
 	position: fixed;
 	background-color: var(--main-bg-color);
-	max-width: 448px;
+	max-width: 100%;
+	width: 448px;
 	right: 0;
 	top: 0;
 	padding: 10px;
