@@ -31,7 +31,16 @@ App.Canvas = (function(Polyfills){
     }
     
     // function copyCanvasImage(sourceCanvasObject, targetCanvasObject){
-    //     targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0);
+    //     let sourceCanvas = sourceCanvasObject.canvas;
+    //     let targetCanvas = targetCanvasObject.canvas;
+        
+    //     targetCanvas.width = sourceCanvas.width;
+    //     targetCanvas.height = sourceCanvas.height;
+    //     //has to be done each time we scale the image, or it will be smoothed
+    //     targetCanvasObject.context.webkitImageSmoothingEnabled = false;
+    //     targetCanvasObject.context.imageSmoothingEnabled = false;
+        
+    //     targetCanvasObject.context.drawImage(sourceCanvas, 0, 0, sourceCanvas.width, sourceCanvas.height);
     // }
     
     function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount){
@@ -98,6 +107,7 @@ App.Canvas = (function(Polyfills){
     
     return {
        create: createCanvasObject,
+    //   copy: copyCanvasImage,
        createWebgl: createWebglCanvas,
        loadImage: canvasObjectLoadImage,
        scale: scaleCanvasImage,
