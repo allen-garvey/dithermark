@@ -35,10 +35,15 @@ App.Canvas = (function(Polyfills){
     // }
     
     function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount){
-        var sourceWidth = sourceCanvasObject.canvas.width;
-        var sourceHeight = sourceCanvasObject.canvas.height;
-        var scaledWidth = Math.ceil(sourceWidth * scaleAmount);
-        var scaledHeight = Math.ceil(sourceHeight * scaleAmount);
+        let sourceWidth = sourceCanvasObject.canvas.width;
+        let sourceHeight = sourceCanvasObject.canvas.height;
+        
+        let scaledWidth = sourceWidth;
+        let scaledHeight = sourceHeight;
+        if(scaleAmount !== 1){
+            scaledWidth = Math.ceil(scaledWidth * scaleAmount);
+            scaledHeight = Math.ceil(scaledHeight * scaleAmount);
+        }
         
         targetCanvasObject.canvas.width = scaledWidth;
         targetCanvasObject.canvas.height = scaledHeight;
