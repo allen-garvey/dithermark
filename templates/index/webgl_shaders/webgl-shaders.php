@@ -39,7 +39,7 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-body">
-   vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
+   vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
    float bayerValue = bayerPixel.r;
    float adjustedThreshold = bayerValue * u_threshold;
@@ -294,7 +294,7 @@
     uniform float u_bayer_texture_dimensions;
 </script>
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-color-body-fshader">
-    vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
+    vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
     vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
     float bayerValue = bayerPixel.r;
     
@@ -326,11 +326,11 @@
     }
 </script>
 <script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-body-fshader">
-    vec2 bayerPixelCoord = vec2(gl_FragCoord.x / u_bayer_texture_dimensions, gl_FragCoord.y / u_bayer_texture_dimensions);
+    vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
     vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
     float bayerValue = bayerPixel.r;
     
-    if(shortestDistance - secondShortestDistance < bayerValue){
+    if(secondShortestDistance * bayerValue < shortestDistance){
         outputPixel = secondClosestPixel;
     }
     outputPixel = hue_lightness_dither(outputPixel, bayerValue);
