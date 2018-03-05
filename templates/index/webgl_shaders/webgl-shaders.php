@@ -29,7 +29,7 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
-    float adjustedThreshold = abs(u_threshold * rand(v_texcoord.xy/u_random_seed.xy));
+    float adjustedThreshold = abs(u_threshold * rand(v_texcoord.xy*u_random_seed.xy));
     bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
 </script>
 
@@ -330,7 +330,7 @@
     vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
     float bayerValue = bayerPixel.r;
     
-    if(secondShortestDistance * bayerValue < shortestDistance){
+    if(shortestDistance - secondShortestDistance < bayerValue){
         outputPixel = secondClosestPixel;
     }
     outputPixel = hue_lightness_dither(outputPixel, bayerValue);
@@ -349,7 +349,7 @@
     }
 </script>
 <script type="webgl/fragment-shader" id="webgl-random-dither-color-body-fshader">
-    float randomValue = rand(v_texcoord.xy/u_random_seed.xy);
+    float randomValue = rand(v_texcoord.xy*u_random_seed.xy);
     
     if(secondShortestDistance * randomValue < shortestDistance){
         outputPixel = secondClosestPixel;
