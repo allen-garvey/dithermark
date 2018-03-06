@@ -41,7 +41,7 @@
         },
         data: function(){
             return {
-                activeTab: 0,
+                activeDitherTab: 0,
                 sourceCanvas: null,
                 transformCanvas: null,
                 transformCanvasWebGl: null,
@@ -83,7 +83,7 @@
                 return '';
             },
             activeDitherSection: function(){
-                if(this.activeTab === 0){
+                if(this.activeDitherTab === 0){
                     return this.$refs.bwDitherSection;
                 }
                 return this.$refs.colorDitherSection;
@@ -127,11 +127,11 @@
             /*
             * Tabs
             */
-            loadTab: function(tabIndex){
-                if(tabIndex === this.activeTab){
+            loadDitherTab: function(tabIndex){
+                if(tabIndex === this.activeDitherTab){
                     return;
                 }
-                this.activeTab = tabIndex;
+                this.activeDitherTab = tabIndex;
                 //todo don't reload image if tab has already loaded it- instead create active tab hook
                 if(this.isImageLoaded){
                     this.activeDitherSection.imageLoaded(this.imageHeader, sourceWebglTexture);   
