@@ -38,9 +38,21 @@ App.Fs = (function(){
         });
     }
     
+    function saveImage(canvas, fileType, callback){
+        if(!canvas.toBlob){
+            callback(canvas.toDataURL(fileType));
+        }
+        else{
+            canvas.toBlob((blob)=>{
+                callback(URL.createObjectURL(blob));
+            }, fileType);
+        }
+    }
+    
     return {
         openImageFile: openImageFile,
         openRandomImage: openRandomImage,
+        saveImage: saveImage,
     };
     
 })();

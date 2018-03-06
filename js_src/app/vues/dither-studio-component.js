@@ -156,9 +156,11 @@
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
                 Canvas.scale(this.transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
-                saveImageLink.href = saveImageCanvas.canvas.toDataURL(this.loadedImage.fileType);
-                saveImageLink.download = this.loadedImage.fileName;
-                saveImageLink.click();
+                Fs.saveImage(saveImageCanvas.canvas, this.loadedImage.fileType, (objectUrl)=>{
+                    saveImageLink.href = objectUrl;
+                    saveImageLink.download = this.loadedImage.fileName;
+                    saveImageLink.click();
+                });
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
