@@ -42,6 +42,7 @@
         data: function(){
             return {
                 activeDitherTab: 0,
+                activeControlsTab: 0,
                 sourceCanvas: null,
                 transformCanvas: null,
                 transformCanvasWebGl: null,

@@ -14,50 +14,19 @@
         </div>
         <div class="controls-secondlevel-container" v-show="isImageLoaded">
             <div class="controls-panel">
-                <div class="spread-content">
-                    <label class="super-label">Editor Theme</label>
-                    <template v-for="(theme, index) in editorThemes">
-                        <label>{{theme.name}}
-                            <input type="radio" v-model="currentEditorThemeIndex" v-bind:value="index" />
-                        </label>
+                <div class="tabs-container">
+                    <template v-for="(tabName, index) in ['Image', 'Settings', 'Export']">
+                        <div class="tab" v-bind:class="{active: activeControlsTab === index}" v-on:click="activeControlsTab = index">{{tabName}}</div>
                     </template>
                 </div>
-                <div class="spread-content">
-                    <label>Show source image
-                        <input type="checkbox" v-model="showOriginalImage"/>
-                    </label>
+                <div v-show="activeControlsTab === 0">
+                    <?php require(TEMPLATES_TABS_PATH.'controls-tab-image.php'); ?>
                 </div>
-                
-                <div class="spread-content">
-                    <label>Live preview
-                        <input type="checkbox" v-model="isLivePreviewEnabled"/>
-                    </label>
-                    
-                    <label v-if="isWebglSupported">Enable WebGL
-                        <input type="checkbox" v-model="isWebglEnabled"/>
-                    </label>
-
-                    <label>Pin controls
-                        <input type="checkbox" v-model="areDitherControlsPinned"/>
-                    </label>
+                <div v-show="activeControlsTab === 1">
+                    <?php require(TEMPLATES_TABS_PATH.'controls-tab-settings.php'); ?>
                 </div>
-                <div>
-                    <label>
-                        Zoom
-                        <input type="number" v-bind:min="zoomMin" v-bind:max="zoomMax" v-model.number="zoom"/>
-                        <input type="range" v-bind:min="zoomMin" v-bind:max="zoomMax" v-model.number="zoom"/>
-                        <button v-show="zoom !== 100" v-on:click="resetZoom">Reset</button>
-                    </label>
-                </div>
-                <div>
-                    <label>Pixelate image
-                        <select v-model.number="pixelateImageZoom">
-                            <option value="100">None</option>
-                            <option value="50">Medium</option>
-                            <option value="25">High</option>
-                            <option value="15">Ultra</option>
-                        </select>
-                    </label>
+                <div v-show="activeControlsTab === 2">
+                    <?php require(TEMPLATES_TABS_PATH.'controls-tab-export.php'); ?>
                 </div>
             </div>
             <div class="super-dither-controls-container" v-bind:class="{'fixed-controls': areDitherControlsPinned}">
