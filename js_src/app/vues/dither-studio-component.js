@@ -51,7 +51,7 @@
                 isCurrentlyLoadingRandomImage: false,
                 isWebglSupported: false,
                 isWebglEnabled: false,
-                areControlsPinned: false,
+                areDitherControlsPinned: false,
                 zoom: 100,
                 pixelateImageZoom: 100,
                 zoomMin: 10,
@@ -98,15 +98,6 @@
                 }
                 let newThemeClass = this.editorThemes[newThemeIndex].className;
                 classList.add(newThemeClass);
-            },
-            areControlsPinned: function(newValue){
-                let classList = document.documentElement.classList;
-                if(newValue){
-                    classList.add('fixed-controls');
-                }
-                else{
-                    classList.remove('fixed-controls');
-                }
             },
             zoom: function(newZoom, oldZoom){
                 let newZoomCleaned = Math.floor(newZoom);

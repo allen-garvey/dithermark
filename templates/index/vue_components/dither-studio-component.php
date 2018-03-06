@@ -38,7 +38,7 @@
                     </label>
 
                     <label>Pin controls
-                        <input type="checkbox" v-model="areControlsPinned"/>
+                        <input type="checkbox" v-model="areDitherControlsPinned"/>
                     </label>
                 </div>
                 <div>
@@ -60,7 +60,7 @@
                     </label>
                 </div>
             </div>
-            <div class="super-dither-controls-container">
+            <div class="super-dither-controls-container" v-bind:class="{'fixed-controls': areDitherControlsPinned}">
                 <div class="tabs-container">
                     <div class="tab" v-bind:class="{active: activeTab === 0}" v-on:click="loadTab(0)">BW Dither</div>
                     <div class="tab" v-bind:class="{active: activeTab === 1}" v-on:click="loadTab(1)">Color Dither</div>
