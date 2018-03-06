@@ -2,6 +2,7 @@
     
     function sharedJsFiles(): array{
         return [
+            JS_SHARED_PATH.'constants.js',
             JS_SHARED_PATH.'polyfills.js',
             JS_SHARED_PATH.'worker-headers.js',
             JS_SHARED_PATH.'color-dither-modes.js',

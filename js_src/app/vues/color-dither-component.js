@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants){
     
     //used for calculating webworker performance
     var webworkerStartTime;
@@ -29,7 +29,7 @@
                 selectedPaletteIndex: null,
                 numColors: 4,
                 numColorsMin: 2,
-                numColorsMax: <?= COLOR_DITHER_MAX_COLORS; ?>,
+                numColorsMax: Constants.colorDitherMaxColors,
                 colorDitherModes: [...ColorDitherModes.values()],
                 selectedColorDitherModeIndex: 0,
                 colorDrag: {
@@ -239,4 +239,4 @@
     });
     
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants);

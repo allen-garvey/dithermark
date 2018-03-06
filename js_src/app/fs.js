@@ -1,4 +1,4 @@
-App.Fs = (function(){
+App.Fs = (function(Constants){
     var URL = window.URL;
     var Image = window.Image;
     
@@ -28,8 +28,8 @@ App.Fs = (function(){
             imageLoadFunc(image, {});
         };
         
-        let imageWidth = Math.min(window.innerWidth, <?= RANDOM_IMAGE_MAX_WIDTH; ?>);
-        let imageHeight = Math.min(window.innerHeight, <?= RANDOM_IMAGE_MAX_HEIGHT; ?>);
+        let imageWidth = Math.min(window.innerWidth, Constants.randomImageMaxWidth);
+        let imageHeight = Math.min(window.innerHeight, Constants.randomImageMaxHeight);
         let randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
         
         //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
@@ -55,4 +55,4 @@ App.Fs = (function(){
         saveImage: saveImage,
     };
     
-})();
+})(App.Constants);

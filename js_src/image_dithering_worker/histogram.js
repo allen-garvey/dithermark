@@ -1,8 +1,8 @@
 
-App.Histogram = (function(Pixel, Polyfills, PixelMath){
-    var histogramHeight = <?= HISTOGRAM_HEIGHT; ?>;
-    var histogramBwWidth = <?= HISTOGRAM_BW_WIDTH; ?>;
-    var histogramColorWidth = <?= HISTOGRAM_COLOR_WIDTH; ?>
+App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
+    var histogramHeight = Constants.histogramHeight;
+    var histogramBwWidth = Constants.histogramBwWidth;
+    var histogramColorWidth = Constants.histogramColorWidth;
     
     function createHistogramArray(histogramWidth){
         //can't use typed array here,
@@ -117,4 +117,4 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath){
         createBwHistogram: createBwHistogram,
         createHueHistogram: createHueHistogram,
     };
-})(App.Pixel, App.Polyfills, App.PixelMath);
+})(App.Pixel, App.Polyfills, App.PixelMath, App.Constants);

@@ -1,5 +1,5 @@
 
-App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker){
+App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
         //(5 + (3 * 2)) * 2
         var buffer = new Polyfills.SharedArrayBuffer(22);
@@ -89,7 +89,7 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker){
         var numWorkers = 1;
         var navigator = window.navigator;
         if(navigator.hardwareConcurrency){
-            numWorkers = Math.min(navigator.hardwareConcurrency * 2, <?= MAX_WEBWORKERS; ?>);
+            numWorkers = Math.min(navigator.hardwareConcurrency * 2, Constants.maxWebworkers);
         }
         var workers = new Array(numWorkers);
         for(let i=0;i<numWorkers;i++){
@@ -126,4 +126,4 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker){
         colorHistogramWorkerHeader: createColorHistogramWorkerHeader,
         createDitherWorkers: createWorkers,
     };
-})(App.Polyfills, App.WorkerHeaders, App.ColorPicker);
+})(App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.Constants);
