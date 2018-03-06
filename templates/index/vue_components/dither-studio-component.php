@@ -16,15 +16,11 @@
                         <div class="tab" v-bind:class="{active: activeControlsTab === index}" v-on:click="activeControlsTab = index">{{tabName}}</div>
                     </template>
                 </div>
-                <div v-show="activeControlsTab === 0">
-                    <?php require(TEMPLATES_TABS_PATH.'controls-tab-image.php'); ?>
-                </div>
-                <div v-show="activeControlsTab === 1">
-                    <?php require(TEMPLATES_TABS_PATH.'controls-tab-settings.php'); ?>
-                </div>
-                <div v-show="activeControlsTab === 2">
-                    <?php require(TEMPLATES_TABS_PATH.'controls-tab-export.php'); ?>
-                </div>
+                <?php foreach(['controls-tab-image.php', 'controls-tab-settings.php', 'controls-tab-export.php'] as $index => $templateFileName): ?>
+                    <div class="controls-tab-container" v-show="activeControlsTab === <?= $index; ?>">
+                        <?php require(TEMPLATES_TABS_PATH.$templateFileName); ?>
+                    </div>
+                <?php endforeach; ?>
             </div>
             <div class="super-dither-controls-container" v-bind:class="{'fixed-controls': areDitherControlsPinned}">
                 <div class="tabs-container">

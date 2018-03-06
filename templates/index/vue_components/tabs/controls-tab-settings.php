@@ -10,11 +10,11 @@
     <label>Live preview
         <input type="checkbox" v-model="isLivePreviewEnabled"/>
     </label>
-    
     <label v-if="isWebglSupported">Enable WebGL
         <input type="checkbox" v-model="isWebglEnabled"/>
     </label>
-
+</div>
+<div>
     <label>Pin controls
         <input type="checkbox" v-model="areDitherControlsPinned"/>
     </label>
