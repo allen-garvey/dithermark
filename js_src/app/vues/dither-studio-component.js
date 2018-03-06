@@ -48,6 +48,8 @@
                 transformCanvasWebGl: null,
                 //loadedImage has properties: width, height, fileName, fileType, fileSize
                 loadedImage: null,
+                saveImageFileName: '',
+                saveImageFileType: 'image/png',
                 isLivePreviewEnabled: true,
                 isCurrentlyLoadingRandomImage: false,
                 isWebglSupported: false,
@@ -77,17 +79,23 @@
                     height: height,
                 };
             },
-            imageTitle: function(){
-                if(this.loadedImage){
-                    return this.loadedImage.fileName || '';
-                }
-                return '';
-            },
+            // imageTitle: function(){
+            //     if(this.loadedImage){
+            //         return this.loadedImage.fileName || '';
+            //     }
+            //     return '';
+            // },
             activeDitherSection: function(){
                 if(this.activeDitherTab === 0){
                     return this.$refs.bwDitherSection;
                 }
                 return this.$refs.colorDitherSection;
+            },
+            saveImageFileExtension: function(){
+                if(this.saveImageFileType === 'image/jpeg'){
+                    return '.jpg';
+                }
+                return '.png';
             },
         },
         watch: {
@@ -150,7 +158,7 @@
                 Canvas.scale(this.transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
                 Fs.saveImage(saveImageCanvas.canvas, this.loadedImage.fileType, (objectUrl)=>{
                     saveImageLink.href = objectUrl;
-                    saveImageLink.download = this.loadedImage.fileName;
+                    saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                     saveImageLink.click();
                 });
             },
@@ -170,6 +178,8 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
+                this.saveImageFileName = file.name.replace(/\.(png|bmp|jpg|jpeg)$/i, '');
+                this.saveImageFileType = file.type;
                 Canvas.loadImage(originalImageCanvas, image);
                 
                 this.imagePixelationChanged(originalImageCanvas, this.imageHeader);

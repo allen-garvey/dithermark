@@ -7,7 +7,7 @@
             </div>
         </div>
         <div class="image-title-container">
-            <h3 class="image-title">{{imageTitle}}</h3>
+            <h3 class="image-title">{{saveImageFileName}}</h3>
         </div>
         <div class="controls-secondlevel-container" v-show="isImageLoaded">
             <div class="controls-panel">
