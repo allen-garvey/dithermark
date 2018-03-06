@@ -31,7 +31,7 @@ App.Fs = (function(Constants){
         image.onload = ()=> {
             imageLoadFunc(image, {
                 name: 'unsplash-random-image.jpg',
-                fileType: 'image/jpeg',
+                type: 'image/jpeg',
             });
         };
         
