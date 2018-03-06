@@ -16,8 +16,6 @@
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
             //select first non-custom palette
             this.selectedPaletteIndex = 1;
-            //set color dither mode to first item in map
-            this.selectedColorDitherModeId = this.colorDitherModes.values().next().value.id;
         },
         data: function(){ 
             return{
@@ -32,8 +30,8 @@
                 numColors: 4,
                 numColorsMin: 2,
                 numColorsMax: <?= COLOR_DITHER_MAX_COLORS; ?>,
-                colorDitherModes: ColorDitherModes,
-                selectedColorDitherModeId: 0,
+                colorDitherModes: [...ColorDitherModes.values()],
+                selectedColorDitherModeIndex: 0,
                 colorDrag: {
                     draggedIndex: null,
                 },
@@ -54,6 +52,9 @@
             },
             selectedColorsVec: function(){
                 return ColorPicker.colorsToVecArray(this.selectedColors, this.numColorsMax);
+            },
+            selectedColorDitherModeId: function(){
+                return this.colorDitherModes[this.selectedColorDitherModeIndex].id;
             },
         },
         watch: {
@@ -107,7 +108,7 @@
                     this.colorsShadow = palette.colors.slice();
                 }
             },
-            selectedColorDitherModeId: function(newValue){
+            selectedColorDitherModeIndex: function(newValue){
                 if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();
                 }

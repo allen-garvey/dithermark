@@ -16,12 +16,14 @@
     </div>
     <div class="spread-content">
         <label>Color comparison mode
-            <select v-model="selectedColorDitherModeId">
-                <template v-for="colorDitherMode in [...colorDitherModes.values()]">
-                    <option v-bind:value="colorDitherMode.id">{{colorDitherMode.title}}</option>
+            <select v-model="selectedColorDitherModeIndex">
+                <template v-for="(colorDitherMode, index) in colorDitherModes">
+                    <option v-bind:value="index">{{colorDitherMode.title}}</option>
                 </template>
             </select>
         </label>
+        <button class="shuffle-color-palette-button" title="Previous color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', -1, colorDitherModes.length)"><</button>
+        <button class="shuffle-color-palette-button" title="Next color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', 1, colorDitherModes.length)">></button>
     </div>
     <div>
         <label>Color palette
