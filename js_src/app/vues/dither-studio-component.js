@@ -79,12 +79,6 @@
                     height: height,
                 };
             },
-            // imageTitle: function(){
-            //     if(this.loadedImage){
-            //         return this.loadedImage.fileName || '';
-            //     }
-            //     return '';
-            // },
             activeDitherSection: function(){
                 if(this.activeDitherTab === 0){
                     return this.$refs.bwDitherSection;
