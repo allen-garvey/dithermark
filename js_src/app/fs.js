@@ -23,14 +23,17 @@ App.Fs = (function(Constants){
     function openRandomImage(imageLoadFunc){
         let fetch = window.fetch;
         
-        let image = new Image();
-        image.onload = ()=> {
-            imageLoadFunc(image, {});
-        };
-        
         let imageWidth = Math.min(window.innerWidth, Constants.randomImageMaxWidth);
         let imageHeight = Math.min(window.innerHeight, Constants.randomImageMaxHeight);
         let randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
+        
+        let image = new Image();
+        image.onload = ()=> {
+            imageLoadFunc(image, {
+                name: 'unsplash-random-image.jpg',
+                fileType: 'image/jpeg',
+            });
+        };
         
         //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         fetch(randomImageUrl).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
