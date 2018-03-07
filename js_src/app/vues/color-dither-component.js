@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins){
     
     //used for calculating webworker performance
     var webworkerStartTime;
@@ -183,16 +183,8 @@
             randomizePalette: function(){
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
             },
-            cyclePropertyList: function(propertyName, amount, listLength, startIndex=0){
-                let newIndex = this[propertyName] + amount;
-                if(newIndex < startIndex){
-                    newIndex = listLength - 1;
-                }
-                else if(newIndex >= listLength){
-                    newIndex = startIndex;
-                }
-                this[propertyName] = newIndex;
-            },
+            cyclePropertyList: VueMixins.cyclePropertyList(),
+            
             handleColorDragstart: function(e, colorIndex){
                 this.colorDrag.draggedIndex = colorIndex;
             },
@@ -239,4 +231,4 @@
     });
     
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.VueMixins);

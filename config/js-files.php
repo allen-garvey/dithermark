@@ -25,6 +25,7 @@
             JS_APP_PATH.'webgl-color-dither.js',
             JS_APP_PATH.'histogram.js',
             JS_APP_PATH.'algorithm-model.js',
+            JS_VUES_PATH.'vue-mixins.js',
             JS_VUES_PATH.'bw-dither-component.js',
             JS_VUES_PATH.'color-dither-component.js',
             JS_VUES_PATH.'dither-studio-component.js',
