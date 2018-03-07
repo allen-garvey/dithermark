@@ -29,8 +29,8 @@
     define('HISTOGRAM_HEIGHT', 96);
     //has to be multiple of 256, since there are 256 lightness values
     define('HISTOGRAM_BW_WIDTH', 1 * 256);
-    //histogram width cannot be safely changed without also changing the generation code as well
-    define('HISTOGRAM_COLOR_WIDTH', 360);
+    //must be a multiple of 360, since there are 360 hues
+    define('HISTOGRAM_COLOR_WIDTH', 1 * 360);
     
     //color dither stuff
     define('COLOR_DITHER_MAX_COLORS', 12);
