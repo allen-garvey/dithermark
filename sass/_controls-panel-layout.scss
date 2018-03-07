@@ -16,6 +16,9 @@
 	.global-controls-panel{
 		left: 0;
 		width: 300px;
+		//so on mobile screens with this activated
+		//we can still get to global controls to de-activate it
+		z-index: 1000;
 	}
 	.super-dither-controls-container{
 		right: 0;
