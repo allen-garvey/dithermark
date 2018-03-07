@@ -56,6 +56,10 @@ $canvasMargin: 25px;
 //negative margin used to get margins between flex items
 //while still getting alignment when they wrap
 //https://stackoverflow.com/questions/20626685/better-way-to-set-distance-between-flexbox-items
+.image-canvas-supercontainer{
+    padding: 0 $canvasMargin;
+}
+
 .image-canvas-container{
     display: flex;
     flex-wrap: wrap;
