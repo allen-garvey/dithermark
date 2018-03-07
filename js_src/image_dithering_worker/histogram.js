@@ -8,7 +8,7 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
         //can't use typed array here,
         //since we don't know the maximum integer value
         //for each item
-        var histogramArray = [];
+        let histogramArray = [];
         for(let i=0;i<histogramWidth;i++){
             histogramArray[i] = 0;
         }
@@ -20,7 +20,7 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
     * @param histogramColorFunc - used to get color of pixel for non-white values in histogram output - (@params x coordinate: int, @returns pixel)
     */
     function createHistogram(pixels, histogramWidth, histogramHeight, pixelHashFunc, histogramColorFunc){
-        var histogramArray = createHistogramArray(histogramWidth);
+        let histogramArray = createHistogramArray(histogramWidth);
         
         for(let i=0;i<pixels.length;i+=4){
             let pixel = Pixel.create(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
@@ -29,15 +29,15 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
         }
         
         //find maximum value so we can normalize values
-        var max = 0;
+        let max = 0;
         histogramArray.forEach((element)=>{
             if(element > max){
                 max = element;
             }
         });
-        histogramArray = histogramArray.map(function(element){
+        histogramArray = histogramArray.map((element)=>{
             //normalize values as percentage of 100, from 0 to 1
-            var percentage = 0;
+            let percentage = 0;
             //dividing by 0 will be infinity
             if(max > 0){
                 percentage = element / max;
@@ -48,11 +48,11 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
             return histogramHeight - barLength;
         });
         
-        var histogramBuffer = new Polyfills.SharedArrayBuffer(histogramWidth * histogramHeight * 4);
-        var histogramPixels = new Uint8ClampedArray(histogramBuffer);
+        let histogramBuffer = new Polyfills.SharedArrayBuffer(histogramWidth * histogramHeight * 4);
+        let histogramPixels = new Uint8ClampedArray(histogramBuffer);
         
-        var x = 0;
-        var y = 0;
+        let x = 0;
+        let y = 0;
         let whitePixel = Pixel.create(255, 255, 255);
         for(let i=0;i<histogramPixels.length;i+=4){
             let outputPixel;
