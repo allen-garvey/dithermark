@@ -4,23 +4,13 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
     var histogramBwWidth = Constants.histogramBwWidth;
     var histogramColorWidth = Constants.histogramColorWidth;
     
-    function createHistogramArray(histogramWidth){
-        //can't use typed array here,
-        //since we don't know the maximum integer value
-        //for each item
-        let histogramArray = [];
-        for(let i=0;i<histogramWidth;i++){
-            histogramArray[i] = 0;
-        }
-        return histogramArray;
-    }
-    
     /*
     * @param pixelHashFunc - used to get index of pixel that is used for counting unique values for histogram - (@params pixel @returns int)
     * @param histogramColorFunc - used to get color of pixel for non-white values in histogram output - (@params x coordinate: int, @returns pixel)
     */
-    function createHistogram(pixels, histogramWidth, histogramHeight, pixelHashFunc, histogramColorFunc){
-        let histogramArray = createHistogramArray(histogramWidth);
+    function createHistogram(pixels, uniqueValues, histogramWidth, histogramHeight, pixelHashFunc, histogramColorFunc){
+        //can't use int array, since we may overflow it
+        let histogramArray = new Float32Array(uniqueValues);
         
         for(let i=0;i<pixels.length;i+=4){
             let pixel = Pixel.create(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
@@ -29,24 +19,25 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
         }
         
         //find maximum value so we can normalize values
-        let max = 0;
-        histogramArray.forEach((element)=>{
-            if(element > max){
-                max = element;
-            }
-        });
-        histogramArray = histogramArray.map((element)=>{
-            //normalize values as percentage of 100, from 0 to 1
+        let max = histogramArray.reduce((currentMax, element)=>{
+            return Math.max(currentMax, element);
+        }, 0);
+        
+        //calculate each unique values percentage of bar height
+        let histogramPercentages = new Uint8Array(uniqueValues);
+        for(let i=0;i<histogramArray.length;i++){
             let percentage = 0;
             //dividing by 0 will be infinity
             if(max > 0){
-                percentage = element / max;
+                percentage = Math.ceil(histogramArray[i] / max * 100);
             }
-            //now figure out histogram height for that x coodinate
-            let barLength = Math.ceil(percentage * histogramHeight);
-            //now figure out at which y coordinate histogram should start with 0,0 being top left
-            return histogramHeight - barLength;
-        });
+            histogramPercentages[i] = percentage;
+        }
+        
+        //turn bar height percentage into pixel value
+        function calculateYAxisStartIndex(heightPercentage){
+            return histogramHeight - Math.ceil(heightPercentage / 100 * histogramHeight);
+        }
         
         let histogramBuffer = new Polyfills.SharedArrayBuffer(histogramWidth * histogramHeight * 4);
         let histogramPixels = new Uint8ClampedArray(histogramBuffer);
@@ -56,7 +47,7 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
         let whitePixel = Pixel.create(255, 255, 255);
         for(let i=0;i<histogramPixels.length;i+=4){
             let outputPixel;
-            if(y >= histogramArray[x]){
+            if(y >= calculateYAxisStartIndex(histogramPercentages[x])){
                 outputPixel = histogramColorFunc(x);
             }
             else{
@@ -78,14 +69,14 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
     
     function createBwHistogram(pixels){
         let blackPixel = Pixel.create(0, 0, 0);
-        return createHistogram(pixels, histogramBwWidth, histogramHeight, PixelMath.lightness, ()=>{return blackPixel;});
+        return createHistogram(pixels, 256, histogramBwWidth, histogramHeight, PixelMath.lightness, ()=>{return blackPixel;});
     }
     
     function createHueHistogram(pixels){
         hueArray = hueArray || createHueArray();
         let retPixel = Pixel.create(0,0,0);
         
-        return createHistogram(pixels, histogramColorWidth, histogramHeight, PixelMath.hue, (hue)=>{
+        return createHistogram(pixels, 360, histogramColorWidth, histogramHeight, PixelMath.hue, (hue)=>{
             let baseIndex = hue * 4;
             retPixel[0] = hueArray[baseIndex];
             retPixel[1] = hueArray[baseIndex+1];
