@@ -10,7 +10,7 @@
             <h3 class="image-title">{{saveImageFileName}}</h3>
         </div>
         <div class="controls-secondlevel-container" v-show="isImageLoaded">
-            <div class="controls-panel">
+            <div class="global-controls-panel controls-panel">
                 <div class="tabs-container">
                     <template v-for="(tabName, index) in ['Image', 'Settings', 'Export']">
                         <div class="tab" v-bind:class="{active: activeControlsTab === index}" v-on:click="activeControlsTab = index">{{tabName}}</div>

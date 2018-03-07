@@ -83,9 +83,14 @@ $canvasMargin: 25px;
     }
 }
 
+.spacer-right{
+    width: 500px;
+}
+.spacer-left{
+    width: 350px;
+}
 .fixed-controls-spacer{
     display: none;
-    width: 550px;
     
     .fixed-controls &{
         display: block;
@@ -145,7 +150,7 @@ input[type="color"]{
     
     .color-container{
         flex-basis: 110px;
-        margin: 0 16px 20px 0;
+        margin: 0 13px 20px 0;
         border: 1px solid $border_color;
         border-radius: 5px;
         padding: 4px;

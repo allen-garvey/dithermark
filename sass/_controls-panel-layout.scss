@@ -1,13 +1,24 @@
 
-.fixed-controls .super-dither-controls-container{
-	position: fixed;
-	background-color: var(--main-bg-color);
-	max-width: 100%;
-	width: 448px;
-	right: 0;
-	top: 0;
-	padding: 10px;
-	//because of current version of libsass (see: https://github.com/sass/node-sass/issues/2251)
-	//have to use RGBA instead of rbgba
-	border: 1px solid RGBA(var(--main-text-color-rgb), 0.2);
+.fixed-controls{
+	.super-dither-controls-container, .global-controls-panel{
+		position: fixed;
+		background-color: var(--main-bg-color);
+		max-width: 100%;
+		top: 0;
+		padding: 10px;
+		max-height: 100%;
+		overflow-y: scroll;
+		box-sizing: border-box;
+		//because of current version of libsass (see: https://github.com/sass/node-sass/issues/2251)
+		//have to use RGBA instead of rbgba
+		border: 1px solid RGBA(var(--main-text-color-rgb), 0.2);
+	}
+	.global-controls-panel{
+		left: 0;
+		width: 300px;
+	}
+	.super-dither-controls-container{
+		right: 0;
+		width: 448px;
+	}
 }
