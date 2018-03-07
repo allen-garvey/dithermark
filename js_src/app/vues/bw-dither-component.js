@@ -194,8 +194,8 @@
                         break;
                 }
             },
-            histogramWorkerMessageReceived: function(pixels){
-                Canvas.replaceImageWithArray(histogramCanvas, Histogram.width, Histogram.height, pixels);
+            histogramWorkerMessageReceived: function(heightPercentages){
+                Histogram.drawBwHistogram(histogramCanvas, heightPercentages);
             },
             ditherWorkerMessageReceived: function(pixels){
                 this.hasImageBeenTransformed = true;

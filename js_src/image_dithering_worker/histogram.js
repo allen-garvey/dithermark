@@ -9,6 +9,8 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
     * @param histogramColorFunc - used to get color of pixel for non-white values in histogram output - (@params x coordinate: int, @returns pixel)
     */
     function createHistogram(pixels, uniqueValues, histogramWidth, histogramHeight, pixelHashFunc, histogramColorFunc){
+        let percentagesOnly = !histogramColorFunc;
+        
         //can't use int array, since we may overflow it
         let histogramArray = new Float32Array(uniqueValues);
         
@@ -32,6 +34,10 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
                 percentage = Math.ceil(histogramArray[i] / max * 100);
             }
             histogramPercentages[i] = percentage;
+        }
+        
+        if(percentagesOnly){
+            return histogramPercentages;
         }
         
         //turn bar height percentage into pixel value
@@ -68,8 +74,7 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
     }
     
     function createBwHistogram(pixels){
-        let blackPixel = Pixel.create(0, 0, 0);
-        return createHistogram(pixels, 256, histogramBwWidth, histogramHeight, PixelMath.lightness, ()=>{return blackPixel;});
+        return createHistogram(pixels, 256, histogramBwWidth, histogramHeight, PixelMath.lightness, false);
     }
     
     function createHueHistogram(pixels){
