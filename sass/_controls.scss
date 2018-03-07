@@ -54,11 +54,17 @@ $controls_gutter: 20px;
 */
 $canvasMargin: 25px;
 
+//we need this extra container to center the content
+//because css grid will cut off large images on left side if we justify-content: center
+.image-canvas-supercontainer{
+    display: flex;
+    justify-content: center;
+}
 .image-canvas-container{
     display: grid;
-    justify-content: center;
-    margin-top: $canvasMargin;
     grid-template-areas: "canvas1 canvas2";
+    max-width: 100%;
+    margin-top: $canvasMargin;
     
     &.show-original{
         grid-column-gap: $canvasMargin;
