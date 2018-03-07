@@ -1,6 +1,9 @@
 App.Canvas = (function(Polyfills){
     var devicePixelRatio = window.devicePixelRatio || 1;
     
+    //make sure to call context.beginPath() after clearing if using paths or rect()
+    //or canvas will not clear
+    //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
     function clearCanvas(canvasObject){
         canvasObject.context.clearRect(0, 0, canvasObject.canvas.width, canvasObject.canvas.height);
     }
