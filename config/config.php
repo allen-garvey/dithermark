@@ -27,8 +27,9 @@
     define('RANDOM_IMAGE_MAX_HEIGHT', 600);
     
     define('HISTOGRAM_HEIGHT', 96);
-    //histogram widths cannot be safely changed without also changing the generation code as well
-    define('HISTOGRAM_BW_WIDTH', 256);
+    //has to be multiple of 256, since there are 256 lightness values
+    define('HISTOGRAM_BW_WIDTH', 1 * 256);
+    //histogram width cannot be safely changed without also changing the generation code as well
     define('HISTOGRAM_COLOR_WIDTH', 360);
     
     //color dither stuff
