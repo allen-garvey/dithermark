@@ -1,6 +1,10 @@
 App.Canvas = (function(Polyfills){
     var devicePixelRatio = window.devicePixelRatio || 1;
     
+    function clearCanvas(canvasObject){
+        canvasObject.context.clearRect(0, 0, canvasObject.canvas.width, canvasObject.canvas.height);
+    }
+    
     function canvasObjectLoadImage(canvasObject, image){
         canvasObject.canvas.width = image.width;
         canvasObject.canvas.height = image.height;
@@ -107,6 +111,7 @@ App.Canvas = (function(Polyfills){
     
     return {
        create: createCanvasObject,
+       clear: clearCanvas,
     //   copy: copyCanvasImage,
        createWebgl: createWebglCanvas,
        loadImage: canvasObjectLoadImage,
