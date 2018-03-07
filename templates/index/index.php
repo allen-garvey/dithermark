@@ -29,13 +29,13 @@
             </div>
         </main>
         <script type="vue/template" id="dither-studio-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'dither-studio-component.php') ?>
+            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'dither-studio-component.php'); ?>
         </script>
         <script type="vue/template" id="bw-dither-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'bw-dither-component.php') ?>
+            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'bw-dither-component.php'); ?>
         </script>
         <script type="vue/template" id="color-dither-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-dither-component.php') ?>
+            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-dither-component.php'); ?>
         </script>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'webgl-shaders.php') ?>
         <script type="text/javascript" src="/js/vue.min.js"></script>
