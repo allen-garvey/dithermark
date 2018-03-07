@@ -53,23 +53,16 @@ $controls_gutter: 20px;
 * Canvases
 */
 $canvasMargin: 25px;
-//negative margin used to get margins between flex items
-//while still getting alignment when they wrap
-//https://stackoverflow.com/questions/20626685/better-way-to-set-distance-between-flexbox-items
-.image-canvas-supercontainer{
-    padding: 0 $canvasMargin;
-}
 
 .image-canvas-container{
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
     justify-content: center;
     margin-top: $canvasMargin;
-    margin-right: -1 * $canvasMargin;
-}
-.image-canvas-container canvas{
-    margin-right: $canvasMargin;
-    margin-bottom: $canvasMargin;
+    grid-template-areas: "canvas1 canvas2";
+    
+    &.show-original{
+        grid-column-gap: $canvasMargin;
+    }
 }
 
 
