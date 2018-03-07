@@ -93,6 +93,10 @@
             },
         },
         watch: {
+            areDitherControlsPinned: function(newValue){
+                let func = newValue ? 'add' : 'remove';
+                document.documentElement.classList[func]('fixed-controls');
+            },
             currentEditorThemeIndex: function(newThemeIndex, oldThemeIndex){
                 let classList = document.documentElement.classList;
                 if(oldThemeIndex !== null){

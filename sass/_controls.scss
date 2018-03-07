@@ -54,23 +54,43 @@ $controls_gutter: 20px;
 */
 $canvasMargin: 25px;
 
-//we need this extra container to center the content
-//because css grid will cut off large images on left side if we justify-content: center
 .image-canvas-supercontainer{
     display: flex;
     justify-content: center;
 }
+
 .image-canvas-container{
-    display: grid;
-    grid-template-areas: "canvas1 canvas2";
-    max-width: 100%;
     margin-top: $canvasMargin;
+    //non-fixed styles only
+    display: grid;
+    max-width: 100%;
+    grid-template-columns: auto auto;
+    grid-column-gap: $canvasMargin;
+}
+
+.fixed-controls{
+    .image-canvas-supercontainer{
+        justify-content: flex-start;
+    }
+    .output-canvas + .output-canvas{
+        margin-left: $canvasMargin;
+    }
     
-    &.show-original{
-        grid-column-gap: $canvasMargin;
+    .image-canvas-container{
+        display: flex;
+        justify-content: center;
+        max-width: none;
     }
 }
 
+.fixed-controls-spacer{
+    display: none;
+    width: 550px;
+    
+    .fixed-controls &{
+        display: block;
+    }
+}
 
 /*
 * Color replace stuff
