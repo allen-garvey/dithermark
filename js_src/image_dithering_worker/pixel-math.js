@@ -41,7 +41,10 @@ App.PixelMath = (function(Pixel){
      * converts a hue in range 0-360 (saturation at 1 and lightness at 0.5) to an rgb Pixel
      *
      */
-    function hueToPixel(hue){
+    function hueToPixel(hue, pixel=null){
+        if(!pixel){
+            pixel = Pixel.create(0, 0, 0);
+        }
         hue /= 360;
         var s = 1;
         var l = 0.5;
@@ -72,7 +75,11 @@ App.PixelMath = (function(Pixel){
         g = hue2rgb(p, q, hue);
         b = hue2rgb(p, q, hue - 1/3);
         
-        return Pixel.create(Math.round(r * 255), Math.round(g * 255), Math.round(b * 255));
+        pixel[Pixel.R_INDEX] = Math.round(r * 255);
+        pixel[Pixel.G_INDEX] = Math.round(g * 255);
+        pixel[Pixel.B_INDEX] = Math.round(b * 255);
+        
+        return pixel;
     }
 
     

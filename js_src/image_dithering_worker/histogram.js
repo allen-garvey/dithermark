@@ -94,9 +94,10 @@ App.Histogram = (function(Pixel, Polyfills, PixelMath, Constants){
     
     function createHueArray(){
         let hueArray = new Uint8Array(360 * 4);
+        let pixel = Pixel.create(0, 0, 0);
         let baseIndex = 0;
         for(let i=0;i<360;i++){
-            let pixel = PixelMath.hueToPixel(i);
+            pixel = PixelMath.hueToPixel(i, pixel);
             hueArray[baseIndex] = pixel[0];
             hueArray[baseIndex+1] = pixel[1];
             hueArray[baseIndex+2] = pixel[2];
