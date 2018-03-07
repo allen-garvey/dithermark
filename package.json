@@ -1,7 +1,7 @@
 {
   "name": "jsdither",
   "version": "1.0.0",
-  "description": "",
+  "description": "Web application to interactively demonstrate image dithering algorithms",
   "main": "public_html/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
