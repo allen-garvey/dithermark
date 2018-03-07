@@ -36,7 +36,7 @@
             </div>
         </div>
     </div>
-        <div class="image-canvas-supercontainer">
+        <div class="image-canvas-supercontainer" v-show="isImageLoaded">
             <div class="image-canvas-container" v-bind:class="{'show-original': showOriginalImage}">
                 <div class="fixed-controls-spacer spacer-left"></div>
                 <canvas ref="saveImageCanvas" class="hidden"></canvas><?php //used when saving image, so pixelated images are scaled correctly ?>

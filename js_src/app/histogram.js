@@ -12,9 +12,10 @@ App.Histogram = (function(Pixel, Constants, Canvas){
         let histogramWidth = Constants.histogramBwWidth;
         let barWidth = Math.floor(histogramWidth / heightPercentages.length);
         
-        Canvas.clear(targetCanvasObject);
-        //need to do this or canvas will not be cleared
-        //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
+        //clear canvas
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, histogramWidth, histogramHeight);
+        
         context.beginPath();
         context.fillStyle = 'black';
         
@@ -35,7 +36,9 @@ App.Histogram = (function(Pixel, Constants, Canvas){
         let histogramWidth = Constants.histogramColorWidth;
         let barWidth = Math.floor(histogramWidth / heightPercentages.length);
         
-        Canvas.clear(targetCanvasObject);
+        //clear canvas
+        context.fillStyle = 'white';
+        context.fillRect(0, 0, histogramWidth, histogramHeight);
         
         let xIndex = 0;
         heightPercentages.forEach((heightPercentage, hue)=>{

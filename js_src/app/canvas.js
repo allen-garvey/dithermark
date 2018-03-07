@@ -14,10 +14,11 @@ App.Canvas = (function(Polyfills){
         canvasObject.context.drawImage(image, 0, 0);
     }
     
-    function createCanvasObject(canvas){
+    //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+    function createCanvasObject(canvas, isTransparent=false){
         return {
             canvas: canvas,
-            context: canvas.getContext('2d'),
+            context: canvas.getContext('2d', { alpha: isTransparent }),
         };
     }
     

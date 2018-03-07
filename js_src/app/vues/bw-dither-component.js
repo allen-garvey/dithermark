@@ -19,7 +19,7 @@
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
-            histogramCanvasIndicator = Canvas.create(this.$refs.histogramCanvasIndicator);
+            histogramCanvasIndicator = Canvas.create(this.$refs.histogramCanvasIndicator, true);
             
             this.resetColorReplace();
         },
