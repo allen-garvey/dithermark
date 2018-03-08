@@ -25,6 +25,16 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
         return {buffer: copiedBuffer, pixels: copiedPixelsSubarray};
     }
     
+    function createHistogramBuffer(length, messageTypeId){
+        let buffer = new Polyfills.SharedArrayBuffer(length + 1);
+        let fullArray = new Uint8Array(buffer);
+        
+        fullArray[0] = messageTypeId;
+        let histogramArray = fullArray.subarray(1, fullArray.length);
+        
+        return {buffer: buffer, array: histogramArray};
+    }
+    
     
     function parseDitherMessageHeader(messageData){
         let messageTypeId = messageData[0];
@@ -79,6 +89,7 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
     return {
         // copyBuffer: copyBuffer,
         copyBufferWithMessageType: copyBufferWithMessageType,
+        createHistogramBuffer: createHistogramBuffer,
         parseMessageHeader: parseMessageHeader,
     };
 })(App.WorkerHeaders, App.Pixel, App.Polyfills);

@@ -4,7 +4,7 @@ App.Histogram = (function(Pixel, PixelMath){
     /*
     * @param pixelHashFunc - used to get index of pixel that is used for counting unique values for histogram - (@params pixel @returns int)
     */
-    function createHistogram(pixels, uniqueValues, pixelHashFunc){
+    function createHistogram(pixels, histogramPercentages, uniqueValues, pixelHashFunc){
         
         //can't use int array, since we may overflow it
         let histogramArray = new Float32Array(uniqueValues);
@@ -21,7 +21,6 @@ App.Histogram = (function(Pixel, PixelMath){
         }, 0);
         
         //calculate each unique values percentage of bar height
-        let histogramPercentages = new Uint8Array(uniqueValues);
         for(let i=0;i<histogramArray.length;i++){
             let percentage = 0;
             //dividing by 0 will be infinity
@@ -30,19 +29,14 @@ App.Histogram = (function(Pixel, PixelMath){
             }
             histogramPercentages[i] = percentage;
         }
-        
-
-        return histogramPercentages;
-
-        
     }
     
-    function createBwHistogram(pixels){
-        return createHistogram(pixels, 256, PixelMath.lightness);
+    function createBwHistogram(pixels, histogramPercentages){
+        return createHistogram(pixels, histogramPercentages, 256, PixelMath.lightness);
     }
     
-    function createHueHistogram(pixels){
-        return createHistogram(pixels, 360, PixelMath.hue);
+    function createHueHistogram(pixels, histogramPercentages){
+        return createHistogram(pixels, histogramPercentages, 360, PixelMath.hue);
     }
     
     return {

@@ -5,18 +5,20 @@
     
     
     function histogramAction(messageHeader){
+        let messageTypeId = messageHeader.messageTypeId;
         //don't need to copy the original imagedata, since we are not modifying it
-        var pixels = new Uint8ClampedArray(pixelBufferOriginal);
-        var histogramBuffer;
-        if(messageHeader.messageTypeId === WorkerHeaders.HUE_HISTOGRAM){
-            histogramBuffer = Histogram.createHueHistogram(pixels, messageHeader.messageTypeId);
+        let pixels = new Uint8ClampedArray(pixelBufferOriginal);
+        let histogramBuffer;
+        
+        if(messageTypeId === WorkerHeaders.HUE_HISTOGRAM){
+            histogramBuffer = WorkerUtil.createHistogramBuffer(360, messageTypeId);
+            Histogram.createHueHistogram(pixels, histogramBuffer.array);
         }
         else{
-            histogramBuffer = Histogram.createBwHistogram(pixels, messageHeader.messageTypeId);   
+            histogramBuffer = WorkerUtil.createHistogramBuffer(256, messageTypeId);
+            Histogram.createBwHistogram(pixels, histogramBuffer.array);   
         }
-        //add messageTypeId
-        var histogramBufferReturn = WorkerUtil.copyBufferWithMessageType(histogramBuffer, messageHeader.messageTypeId);
-        postMessage(histogramBufferReturn.buffer);
+        postMessage(histogramBuffer.buffer);
     }
     
     function ditherAction(messageHeader){
