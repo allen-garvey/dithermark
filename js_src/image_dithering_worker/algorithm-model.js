@@ -62,6 +62,22 @@ App.Algorithms = (function(){
             	    title: "Garvey",
             	    algorithm: App.ErrorPropDither.garvey,
             	},
+            	16: {
+            	    title: "Arithmetic Dither XOR 1",
+            	    algorithm: App.Threshold.adither1,
+            	},
+            	17: {
+            	    title: "Arithmetic Dither XOR 2",
+            	    algorithm: App.Threshold.adither2,
+            	},
+            	18: {
+            	    title: "Arithmetic Dither Add 1",
+            	    algorithm: App.Threshold.adither3,
+            	},
+            	19: {
+            	    title: "Arithmetic Dither Add 2",
+            	    algorithm: App.Threshold.adither4,
+            	},
             };
     }
     

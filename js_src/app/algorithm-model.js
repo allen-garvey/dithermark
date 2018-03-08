@@ -11,6 +11,22 @@ App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
                     webGlFunc: WebGlBwDither.randomThreshold,
                 },
                 {
+            	    title: "Arithmetic Dither XOR 1",
+            	    id: 16,
+            	},
+            	{
+            	    title: "Arithmetic Dither XOR 2",
+            	    id: 17,
+            	},
+            	{
+            	    title: "Arithmetic Dither Add 1",
+            	    id: 18,
+            	},
+            	{
+            	    title: "Arithmetic Dither Add 2",
+            	    id: 19,
+            	},
+                {
                     title: "Atkinson", 
                     id: 3,
                 },
