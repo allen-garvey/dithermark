@@ -80,20 +80,15 @@ $canvasMargin: 25px;
         display: flex;
         justify-content: center;
         max-width: none;
-    }
-}
 
-.spacer-right{
-    width: 500px;
-}
-.spacer-left{
-    width: 350px;
-}
-.fixed-controls-spacer{
-    display: none;
-    
-    .fixed-controls &{
-        display: block;
+        &::before{
+            content: '';
+            width: 350px;
+        }
+        &::after{
+            content: '';
+            width: 500px;
+        }
     }
 }
 
