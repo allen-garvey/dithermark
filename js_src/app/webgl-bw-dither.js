@@ -12,8 +12,8 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         
         return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, setCustomUniformsFunc){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
-                //set threshold
-                gl.uniform1f(customUniformLocations['u_threshold'], threshold);
+                //set threshold after converting to float
+                gl.uniform1f(customUniformLocations['u_threshold'], threshold / 255);
             
                 //set pixels
                 gl.uniform3fv(customUniformLocations['u_black_pixel'], WebGl.pixelToVec(blackPixel));
@@ -70,8 +70,6 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     var bayerTextures = {};
     
     function webGLThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        //convert threshold to float
-        threshold = threshold / 255.0;
         
         drawImageThreshold = drawImageThreshold || createWebGLDrawImageFunc(gl, thresholdFragmentShaderText);
         // Tell WebGL how to convert from clip space to pixels
@@ -80,25 +78,16 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     }
     
     function webGLRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        //convert threshold to float
-        threshold = threshold / 255.0;
         
         drawImageRandomThreshold = drawImageRandomThreshold || createWebGLDrawImageFunc(gl, randomThresholdFragmentShaderText, ['u_random_seed']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawImageRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-            //set random seed
-            var randomSeed = new Float32Array(2);
-            randomSeed[0] = Math.random();
-            randomSeed[1] = Math.random();
-            gl.uniform2fv(customUniformLocations['u_random_seed'], randomSeed);
+            gl.uniform2f(customUniformLocations['u_random_seed'], Math.random(), Math.random());
         });
     }
     
     function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions){
-        //convert threshold to float
-        threshold = threshold / 255.0;
-        //4 UInts per pixel * 2 dimensions = 8
         
         drawImageOrderedDither = drawImageOrderedDither || createWebGLDrawImageFunc(gl, orderedDitherFragmentShaderText, ['u_bayer_texture_dimensions', 'u_bayer_texture']);
         // Tell WebGL how to convert from clip space to pixels
