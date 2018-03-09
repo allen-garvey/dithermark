@@ -68,11 +68,20 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         return fragmentShaderTemplate.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
     }
     
+    function generateBitwiseFunctionsText(){
+        function generateOperator(functionName, operation){
+            return functionTemplate.replace('#{{functionName}}', functionName).replace('#{{operation}}', operation);
+        }
+        let functionTemplate = getShaderScriptText('webgl-bitwise-function-template');
+        return generateOperator('AND', 'mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0') + generateOperator('XOR', '(mod(v1, 2.0) > 0.0 || mod(v2, 2.0) > 0.0) && !(mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0)');
+    }
+    
     //vertex shader
     var thresholdVertexShaderText = getShaderScriptText('webgl-threshold-vertex-shader');
     //fragment shaders
     var fragmentLightnessFunctionText = getShaderScriptText('webgl-fragment-shader-lightness-function');
     var fragmentShaderTemplate = getShaderScriptText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    var bitwiseFunctionsText = generateBitwiseFunctionsText(); 
     
     //draw image created functions
     var drawImageFuncs = {};
@@ -97,7 +106,7 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     }
     
     function createArithmeticDither(ditherKey, customDeclarationReplace){
-        let customDeclarationReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}];
+        let customDeclarationReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}, {find: '#{{bitwiseFunctions}}', replace: bitwiseFunctionsText}];
         
         return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
             let drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customDeclarationReplacements], ['u_image_height', 'u_image_width']);
