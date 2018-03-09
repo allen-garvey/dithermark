@@ -19,12 +19,20 @@ App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
             	    id: 17,
             	},
             	{
-            	    title: "Arithmetic Dither Add 1",
+            	    title: "Arithmetic Dither XOR 3",
             	    id: 18,
             	},
             	{
-            	    title: "Arithmetic Dither Add 2",
+            	    title: "Arithmetic Dither Add 1",
             	    id: 19,
+            	},
+            	{
+            	    title: "Arithmetic Dither Add 2",
+            	    id: 20,
+            	},
+            	{
+            	    title: "Arithmetic Dither Add 3",
+            	    id: 21,
             	},
                 {
                     title: "Atkinson", 

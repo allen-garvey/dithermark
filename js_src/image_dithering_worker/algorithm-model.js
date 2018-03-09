@@ -1,82 +1,90 @@
 
-App.Algorithms = (function(){
+App.Algorithms = (function(Threshold, OrderedDither, ErrorPropDither){
     function ditherAlgorithms(){
         return {
                 1: {
                     title: "Threshold", 
-                    algorithm: App.Threshold.image,
+                    algorithm: Threshold.image,
                 },
                 2: {
                     title: "Random", 
-                    algorithm: App.Threshold.randomDither,
+                    algorithm: Threshold.randomDither,
                 },
                 3: {
                     title: "Atkinson", 
-                    algorithm: App.ErrorPropDither.atkinson,
+                    algorithm: ErrorPropDither.atkinson,
                 },
                 4: {
                     title: "Floyd-Steinberg", 
-                    algorithm: App.ErrorPropDither.floydSteinberg,
+                    algorithm: ErrorPropDither.floydSteinberg,
                 },
                 5: {
             		title: "Javis-Judice-Ninke",
-            		algorithm: App.ErrorPropDither.javisJudiceNinke,
+            		algorithm: ErrorPropDither.javisJudiceNinke,
             	},
             	6: {
             		title: "Stucki",
-            		algorithm: App.ErrorPropDither.stucki,
+            		algorithm: ErrorPropDither.stucki,
             	},
             	7: {
             		title: "Burkes",
-            		algorithm: App.ErrorPropDither.burkes,
+            		algorithm: ErrorPropDither.burkes,
             	},
             	8: {
             		title: "Sierra3",
-            		algorithm: App.ErrorPropDither.sierra3,
+            		algorithm: ErrorPropDither.sierra3,
             	},
             	9: {
             		title: "Sierra2",
-            		algorithm: App.ErrorPropDither.sierra2,
+            		algorithm: ErrorPropDither.sierra2,
             	},
             	10: {
             		title: "Sierra1",
-            		algorithm: App.ErrorPropDither.sierra1,
+            		algorithm: ErrorPropDither.sierra1,
             	},
             	11: {
             	    title: "Ordered Dither 2x2",
-            	    algorithm: App.OrderedDither.createOrderedDither(2),
+            	    algorithm: OrderedDither.createOrderedDither(2),
             	},
             	12: {
             	    title: "Ordered Dither 4x4",
-            	    algorithm: App.OrderedDither.createOrderedDither(4),
+            	    algorithm: OrderedDither.createOrderedDither(4),
             	},
             	13: {
             	    title: "Ordered Dither 8x8",
-            	    algorithm: App.OrderedDither.createOrderedDither(8),
+            	    algorithm: OrderedDither.createOrderedDither(8),
             	},
             	14: {
             	    title: "Ordered Dither 16x16",
-            	    algorithm: App.OrderedDither.createOrderedDither(16),
+            	    algorithm: OrderedDither.createOrderedDither(16),
             	},
             	15: {
             	    title: "Garvey",
-            	    algorithm: App.ErrorPropDither.garvey,
+            	    algorithm: ErrorPropDither.garvey,
             	},
             	16: {
             	    title: "Arithmetic Dither XOR 1",
-            	    algorithm: App.Threshold.adither1,
+            	    algorithm: Threshold.aditherXor1,
             	},
             	17: {
             	    title: "Arithmetic Dither XOR 2",
-            	    algorithm: App.Threshold.adither2,
+            	    algorithm: Threshold.aditherXor2,
             	},
             	18: {
-            	    title: "Arithmetic Dither Add 1",
-            	    algorithm: App.Threshold.adither3,
+            	    title: "Arithmetic Dither XOR 3",
+            	    algorithm: Threshold.aditherXor3,
             	},
             	19: {
+            	    title: "Arithmetic Dither Add 1",
+            	    algorithm: Threshold.aditherAdd1,
+            	},
+            	20: {
             	    title: "Arithmetic Dither Add 2",
-            	    algorithm: App.Threshold.adither4,
+            	    algorithm: Threshold.aditherAdd2,
+            	},
+            	21: {
+            	    title: "Arithmetic Dither Add 3",
+            	    algorithm: Threshold.aditherAdd3,
             	},
             };
     }
@@ -86,4 +94,4 @@ App.Algorithms = (function(){
     return {
         model: ditherAlgorithms,
     };
-})(App);
+})(App.Threshold, App.OrderedDither, App.ErrorPropDither);

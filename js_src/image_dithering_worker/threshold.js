@@ -16,12 +16,20 @@ App.Threshold = (function(Image, Pixel, PixelMath){
         };
     }
     //a_dither adapted from: http://pippin.gimp.org/a_dither/
-    function aDitherFunc1(threshold, pixel, x, y){
+    function aDitherXorFunc1(threshold, pixel, x, y){
         let mask = ((x ^ y * 149) * 1234& 511)/511.0;
         return threshold * mask;
     }
     
-    function aDitherFunc2(threshold, pixel, x, y){
+    function aDitherXorFunc2(threshold, pixel, x, y){
+        function maskFunc(c){
+            return (((x+c*17) ^ y * 149) * 1234 & 511)/511.0;
+        }
+        let mask = (maskFunc(0) + maskFunc(1) + maskFunc(2)) / 3;
+        return threshold * mask;
+    }
+    
+    function aDitherXorFunc3(threshold, pixel, x, y){
         function maskFunc(c){
             return (((x+c*17) ^ y * 149) * 1234 & 511)/511.0;
         }
@@ -29,13 +37,20 @@ App.Threshold = (function(Image, Pixel, PixelMath){
         return threshold * mask;
     }
     
-    function aDitherFunc3(threshold, pixel, x, y){
-        //mask3
+    function aDitherAddFunc1(threshold, pixel, x, y){
         let mask = ((x + y * 237) * 119 & 255)/255.0;
         return threshold * mask;
     }
     
-    function aDitherFunc4(threshold, pixel, x, y){
+    function aDitherAddFunc2(threshold, pixel, x, y){
+        function maskFunc(c){
+            return (((x+c*67) + y * 236) * 119 & 255)/255.0;
+        }
+        let mask = (maskFunc(0) + maskFunc(1) + maskFunc(2)) / 3;
+        return threshold * mask;
+    }
+    
+    function aDitherAddFunc3(threshold, pixel, x, y){
         function maskFunc(c){
             return (((x+c*67) + y * 236) * 119 & 255)/255.0;
         }
@@ -49,10 +64,12 @@ App.Threshold = (function(Image, Pixel, PixelMath){
     
     return {
        image: thresholdGenerator((threshold)=>{ return threshold; }),
-       adither1: thresholdGenerator(aDitherFunc1),
-       adither2: thresholdGenerator(aDitherFunc2),
-       adither3: thresholdGenerator(aDitherFunc3),
-       adither4: thresholdGenerator(aDitherFunc4),
+       aditherXor1: thresholdGenerator(aDitherXorFunc1),
+       aditherXor2: thresholdGenerator(aDitherXorFunc2),
+       aditherXor3: thresholdGenerator(aDitherXorFunc3),
+       aditherAdd1: thresholdGenerator(aDitherAddFunc1),
+       aditherAdd2: thresholdGenerator(aDitherAddFunc2),
+       aditherAdd3: thresholdGenerator(aDitherAddFunc3),
        randomDither: thresholdGenerator(randomThresholdFunc),
     };
 })(App.Image, App.Pixel, App.PixelMath);
