@@ -60,5 +60,6 @@
     <div>
         <button @click="randomizePalette">Randomize palette</button>
         <button @click="printPalette">Print palette</button>
+        <button @click="optimizePalette">Optimize palette</button>
     </div>
 </div>   

@@ -161,6 +161,9 @@
                     case WorkerHeaders.DITHER_BW:
                         this.ditherWorkerBwMessageReceived(pixels);
                         break;
+                    case WorkerHeaders.OPTIMIZE_PALETTE:
+                        console.log(pixels);
+                        break;
                     //histogram
                     default:
                         this.histogramWorkerMessageReceived(pixels);
@@ -182,6 +185,11 @@
             },
             randomizePalette: function(){
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
+            },
+            optimizePalette: function(){
+                this.$emit('request-worker', (worker)=>{
+                    worker.postMessage(WorkerUtil.optimizePaletteHeader());
+                });
             },
             cyclePropertyList: VueMixins.cyclePropertyList(),
             

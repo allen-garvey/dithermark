@@ -5,4 +5,5 @@ App.WorkerHeaders = {
     HISTOGRAM: 3,
     HUE_HISTOGRAM: 4,
     DITHER_COLOR: 5,
+    OPTIMIZE_PALETTE: 6,
 };

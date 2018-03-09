@@ -1,4 +1,4 @@
-(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders, Histogram){
+(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders, Histogram, OptimizePalette){
     var ditherAlgorithms = Algorithms.model();
     var messageHeader = {};
     var pixelBufferOriginal;
@@ -40,6 +40,16 @@
         postMessage(imageDataBuffer);
     }
     
+    function optimizePaletteAction(messageHeader){
+        //don't need to copy the original imagedata, since we are not modifying it
+        let pixels = new Uint8ClampedArray(pixelBufferOriginal);
+        let paletteBuffer;
+        Timer.time('Optimize palette', ()=>{
+           paletteBuffer = OptimizePalette.medianPopularity(pixels); 
+        });
+        
+        postMessage(WorkerUtil.copyBufferWithMessageType(paletteBuffer, messageHeader.messageTypeId).buffer);
+    }
     
     
     onmessage = function(e){
@@ -54,8 +64,8 @@
             return;
         }
         //get new headers
-        messageHeader = WorkerUtil.parseMessageHeader(messageData);
-        
+        let messageDataView = new Uint16Array(messageData);
+        messageHeader = WorkerUtil.parseMessageHeader(messageDataView);
         //perform action based on headers
         switch(messageHeader.messageTypeId){
             case WorkerHeaders.DITHER:
@@ -66,11 +76,14 @@
             case WorkerHeaders.HUE_HISTOGRAM:
                 histogramAction(messageHeader);
                 break;
+            case WorkerHeaders.OPTIMIZE_PALETTE:
+                optimizePaletteAction(messageHeader);
+                break;
             //LOAD_IMAGE just returns
             default:
                 return;
         }
         
     };
-})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders, App.Histogram);
+})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders, App.Histogram, App.OptimizePalette);
 

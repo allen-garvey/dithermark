@@ -65,14 +65,20 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         
         return buffer;
     }
-    
-    function createHistogramWorkerHeader(){
-        var buffer = new Polyfills.SharedArrayBuffer(2);
-        var bufferView = new Uint16Array(buffer);
+    function createEmptyHeader(messageType){
+        let buffer = new Polyfills.SharedArrayBuffer(2);
+        let bufferView = new Uint16Array(buffer);
         
-        bufferView[0] = WorkerHeaders.HISTOGRAM;
+        bufferView[0] = messageType;
         
         return buffer;
+    }
+    
+    function createHistogramWorkerHeader(){
+        return createEmptyHeader(WorkerHeaders.HISTOGRAM);
+    }
+    function createOptimizePaletteHeader(){
+        return createEmptyHeader(WorkerHeaders.OPTIMIZE_PALETTE);
     }
     
     function createColorHistogramWorkerHeader(){
@@ -121,6 +127,7 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         ditherWorkerHeader: createDitherWorkerHeader,
         ditherWorkerBwHeader: createDitherWorkerBwHeader,
         ditherWorkerColorHeader: createDitherWorkerColorHeader,
+        optimizePaletteHeader: createOptimizePaletteHeader,
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
         histogramWorkerHeader: createHistogramWorkerHeader,
         colorHistogramWorkerHeader: createColorHistogramWorkerHeader,

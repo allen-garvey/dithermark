@@ -242,6 +242,7 @@
                         this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
                         break;
                     case WorkerHeaders.HUE_HISTOGRAM:
+                    case WorkerHeaders.OPTIMIZE_PALETTE:
                         this.$refs.colorDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
                         break;
                     default:

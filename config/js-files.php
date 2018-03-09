@@ -44,6 +44,7 @@
             JS_WORKER_PATH.'algorithm-model.js',
             JS_WORKER_PATH.'worker-util.js',
             JS_WORKER_PATH.'histogram.js',
+            JS_WORKER_PATH.'optimize-palette.js',
             JS_WORKER_PATH.'main.js'
         ]);
     }
