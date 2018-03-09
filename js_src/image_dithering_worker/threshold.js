@@ -17,19 +17,19 @@ App.Threshold = (function(Image, Pixel, PixelMath){
     }
     //a_dither adapted from: http://pippin.gimp.org/a_dither/
     function aDitherMask1(x, y){
-        return ((x ^ y * 149) * 1234 & 511) / 511.0;
+        return ((x ^ (y * 149)) * 1234 & 511) / 511.0;
     }
     
     function aDitherMask2(x, y, c){
-        return (((x + c * 17) ^ y * 149) * 1234 & 511) / 511.0;
+        return (((x + (c * 17)) ^ y * 149) * 1234 & 511) / 511.0;
     }
     
     function aDitherMask3(x, y){
-        return ((x + y * 237) * 119 & 255) / 255.0;
+        return ((x + (y * 237)) * 119 & 255) / 255.0;
     }
     
     function aDitherMask4(x, y, c){
-            return (((x + c * 67) + y * 236) * 119 & 255) / 255.0;
+            return (((x + (c * 67)) + (y * 236)) * 119 & 255) / 255.0;
         }
     
     function aDitherXorFunc1(threshold, x, y){
