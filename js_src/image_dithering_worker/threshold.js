@@ -5,7 +5,7 @@ App.Threshold = (function(Image, Pixel, PixelMath){
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 var lightness = PixelMath.lightness(pixel);
                 
-                if(lightness > thresholdFunc(threshold, pixel, x, y)){
+                if(lightness > thresholdFunc(threshold, x, y, pixel)){
                     whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
                     return whitePixel;
                 }
@@ -16,45 +16,47 @@ App.Threshold = (function(Image, Pixel, PixelMath){
         };
     }
     //a_dither adapted from: http://pippin.gimp.org/a_dither/
-    function aDitherXorFunc1(threshold, pixel, x, y){
-        let mask = ((x ^ y * 149) * 1234& 511)/511.0;
-        return threshold * mask;
+    function aDitherMask1(x, y){
+        return ((x ^ y * 149) * 1234 & 511) / 511.0;
     }
     
-    function aDitherXorFunc2(threshold, pixel, x, y){
-        function maskFunc(c){
-            return (((x+c*17) ^ y * 149) * 1234 & 511)/511.0;
+    function aDitherMask2(x, y, c){
+        return (((x + c * 17) ^ y * 149) * 1234 & 511) / 511.0;
+    }
+    
+    function aDitherMask3(x, y){
+        return ((x + y * 237) * 119 & 255) / 255.0;
+    }
+    
+    function aDitherMask4(x, y, c){
+            return (((x + c * 67) + y * 236) * 119 & 255) / 255.0;
         }
-        let mask = (maskFunc(0) + maskFunc(1) + maskFunc(2)) / 3;
+    
+    function aDitherXorFunc1(threshold, x, y){
+        return threshold * aDitherMask1(x, y);
+    }
+    
+    function aDitherXorFunc2(threshold, x, y){
+        let mask = (aDitherMask2(x, y, 0) + aDitherMask2(x, y, 1) + aDitherMask2(x, y, 2)) / 3;
         return threshold * mask;
     }
     
-    function aDitherXorFunc3(threshold, pixel, x, y){
-        function maskFunc(c){
-            return (((x+c*17) ^ y * 149) * 1234 & 511)/511.0;
-        }
-        let mask = (maskFunc(pixel[0]) + maskFunc(pixel[1]) + maskFunc(pixel[2])) / 3;
+    function aDitherXorFunc3(threshold, x, y, pixel){
+        let mask = (aDitherMask2(x, y, pixel[0]) + aDitherMask2(x, y, pixel[1]) + aDitherMask2(x, y, pixel[2])) / 3;
         return threshold * mask;
     }
     
-    function aDitherAddFunc1(threshold, pixel, x, y){
-        let mask = ((x + y * 237) * 119 & 255)/255.0;
+    function aDitherAddFunc1(threshold, x, y){
+        return threshold * aDitherMask3(x, y);
+    }
+    
+    function aDitherAddFunc2(threshold, x, y){
+        let mask = (aDitherMask4(x, y, 0) + aDitherMask4(x, y, 1) + aDitherMask4(x, y, 2)) / 3;
         return threshold * mask;
     }
     
-    function aDitherAddFunc2(threshold, pixel, x, y){
-        function maskFunc(c){
-            return (((x+c*67) + y * 236) * 119 & 255)/255.0;
-        }
-        let mask = (maskFunc(0) + maskFunc(1) + maskFunc(2)) / 3;
-        return threshold * mask;
-    }
-    
-    function aDitherAddFunc3(threshold, pixel, x, y){
-        function maskFunc(c){
-            return (((x+c*67) + y * 236) * 119 & 255)/255.0;
-        }
-        let mask = (maskFunc(pixel[0]) + maskFunc(pixel[1]) + maskFunc(pixel[2])) / 3;
+    function aDitherAddFunc3(threshold, x, y, pixel){
+        let mask = (aDitherMask4(x, y, pixel[0]) + aDitherMask4(x, y, pixel[1]) + aDitherMask4(x, y, pixel[2])) / 3;
         return threshold * mask;
     }
     
