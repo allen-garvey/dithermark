@@ -8,6 +8,9 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     const ADITHER_ADD1 = 6;
     const ADITHER_ADD2 = 7;
     const ADITHER_ADD3 = 8;
+    const ADITHER_XOR1 = 9;
+    const ADITHER_XOR2 = 10;
+    const ADITHER_XOR3 = 11;
     
     
     /*
@@ -162,9 +165,12 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     return {
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
-        aDitherAdd1: createArithmeticDither(ADITHER_ADD1, 'aditherMask3(x, y)'),
-        aDitherAdd2: createArithmeticDither(ADITHER_ADD2, '(aditherMask4(x, y, 0) + aditherMask4(x, y, 1) + aditherMask4(x, y, 2)) / 3.0'),
-        aDitherAdd3: createArithmeticDither(ADITHER_ADD3, '(aditherMask4(x, y, int(pixel.r * 255.)) + aditherMask4(x, y, int(pixel.g * 255.)) + aditherMask4(x, y, int(pixel.b * 255.))) / 3.0'),
+        aDitherAdd1: createArithmeticDither(ADITHER_ADD1, 'aDitherMask3(x, y)'),
+        aDitherAdd2: createArithmeticDither(ADITHER_ADD2, '(aDitherMask4(x, y, 0) + aDitherMask4(x, y, 1) + aDitherMask4(x, y, 2)) / 3.0'),
+        aDitherAdd3: createArithmeticDither(ADITHER_ADD3, '(aDitherMask4(x, y, int(pixel.r * 255.)) + aDitherMask4(x, y, int(pixel.g * 255.)) + aDitherMask4(x, y, int(pixel.b * 255.))) / 3.0'),
+        aDitherXor1: createArithmeticDither(ADITHER_XOR1, 'aDitherMask1(x, y)'),
+        aDitherXor2: createArithmeticDither(ADITHER_XOR2, '(aDitherMask2(x, y, 0) + aDitherMask2(x, y, 1) + aDitherMask2(x, y, 2)) / 3.0'),
+        aDitherXor3: createArithmeticDither(ADITHER_XOR3, '(aDitherMask2(x, y, int(pixel.r * 255.)) + aDitherMask2(x, y, int(pixel.g * 255.)) + aDitherMask2(x, y, int(pixel.b * 255.))) / 3.0'),
         createOrderedDither: createWebGLOrderedDither,
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,

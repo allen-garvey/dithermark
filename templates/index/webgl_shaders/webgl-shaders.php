@@ -46,30 +46,61 @@
         int result = 0;
         
         for(int i = 0; i < 32; i++){
-            bool keepGoing = v1>0.0 || v2 > 0.0;
+            bool keepGoing = v1 > 0.0 || v2 > 0.0;
             if(keepGoing){
-                
                 bool addOn = mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0;
-                
                 if(addOn){
                     result += byteVal;
                 }
-                
                 v1 = floor(v1 / 2.0);
                 v2 = floor(v2 / 2.0);
                 byteVal *= 2;
-            } else {
+            } 
+            else{
                 return result;
             }
         }
         return result;
     }
     
-    float aditherMask3(int x, int y){
+    int XOR(int n1, int n2){
+        float v1 = float(n1);
+        float v2 = float(n2);
+        
+        int byteVal = 1;
+        int result = 0;
+        
+        for(int i = 0; i < 32; i++){
+            bool keepGoing = v1 > 0.0 || v2 > 0.0;
+            if(keepGoing){
+                bool addOn = (mod(v1, 2.0) > 0.0 || mod(v2, 2.0) > 0.0) && !(mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0);
+                if(addOn){
+                    result += byteVal;
+                }
+                v1 = floor(v1 / 2.0);
+                v2 = floor(v2 / 2.0);
+                byteVal *= 2;
+            } 
+            else{
+                return result;
+            }
+        }
+        return result;
+    }
+    
+    float aDitherMask1(int x, int y){
+        return float(AND(XOR(x, y * 149) * 1234, 511)) / 511.0;
+    }
+    
+    float aDitherMask2(int x, int y, int c){
+        return float(AND(XOR(x + (c * 17), y * 149) * 1234, 511)) / 511.0;
+    }
+    
+    float aDitherMask3(int x, int y){
         return float(AND((x + (y * 237)) * 119,  255)) / 255.0;
     }
     
-    float aditherMask4(int x, int y, int c){
+    float aDitherMask4(int x, int y, int c){
         return float(AND(((c * 67 + x) + (y * 236)) * 119, 255)) / 255.0;
     }
     
@@ -77,7 +108,7 @@
         int x = int(pos.x * float(u_image_width));
         int y = int(pos.y * float(u_image_height));
         return #{{arithmeticDitherReturn}};
-        <?php //(e.g.) aditherMask3(x, y); ?>
+        <?php //(e.g.) aDitherMask3(x, y); ?>
     }
 </script>
 
