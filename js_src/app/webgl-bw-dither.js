@@ -5,6 +5,7 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     const ORDERED_DITHER = 3;
     const COLOR_REPLACE = 4;
     const TEXTURE_COMBINE = 5;
+    const ARITHMETIC_DITHER = 6;
     
     
     /*
@@ -37,6 +38,7 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         if(!drawFunc){
             fragmentShaderArgs.unshift(fragmentShaderTemplate);
             let fragmentShaderText = generateFragmentShader(...fragmentShaderArgs);
+            console.log(fragmentShaderText);
             drawFunc = createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames);
             drawImageFuncs[typeEnum] = drawFunc;
         }
@@ -88,6 +90,16 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
             gl.uniform2f(customUniformLocations['u_random_seed'], Math.random(), Math.random());
+        });
+    }
+    
+    function webGLArithmeticDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
+        let drawFunc = getDrawFunc(ARITHMETIC_DITHER, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body'], ['u_image_height', 'u_image_width']);
+        // Tell WebGL how to convert from clip space to pixels
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+        drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
+            gl.uniform1i(customUniformLocations['u_image_width'], imageWidth);
+            gl.uniform1i(customUniformLocations['u_image_height'], imageHeight);
         });
     }
     
@@ -146,6 +158,7 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     return {
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
+        arithmeticDither: webGLArithmeticDither,
         createOrderedDither: createWebGLOrderedDither,
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,

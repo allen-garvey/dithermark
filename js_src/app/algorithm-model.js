@@ -25,6 +25,7 @@ App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
             	{
             	    title: "Arithmetic Dither Add 1",
             	    id: 19,
+            	    webGlFunc: WebGlBwDither.arithmeticDither,
             	},
             	{
             	    title: "Arithmetic Dither Add 2",

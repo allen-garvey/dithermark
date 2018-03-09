@@ -33,6 +33,54 @@
     bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
 </script>
 
+<script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-declaration">
+    uniform int u_image_height;
+    uniform int u_image_width;
+    
+    <?php //from: https://gist.github.com/EliCDavis/f35a9e4afb8e1c9ae94cce8f3c2c9b9a ?>
+    int AND(int n1, int n2){
+        float v1 = float(n1);
+        float v2 = float(n2);
+        
+        int byteVal = 1;
+        int result = 0;
+        
+        for(int i = 0; i < 32; i++){
+            bool keepGoing = v1>0.0 || v2 > 0.0;
+            if(keepGoing){
+                
+                bool addOn = mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0;
+                
+                if(addOn){
+                    result += byteVal;
+                }
+                
+                v1 = floor(v1 / 2.0);
+                v2 = floor(v2 / 2.0);
+                byteVal *= 2;
+            } else {
+                return result;
+            }
+        }
+        return result;
+    }
+    
+    float arithmeticMask(int x, int y){
+        return float(AND((x + (y * 237)) * 119,  255)) / 255.0;
+    }
+    
+    float arithmeticDither(vec2 pos){
+        int x = int(pos.x * float(u_image_width));
+        int y = int(pos.y * float(u_image_height));
+        return arithmeticMask(x, y);
+    }
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-body">
+    float adjustedThreshold = u_threshold * arithmeticDither(v_texcoord);
+    bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
+</script>
+
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-declaration">
     uniform sampler2D u_bayer_texture;
     uniform float u_bayer_texture_dimensions;
