@@ -65,19 +65,24 @@
         return result;
     }
     
-    float arithmeticMask(int x, int y){
+    float aditherMask3(int x, int y){
         return float(AND((x + (y * 237)) * 119,  255)) / 255.0;
     }
     
-    float arithmeticDither(vec2 pos){
+    float aditherMask4(int x, int y, int c){
+        return float(AND(((c * 67 + x) + (y * 236)) * 119, 255)) / 255.0;
+    }
+    
+    float arithmeticDither(vec2 pos, vec3 pixel){
         int x = int(pos.x * float(u_image_width));
         int y = int(pos.y * float(u_image_height));
-        return arithmeticMask(x, y);
+        return #{{arithmeticDitherReturn}};
+        <?php //(e.g.) aditherMask3(x, y); ?>
     }
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-body">
-    float adjustedThreshold = u_threshold * arithmeticDither(v_texcoord);
+    float adjustedThreshold = u_threshold * arithmeticDither(v_texcoord, pixel.rgb);
     bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
 </script>
 

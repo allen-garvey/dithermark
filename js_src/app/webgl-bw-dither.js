@@ -5,7 +5,9 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     const ORDERED_DITHER = 3;
     const COLOR_REPLACE = 4;
     const TEXTURE_COMBINE = 5;
-    const ARITHMETIC_DITHER = 6;
+    const ADITHER_ADD1 = 6;
+    const ADITHER_ADD2 = 7;
+    const ADITHER_ADD3 = 8;
     
     
     /*
@@ -52,15 +54,14 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         return document.getElementById(id).textContent;
     }
     
-    function generateFragmentShader(fragmentShaderTemplate, customDeclarationId, customBodyId){
-        var customDeclaration = '';
-        if(customDeclarationId){
-            customDeclaration = getShaderScriptText(customDeclarationId);
-        }
-        var customBody = '';
-        if(customBodyId){
-            customBody = getShaderScriptText(customBodyId);
-        }
+    function generateFragmentShader(fragmentShaderTemplate, customDeclarationId, customBodyId, customDeclarationReplacements = []){
+        let customDeclaration = customDeclarationId ? getShaderScriptText(customDeclarationId) : '';
+        let customBody = customBodyId ? getShaderScriptText(customBodyId) : '';
+        
+        customDeclarationReplacements.forEach((replacement)=>{
+            customDeclaration = customDeclaration.replace(replacement.find, replacement.replace);
+        });
+        
         return fragmentShaderTemplate.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
     }
     
@@ -92,14 +93,18 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         });
     }
     
-    function webGLArithmeticDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        let drawFunc = getDrawFunc(ARITHMETIC_DITHER, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body'], ['u_image_height', 'u_image_width']);
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-            gl.uniform1i(customUniformLocations['u_image_width'], imageWidth);
-            gl.uniform1i(customUniformLocations['u_image_height'], imageHeight);
-        });
+    function createArithmeticDither(ditherKey, customDeclarationReplace){
+        let customDeclarationReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}];
+        
+        return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
+            let drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customDeclarationReplacements], ['u_image_height', 'u_image_width']);
+            // Tell WebGL how to convert from clip space to pixels
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
+                gl.uniform1i(customUniformLocations['u_image_width'], imageWidth);
+                gl.uniform1i(customUniformLocations['u_image_height'], imageHeight);
+            });
+        }   
     }
     
     function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions){
@@ -157,7 +162,9 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     return {
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
-        arithmeticDither: webGLArithmeticDither,
+        aDitherAdd1: createArithmeticDither(ADITHER_ADD1, 'aditherMask3(x, y)'),
+        aDitherAdd2: createArithmeticDither(ADITHER_ADD2, '(aditherMask4(x, y, 0) + aditherMask4(x, y, 1) + aditherMask4(x, y, 2)) / 3.0'),
+        aDitherAdd3: createArithmeticDither(ADITHER_ADD3, '(aditherMask4(x, y, int(pixel.r * 255.)) + aditherMask4(x, y, int(pixel.g * 255.)) + aditherMask4(x, y, int(pixel.b * 255.))) / 3.0'),
         createOrderedDither: createWebGLOrderedDither,
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
