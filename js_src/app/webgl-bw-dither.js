@@ -38,7 +38,6 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         if(!drawFunc){
             fragmentShaderArgs.unshift(fragmentShaderTemplate);
             let fragmentShaderText = generateFragmentShader(...fragmentShaderArgs);
-            console.log(fragmentShaderText);
             drawFunc = createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames);
             drawImageFuncs[typeEnum] = drawFunc;
         }
