@@ -113,8 +113,8 @@ App.WebGlBwDither = (function(Bayer, WebGl){
             // Tell WebGL how to convert from clip space to pixels
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
             drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-                gl.uniform1i(customUniformLocations['u_image_width'], imageWidth);
-                gl.uniform1i(customUniformLocations['u_image_height'], imageHeight);
+                gl.uniform1f(customUniformLocations['u_image_width'], imageWidth);
+                gl.uniform1f(customUniformLocations['u_image_height'], imageHeight);
             });
         }   
     }

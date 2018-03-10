@@ -62,8 +62,8 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-declaration">
-    uniform int u_image_height;
-    uniform int u_image_width;
+    uniform float u_image_height;
+    uniform float u_image_width;
     
     #{{bitwiseFunctions}}
     
@@ -84,8 +84,8 @@
     }
     
     float arithmeticDither(vec2 pos, vec3 pixel){
-        int x = int(pos.x * float(u_image_width));
-        int y = int(pos.y * float(u_image_height));
+        int x = int(pos.x * u_image_width);
+        int y = int(pos.y * u_image_height);
         return #{{arithmeticDitherReturn}};
         <?php //(e.g.) aDitherMask3(x, y); ?>
     }
