@@ -1,12 +1,12 @@
+$global_controls_height: 230px;
 
 .fixed-controls{
 	.super-dither-controls-container, .global-controls-panel{
 		position: fixed;
 		background-color: var(--main-bg-color);
 		max-width: 100%;
-		top: 0;
+		right: 0;
 		padding: 10px;
-		max-height: 100%;
 		overflow-y: scroll;
 		box-sizing: border-box;
 		//because of current version of libsass (see: https://github.com/sass/node-sass/issues/2251)
@@ -14,14 +14,15 @@
 		border: 1px solid RGBA(var(--main-text-color-rgb), 0.2);
 	}
 	.global-controls-panel{
-		left: 0;
+		top: 0;
 		width: 300px;
-		//so on mobile screens with this activated
-		//we can still get to global controls to de-activate it
-		z-index: 1000;
+		margin: 0;
+		height: $global_controls_height;
+		max-height: 100%;
 	}
 	.super-dither-controls-container{
-		right: 0;
+		top: $global-controls-height;
+		max-height: calc(100% - #{$global_controls_height});
 		width: 448px;
 	}
 }

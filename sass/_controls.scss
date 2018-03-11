@@ -30,7 +30,7 @@ $controls_gutter: 20px;
 .controls-secondlevel-container > div{
     flex-basis: calc(50% - #{$controls_gutter});
 }
-.controls-secondlevel-container > div:first-of-type{
+.controls-secondlevel-container .global-controls-panel{
     margin-right: $controls_gutter;
 }
 
