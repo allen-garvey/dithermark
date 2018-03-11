@@ -1,0 +1,5 @@
+@mixin pinned_controls_mq{
+    @media screen and (min-width: $pinned_controls_mq_width) and (min-height: 600px){
+        @content;
+    }
+}

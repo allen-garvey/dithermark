@@ -17,7 +17,7 @@ $canvasMargin: 25px;
     grid-column-gap: $canvasMargin;
 }
 
-.fixed-controls{
+@include pinned_controls_mq{
     .image-canvas-supercontainer{
         justify-content: flex-start;
     }
@@ -30,13 +30,9 @@ $canvasMargin: 25px;
         justify-content: center;
         max-width: none;
 
-        &::before{
+        &::before, &::after{
             content: '';
-            width: 350px;
-        }
-        &::after{
-            content: '';
-            width: 500px;
+            width: $pinned_controls_canvas_padding;
         }
     }
 }

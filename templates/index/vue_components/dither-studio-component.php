@@ -22,7 +22,7 @@
                     </div>
                 <?php endforeach; ?>
             </div>
-            <div class="super-dither-controls-container" v-bind:class="{'fixed-controls': areDitherControlsPinned}">
+            <div class="super-dither-controls-container">
                 <div class="tabs-container">
                     <div class="tab" v-bind:class="{active: activeDitherTab === 0}" v-on:click="loadDitherTab(0)">BW Dither</div>
                     <div class="tab" v-bind:class="{active: activeDitherTab === 1}" v-on:click="loadDitherTab(1)">Color Dither</div>
