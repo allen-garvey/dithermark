@@ -1,0 +1,42 @@
+/*
+* Canvases
+*/
+$canvasMargin: 25px;
+
+.image-canvas-supercontainer{
+    display: flex;
+    justify-content: center;
+}
+
+.image-canvas-container{
+    margin-top: $canvasMargin;
+    //non-fixed styles only
+    display: grid;
+    max-width: 100%;
+    grid-template-columns: auto auto;
+    grid-column-gap: $canvasMargin;
+}
+
+.fixed-controls{
+    .image-canvas-supercontainer{
+        justify-content: flex-start;
+    }
+    .output-canvas + .output-canvas{
+        margin-left: $canvasMargin;
+    }
+    
+    .image-canvas-container{
+        display: flex;
+        justify-content: center;
+        max-width: none;
+
+        &::before{
+            content: '';
+            width: 350px;
+        }
+        &::after{
+            content: '';
+            width: 500px;
+        }
+    }
+}
