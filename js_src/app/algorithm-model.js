@@ -1,44 +1,44 @@
-App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
-    var ditherAlgorithms = [
+App.AlgorithmModel = (function(BwDither, ColorDither){
+    let ditherAlgorithms = [
                 {
                     title: "Threshold", 
                     id: 1,
-                    webGlFunc: WebGlBwDither.threshold,
+                    webGlFunc: BwDither.threshold,
                 },
                 {
                     title: "Random Threshold", 
                     id: 2,
-                    webGlFunc: WebGlBwDither.randomThreshold,
+                    webGlFunc: BwDither.randomThreshold,
                 },
                 {
             	    title: "Arithmetic Dither Xor 1",
             	    id: 16,
-            	    webGlFunc: WebGlBwDither.aDitherXor1,
+            	    webGlFunc: BwDither.aDitherXor1,
             	},
             	{
             	    title: "Arithmetic Dither Xor 2",
             	    id: 17,
-            	    webGlFunc: WebGlBwDither.aDitherXor2,
+            	    webGlFunc: BwDither.aDitherXor2,
             	},
             	{
             	    title: "Arithmetic Dither Xor 3",
             	    id: 18,
-            	    webGlFunc: WebGlBwDither.aDitherXor3,
+            	    webGlFunc: BwDither.aDitherXor3,
             	},
             	{
             	    title: "Arithmetic Dither Add 1",
             	    id: 19,
-            	    webGlFunc: WebGlBwDither.aDitherAdd1,
+            	    webGlFunc: BwDither.aDitherAdd1,
             	},
             	{
             	    title: "Arithmetic Dither Add 2",
             	    id: 20,
-            	    webGlFunc: WebGlBwDither.aDitherAdd2,
+            	    webGlFunc: BwDither.aDitherAdd2,
             	},
             	{
             	    title: "Arithmetic Dither Add 3",
             	    id: 21,
-            	    webGlFunc: WebGlBwDither.aDitherAdd3,
+            	    webGlFunc: BwDither.aDitherAdd3,
             	},
                 {
                     title: "Atkinson", 
@@ -79,60 +79,90 @@ App.AlgorithmModel = (function(WebGlBwDither, WebGlColorDither){
             	{
             	    title: "Ordered Dither 2x2",
             	    id: 11,
-            	    webGlFunc: WebGlBwDither.createOrderedDither(2),
+            	    webGlFunc: BwDither.createOrderedDither(2),
             	},
             	{
             	    title: "Ordered Dither 4x4",
             	    id: 12,
-            	    webGlFunc: WebGlBwDither.createOrderedDither(4),
+            	    webGlFunc: BwDither.createOrderedDither(4),
             	},
             	{
             	    title: "Ordered Dither 8x8",
             	    id: 13,
-            	    webGlFunc: WebGlBwDither.createOrderedDither(8),
+            	    webGlFunc: BwDither.createOrderedDither(8),
             	},
             	{
             	    title: "Ordered Dither 16x16",
             	    id: 14,
-            	    webGlFunc: WebGlBwDither.createOrderedDither(16),
+            	    webGlFunc: BwDither.createOrderedDither(16),
             	},
             ];
             
-    var colorDitherAlgorithms = [
+    let colorDitherAlgorithms = [
                 {
                     title: "Closest Color", 
-                    id: 16,
-                    webGlFunc: WebGlColorDither.closestColor,
+                    id: 101,
+                    webGlFunc: ColorDither.closestColor,
                 },
                 {
                     title: "Random Closest Color", 
-                    id: 17,
-                    webGlFunc: WebGlColorDither.randomClosestColor,
+                    id: 102,
+                    webGlFunc: ColorDither.randomClosestColor,
                 },
                 {
+            	    title: "Arithmetic Dither Xor 1",
+            	    id: 103,
+            	    webGlFunc: ColorDither.aDitherXor1,
+            	},
+            	{
+            	    title: "Arithmetic Dither Xor 2",
+            	    id: 104,
+            	    webGlFunc: ColorDither.aDitherXor2,
+            	},
+            	{
+            	    title: "Arithmetic Dither Xor 3",
+            	    id: 105,
+            	    webGlFunc: ColorDither.aDitherXor3,
+            	},
+            	{
+            	    title: "Arithmetic Dither Add 1",
+            	    id: 106,
+            	    webGlFunc: ColorDither.aDitherAdd1,
+            	},
+            	{
+            	    title: "Arithmetic Dither Add 2",
+            	    id: 107,
+            	    webGlFunc: ColorDither.aDitherAdd2,
+            	},
+            	{
+            	    title: "Arithmetic Dither Add 3",
+            	    id: 108,
+            	    webGlFunc: ColorDither.aDitherAdd3,
+            	},
+                {
                     title: "Ordered Dither 2x2", 
-                    id: 18,
-                    webGlFunc: WebGlColorDither.createOrderedDither(2),
+                    id: 109,
+                    webGlFunc: ColorDither.createOrderedDither(2),
                 },
                 {
                     title: "Ordered Dither 4x4", 
-                    id: 19,
-                    webGlFunc: WebGlColorDither.createOrderedDither(4),
+                    id: 110,
+                    webGlFunc: ColorDither.createOrderedDither(4),
                 },
                 {
                     title: "Ordered Dither 8x8", 
-                    id: 20,
-                    webGlFunc: WebGlColorDither.createOrderedDither(8),
+                    id: 111,
+                    webGlFunc: ColorDither.createOrderedDither(8),
                 },
                 {
                     title: "Ordered Dither 16x16", 
-                    id: 21,
-                    webGlFunc: WebGlColorDither.createOrderedDither(16),
+                    id: 112,
+                    webGlFunc: ColorDither.createOrderedDither(16),
                 },
                 {
                     title: "Hue-Lightness Ordered Dither 16x16", 
-                    id: 22,
-                    webGlFunc: WebGlColorDither.createHueLightnessOrderedDither(16),
+                    id: 113,
+                    webGlFunc: ColorDither.createHueLightnessOrderedDither(16),
                 },
             ];
             

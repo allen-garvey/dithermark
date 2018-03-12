@@ -419,3 +419,9 @@
         outputPixel = secondClosestPixel;
     }
 </script>
+<script type="webgl/fragment-shader" id="webgl-arithmetic-dither-color-body">
+    float aDitherValue = arithmeticDither(v_texcoord, pixel.rgb);
+    if(secondShortestDistance * aDitherValue < shortestDistance){
+        outputPixel = secondClosestPixel;
+    }
+</script>

@@ -50,18 +50,31 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         
         //reused webgl fragment shader texts
         let fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
-        let fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
-        let fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
+        let aDitherDeclaration = shaderText('webgl-arithmetic-dither-fshader-declaration');
+        let aDitherBody = shaderText('webgl-arithmetic-dither-color-body');
+        let bitwiseFunctionsText = Shader.generateBitwiseFunctionsText();
         
-        function compileColorDither(baseText, customDeclarationId, customBodyId){
-            return baseText.replace('#{{customDeclaration}}', shaderText(customDeclarationId)).replace('#{{customBody}}', shaderText(customBodyId));
+        function generateFragmentShader(baseText, customDeclarationId, customBodyId){
+            return generateFragmentShaderBase(baseText, shaderText(customDeclarationId), shaderText(customBodyId));
         }
         
-        function fragmentShaderText(shaderBase, distanceFuncId){
-            return shaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
+        function generateFragmentShaderBase(baseText, customDeclaration, customBody){
+            return baseText.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
+        }
+        
+        function generateADitherShader(aDitherReturnValue){
+            let declaration = aDitherDeclaration.replace('#{{arithmeticDitherReturn}}', aDitherReturnValue).replace('#{{bitwiseFunctions}}', bitwiseFunctionsText);
+            return generateFragmentShaderBase(fragmentShaderBaseText, declaration, aDitherBody);
         }
         
         function shaderTextContainer(baseText){
+            let fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
+            let fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
+            
+            function fragmentShaderText(shaderBase, distanceFuncId){
+                return shaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
+            }
+            
             let modeDistances = [
                 {key: 'RGB', distanceFunc: 'webgl-rgb-distance'},
                 {key: 'HUE_LIGHTNESS', distanceFunc: 'webgl-hue-lightness-distance'},
@@ -80,9 +93,9 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         }
         
         let closestColorShaderBase = shaderText('webgl-closest-color-fshader');
-        let orderedDitherSharedBase = compileColorDither(fragmentShaderBaseText, 'webgl-ordered-dither-color-declaration-fshader', 'webgl-ordered-dither-color-body-fshader');
-        let hueLightnessOrderedDitherSharedBase = compileColorDither(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
-        let randomDitherShaderBase = compileColorDither(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
+        let orderedDitherSharedBase = generateFragmentShader(fragmentShaderBaseText, 'webgl-ordered-dither-color-declaration-fshader', 'webgl-ordered-dither-color-body-fshader');
+        let hueLightnessOrderedDitherSharedBase = generateFragmentShader(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
+        let randomDitherShaderBase = generateFragmentShader(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
         
         //map containing program source code
         let fragmentShaderTexts = createLookupContainer();
@@ -90,6 +103,12 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         fragmentShaderTexts[RANDOM_CLOSEST_COLOR] = shaderTextContainer(randomDitherShaderBase);
         fragmentShaderTexts[ORDERED_DITHER] = shaderTextContainer(orderedDitherSharedBase);
         fragmentShaderTexts[HUE_LIGHTNESS_ORDERED_DITHER] = shaderTextContainer(hueLightnessOrderedDitherSharedBase);
+        fragmentShaderTexts[ADITHER_ADD1] = shaderTextContainer(generateADitherShader(Shader.aDitherAdd1Return));
+        fragmentShaderTexts[ADITHER_ADD2] = shaderTextContainer(generateADitherShader(Shader.aDitherAdd2Return));
+        fragmentShaderTexts[ADITHER_ADD3] = shaderTextContainer(generateADitherShader(Shader.aDitherAdd3Return));
+        fragmentShaderTexts[ADITHER_XOR1] = shaderTextContainer(generateADitherShader(Shader.aDitherXor1Return));
+        fragmentShaderTexts[ADITHER_XOR2] = shaderTextContainer(generateADitherShader(Shader.aDitherXor2Return));
+        fragmentShaderTexts[ADITHER_XOR3] = shaderTextContainer(generateADitherShader(Shader.aDitherXor3Return));
         
         return fragmentShaderTexts;
     }
@@ -167,10 +186,32 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         return createOrderedDitherBase(dimensions, HUE_LIGHTNESS_ORDERED_DITHER);
     }
     
+    function createArithmeticDither(key){
+        return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
+            let drawImageFunc = drawImageFuncs[key][colorDitherModeId];
+            if(!drawImageFunc){
+                drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[key][colorDitherModeId], ['u_image_width', 'u_image_height']);
+                drawImageFuncs[key][colorDitherModeId] = drawImageFunc;
+            }
+            // Tell WebGL how to convert from clip space to pixels
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength, (gl, customUniformLocations)=>{
+                gl.uniform1f(customUniformLocations['u_image_width'], imageWidth);
+                gl.uniform1f(customUniformLocations['u_image_height'], imageHeight);
+            });
+        };
+    }
+    
     return {
         closestColor: closestColor,
         randomClosestColor: randomDither,
         createOrderedDither: createOrderedDither,
         createHueLightnessOrderedDither: createHueLightnessOrderedDither,
+        aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
+        aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
+        aDitherAdd3: createArithmeticDither(ADITHER_ADD3),
+        aDitherXor1: createArithmeticDither(ADITHER_XOR1),
+        aDitherXor2: createArithmeticDither(ADITHER_XOR2),
+        aDitherXor3: createArithmeticDither(ADITHER_XOR3),
     };    
 })(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader);
