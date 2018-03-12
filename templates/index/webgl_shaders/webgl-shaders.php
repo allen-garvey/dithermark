@@ -1,4 +1,4 @@
-<script type="webgl/vertex-shader" id="webgl-threshold-vertex-shader">
+<script type="webgl/vertex-shader" id="webgl-vertex-shader">
     attribute vec4 a_position;
     attribute vec2 a_texcoord;
      

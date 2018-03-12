@@ -18,7 +18,7 @@ App.WebGlShader = (function(){
     
     return {
         shaderText: shaderText,
-        vertexShaderText: shaderText('webgl-threshold-vertex-shader'),
+        vertexShaderText: shaderText('webgl-vertex-shader'),
         generateBitwiseFunctionsText: generateBitwiseFunctionsText,
         aDitherAdd1Return: 'aDitherMask3(x, y)',
         aDitherAdd2Return: '(aDitherMask4(x, y, 0) + aDitherMask4(x, y, 1) + aDitherMask4(x, y, 2)) / 3.0',
