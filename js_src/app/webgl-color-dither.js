@@ -131,11 +131,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength, (gl, customUniformLocations)=>{
-            //set random seed
-            var randomSeed = new Float32Array(2);
-            randomSeed[0] = Math.random();
-            randomSeed[1] = Math.random();
-            gl.uniform2fv(customUniformLocations['u_random_seed'], randomSeed);
+            gl.uniform2f(customUniformLocations['u_random_seed'], Math.random(), Math.random());
         });
     }
     
