@@ -11,11 +11,13 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
     const ADITHER_XOR2 = 8;
     const ADITHER_XOR3 = 9;
     
-    const ALGO_KEYS = [CLOSEST_COLOR, RANDOM_CLOSEST_COLOR, ORDERED_DITHER, HUE_LIGHTNESS_ORDERED_DITHER, ADITHER_ADD1, ADITHER_ADD2, ADITHER_ADD3, ADITHER_XOR1, ADITHER_XOR2, ADITHER_XOR3];
-    
     //creates container to lookup something by algorithm and color mode
     function createLookupContainer(){
-        return ALGO_KEYS.map(()=>{return {};});
+        //should be length of algorithm keys
+        let ret = new Array(10);
+        //need to do it like this, otherwise we will be passing a reference to the same object
+        //https://stackoverflow.com/questions/35578478/array-prototype-fill-with-object-passes-reference-and-not-new-instance
+        return ret.fill().map(()=>{return {};});
     }
     
     
