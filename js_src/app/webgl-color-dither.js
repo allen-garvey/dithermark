@@ -87,13 +87,12 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     var hueLightnessOrderedDitherSharedBase = compileColorDither(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
     var randomDitherShaderBase = compileColorDither(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
     
-    //maps containing program source code
-    var closestColorShaderText = shaderTextContainer(closestColorShaderBase);
-    var orderedDitherShaderText = shaderTextContainer(orderedDitherSharedBase);
-    var hueLightnessOrderedDitherShaderText = shaderTextContainer(hueLightnessOrderedDitherSharedBase);
-    var randomDitherShaderText = shaderTextContainer(randomDitherShaderBase);
-    
+    //map containing program source code
     var fragmentShaderTexts = createLookupContainer();
+    fragmentShaderTexts[CLOSEST_COLOR] = shaderTextContainer(closestColorShaderBase);
+    fragmentShaderTexts[RANDOM_CLOSEST_COLOR] = shaderTextContainer(randomDitherShaderBase);
+    fragmentShaderTexts[ORDERED_DITHER] = shaderTextContainer(orderedDitherSharedBase);
+    fragmentShaderTexts[HUE_LIGHTNESS_ORDERED_DITHER] = shaderTextContainer(hueLightnessOrderedDitherSharedBase);
     
     //draw image compiled functions
     var drawImageFuncs = createLookupContainer();
@@ -105,7 +104,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     function closestColor(gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength){
         let drawImageFunc = drawImageFuncs[CLOSEST_COLOR][colorDitherModeId];
         if(!drawImageFunc){
-            drawImageFunc = createWebGLDrawImageFunc(gl, closestColorShaderText[colorDitherModeId]);
+            drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[CLOSEST_COLOR][colorDitherModeId]);
             drawImageFuncs[CLOSEST_COLOR][colorDitherModeId] = drawImageFunc;
         }
         // Tell WebGL how to convert from clip space to pixels
@@ -116,7 +115,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     function randomDither(gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength){
         let drawImageFunc = drawImageFuncs[RANDOM_CLOSEST_COLOR][colorDitherModeId];
         if(!drawImageFunc){
-            drawImageFunc = createWebGLDrawImageFunc(gl, randomDitherShaderText[colorDitherModeId], ['u_random_seed']);
+            drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[RANDOM_CLOSEST_COLOR][colorDitherModeId], ['u_random_seed']);
             drawImageFuncs[RANDOM_CLOSEST_COLOR][colorDitherModeId] = drawImageFunc;
         }
         // Tell WebGL how to convert from clip space to pixels
@@ -130,11 +129,11 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         });
     }
     
-    function orderedDither(shaderTextContainer, drawImageFuncContainer, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, bayerDimensions){
-        let drawImageFunc = drawImageFuncContainer[colorDitherModeId];
+    function orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, bayerDimensions){
+        let drawImageFunc = drawImageFuncs[algoKey][colorDitherModeId];
         if(!drawImageFunc){
-            drawImageFunc = createWebGLDrawImageFunc(gl, shaderTextContainer[colorDitherModeId], ['u_bayer_texture_dimensions', 'u_bayer_texture']);
-            drawImageFuncContainer[colorDitherModeId] = drawImageFunc;
+            drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[algoKey][colorDitherModeId], ['u_bayer_texture_dimensions', 'u_bayer_texture']);
+            drawImageFuncs[algoKey][colorDitherModeId] = drawImageFunc;
         }
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -150,23 +149,23 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         });
     }
     
-    function createOrderedDitherBase(dimensions, shaderTextContainer, drawImageFuncContainer){
+    function createOrderedDitherBase(dimensions, algoKey){
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
             let bayerTexture = bayerTextures[dimensions];
             if(!bayerTexture){
                 bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.create(dimensions), dimensions);
                 bayerTextures[dimensions] = bayerTexture;
             }
-            orderedDither(shaderTextContainer, drawImageFuncContainer, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
+            orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
         };
     }
     
     function createOrderedDither(dimensions){
-        return createOrderedDitherBase(dimensions, orderedDitherShaderText, drawImageFuncs[ORDERED_DITHER]);
+        return createOrderedDitherBase(dimensions, ORDERED_DITHER);
     }
     
     function createHueLightnessOrderedDither(dimensions){
-        return createOrderedDitherBase(dimensions, hueLightnessOrderedDitherShaderText, drawImageFuncs[HUE_LIGHTNESS_ORDERED_DITHER]);
+        return createOrderedDitherBase(dimensions, HUE_LIGHTNESS_ORDERED_DITHER);
     }
     
     return {
