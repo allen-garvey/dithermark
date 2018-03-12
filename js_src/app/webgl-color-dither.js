@@ -1,5 +1,5 @@
 
-App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
+App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
     const CLOSEST_COLOR = 0;
     const RANDOM_CLOSEST_COLOR = 1;
     const ORDERED_DITHER = 2;
@@ -26,7 +26,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         customUniformNames = customUniformNames || [];
         customUniformNames = customUniformNames.concat(['u_colors_array', 'u_colors_array_length']);
         
-        var drawFunc = WebGl.createDrawImageFunc(gl, vertexShaderText, fragmentShaderText, customUniformNames);
+        var drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
         
         return function(gl, tex, texWidth, texHeight, colorsArray, colorsArrayLength, setCustomUniformsFunc){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
@@ -45,13 +45,9 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
     /*
     * Shader caching
     */
-    
-    function shaderText(id){
-        return document.getElementById(id).textContent;
-    }
-    
-    
     function createFragmentShaderTexts(){
+        let shaderText = Shader.shaderText;
+        
         //reused webgl fragment shader texts
         let fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
         let fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
@@ -97,9 +93,6 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         
         return fragmentShaderTexts;
     }
-    
-    //vertex shader
-    var vertexShaderText = shaderText('webgl-threshold-vertex-shader');
     
     //map containing fragment shader source code
     var fragmentShaderTexts = createFragmentShaderTexts();
@@ -180,4 +173,4 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         createOrderedDither: createOrderedDither,
         createHueLightnessOrderedDither: createHueLightnessOrderedDither,
     };    
-})(App.WebGl, App.ColorDitherModes, App.BayerWebgl);
+})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader);

@@ -1,5 +1,5 @@
 
-App.WebGlBwDither = (function(Bayer, WebGl){
+App.WebGlBwDither = (function(Bayer, WebGl, Shader){
     const THRESHOLD = 1;
     const RANDOM_THRESHOLD = 2;
     const ORDERED_DITHER = 3;
@@ -19,7 +19,7 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames = []){
         customUniformNames = customUniformNames.concat(['u_threshold', 'u_black_pixel', 'u_white_pixel']);
         
-        var drawFunc = WebGl.createDrawImageFunc(gl, thresholdVertexShaderText, fragmentShaderText, customUniformNames);
+        var drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
         
         return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, setCustomUniformsFunc){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
@@ -53,13 +53,9 @@ App.WebGlBwDither = (function(Bayer, WebGl){
     * Shader caching
     */
     
-    function getShaderScriptText(id){
-        return document.getElementById(id).textContent;
-    }
-    
     function generateFragmentShader(fragmentShaderTemplate, customDeclarationId, customBodyId, customDeclarationReplacements = []){
-        let customDeclaration = customDeclarationId ? getShaderScriptText(customDeclarationId) : '';
-        let customBody = customBodyId ? getShaderScriptText(customBodyId) : '';
+        let customDeclaration = customDeclarationId ? Shader.shaderText(customDeclarationId) : '';
+        let customBody = customBodyId ? Shader.shaderText(customBodyId) : '';
         
         customDeclarationReplacements.forEach((replacement)=>{
             customDeclaration = customDeclaration.replace(replacement.find, replacement.replace);
@@ -68,20 +64,10 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         return fragmentShaderTemplate.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
     }
     
-    function generateBitwiseFunctionsText(){
-        function generateOperator(functionName, operation){
-            return functionTemplate.replace('#{{functionName}}', functionName).replace('#{{operation}}', operation);
-        }
-        let functionTemplate = getShaderScriptText('webgl-bitwise-function-template');
-        return generateOperator('AND', 'mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0') + generateOperator('XOR', '(mod(v1, 2.0) > 0.0 || mod(v2, 2.0) > 0.0) && !(mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0)');
-    }
-    
-    //vertex shader
-    var thresholdVertexShaderText = getShaderScriptText('webgl-threshold-vertex-shader');
     //fragment shaders
-    var fragmentLightnessFunctionText = getShaderScriptText('webgl-fragment-shader-lightness-function');
-    var fragmentShaderTemplate = getShaderScriptText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
-    var bitwiseFunctionsText = generateBitwiseFunctionsText(); 
+    var fragmentLightnessFunctionText = Shader.shaderText('webgl-fragment-shader-lightness-function');
+    var fragmentShaderTemplate = Shader.shaderText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    var bitwiseFunctionsText = Shader.generateBitwiseFunctionsText(); 
     
     //draw image created functions
     var drawImageFuncs = {};
@@ -116,7 +102,7 @@ App.WebGlBwDither = (function(Bayer, WebGl){
                 gl.uniform1f(customUniformLocations['u_image_width'], imageWidth);
                 gl.uniform1f(customUniformLocations['u_image_height'], imageHeight);
             });
-        }   
+        };   
     }
     
     function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions){
@@ -184,4 +170,4 @@ App.WebGlBwDither = (function(Bayer, WebGl){
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
-})(App.BayerWebgl, App.WebGl);
+})(App.BayerWebgl, App.WebGl, App.WebGlShader);

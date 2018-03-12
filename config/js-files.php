@@ -21,6 +21,7 @@
             JS_APP_PATH.'bayer-webgl.js',
             JS_APP_PATH.'webgl-m4.js',
             JS_APP_PATH.'webgl.js',
+            JS_APP_PATH.'webgl-shader.js',
             JS_APP_PATH.'webgl-bw-dither.js',
             JS_APP_PATH.'webgl-color-dither.js',
             JS_APP_PATH.'histogram.js',
