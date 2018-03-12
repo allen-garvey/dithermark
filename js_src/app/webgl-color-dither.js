@@ -50,49 +50,59 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer){
         return document.getElementById(id).textContent;
     }
     
-    function compileColorDither(baseText, customDeclarationId, customBodyId){
-        return baseText.replace('#{{customDeclaration}}', shaderText(customDeclarationId)).replace('#{{customBody}}', shaderText(customBodyId));
-    }
     
-    function fragmentShaderText(shaderBase, distanceFuncId){
-        return shaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
-    }
-    
-    function shaderTextContainer(baseText){
-        let modeDistances = [
-            {id: ColorDitherModes.get('RGB').id, distanceFunc: 'webgl-rgb-distance'},
-            {id: ColorDitherModes.get('HUE_LIGHTNESS').id, distanceFunc: 'webgl-hue-lightness-distance'},
-            {id: ColorDitherModes.get('HSL').id, distanceFunc: 'webgl-hue-saturation-lightness-distance'},
-            {id: ColorDitherModes.get('LIGHTNESS').id, distanceFunc: 'webgl-lightness-distance'},
-            {id: ColorDitherModes.get('HUE').id, distanceFunc: 'webgl-hue-distance'},
-        ];
-        let ret = {};
+    function createFragmentShaderTexts(){
+        //reused webgl fragment shader texts
+        let fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
+        let fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
+        let fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
         
-        modeDistances.forEach((item)=>{
-            ret[item.id] = fragmentShaderText(baseText, item.distanceFunc);
-        });
+        function compileColorDither(baseText, customDeclarationId, customBodyId){
+            return baseText.replace('#{{customDeclaration}}', shaderText(customDeclarationId)).replace('#{{customBody}}', shaderText(customBodyId));
+        }
         
-        return ret; 
+        function fragmentShaderText(shaderBase, distanceFuncId){
+            return shaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
+        }
+        
+        function shaderTextContainer(baseText){
+            let modeDistances = [
+                {key: 'RGB', distanceFunc: 'webgl-rgb-distance'},
+                {key: 'HUE_LIGHTNESS', distanceFunc: 'webgl-hue-lightness-distance'},
+                {key: 'HSL', distanceFunc: 'webgl-hue-saturation-lightness-distance'},
+                {key: 'LIGHTNESS', distanceFunc: 'webgl-lightness-distance'},
+                {key: 'HUE', distanceFunc: 'webgl-hue-distance'},
+            ];
+            
+            let ret = {};
+            
+            modeDistances.forEach((item)=>{
+                ret[ColorDitherModes.get(item.key).id] = fragmentShaderText(baseText, item.distanceFunc);
+            });
+            
+            return ret; 
+        }
+        
+        let closestColorShaderBase = shaderText('webgl-closest-color-fshader');
+        let orderedDitherSharedBase = compileColorDither(fragmentShaderBaseText, 'webgl-ordered-dither-color-declaration-fshader', 'webgl-ordered-dither-color-body-fshader');
+        let hueLightnessOrderedDitherSharedBase = compileColorDither(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
+        let randomDitherShaderBase = compileColorDither(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
+        
+        //map containing program source code
+        let fragmentShaderTexts = createLookupContainer();
+        fragmentShaderTexts[CLOSEST_COLOR] = shaderTextContainer(closestColorShaderBase);
+        fragmentShaderTexts[RANDOM_CLOSEST_COLOR] = shaderTextContainer(randomDitherShaderBase);
+        fragmentShaderTexts[ORDERED_DITHER] = shaderTextContainer(orderedDitherSharedBase);
+        fragmentShaderTexts[HUE_LIGHTNESS_ORDERED_DITHER] = shaderTextContainer(hueLightnessOrderedDitherSharedBase);
+        
+        return fragmentShaderTexts;
     }
     
-    //reused webgl fragment shader texts
-    var fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
-    var fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
-    var fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
     //vertex shader
     var vertexShaderText = shaderText('webgl-threshold-vertex-shader');
-    //fragment shaders
-    var closestColorShaderBase = shaderText('webgl-closest-color-fshader');
-    var orderedDitherSharedBase = compileColorDither(fragmentShaderBaseText, 'webgl-ordered-dither-color-declaration-fshader', 'webgl-ordered-dither-color-body-fshader');
-    var hueLightnessOrderedDitherSharedBase = compileColorDither(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
-    var randomDitherShaderBase = compileColorDither(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
     
-    //map containing program source code
-    var fragmentShaderTexts = createLookupContainer();
-    fragmentShaderTexts[CLOSEST_COLOR] = shaderTextContainer(closestColorShaderBase);
-    fragmentShaderTexts[RANDOM_CLOSEST_COLOR] = shaderTextContainer(randomDitherShaderBase);
-    fragmentShaderTexts[ORDERED_DITHER] = shaderTextContainer(orderedDitherSharedBase);
-    fragmentShaderTexts[HUE_LIGHTNESS_ORDERED_DITHER] = shaderTextContainer(hueLightnessOrderedDitherSharedBase);
+    //map containing fragment shader source code
+    var fragmentShaderTexts = createFragmentShaderTexts();
     
     //draw image compiled functions
     var drawImageFuncs = createLookupContainer();
