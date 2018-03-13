@@ -64,8 +64,7 @@
             return;
         }
         //get new headers
-        let messageDataView = new Uint16Array(messageData);
-        messageHeader = WorkerUtil.parseMessageHeader(messageDataView);
+        messageHeader = WorkerUtil.parseMessageHeader(messageData);
         //perform action based on headers
         switch(messageHeader.messageTypeId){
             case WorkerHeaders.DITHER:
