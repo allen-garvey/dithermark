@@ -12,9 +12,9 @@ App.PixelMath = (function(Pixel){
     
     //based on wikipedia formulas: https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
     function pixelHue(pixel){
-        var max = Math.max(pixel[0], pixel[1], pixel[2]);
-        var min = Math.min(pixel[0], pixel[1], pixel[2]);
-        var diff = max - min;
+        let max = Math.max(pixel[0], pixel[1], pixel[2]);
+        let min = Math.min(pixel[0], pixel[1], pixel[2]);
+        let diff = max - min;
         //white, black or gray
         if(diff === 0){
             if(pixel[0] >= 128){
@@ -24,16 +24,37 @@ App.PixelMath = (function(Pixel){
         }
         let rawHue;
         if(pixel[R_INDEX] === max){
-            rawHue = (pixel[G_INDEX] - pixel[B_INDEX]) / diff % 6;
+            rawHue = Math.abs(pixel[G_INDEX] - pixel[B_INDEX]) / diff % 6;
         }
         else if(pixel[G_INDEX] === max){
-            rawHue = (pixel[B_INDEX] - pixel[R_INDEX]) / diff + 2;
+            rawHue = Math.abs(pixel[B_INDEX] - pixel[R_INDEX]) / diff + 2;
         }
         else{
-            rawHue = (pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
+            rawHue = Math.abs(pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
         }
         //convert to 360 degrees
-        return rawHue * 60;
+        return Math.round(rawHue * 60);
+    }
+    
+    //based on: https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
+    //returns saturation is range 0-100
+    function pixelSaturation(pixel){
+        let max = Math.max(pixel[0], pixel[1], pixel[2]) / 255;
+        let min = Math.min(pixel[0], pixel[1], pixel[2]) / 255;
+        if(max === min){
+            return 0;
+        }
+        let c = (max + min) / 2;
+        let diff = max - min;
+        let saturation;
+        if(c > 0.5){
+            saturation = diff / (2 - diff);
+        }
+        else{
+            saturation = diff / (max + min);
+        }
+        
+        return Math.round(saturation * 100);
     }
     
     /**
@@ -41,6 +62,7 @@ App.PixelMath = (function(Pixel){
      * converts a hue in range 0-360 (saturation at 1 and lightness at 0.5) to an rgb Pixel
      *
      */
+     /*
     function hueToPixel(hue, pixel=null){
         if(!pixel){
             pixel = Pixel.create(0, 0, 0);
@@ -81,11 +103,12 @@ App.PixelMath = (function(Pixel){
         
         return pixel;
     }
-
+    */
     
     return {
        lightness: pixelLightness,
        hue: pixelHue,
-       hueToPixel: hueToPixel,
+       saturation: pixelSaturation,
+    //   hueToPixel: hueToPixel,
     };
 })(App.Pixel);
