@@ -93,6 +93,15 @@ App.ColorPicker = (function(Pixel){
         return array1.length == array2.length && array1.every((v,i)=> v === array2[i]);
     }
     
+    function pixelsToHexArray(pixels){
+        let ret = [];
+        for(let i=0;i<pixels.length;i+=3){
+            ret.push(`#${pixels[i].toString(16)}${pixels[i+1].toString(16)}${pixels[i+2].toString(16)}`);
+        }
+        
+        return ret;
+    }
+    
     return {
         pixelFromHex: pixelFromColorPicker,
         COLOR_REPLACE_DEFAULT_BLACK_VALUE: '#000000',
@@ -102,6 +111,7 @@ App.ColorPicker = (function(Pixel){
         areColorArraysIdentical: areColorArraysIdentical,
         randomPalette: randomPalette,
         prepareForWorker: prepareForWorker,
+        pixelsToHexArray: pixelsToHexArray,
     };
     
 })(App.Pixel);

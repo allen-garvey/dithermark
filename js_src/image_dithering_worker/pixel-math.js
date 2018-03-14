@@ -57,22 +57,48 @@ App.PixelMath = (function(Pixel){
         return Math.round(saturation * 100);
     }
     
+    function hslArrayToRgb(hslArray){
+        let pixel = Pixel.create(0, 0, 0);
+        let rgbArray = new Uint8Array(hslArray.length);
+        
+        for(let i=0;i<hslArray.length;i+=3){
+            let hsl = hslArray.subarray(i, i+4);
+            pixel = hslToPixel(hsl, pixel);
+            
+            rgbArray[i] = pixel[0];
+            rgbArray[i+1] = pixel[1];
+            rgbArray[i+2] = pixel[2];
+        }
+        
+        return rgbArray;
+    }
+    
     /**
      * based on https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
-     * converts a hue in range 0-360 (saturation at 1 and lightness at 0.5) to an rgb Pixel
+     * converts a hue in range 0-360, saturation in range 0-100 and lightness in range 0-255 to an rgb Pixel
      *
      */
-     /*
-    function hueToPixel(hue, pixel=null){
+    function hslToPixel(hsl, pixel=null){
         if(!pixel){
             pixel = Pixel.create(0, 0, 0);
         }
+        let hue = hsl[0];
+        let saturation = hsl[1];
+        let lightness = hsl[2];
+        
+        if(saturation === 0){
+            pixel[0] = lightness;
+            pixel[1] = lightness;
+            pixel[2] = lightness;
+            return pixel;
+        }
+        
         hue /= 360;
-        var s = 1;
-        var l = 0.5;
-        var r, g, b;
+        let s = saturation / 100;
+        let l = lightness / 255;
+        let r, g, b;
     
-        var hue2rgb = function hue2rgb(p, q, t){
+        let hue2rgb = function hue2rgb(p, q, t){
             if(t < 0){
                 t += 1;   
             }
@@ -91,8 +117,8 @@ App.PixelMath = (function(Pixel){
             return p;
         };
     
-        var q = l + s - l * s;
-        var p = 2 * l - q;
+        let q = l + s - l * s;
+        let p = 2 * l - q;
         r = hue2rgb(p, q, hue + 1/3);
         g = hue2rgb(p, q, hue);
         b = hue2rgb(p, q, hue - 1/3);
@@ -103,12 +129,12 @@ App.PixelMath = (function(Pixel){
         
         return pixel;
     }
-    */
+    
     
     return {
        lightness: pixelLightness,
        hue: pixelHue,
        saturation: pixelSaturation,
-    //   hueToPixel: hueToPixel,
+       hslArrayToRgb: hslArrayToRgb,
     };
 })(App.Pixel);
