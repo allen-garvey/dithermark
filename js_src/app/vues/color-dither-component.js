@@ -188,7 +188,7 @@
             },
             optimizePalette: function(){
                 this.$emit('request-worker', (worker)=>{
-                    worker.postMessage(WorkerUtil.optimizePaletteHeader());
+                    worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors));
                 });
             },
             cyclePropertyList: VueMixins.cyclePropertyList(),

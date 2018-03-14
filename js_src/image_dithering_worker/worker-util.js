@@ -79,8 +79,9 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
                 return parseDitherMessageHeader(messageData);
             case WorkerHeaders.HISTOGRAM:
             case WorkerHeaders.HUE_HISTOGRAM:
-            case WorkerHeaders.OPTIMIZE_PALETTE:
                 return {messageTypeId: messageTypeId};
+            case WorkerHeaders.OPTIMIZE_PALETTE:
+                return {messageTypeId: messageTypeId, numColors: messageData[1]};
             default:
                 return null;
         }

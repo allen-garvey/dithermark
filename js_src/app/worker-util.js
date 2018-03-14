@@ -77,8 +77,14 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     function createHistogramWorkerHeader(){
         return createEmptyHeader(WorkerHeaders.HISTOGRAM);
     }
-    function createOptimizePaletteHeader(){
-        return createEmptyHeader(WorkerHeaders.OPTIMIZE_PALETTE);
+    function createOptimizePaletteHeader(numColors){
+        let buffer = new Polyfills.SharedArrayBuffer(4);
+        let bufferView = new Uint16Array(buffer);
+        
+        bufferView[0] = WorkerHeaders.OPTIMIZE_PALETTE;
+        bufferView[1] = numColors;
+        
+        return buffer;
     }
     
     function createColorHistogramWorkerHeader(){
