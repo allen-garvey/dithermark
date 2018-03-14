@@ -94,9 +94,16 @@ App.ColorPicker = (function(Pixel){
     }
     
     function pixelsToHexArray(pixels){
+        function numToHex(num){
+            let hex = num.toString(16);
+            if(hex.length < 2){
+                return '0' + hex;
+            }
+            return hex;
+        }
         let ret = [];
         for(let i=0;i<pixels.length;i+=3){
-            ret.push(`#${pixels[i].toString(16)}${pixels[i+1].toString(16)}${pixels[i+2].toString(16)}`);
+            ret.push(`#${numToHex(pixels[i])}${numToHex(pixels[i+1])}${numToHex(pixels[i+2])}`);
         }
         
         return ret;
