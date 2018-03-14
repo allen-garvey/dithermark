@@ -1,5 +1,5 @@
 App.OptimizePalette = (function(Pixel, PixelMath){
-    function medianPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc){
+    function medianPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc, bucketCapacityFunc=null){
         let popularityMap = new Float32Array(numDistinctValues);
         
         for(let i=0;i<pixels.length;i+=4){
@@ -20,13 +20,18 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             buckets = new Uint16Array(numColors);
         }
         //minimum number of pixels for each bucket
-        const bucketMaxCapacity = Math.ceil(pixels.length / 4 / buckets.length);
-        
+        if(!bucketCapacityFunc){
+            bucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
+                return Math.ceil(numPixels / numBuckets);
+            };
+        }
+        let bucketMaxCapacity = 0;
         let mapIndex = 0;
         for(let bucketIndex=0;bucketIndex<buckets.length;bucketIndex++){
             let bucketCount = 0;
             let bucketTotal = 0;
             let isLastBucket = bucketIndex === buckets.length - 1;
+            bucketMaxCapacity = bucketCapacityFunc(pixels.length / 4, buckets.length, bucketIndex, bucketMaxCapacity);
             
             for(;mapIndex<popularityMap.length;mapIndex++){
                 const bucketLimit = bucketMaxCapacity - bucketCount;
@@ -87,10 +92,16 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     }
     
     function medianPopularity(pixels, numColors){
+        let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
+                previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
+                return Math.ceil(previousBucketCapacity / Math.LN10);
+        };
+        
+        
         let lightnesses = medianPopularityBase(pixels, numColors, 256, PixelMath.lightness);
         console.log('lightness results');
         console.log(lightnesses);
-        let saturations = medianPopularityBase(pixels, numColors, 101, PixelMath.saturation);
+        let saturations = medianPopularityBase(pixels, numColors, 101, PixelMath.saturation, logarithmicBucketCapacityFunc);
         console.log('saturation results');
         console.log(saturations);
         let hues = medianPopularityBase(pixels, numColors, 360, (pixel)=>{
