@@ -79,15 +79,17 @@ App.PixelMath = (function(Pixel){
      *
      */
     function hslToPixel(hsl, pixel=null){
+        if(!pixel){
+            pixel = Pixel.create(0, 0, 0);
+        }
         let hue = hsl[0];
         let saturation = hsl[1];
         let lightness = hsl[2];
         
-        if(!pixel){
-            pixel = Pixel.create(lightness, lightness, lightness);
-        }
-        
         if(saturation === 0){
+            pixel[0] = lightness;
+            pixel[1] = lightness;
+            pixel[2] = lightness;
             return pixel;
         }
         
