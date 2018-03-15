@@ -62,7 +62,7 @@ App.PixelMath = (function(Pixel){
         let rgbArray = new Uint8Array(hslArray.length);
         
         for(let i=0;i<hslArray.length;i+=3){
-            let hsl = hslArray.subarray(i, i+4);
+            let hsl = hslArray.subarray(i, i+3);
             pixel = hslToPixel(hsl, pixel);
             
             rgbArray[i] = pixel[0];
