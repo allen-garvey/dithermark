@@ -79,24 +79,21 @@ App.PixelMath = (function(Pixel){
      *
      */
     function hslToPixel(hsl, pixel=null){
-        if(!pixel){
-            pixel = Pixel.create(0, 0, 0);
-        }
         let hue = hsl[0];
         let saturation = hsl[1];
         let lightness = hsl[2];
         
+        if(!pixel){
+            pixel = Pixel.create(lightness, lightness, lightness);
+        }
+        
         if(saturation === 0){
-            pixel[0] = lightness;
-            pixel[1] = lightness;
-            pixel[2] = lightness;
             return pixel;
         }
         
         hue /= 360;
         let s = saturation / 100;
         let l = lightness / 255;
-        let r, g, b;
     
         let hue2rgb = function hue2rgb(p, q, t){
             if(t < 0){
@@ -108,10 +105,10 @@ App.PixelMath = (function(Pixel){
             if(t < 1/6){ 
                 return p + (q - p) * 6 * t;
             }
-            if(t < 1/2){
+            else if(t < 1/2){
                 return q;
             }
-            if(t < 2/3){
+            else if(t < 2/3){
                 return p + (q - p) * (2/3 - t) * 6;
             }
             return p;
@@ -119,9 +116,9 @@ App.PixelMath = (function(Pixel){
     
         let q = l + s - l * s;
         let p = 2 * l - q;
-        r = hue2rgb(p, q, hue + 1/3);
-        g = hue2rgb(p, q, hue);
-        b = hue2rgb(p, q, hue - 1/3);
+        let r = hue2rgb(p, q, hue + 1/3);
+        let g = hue2rgb(p, q, hue);
+        let b = hue2rgb(p, q, hue - 1/3);
         
         pixel[Pixel.R_INDEX] = Math.round(r * 255);
         pixel[Pixel.G_INDEX] = Math.round(g * 255);
