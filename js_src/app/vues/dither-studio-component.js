@@ -36,7 +36,8 @@
             this.isWebglEnabled = this.isWebglSupported;
 
             fileInput.addEventListener('change', (e)=>{
-                Fs.openImageFile(e, this.loadImage);   
+                Fs.openImageFile(e, this.loadImage);
+                fileInput.value = null;
             }, false);  
         },
         data: function(){
