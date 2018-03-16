@@ -99,6 +99,49 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return buckets;
     }
     
+    function hueLightnessPopularityMap(pixels, numDistinctValues, pixelHueFunc){
+        let popularityMap = new Float32Array(numDistinctValues * 2);
+        
+        for(let i=0;i<pixels.length;i+=4){
+            let pixel = pixels.subarray(i, i+5);
+            let pixelHue = pixelHueFunc(pixel);
+            let index = pixelHue * 2;
+            popularityMap[index] = popularityMap[index] + 1;
+            let pixelLightness = PixelMath.lightness(pixel);
+            popularityMap[index + 1] = popularityMap[index + 1] + pixelLightness;
+        }
+        
+        // for(let i=0;i<popularityMap.length;i+=2){
+        //     let total = popularityMap[i];
+        //     let average = total === 0 ? 0 : popularityMap[i+1] / total;
+        //     popularityMap[i+1] = average;
+        // }
+        
+        return popularityMap;
+    }
+    
+    function sortHues(hues, hueLightnessPopularities){
+        let index = 0;
+        
+        let lightnessMap = new Uint8Array(hues.length);
+        hues.forEach((hue, i)=>{
+            let totalLightness = 0;
+            let total = 0;
+            for(;index<=hue*2;index+=2){
+                total += hueLightnessPopularities[index];
+                totalLightness += hueLightnessPopularities[index + 1];
+            }
+            
+            lightnessMap[i] = Math.floor(totalLightness / total);
+        });
+        console.log(lightnessMap);
+        let sortMap = new Array(hues.length);
+        let sorted = new Uint16Array(sortMap.fill().map((item, i)=>{ return [hues[i], lightnessMap[i]];}).sort((a, b)=>{ return a[1] - b[1]; }).map((item)=>{return item[0];}));
+        console.log('sorted hues');
+        console.log(sorted);
+        return sorted;
+    }
+    
     
     
     //zips lightnesses and saturation arrays into single array
@@ -179,22 +222,20 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         saturations = averageArrays(saturations, saturations2);
         console.log('saturation results');
         console.log(saturations);
-        let hues = medianPopularityBase(pixels, numColors, 360, (pixel)=>{
+        let hueFunc = (pixel)=>{
             let value = PixelMath.hue(pixel);
             if(value === 360){
                 return 0;
             }
             return value;
-        });
-        let hues2 = uniformPopularityBase(pixels, numColors, 360, (pixel)=>{
-            let value = PixelMath.hue(pixel);
-            if(value === 360){
-                return 0;
-            }
-            return value;
-        });
+        };
+        let hues = medianPopularityBase(pixels, numColors, 360, hueFunc);
+        let hues2 = uniformPopularityBase(pixels, numColors, 360, hueFunc);
         hues = averageArrays(hues, hues2);
-        shuffle(hues);
+        let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
+        console.log(huePopularityMap);
+        hues = sortHues(hues, huePopularityMap);
+        // shuffle(hues);
         console.log('hue results');
         console.log(hues);
         let hsl = zipHsl(hues, saturations, lightnesses, numColors);
