@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "gulp": "gulp",
     "gulp:watch": "gulp watch",
-    "server": "http-server public_html -c-1 -p 3000"
+    "start": "http-server public_html -c-1 -p 3000"
   },
   "repository": {
     "type": "git",
