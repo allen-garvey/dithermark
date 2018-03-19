@@ -2,10 +2,16 @@
 
 
 
-## Dependencies
+## Dependencies for building
 
-* POSIX compatible operating system to build
-* 
+* POSIX compatible operating system
+* GNU Make
+* Node >= 6.11
+* npm
+
+## Dependencies for running
+
+* Recent version of either Google Chrome, Mozilla Firefox, Apple Safari or Microsoft Edge
 
 ## Getting Started
 
