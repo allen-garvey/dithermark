@@ -162,7 +162,7 @@
                         this.ditherWorkerBwMessageReceived(pixels);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE:
-                        this.colorsShadow = ColorPicker.pixelsToHexArray(pixels);
+                        this.colorsShadow = ColorPicker.pixelsToHexArray(pixels, this.numColorsMax);
                         break;
                     //histogram
                     default:
