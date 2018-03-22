@@ -1,10 +1,11 @@
-<div class="spread-content">
-    <label class="super-label">Editor Theme</label>
-    <template v-for="(theme, index) in editorThemes">
-        <label>{{theme.name}}
-            <input type="radio" v-model="currentEditorThemeIndex" v-bind:value="index" />
-        </label>
-    </template>
+<div>
+    <label>Editor theme
+        <select v-model.number="currentEditorThemeIndex">
+            <template v-for="(theme, index) in editorThemes">
+                <option v-bind:value="index">{{theme.name}}</option>
+            </template>
+        </select>
+    </label>
 </div>
 <div class="spread-content">
     <label>Live preview
