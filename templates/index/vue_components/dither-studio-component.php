@@ -3,7 +3,7 @@
         <div class="image-title-container">
             <h3 class="image-title">{{saveImageFileName}}</h3>
         </div>
-        <div class="controls-secondlevel-container">
+        <div class="controls-container">
             <div class="global-controls-panel controls-panel">
                 <div class="tabs-container">
                     <template v-for="(tab, index) in globalControlsTabs">
