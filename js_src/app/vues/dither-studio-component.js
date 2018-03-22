@@ -91,6 +91,20 @@
                 }
                 return '.png';
             },
+            globalControlsTabs: function(){
+                let tabs = [
+                    {name: 'Open'},
+                    {name: 'Image'},
+                    {name: 'Settings'},
+                    {name: 'Export'},
+                ];
+                if(!this.isImageLoaded){
+                    tabs[1].isDisabled = true;
+                    tabs[3].isDisabled = true;
+                }
+
+                return tabs;
+            },
         },
         watch: {
             currentEditorThemeIndex: function(newThemeIndex, oldThemeIndex){
@@ -130,6 +144,12 @@
             /*
             * Tabs
             */
+           setActiveControlsTab: function(tabIndex, isDisabled){
+            if(isDisabled){
+                return;
+            }
+            this.activeControlsTab = tabIndex;
+           },
             loadDitherTab: function(tabIndex){
                 if(tabIndex === this.activeDitherTab){
                     return;

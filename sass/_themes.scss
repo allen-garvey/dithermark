@@ -8,6 +8,7 @@
     background-color: white;
     --main-bg-color: white;
     --main-text-color: black;
+    --disabled-text-color: #ddd;
     --main-text-color-rgb: 0, 0, 0;
 }
 
@@ -16,6 +17,7 @@
     background-color: #aaa;
     --main-bg-color: #aaa;
     --main-text-color: black;
+    --disabled-text-color: #666;
     --main-text-color-rgb: 0, 0, 0;
 }
 
@@ -24,5 +26,6 @@
     background-color: black;
     --main-bg-color: black;
     --main-text-color: white;
+    --disabled-text-color: #666;
     --main-text-color-rgb: 255, 255, 255;
 }

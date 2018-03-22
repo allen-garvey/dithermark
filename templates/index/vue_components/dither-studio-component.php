@@ -1,19 +1,13 @@
 <div>
     <div class="controls" v-cloak>
-        <div class="controls-toplevel-container">
-            <div>
-                <button v-on:click="loadImageTrigger" title="Open local image file">Open image</button>
-                <button v-on:click="loadRandomImage" v-bind:disabled="isCurrentlyLoadingRandomImage" title="Load random image from Unsplash">Random image</button>    
-            </div>
-        </div>
         <div class="image-title-container">
             <h3 class="image-title">{{saveImageFileName}}</h3>
         </div>
-        <div class="controls-secondlevel-container" v-show="isImageLoaded">
+        <div class="controls-secondlevel-container">
             <div class="global-controls-panel controls-panel">
                 <div class="tabs-container">
-                    <template v-for="(tabName, index) in ['Open', 'Image', 'Settings', 'Export']">
-                        <div class="tab" v-bind:class="{active: activeControlsTab === index}" v-on:click="activeControlsTab = index">{{tabName}}</div>
+                    <template v-for="(tab, index) in globalControlsTabs">
+                        <div class="tab" v-bind:class="{active: activeControlsTab === index, disabled: tab.isDisabled}" v-on:click="setActiveControlsTab(index, tab.isDisabled)">{{tab.name}}</div>
                     </template>
                 </div>
                 <?php foreach(['open', 'image', 'settings', 'export'] as $index => $templateFileSuffix): ?>
@@ -22,7 +16,7 @@
                     </div>
                 <?php endforeach; ?>
             </div>
-            <div class="super-dither-controls-container">
+            <div class="super-dither-controls-container" v-show="isImageLoaded">
                 <div class="tabs-container">
                     <div class="tab" v-bind:class="{active: activeDitherTab === 0}" v-on:click="loadDitherTab(0)">BW Dither</div>
                     <div class="tab" v-bind:class="{active: activeDitherTab === 1}" v-on:click="loadDitherTab(1)">Color Dither</div>

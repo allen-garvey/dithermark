@@ -19,5 +19,9 @@
             border-color: $border_color $border_color #fff;
             border-bottom-color: var(--main-bg-color);
         }
+        &.disabled{
+            cursor: not-allowed;
+            color: var(--disabled-text-color);
+        }
     }
 }
