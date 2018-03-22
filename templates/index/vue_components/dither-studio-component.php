@@ -12,13 +12,13 @@
         <div class="controls-secondlevel-container" v-show="isImageLoaded">
             <div class="global-controls-panel controls-panel">
                 <div class="tabs-container">
-                    <template v-for="(tabName, index) in ['Image', 'Settings', 'Export']">
+                    <template v-for="(tabName, index) in ['Open', 'Image', 'Settings', 'Export']">
                         <div class="tab" v-bind:class="{active: activeControlsTab === index}" v-on:click="activeControlsTab = index">{{tabName}}</div>
                     </template>
                 </div>
-                <?php foreach(['controls-tab-image.php', 'controls-tab-settings.php', 'controls-tab-export.php'] as $index => $templateFileName): ?>
+                <?php foreach(['open', 'image', 'settings', 'export'] as $index => $templateFileSuffix): ?>
                     <div class="controls-tab-container" v-show="activeControlsTab === <?= $index; ?>">
-                        <?php require(TEMPLATES_TABS_PATH.$templateFileName); ?>
+                        <?php require(TEMPLATES_TABS_PATH.'controls-tab-'.$templateFileSuffix.'.php'); ?>
                     </div>
                 <?php endforeach; ?>
             </div>
