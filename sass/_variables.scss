@@ -2,8 +2,9 @@ $border_color: #dee2e6;
 $highlight_color: magenta;
 
 //controls panel layout variables
-$global_controls_height: 230px;
+$global_controls_height: 180px;
 $pinned_dither_controls_width: 448px;
+$pinned_dither_controls_min_height: 400px;
 //padding to left and right of canvas when controls are pinned so controls don't overlap 
 $pinned_controls_canvas_padding: $pinned_dither_controls_width + 30px;
 $pinned_controls_mq_width: 1080px;

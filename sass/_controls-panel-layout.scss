@@ -1,26 +1,27 @@
 @include pinned_controls_mq{
-	.super-dither-controls-container, .global-controls-panel{
+	.controls-secondlevel-container{
 		position: fixed;
+		display: block;
 		background-color: var(--main-bg-color);
+		width: auto;
 		max-width: 100%;
+		max-height: 100%;
+		top: 0;
 		right: 0;
-		padding: 10px;
 		overflow-y: scroll;
 		box-sizing: border-box;
+		max-width: $pinned_dither_controls_width;
+	}
+
+	.super-dither-controls-container, .global-controls-panel{
 		//because of current version of libsass (see: https://github.com/sass/node-sass/issues/2251)
 		//have to use RGBA instead of rbgba
 		border: 1px solid RGBA(var(--main-text-color-rgb), 0.2);
+		border-top: none;
+		padding: 10px;
 	}
 	.global-controls-panel{
-		top: 0;
-		width: 340px;
 		margin: 0;
 		height: $global_controls_height;
-		max-height: 100%;
-	}
-	.super-dither-controls-container{
-		top: $global-controls-height;
-		max-height: calc(100% - #{$global_controls_height});
-		max-width: $pinned_dither_controls_width;
 	}
 }
