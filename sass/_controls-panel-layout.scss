@@ -22,6 +22,6 @@
 	}
 	.global-controls-panel{
 		margin: 0;
-		height: $global_controls_height;
+		min-height: $global_controls_height;
 	}
 }
