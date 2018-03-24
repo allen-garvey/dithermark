@@ -148,7 +148,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     //both arrays should be the same length
     //based on artistic/psychological principle that very dark or very light colors should be less saturated
     //while colors with medium lightness should be the most saturated
-    function zipHsl(hues, saturations, lightnesses, numColors){
+    function zipHsl(hues, saturations, lightnesses, numColors, centerSaturation){
         let ret = new Uint16Array(numColors * 3);
         
         //lightness
@@ -157,19 +157,27 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         }
         
         //saturation
-        let retIndex = 1;
-        let saturationIndex = 0;
-        let half = Math.floor(ret.length / 2);
-        for(;retIndex < half;retIndex+=3,saturationIndex+=2){
-            ret[retIndex] = saturations[saturationIndex];
-            ret[ret.length - 1 - retIndex] = saturations[saturationIndex + 1];
+        //have most saturated colors in middle brightness, while darkest and lightest colors are less saturated
+        if(centerSaturation){
+            let retIndex = 1;
+            let saturationIndex = 0;
+            let half = Math.floor(ret.length / 2);
+            for(;retIndex < half;retIndex+=3,saturationIndex+=2){
+                ret[retIndex] = saturations[saturationIndex];
+                ret[ret.length - 1 - retIndex] = saturations[saturationIndex + 1];
+            }
+            //for odd numbers
+            if(ret.length % 2 === 1){
+                let middle = half + 1;
+                ret[middle * 3 + 1] = saturations[middle];
+            }
         }
-        //for odd numbers
-        if(ret.length % 2 === 1){
-            let middle = half + 1;
-            ret[middle * 3 + 1] = saturations[middle];
+        //match increase saturation with lightness
+        else{
+            for(let retIndex=1, saturationIndex=0;retIndex<ret.length;retIndex+=3,saturationIndex++){
+                ret[retIndex] = saturations[saturationIndex];
+            }
         }
-        
         
         //hues
         for(let retIndex = 0, hueIndex=0;retIndex<ret.length;retIndex+=3, hueIndex++){
@@ -205,6 +213,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return array1.map((value, index)=>{ return Math.floor((value + array2[index]) / 2); });
     }
     
+    //TODO: ignore transparent pixels
     function medianPopularity(pixels, numColors){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
@@ -217,7 +226,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         // lightnesses = averageArrays(lightnesses, lightnesses2);
         console.log('lightness results');
         console.log(lightnesses);
-        let saturations = uniformPopularityBase(pixels, numColors, 101, PixelMath.saturation, logarithmicBucketCapacityFunc);
+        let saturations = uniformPopularityBase(pixels, numColors, 101, PixelMath.saturation);
         let saturations2 = medianPopularityBase(pixels, numColors, 101, PixelMath.saturation, logarithmicBucketCapacityFunc);
         saturations = averageArrays(saturations, saturations2);
         console.log('saturation results');
@@ -238,7 +247,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         // shuffle(hues);
         console.log('hue results');
         console.log(hues);
-        let hsl = zipHsl(hues, saturations, lightnesses, numColors);
+        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
         console.log('hsl');
         console.log(hsl);
         let ret = PixelMath.hslArrayToRgb(hsl);
@@ -246,9 +255,44 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         // console.log(ret);
         return ret;
     }
+
+    //note: does not look good, as it generally tends to pick up too many shades of black
+    function popularity(pixels, numColors){
+        function incMap(map, key){
+            if(map.has(key)){
+                map.set(key, map.get(key) + 1);
+            }
+            else{
+                map.set(key, 1);
+            }
+        }
+        let colorsMap = new Map();
+        for(let i=0;i<pixels.length;i+=4){
+            let alpha = pixels[i+3];
+            if(alpha === 0){
+                continue;
+            }
+            let key = `${pixels[i]};${pixels[i+1]};${pixels[i+2]}`;
+            incMap(colorsMap, key);
+        }
+        let sortedKeys = [...colorsMap.keys()].sort((a, b)=>{
+            return colorsMap.get(b) - colorsMap.get(a);
+        });
+        console.log(sortedKeys);
+
+        let ret = new Uint8Array(numColors * 3);
+
+        for(let i=0;i<numColors && i<sortedKeys.length;i++){
+            sortedKeys[i].split(';').forEach((value, index)=>{
+                ret[i+index] = parseInt(value);
+            });
+        }
+        return ret;
+    }
     
     
     return {
        medianPopularity: medianPopularity,
+       popularity: popularity,
     };
 })(App.Pixel, App.PixelMath);
