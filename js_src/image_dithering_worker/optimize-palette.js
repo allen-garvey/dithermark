@@ -221,8 +221,10 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return array;
     }
     
-    function averageArrays(array1, array2){
-        return array1.map((value, index)=>{ return Math.floor((value + array2[index]) / 2); });
+    //weight is how much to weight towards first array
+    function averageArrays(array1, array2, weight=1){
+        let counterWeight = 2 - weight;
+        return array1.map((value, index)=>{ return Math.floor((value * weight + array2[index] * counterWeight) / 2); });
     }
     
     function medianPopularity(pixels, numColors){
@@ -251,7 +253,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         };
         let hues = medianPopularityBase(pixels, numColors, 360, hueFunc);
         let hues2 = uniformPopularityBase(pixels, numColors, 360, hueFunc);
-        hues = averageArrays(hues, hues2);
+        hues = averageArrays(hues, hues2, 1.2);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
         console.log(huePopularityMap);
         hues = sortHues(hues, huePopularityMap);

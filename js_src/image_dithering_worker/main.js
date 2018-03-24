@@ -46,6 +46,7 @@
         let paletteBuffer;
         Timer.time('Optimize palette', ()=>{
            paletteBuffer = OptimizePalette.medianPopularity(pixels, messageHeader.numColors); 
+        //    paletteBuffer = OptimizePalette.popularity(pixels, messageHeader.numColors); 
         });
         
         postMessage(WorkerUtil.copyBufferWithMessageType(paletteBuffer, messageHeader.messageTypeId).buffer);
