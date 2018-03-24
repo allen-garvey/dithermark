@@ -4,6 +4,10 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
+            //ignore transparent pixels
+            if(pixel[3] === 0){
+                continue;
+            }
             let pixelValue = pixelValueFunc(pixel);
             // if(pixelValue < 0 || pixelValue >= popularityMap.length || typeof pixelValue !== 'number' || isNaN(pixelValue)){
             //     console.log(`pixel value out of range ${pixelValue}/${numDistinctValues}`);
@@ -62,6 +66,10 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
+            //ignore transparent pixels
+            if(pixel[3] === 0){
+                continue;
+            }
             let pixelValue = pixelValueFunc(pixel);
             // if(pixelValue < 0 || pixelValue >= popularityMap.length || typeof pixelValue !== 'number' || isNaN(pixelValue)){
             //     console.log(`pixel value out of range ${pixelValue}/${numDistinctValues}`);
