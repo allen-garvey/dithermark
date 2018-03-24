@@ -1,4 +1,7 @@
 App.OptimizePalette = (function(Pixel, PixelMath){
+
+    //finds n ranges, where each range contains the either the same number of pixels, or the number of pixel size can
+    //increase by some amount, such as logarithmically. Then the average value in each range is used
     function medianPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc, bucketCapacityFunc=null){
         let popularityMap = new Float32Array(numDistinctValues);
         
@@ -61,6 +64,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return buckets;
     }
     
+    //finds the max and min values, and then divides the range into equal parts
     function uniformPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc){
         let popularityMap = new Float32Array(numDistinctValues);
         
@@ -221,7 +225,6 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return array1.map((value, index)=>{ return Math.floor((value + array2[index]) / 2); });
     }
     
-    //TODO: ignore transparent pixels
     function medianPopularity(pixels, numColors){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
@@ -287,6 +290,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             return colorsMap.get(b) - colorsMap.get(a);
         });
         console.log(sortedKeys);
+        console.log([...colorsMap.entries()]);
 
         let ret = new Uint8Array(numColors * 3);
 
