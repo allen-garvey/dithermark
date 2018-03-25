@@ -243,13 +243,13 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         
         
         let lightnesses = medianPopularityBase(pixels, numColors, 256, PixelMath.lightness);
-        // let lightnesses2 = uniformPopularityBase(pixels, numColors, 256, PixelMath.lightness);
-        // lightnesses = averageArrays(lightnesses, lightnesses2);
+        let lightnesses2 = uniformPopularityBase(pixels, numColors, 256, PixelMath.lightness);
+        lightnesses = averageArrays(lightnesses, lightnesses2, 1.8);
         console.log('lightness results');
         console.log(lightnesses);
         let saturations = uniformPopularityBase(pixels, numColors, 101, PixelMath.saturation);
         let saturations2 = medianPopularityBase(pixels, numColors, 101, PixelMath.saturation, logarithmicBucketCapacityFunc);
-        saturations = averageArrays(saturations, saturations2);
+        saturations = averageArrays(saturations, saturations2, 0.8);
         console.log('saturation results');
         console.log(saturations);
         let hueFunc = (pixel)=>{
@@ -271,7 +271,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         };
         let hues = medianPopularityBase(pixels, numColors, 360, hueFunc);
         let hues2 = uniformPopularityBase(pixels, numColors, 360, hueFunc);
-        hues = averageArrays(hues, hues2, 1.2);
+        hues = averageArrays(hues, hues2, 1.5);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
         console.log(huePopularityMap);
         hues = sortHues(hues, huePopularityMap);
