@@ -97,8 +97,8 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         else{
             buckets = new Uint16Array(numColors);
         }
-        let valueMin;
-        let valueMax;
+        let valueMin = 0;
+        let valueMax = numDistinctValues - 1;
         for(let i=0;i<popularityMap.length;i++){
             if(popularityMap[i] > 0){
                 valueMin = i;
