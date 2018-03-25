@@ -4,14 +4,19 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     //increase by some amount, such as logarithmically. Then the average value in each range is used
     function medianPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc, bucketCapacityFunc=null){
         let popularityMap = new Float32Array(numDistinctValues);
-        
+        let ignoredPixels = 0;
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
             if(pixel[3] === 0){
+                ignoredPixels++;
                 continue;
             }
             let pixelValue = pixelValueFunc(pixel);
+            if(pixelValue === null){
+                ignoredPixels++;
+                continue;
+            }
             // if(pixelValue < 0 || pixelValue >= popularityMap.length || typeof pixelValue !== 'number' || isNaN(pixelValue)){
             //     console.log(`pixel value out of range ${pixelValue}/${numDistinctValues}`);
             // }
@@ -34,11 +39,12 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         }
         let bucketMaxCapacity = 0;
         let mapIndex = 0;
+        const numPixelsUsed = (pixels.length / 4) - ignoredPixels;
         for(let bucketIndex=0;bucketIndex<buckets.length;bucketIndex++){
             let bucketCount = 0;
             let bucketTotal = 0;
             let isLastBucket = bucketIndex === buckets.length - 1;
-            bucketMaxCapacity = bucketCapacityFunc(pixels.length / 4, buckets.length, bucketIndex, bucketMaxCapacity);
+            bucketMaxCapacity = bucketCapacityFunc(numPixelsUsed, buckets.length, bucketIndex, bucketMaxCapacity);
             
             for(;mapIndex<popularityMap.length;mapIndex++){
                 const bucketLimit = bucketMaxCapacity - bucketCount;
@@ -67,7 +73,6 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     //finds the max and min values, and then divides the range into equal parts
     function uniformPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc){
         let popularityMap = new Float32Array(numDistinctValues);
-        
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
@@ -75,6 +80,9 @@ App.OptimizePalette = (function(Pixel, PixelMath){
                 continue;
             }
             let pixelValue = pixelValueFunc(pixel);
+            if(pixelValue === null){
+                continue;
+            }
             // if(pixelValue < 0 || pixelValue >= popularityMap.length || typeof pixelValue !== 'number' || isNaN(pixelValue)){
             //     console.log(`pixel value out of range ${pixelValue}/${numDistinctValues}`);
             // }
@@ -245,11 +253,21 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         console.log('saturation results');
         console.log(saturations);
         let hueFunc = (pixel)=>{
-            let value = PixelMath.hue(pixel);
-            if(value === 360){
+            let lightness = PixelMath.lightness(pixel);
+            //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
+            //TODO: find the lightness range in the image beforehand, so we can adjust this range dynamically
+            if(lightness <= 63 || lightness >= 246){
+                return null;
+            }
+            //also ignore hue if saturation is too low to distinguish hue
+            if(PixelMath.saturation(pixel) <= 5){
+                return null;
+            }
+            let hue = PixelMath.hue(pixel);
+            if(hue === 360){
                 return 0;
             }
-            return value;
+            return hue;
         };
         let hues = medianPopularityBase(pixels, numColors, 360, hueFunc);
         let hues2 = uniformPopularityBase(pixels, numColors, 360, hueFunc);
