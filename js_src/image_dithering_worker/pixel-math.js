@@ -116,7 +116,7 @@ App.PixelMath = (function(Pixel){
             return p;
         };
     
-        let q = l + s - l * s;
+        let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
         let p = 2 * l - q;
         let r = hue2rgb(p, q, hue + 1/3);
         let g = hue2rgb(p, q, hue);
