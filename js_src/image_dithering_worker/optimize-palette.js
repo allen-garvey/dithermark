@@ -1,29 +1,37 @@
 App.OptimizePalette = (function(Pixel, PixelMath){
-
-    //finds n ranges, where each range contains the either the same number of pixels, or the number of pixel size can
-    //increase by some amount, such as logarithmically. Then the average value in each range is used
-    function medianPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc, bucketCapacityFunc=null){
+    
+    function createPopularityMap(pixels, numColors, numDistinctValues, pixelValueFunc){
         let popularityMap = new Float32Array(numDistinctValues);
-        let ignoredPixels = 0;
+        let count = 0;
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
             if(pixel[3] === 0){
-                ignoredPixels++;
                 continue;
             }
             let pixelValue = pixelValueFunc(pixel);
             if(pixelValue === null){
-                ignoredPixels++;
                 continue;
             }
             // if(pixelValue < 0 || pixelValue >= popularityMap.length || typeof pixelValue !== 'number' || isNaN(pixelValue)){
             //     console.log(`pixel value out of range ${pixelValue}/${numDistinctValues}`);
             // }
             popularityMap[pixelValue] = popularityMap[pixelValue] + 1;
+            count++;
         }
-        // console.log(popularityMap);
-        // console.log(popularityMap.reduce((sum, current)=>{ return sum+ current;}, 0));
+
+        return {
+            map: popularityMap,
+            count: count,
+        };
+    }
+
+
+    //finds n ranges, where each range contains the either the same number of pixels, or the number of pixel size can
+    //increase by some amount, such as logarithmically. Then the average value in each range is used
+    function medianPopularityBase(popularityMapObject, numColors, numDistinctValues, bucketCapacityFunc=null){
+        let popularityMap = new Float32Array(popularityMapObject.map);
+
         let buckets;
         if(numDistinctValues <= 255){
             buckets = new Uint8Array(numColors);   
@@ -39,7 +47,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         }
         let bucketMaxCapacity = 0;
         let mapIndex = 0;
-        const numPixelsUsed = (pixels.length / 4) - ignoredPixels;
+        const numPixelsUsed = popularityMapObject.count;
         for(let bucketIndex=0;bucketIndex<buckets.length;bucketIndex++){
             let bucketCount = 0;
             let bucketTotal = 0;
@@ -71,25 +79,9 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     }
     
     //finds the max and min values, and then divides the range into equal parts
-    function uniformPopularityBase(pixels, numColors, numDistinctValues, pixelValueFunc){
-        let popularityMap = new Float32Array(numDistinctValues);
-        for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+5);
-            //ignore transparent pixels
-            if(pixel[3] === 0){
-                continue;
-            }
-            let pixelValue = pixelValueFunc(pixel);
-            if(pixelValue === null){
-                continue;
-            }
-            // if(pixelValue < 0 || pixelValue >= popularityMap.length || typeof pixelValue !== 'number' || isNaN(pixelValue)){
-            //     console.log(`pixel value out of range ${pixelValue}/${numDistinctValues}`);
-            // }
-            popularityMap[pixelValue] = popularityMap[pixelValue] + 1;
-        }
-        // console.log(popularityMap);
-        // console.log(popularityMap.reduce((sum, current)=>{ return sum+ current;}, 0));
+    function uniformPopularityBase(popularityMapObject, numColors, numDistinctValues){
+        let popularityMap = popularityMapObject.map;
+
         let buckets;
         if(numDistinctValues <= 255){
             buckets = new Uint8Array(numColors);   
@@ -130,12 +122,6 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             let pixelLightness = PixelMath.lightness(pixel);
             popularityMap[index + 1] = popularityMap[index + 1] + pixelLightness;
         }
-        
-        // for(let i=0;i<popularityMap.length;i+=2){
-        //     let total = popularityMap[i];
-        //     let average = total === 0 ? 0 : popularityMap[i+1] / total;
-        //     popularityMap[i+1] = average;
-        // }
         
         return popularityMap;
     }
@@ -241,14 +227,15 @@ App.OptimizePalette = (function(Pixel, PixelMath){
                 return Math.ceil(previousBucketCapacity / Math.LN10);
         };
         
-        
-        let lightnesses = medianPopularityBase(pixels, numColors, 256, PixelMath.lightness);
-        let lightnesses2 = uniformPopularityBase(pixels, numColors, 256, PixelMath.lightness);
+        let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
+        let lightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
+        let lightnesses2 = uniformPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         lightnesses = averageArrays(lightnesses, lightnesses2, 1.8);
         console.log('lightness results');
         console.log(lightnesses);
-        let saturations = uniformPopularityBase(pixels, numColors, 101, PixelMath.saturation);
-        let saturations2 = medianPopularityBase(pixels, numColors, 101, PixelMath.saturation, logarithmicBucketCapacityFunc);
+        let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
+        let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
+        let saturations2 = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
         saturations = averageArrays(saturations, saturations2, 0.8);
         console.log('saturation results');
         console.log(saturations);
@@ -269,8 +256,9 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             }
             return hue;
         };
-        let hues = medianPopularityBase(pixels, numColors, 360, hueFunc);
-        let hues2 = uniformPopularityBase(pixels, numColors, 360, hueFunc);
+        let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let hues = medianPopularityBase(huePopularityMapObject, numColors, 360);
+        let hues2 = uniformPopularityBase(huePopularityMapObject, numColors, 360);
         hues = averageArrays(hues, hues2, 1.5);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
         console.log(huePopularityMap);
