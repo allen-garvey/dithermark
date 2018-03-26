@@ -44,7 +44,7 @@
         //don't need to copy the original imagedata, since we are not modifying it
         let pixels = new Uint8ClampedArray(pixelBufferOriginal);
         let paletteBuffer;
-        Timer.time('Optimize palette', ()=>{
+        Timer.megapixelsPerSecond('Optimize palette', pixels.length / 4, ()=>{
            paletteBuffer = OptimizePalette.medianPopularity(pixels, messageHeader.numColors); 
         //    paletteBuffer = OptimizePalette.popularity(pixels, messageHeader.numColors); 
         });
