@@ -91,14 +91,40 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return buckets;
     }
     
-    //finds the max and min values, and then divides the range into equal parts
+    //Divides the range between min and max values into equal parts
     function uniformPopularityBase(popularityMapObject, numColors, numDistinctValues){
         let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
-        let bucketFraction = Math.floor((popularityMapObject.valueMax - popularityMapObject.valueMin) / buckets.length);
+        const bucketFraction = Math.floor((popularityMapObject.valueMax - popularityMapObject.valueMin) / buckets.length);
         
         buckets = buckets.map((value, i)=>{ return i * bucketFraction; });
         //rounding down will make this less than the max value
         buckets[buckets.length -1] = popularityMapObject.valueMax;
+        return buckets;
+    }
+
+
+    //divides lightness into uniform segments, but assuming the range in wide enough,
+    //it makes sure there is only 1 black value, and only 1 white value
+    function lightnessUniformPopularity(popularityMapObject, numColors, numDistinctValues){
+        const minRange = Math.floor(numDistinctValues / 2);
+        const min = popularityMapObject.valueMin;
+        const max = popularityMapObject.valueMax;
+        if(max - min <= minRange){
+            return uniformPopularityBase(popularityMapObject, numColors, numDistinctValues);
+        }
+        let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
+        buckets[0] = min;
+        buckets[buckets.length - 1] = max;
+        const bottomOffset = Math.ceil(numDistinctValues * .18);
+        const topOffset = Math.ceil(numDistinctValues * .18);
+
+        const floor = min < bottomOffset ? min + bottomOffset : min;
+        const ceil = max > numDistinctValues - topOffset ? max - topOffset : max;
+        const bucketFraction = Math.floor((ceil - floor) / (buckets.length - 2));
+        console.log(`bottomOffset ${bottomOffset}, topOffset ${topOffset} floor ${floor} ceil ${ceil} max ${max} min ${min}`);
+        for(let i=1;i<buckets.length - 1;i++){
+            buckets[i] = i * bucketFraction + floor;
+        }
         return buckets;
     }
     
@@ -222,10 +248,10 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         let lightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         console.log('lightnesses median');
         console.log(lightnesses);
-        let lightnesses2 = uniformPopularityBase(lightnessesPopularityMapObject, numColors, 256);
+        let lightnesses2 = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
         console.log('lightnesses uniform');
         console.log(lightnesses2);
-        lightnesses = averageArrays(lightnesses, lightnesses2, 1.8);
+        lightnesses = averageArrays(lightnesses, lightnesses2, .8);
         console.log('lightness results');
         console.log(lightnesses);
         let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
