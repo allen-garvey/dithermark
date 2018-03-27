@@ -12,6 +12,20 @@
         ];
     }
     
+    function appVueComponents(): array{
+        $ret = [];
+        $ret[] = JS_VUES_PATH.'vue-mixins.js';
+        if(ENABLE_PRINT_COLOR_PALETTE_BUTTON){
+            $ret[] = JS_VUES_PATH.'print-palette-component.js';
+        }
+        $ret[] = JS_VUES_PATH.'bw-dither-component.js';
+        $ret[] = JS_VUES_PATH.'color-dither-component.js';
+        $ret[] = JS_VUES_PATH.'dither-studio-component.js';
+        $ret[] = JS_VUES_PATH.'app.js';
+
+        return $ret;
+    }
+
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
             JS_APP_PATH.'fs.js',
@@ -26,13 +40,7 @@
             JS_APP_PATH.'webgl-color-dither.js',
             JS_APP_PATH.'histogram.js',
             JS_APP_PATH.'algorithm-model.js',
-            JS_VUES_PATH.'vue-mixins.js',
-            JS_VUES_PATH.'print-palette-component.js',
-            JS_VUES_PATH.'bw-dither-component.js',
-            JS_VUES_PATH.'color-dither-component.js',
-            JS_VUES_PATH.'dither-studio-component.js',
-            JS_VUES_PATH.'app.js'
-        ]);
+        ], appVueComponents());
     }
     
     

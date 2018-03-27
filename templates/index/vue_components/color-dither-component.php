@@ -59,7 +59,9 @@
     </div>
     <div>
         <button @click="randomizePalette">Randomize palette</button>
-        <print-palette-button :colors="colors" />
+        <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
+            <print-palette-button :colors="colors" />
+        <?php endif; ?>
         <button @click="optimizePalette">Optimize palette</button>
     </div>
 </div>   

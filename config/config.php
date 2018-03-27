@@ -34,3 +34,7 @@
     
     //color dither stuff
     define('COLOR_DITHER_MAX_COLORS', 12);
+
+    //whether or not print color palette button is shown
+    //(useful for when creating new color palettes)
+    define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
