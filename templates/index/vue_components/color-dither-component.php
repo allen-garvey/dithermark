@@ -59,7 +59,7 @@
     </div>
     <div>
         <button @click="randomizePalette">Randomize palette</button>
-        <button @click="printPalette">Print palette</button>
+        <print-palette-button :colors="colors" />
         <button @click="optimizePalette">Optimize palette</button>
     </div>
 </div>   

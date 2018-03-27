@@ -179,10 +179,6 @@
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.$emit('display-transformed-image');
             },
-            printPalette: function(){
-                //used to simplify palette creation
-                console.log(JSON.stringify(this.colors).replace(/"/g, '\'').replace(/,/g, ', '));
-            },
             randomizePalette: function(){
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
             },
