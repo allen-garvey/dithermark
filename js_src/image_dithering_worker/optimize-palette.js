@@ -20,9 +20,28 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             count++;
         }
 
+        //find minimum and maximum values in map
+        let valueMin = 0;
+        let valueMax = numDistinctValues - 1;
+        for(let i=0;i<popularityMap.length;i++){
+            if(popularityMap[i] > 0){
+                valueMin = i;
+                break;   
+            }
+        }
+        
+        for(let i=popularityMap.length-1;i>=0;i--){
+            if(popularityMap[i] > 0){
+                valueMax = i;
+                break;   
+            }
+        }
+
         return {
             map: popularityMap,
             count: count,
+            valueMin: valueMin,
+            valueMax: valueMax,
         };
     }
 
@@ -32,13 +51,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     function medianPopularityBase(popularityMapObject, numColors, numDistinctValues, bucketCapacityFunc=null){
         let popularityMap = new Float32Array(popularityMapObject.map);
 
-        let buckets;
-        if(numDistinctValues <= 255){
-            buckets = new Uint8Array(numColors);   
-        }
-        else{
-            buckets = new Uint16Array(numColors);
-        }
+        let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
         //minimum number of pixels for each bucket
         if(!bucketCapacityFunc){
             bucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
@@ -80,34 +93,12 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     
     //finds the max and min values, and then divides the range into equal parts
     function uniformPopularityBase(popularityMapObject, numColors, numDistinctValues){
-        let popularityMap = popularityMapObject.map;
-
-        let buckets;
-        if(numDistinctValues <= 255){
-            buckets = new Uint8Array(numColors);   
-        }
-        else{
-            buckets = new Uint16Array(numColors);
-        }
-        let valueMin = 0;
-        let valueMax = numDistinctValues - 1;
-        for(let i=0;i<popularityMap.length;i++){
-            if(popularityMap[i] > 0){
-                valueMin = i;
-                break;   
-            }
-        }
+        let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
+        let bucketFraction = Math.floor((popularityMapObject.valueMax - popularityMapObject.valueMin) / buckets.length);
         
-        for(let i=popularityMap.length-1;i>=0;i--){
-            if(popularityMap[i] > 0){
-                valueMax = i;
-                break;   
-            }
-        }
-        let bucketFraction = Math.floor((valueMax - valueMin) / buckets.length);
         buckets = buckets.map((value, i)=>{ return i * bucketFraction; });
         //rounding down will make this less than the max value
-        buckets[buckets.length -1] = valueMax;
+        buckets[buckets.length -1] = popularityMapObject.valueMax;
         return buckets;
     }
     
@@ -229,14 +220,18 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         
         let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
         let lightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
+        console.log('lightnesses median');
+        console.log(lightnesses);
         let lightnesses2 = uniformPopularityBase(lightnessesPopularityMapObject, numColors, 256);
+        console.log('lightnesses uniform');
+        console.log(lightnesses2);
         lightnesses = averageArrays(lightnesses, lightnesses2, 1.8);
         console.log('lightness results');
         console.log(lightnesses);
         let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
-        let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
-        let saturations2 = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
-        saturations = averageArrays(saturations, saturations2, 0.8);
+        let saturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
+        let saturations2 = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
+        saturations = averageArrays(saturations, saturations2, 1.2);
         console.log('saturation results');
         console.log(saturations);
         let hueFunc = (pixel)=>{
