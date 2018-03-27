@@ -274,45 +274,9 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         // console.log(ret);
         return ret;
     }
-
-    //note: does not look good, as it generally tends to pick up too many shades of black
-    function popularity(pixels, numColors){
-        function incMap(map, key){
-            if(map.has(key)){
-                map.set(key, map.get(key) + 1);
-            }
-            else{
-                map.set(key, 1);
-            }
-        }
-        let colorsMap = new Map();
-        for(let i=0;i<pixels.length;i+=4){
-            let alpha = pixels[i+3];
-            if(alpha === 0){
-                continue;
-            }
-            let key = `${pixels[i]};${pixels[i+1]};${pixels[i+2]}`;
-            incMap(colorsMap, key);
-        }
-        let sortedKeys = [...colorsMap.keys()].sort((a, b)=>{
-            return colorsMap.get(b) - colorsMap.get(a);
-        });
-        console.log(sortedKeys);
-        console.log([...colorsMap.entries()]);
-
-        let ret = new Uint8Array(numColors * 3);
-
-        for(let i=0;i<numColors && i<sortedKeys.length;i++){
-            sortedKeys[i].split(';').forEach((value, index)=>{
-                ret[i+index] = parseInt(value);
-            });
-        }
-        return ret;
-    }
     
     
     return {
        medianPopularity: medianPopularity,
-       popularity: popularity,
     };
 })(App.Pixel, App.PixelMath);
