@@ -20,10 +20,6 @@
             </div>
         </header>
         <main>
-            <div class="hidden">
-                <input type="file" id="file-input"/>
-                <a id="save-image-link">Save image</a>
-            </div>
             <div id="app">
                 <dither-studio/>
             </div>

@@ -276,7 +276,8 @@
         }
     });
     
-    var saveImageLink = document.getElementById('save-image-link');
-    var fileInput = document.getElementById('file-input');
+    var saveImageLink = document.createElement('a');
+    var fileInput = document.createElement('input');
+    fileInput.type = 'file';
     
 })(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders);
