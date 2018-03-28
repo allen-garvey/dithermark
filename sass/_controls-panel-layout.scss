@@ -14,9 +14,7 @@
 	}
 
 	.super-dither-controls-container, .global-controls-panel{
-		//because of current version of libsass (see: https://github.com/sass/node-sass/issues/2251)
-		//have to use RGBA instead of rbgba
-		border: 1px solid RGBA(var(--main-text-color-rgb), 0.2);
+		border: 1px solid rgba(var(--main-text-color-rgb), 0.2);
 		border-top: none;
 		padding: 10px;
 	}
