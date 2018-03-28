@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants){
     //webworker stuff
     var ditherWorkers;
     
@@ -13,7 +13,7 @@
     var app = Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         mounted: function(){
-            WorkerUtil.getDitherWorkers('/js/dither-worker.js').then((workers)=>{
+            WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
                 ditherWorkers = workers;
                 ditherWorkers.forEach((ditherWorker)=>{
                     ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
@@ -45,8 +45,8 @@
         },
         data: function(){
             return {
-                activeDitherTab: 0,
                 areWorkersInitialized: false,
+                activeDitherTab: 1,
                 activeControlsTab: 0,
                 sourceCanvas: null,
                 transformCanvas: null,
@@ -280,4 +280,4 @@
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
     
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants);

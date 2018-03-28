@@ -6,4 +6,5 @@ App.Constants = {
     histogramHeight: <?= HISTOGRAM_HEIGHT; ?>,
     histogramBwWidth: <?= HISTOGRAM_BW_WIDTH; ?>,
     histogramColorWidth: <?= HISTOGRAM_COLOR_WIDTH; ?>,
+    ditherWorkerUrl: '/js/dither-worker.js',
 };
