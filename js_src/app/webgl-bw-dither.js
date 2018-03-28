@@ -131,6 +131,28 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
             webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
         };
     }
+
+    function clusterOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
+        const dimensions = 4;
+        const key = 'cluster';
+        let bayerTexture = bayerTextures[key];
+        if(!bayerTexture){
+            bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createCluster(), dimensions);
+            bayerTextures[key] = bayerTexture;
+        }
+        webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+    };
+
+    function dotClusterOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
+        const dimensions = 4;
+        const key = 'dot-cluster';
+        let bayerTexture = bayerTextures[key];
+        if(!bayerTexture){
+            bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createDotCluster(), dimensions);
+            bayerTextures[key] = bayerTexture;
+        }
+        webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+    };
     
     function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel){
         let drawFunc = getDrawFunc(COLOR_REPLACE, gl, [null, 'webgl-color-replace-fshader-body']);
@@ -167,6 +189,8 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
         aDitherXor2: createArithmeticDither(ADITHER_XOR2, Shader.aDitherXor2Return),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3, Shader.aDitherXor3Return),
         createOrderedDither: createWebGLOrderedDither,
+        clusterOrderedDither: clusterOrderedDither,
+        dotClusterOrderedDither: dotClusterOrderedDither,
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    

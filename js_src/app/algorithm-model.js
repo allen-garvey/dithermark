@@ -95,7 +95,17 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
             	    title: "Ordered Dither 16x16",
             	    id: 14,
             	    webGlFunc: BwDither.createOrderedDither(16),
-            	},
+				},
+				{
+					title: "Cluster Ordered Dither 4x4",
+					id: 22,
+					webGlFunc: BwDither.clusterOrderedDither,
+				},
+				{
+					title: "Dot Cluster Ordered Dither 4x4",
+					id: 23,
+					webGlFunc: BwDither.dotClusterOrderedDither,
+				},
             ];
             
     let colorDitherAlgorithms = [
@@ -163,7 +173,17 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
                     title: "Hue-Lightness Ordered Dither 16x16", 
                     id: 113,
                     webGlFunc: ColorDither.createHueLightnessOrderedDither(16),
-                },
+				},
+				{
+					title: "Cluster Ordered Dither 4x4",
+					id: 114,
+					webGlFunc: ColorDither.createClusterOrderedDither(4),
+				},
+				{
+					title: "Dot Cluster Ordered Dither 4x4",
+					id: 115,
+					webGlFunc: ColorDither.createDotClusterOrderedDither(4),
+				},
             ];
             
     

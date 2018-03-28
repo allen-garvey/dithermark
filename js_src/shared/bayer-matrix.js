@@ -50,8 +50,29 @@ App.BayerMatrix = (function(){
         }
         return bayerArray;
     }
+    //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2002/lectures/cs559-5.ppt
+    function createCluster(){
+        return new Uint8Array([
+            15, 11, 7, 3,
+            11, 11, 7, 3,
+            7, 7, 7, 3,
+            3, 3, 3, 3,
+        ]);
+    }
+
+    //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2004/lectures/cs559-5.ppt
+    function createDotCluster(){
+        return new Uint8Array([
+            11, 5, 9, 3,
+            0, 15, 13, 6,
+            7, 12, 14, 1,
+            2, 8, 4, 10,
+        ]);
+    }
     
     return {
         create: createBayer,
+        createCluster: createCluster,
+        createDotCluster: createDotCluster,
     };
 })();

@@ -183,6 +183,26 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
     function createOrderedDither(dimensions){
         return createOrderedDitherBase(dimensions, ORDERED_DITHER);
     }
+
+    function createClusterOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, clusterFunc){
+        let bayerKey = `${textureKeyPrefix}_${dimensions}`;
+        return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
+            let bayerTexture = bayerTextures[bayerKey];
+            if(!bayerTexture){
+                bayerTexture = Bayer.createAndLoadTexture(gl, Bayer[clusterFunc](dimensions), dimensions);
+                bayerTextures[bayerKey] = bayerTexture;
+            }
+            orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
+        };
+    }
+    
+    function createClusterOrderedDither(dimensions){
+        return createClusterOrderedDitherBase(dimensions, ORDERED_DITHER, 'cluster', 'createCluster');
+    }
+
+    function createDotClusterOrderedDither(dimensions){
+        return createClusterOrderedDitherBase(dimensions, ORDERED_DITHER, 'dot-cluster', 'createDotCluster');
+    }
     
     function createHueLightnessOrderedDither(dimensions){
         return createOrderedDitherBase(dimensions, HUE_LIGHTNESS_ORDERED_DITHER);
@@ -208,6 +228,8 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         closestColor: closestColor,
         randomClosestColor: randomDither,
         createOrderedDither: createOrderedDither,
+        createClusterOrderedDither: createClusterOrderedDither,
+        createDotClusterOrderedDither: createDotClusterOrderedDither,
         createHueLightnessOrderedDither: createHueLightnessOrderedDither,
         aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
         aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
