@@ -1,5 +1,5 @@
 <div>
-    <div class="controls" v-cloak>
+    <div class="controls" :show="areWorkersInitialized">
         <div class="image-title-container">
             <h3 class="image-title">{{saveImageFileName}}</h3>
         </div>

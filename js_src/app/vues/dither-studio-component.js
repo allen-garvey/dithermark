@@ -13,9 +13,12 @@
     var app = Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         mounted: function(){
-            ditherWorkers = WorkerUtil.createDitherWorkers('/js/dither-worker.js');
-            ditherWorkers.forEach((ditherWorker)=>{
-               ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
+            WorkerUtil.getDitherWorkers('/js/dither-worker.js').then((workers)=>{
+                ditherWorkers = workers;
+                ditherWorkers.forEach((ditherWorker)=>{
+                    ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
+                 });
+                 this.areWorkersInitialized = true;
             });
             
             let refs = this.$refs;
@@ -43,6 +46,7 @@
         data: function(){
             return {
                 activeDitherTab: 0,
+                areWorkersInitialized: false,
                 activeControlsTab: 0,
                 sourceCanvas: null,
                 transformCanvas: null,

@@ -95,9 +95,18 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         
         return buffer;
     }
+
+    //returns promise;
+    //gets worker src code, and then initializes queue of workers
+    //very loosely based on: https://stackoverflow.com/questions/10343913/how-to-create-a-web-worker-from-a-string
+    function getWorkers(workerUrl){
+        return fetch(workerUrl).then((res)=>{ return res.blob(); }).then((blob)=>{ 
+            return createWorkers(URL.createObjectURL(blob));
+        });
+    }
     
     //creates queue of webworkers
-    function createWorkers(ditherWorkerUrl){
+    function createWorkers(workerSrc){
         var numWorkers = 1;
         var navigator = window.navigator;
         if(navigator.hardwareConcurrency){
@@ -105,7 +114,7 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         }
         var workers = new Array(numWorkers);
         for(let i=0;i<numWorkers;i++){
-            workers[i] = new Worker(ditherWorkerUrl);
+            workers[i] = new Worker(workerSrc);
         }
         
         var workerCurrentIndex = 0;
@@ -137,6 +146,6 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
         histogramWorkerHeader: createHistogramWorkerHeader,
         colorHistogramWorkerHeader: createColorHistogramWorkerHeader,
-        createDitherWorkers: createWorkers,
+        getDitherWorkers: getWorkers,
     };
 })(App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.Constants);
