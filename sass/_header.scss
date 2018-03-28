@@ -3,10 +3,16 @@
 }
 
 .brand{
-    font-family: 'Bungee', sans-serif;
-    margin: 0;
-    display: inline-block;
+    margin: 8px 0 0;
+    font-size: 20px;
     &:hover{
-        text-shadow: 2px 2px $highlight_color;
+        text-shadow: 1px 1px $highlight_color;
     }
+}
+
+.image-title-container{
+    margin-bottom: 20px;
+}
+.image-title{
+    font-size: 15px;
 }
