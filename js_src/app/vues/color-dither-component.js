@@ -167,7 +167,7 @@
                     case WorkerHeaders.OPTIMIZE_PALETTE:
                         let optimizePaletteColorCount = pixels.length / 3;
                         optimizedPalettes[optimizePaletteColorCount] = ColorPicker.pixelsToHexArray(pixels, this.numColorsMax); 
-                        this.colorsShadow = optimizedPalettes[optimizePaletteColorCount];
+                        this.colorsShadow = optimizedPalettes[optimizePaletteColorCount].slice();
                         break;
                     //histogram
                     default:
@@ -189,7 +189,7 @@
             },
             optimizePalette: function(){
                 if(optimizedPalettes[this.numColors]){
-                    this.colorsShadow = optimizedPalettes[this.numColors];
+                    this.colorsShadow = optimizedPalettes[this.numColors].slice();
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
