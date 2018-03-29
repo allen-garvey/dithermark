@@ -5,6 +5,9 @@
     
     //canvas stuff
     var histogramCanvas;
+
+    //caching for optimize palette
+    var optimizedPalettes;
     
     var sourceWebglTexture = null;
     
@@ -162,7 +165,9 @@
                         this.ditherWorkerBwMessageReceived(pixels);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE:
-                        this.colorsShadow = ColorPicker.pixelsToHexArray(pixels, this.numColorsMax);
+                        let optimizePaletteColorCount = pixels.length / 3;
+                        optimizedPalettes[optimizePaletteColorCount] = ColorPicker.pixelsToHexArray(pixels, this.numColorsMax); 
+                        this.colorsShadow = optimizedPalettes[optimizePaletteColorCount];
                         break;
                     //histogram
                     default:
@@ -183,6 +188,10 @@
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
             },
             optimizePalette: function(){
+                if(optimizedPalettes[this.numColors]){
+                    this.colorsShadow = optimizedPalettes[this.numColors];
+                    return;
+                }
                 this.$emit('request-worker', (worker)=>{
                     worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors));
                 });
