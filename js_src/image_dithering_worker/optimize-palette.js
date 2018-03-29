@@ -250,11 +250,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             if(PixelMath.saturation(pixel) <= 5){
                 return null;
             }
-            let hue = PixelMath.hue(pixel);
-            if(hue === 360){
-                return 0;
-            }
-            return hue;
+            return PixelMath.hue(pixel);
         };
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
         let hues = medianPopularityBase(huePopularityMapObject, numColors, 360);

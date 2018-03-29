@@ -11,15 +11,13 @@ App.PixelMath = (function(Pixel){
     }
     
     //based on wikipedia formulas: https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
+    //returns hue in range 0 - 359
     function pixelHue(pixel){
         let max = Math.max(pixel[0], pixel[1], pixel[2]);
         let min = Math.min(pixel[0], pixel[1], pixel[2]);
         let diff = max - min;
         //white, black or gray
         if(diff === 0){
-            if(pixel[0] >= 128){
-                return 360;
-            }
             return 0;
         }
         let rawHue;
