@@ -24,16 +24,20 @@ App.PixelMath = (function(Pixel){
         }
         let rawHue;
         if(pixel[R_INDEX] === max){
-            rawHue = Math.abs(pixel[G_INDEX] - pixel[B_INDEX]) / diff % 6;
+            rawHue = (pixel[G_INDEX] - pixel[B_INDEX]) / diff % 6;
         }
         else if(pixel[G_INDEX] === max){
-            rawHue = Math.abs(pixel[B_INDEX] - pixel[R_INDEX]) / diff + 2;
+            rawHue = (pixel[B_INDEX] - pixel[R_INDEX]) / diff + 2;
         }
         else{
-            rawHue = Math.abs(pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
+            rawHue = (pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
         }
         //convert to 360 degrees
-        return Math.round(rawHue * 60);
+        let ret = Math.round(rawHue * 60);
+        if(ret < 0){
+            return ret + 360;
+        }
+        return ret;
     }
     
     //based on: https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
