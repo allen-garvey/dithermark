@@ -123,6 +123,7 @@
                 this.loadedImage = loadedImage;
                 this.hasImageBeenTransformed = false;
                 sourceWebglTexture = loadedWebglTexture;
+                optimizedPalettes = {};
                 
                 //draw histogram
                 this.$emit('request-worker', (worker)=>{
