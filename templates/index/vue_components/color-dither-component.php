@@ -2,7 +2,9 @@
     <div>
         <label>Dithering algorithm
             <select v-model="selectedDitherAlgorithmIndex">
-                <option v-for="(ditherAlgorithm, index) in ditherAlgorithms" v-bind:value="index">{{ ditherAlgorithm.title }}</option>
+                    <optgroup v-for="ditherGroup in ditherGroups" v-bind:label="ditherGroup.title">
+                        <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" v-bind:value="ditherGroup.start + index">{{ ditherAlgorithm.title }}</option>
+                    </optgroup>
             </select>
         </label>
     </div>

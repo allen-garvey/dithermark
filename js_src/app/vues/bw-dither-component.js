@@ -31,7 +31,8 @@
                 selectedDitherAlgorithmIndex: 0,
                 hasImageBeenTransformed: false,
                 colorReplaceColors: [],
-                ditherAlgorithms: AlgorithmModel.ditherAlgorithms,
+                ditherGroups: AlgorithmModel.bwDitherGroups,
+                ditherAlgorithms: AlgorithmModel.bwDitherAlgorithms,
                 savedTextures: [],
                 loadedImage: null,
             };

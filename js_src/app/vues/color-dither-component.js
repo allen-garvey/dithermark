@@ -24,6 +24,7 @@
             return{
                 selectedDitherAlgorithmIndex: 0,
                 hasImageBeenTransformed: false,
+                ditherGroups: AlgorithmModel.colorDitherGroups,
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
                 colors: [],

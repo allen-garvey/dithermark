@@ -1,5 +1,41 @@
 App.AlgorithmModel = (function(BwDither, ColorDither){
-    let ditherAlgorithms = [
+	function assignStart(item, index, array){
+		let start = 0;
+		if(index > 0){
+			let previousItem = array[index-1];
+			start = previousItem.start + previousItem.length;
+		}
+		item.start = start;
+		return item;
+	}
+
+	let bwDitherGroups = [
+		{
+			title: 'Threshold',
+			length: 2,
+		},
+		{
+			title: 'Arithmetic',
+			length: 6,
+		},
+		{
+			title: 'Error Propagation',
+			length: 7,
+		},
+		{
+			title: 'Error Propagation Reduced Bleed',
+			length: 2,
+		},
+		{
+			title: 'Ordered (Bayer)',
+			length: 4,
+		},
+		{
+			title: 'Ordered (Cluster)',
+			length: 2,
+		},
+	].map(assignStart);
+    const bwDitherAlgorithms = [
                 {
                     title: "Threshold", 
                     id: 1,
@@ -41,10 +77,6 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
             	    webGlFunc: BwDither.aDitherAdd3,
             	},
                 {
-                    title: "Atkinson", 
-                    id: 3,
-                },
-                {
                     title: "Floyd-Steinberg", 
                     id: 4,
                 },
@@ -71,7 +103,11 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
             	{
             		title: "Sierra1",
             		id: 10,
-            	},
+				},
+				{
+                    title: "Atkinson", 
+                    id: 3,
+                },
             	{
             	    title: "Garvey",
             	    id: 15,
@@ -106,9 +142,35 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
 					id: 23,
 					webGlFunc: BwDither.dotClusterOrderedDither,
 				},
-            ];
+			];
+	let colorDitherGroups = [
+		{
+			title: 'Closest',
+			length: 2,
+		},
+		{
+			title: 'Arithmetic',
+			length: 6,
+		},
+		// {
+		// 	title: 'Error Propagation',
+		// 	length: 7,
+		// },
+		// {
+		// 	title: 'Error Propagation Reduced Bleed',
+		// 	length: 2,
+		// },
+		{
+			title: 'Ordered (Bayer)',
+			length: 5,
+		},
+		{
+			title: 'Ordered (Cluster)',
+			length: 2,
+		},
+	].map(assignStart);
             
-    let colorDitherAlgorithms = [
+    const colorDitherAlgorithms = [
                 {
                     title: "Closest Color", 
                     id: 101,
@@ -189,7 +251,9 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
     
     
     return {
-        ditherAlgorithms: ditherAlgorithms,
+		bwDitherGroups: bwDitherGroups,
+		bwDitherAlgorithms: bwDitherAlgorithms,
+		colorDitherGroups: colorDitherGroups,
         colorDitherAlgorithms: colorDitherAlgorithms,
     };
     
