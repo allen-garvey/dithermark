@@ -1,5 +1,5 @@
 <div class="dither-controls-container controls-panel">
-    <div>
+    <div class="spread-content">
         <label>Algorithm
             <select v-model="selectedDitherAlgorithmIndex">
                     <optgroup v-for="ditherGroup in ditherGroups" v-bind:label="ditherGroup.title">
@@ -7,6 +7,10 @@
                     </optgroup>
             </select>
         </label>
+        <div>
+            <button class="shuffle-color-palette-button" title="Previous algorithm" @click="cyclePropertyList('selectedDitherAlgorithmIndex', -1, ditherAlgorithms.length)"><</button>
+            <button class="shuffle-color-palette-button" title="Next algorithm" @click="cyclePropertyList('selectedDitherAlgorithmIndex', 1, ditherAlgorithms.length)">></button>
+        </div>
     </div>
     <div>
         <button v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>

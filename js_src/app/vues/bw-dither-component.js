@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, WebGlBwDither){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, WebGlBwDither, VueMixins){
     
     //used for creating BW texture for webgl color replace
     var isDitherWorkerBwWorking = false;
@@ -231,7 +231,8 @@
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
                 this.$emit('display-transformed-image');
             },
+            cyclePropertyList: VueMixins.cyclePropertyList(),
         }
     });
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.WebGlBwDither);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.WebGlBwDither, App.VueMixins);
