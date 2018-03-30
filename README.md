@@ -1,4 +1,4 @@
-# jsdither
+# Dithermark
 
 
 
@@ -25,4 +25,4 @@
 
 ## License
 
-jsdither is released under the MIT License. See license.txt for more details.
+Dithermark is released under the MIT License. See license.txt for more details.
