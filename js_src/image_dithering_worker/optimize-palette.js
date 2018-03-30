@@ -49,9 +49,10 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     //finds n ranges, where each range contains the either the same number of pixels, or the number of pixel size can
     //increase by some amount, such as logarithmically. Then the average value in each range is used
     function medianPopularityBase(popularityMapObject, numColors, numDistinctValues, bucketCapacityFunc=null){
-        let popularityMap = new Float32Array(popularityMapObject.map);
+        let popularityMap = popularityMapObject.map.slice();
 
-        let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
+        let bucketsAverage = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
+        let bucketsMedian = bucketsAverage.slice();
         //minimum number of pixels for each bucket
         if(!bucketCapacityFunc){
             bucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
@@ -61,11 +62,14 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         let bucketMaxCapacity = 0;
         let mapIndex = 0;
         const numPixelsUsed = popularityMapObject.count;
-        for(let bucketIndex=0;bucketIndex<buckets.length;bucketIndex++){
+        let previousMedianValue = 0;
+        let currentMedianValue = 0;
+
+        for(let bucketIndex=0;bucketIndex<bucketsAverage.length;bucketIndex++){
             let bucketCount = 0;
             let bucketTotal = 0;
-            let isLastBucket = bucketIndex === buckets.length - 1;
-            bucketMaxCapacity = bucketCapacityFunc(numPixelsUsed, buckets.length, bucketIndex, bucketMaxCapacity);
+            let isLastBucket = bucketIndex === bucketsAverage.length - 1;
+            bucketMaxCapacity = bucketCapacityFunc(numPixelsUsed, bucketsAverage.length, bucketIndex, bucketMaxCapacity);
             
             for(;mapIndex<popularityMap.length;mapIndex++){
                 const bucketLimit = bucketMaxCapacity - bucketCount;
@@ -75,6 +79,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
                 if(!isLastBucket && numToAdd > bucketLimit){
                     numToAdd = bucketLimit;
                     popularityMap[mapIndex] = mapValue - numToAdd;
+                    currentMedianValue = mapIndex;
                     shouldBreak = true;
                 }
                 bucketTotal = bucketTotal + (numToAdd * mapIndex);
@@ -85,10 +90,105 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             }
             // console.log(`mapIndex, bucketTotal/bucketCount: ${mapIndex}, ${bucketTotal}/${bucketCount}`);
             //find average
-            buckets[bucketIndex] = Math.round(bucketTotal / bucketCount);
+            bucketsAverage[bucketIndex] = Math.round(bucketTotal / bucketCount);
+            bucketsMedian[bucketIndex] = Math.round(((currentMedianValue - previousMedianValue) / 2) + previousMedianValue);
+            previousMedianValue = currentMedianValue;
         }
         
-        return buckets;
+        return {
+            average: bucketsAverage,
+            median: bucketsMedian,
+        };
+    }
+
+    function medianPopularityBase2(popularityMapObject, numColors, numDistinctValues, offset=0){
+        let popularityMap = popularityMapObject.map.slice();
+
+        let bucketsAverage = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
+        let bucketsMedian = bucketsAverage.slice();
+        let mapIndex = 0;
+        const numPixelsUsed = popularityMapObject.count;
+        let previousMedianValue = offset;
+        let currentMedianValue = offset;
+        const bucketMaxCapacity = Math.ceil(numPixelsUsed / bucketsAverage.length);
+
+        for(let bucketIndex=0;bucketIndex<bucketsAverage.length;bucketIndex++){
+            let bucketCount = 0;
+            let bucketTotal = 0;
+            let isLastBucket = bucketIndex === bucketsAverage.length - 1;
+            
+            for(;mapIndex<popularityMap.length;mapIndex++){
+                const bucketLimit = bucketMaxCapacity - bucketCount;
+                const adjustedMapIndex = (mapIndex + offset) % numDistinctValues;
+                let shouldBreak = false;
+                const mapValue = popularityMap[mapIndex];
+                let numToAdd = mapValue;
+                if(!isLastBucket && numToAdd > bucketLimit){
+                    numToAdd = bucketLimit;
+                    popularityMap[mapIndex] = mapValue - numToAdd;
+                    currentMedianValue = adjustedMapIndex;
+                    shouldBreak = true;
+                }
+                bucketTotal = bucketTotal + (numToAdd * adjustedMapIndex);
+                bucketCount += numToAdd;
+                if(shouldBreak){
+                    break;
+                }
+            }
+            // console.log(`mapIndex, bucketTotal/bucketCount: ${mapIndex}, ${bucketTotal}/${bucketCount}`);
+            //find average
+            bucketsAverage[bucketIndex] = Math.round(bucketTotal / bucketCount);
+            bucketsMedian[bucketIndex] = Math.round(((currentMedianValue - previousMedianValue) / 2) + previousMedianValue);
+            previousMedianValue = currentMedianValue;
+        }
+        
+        return {
+            average: bucketsAverage,
+            median: bucketsMedian,
+        };
+    }
+
+    //since hues wrap around, we have to find the starting point where median hue will most closely match average hue
+    function medianPopularityHues(popularityMap, numColors){
+        function squaredDistances(list, list2){
+            let sum = 0;
+            for(let i=0;i<list.length;i++){
+                let distance = list[i] - list2[i];
+                sum += distance * distance;
+            }
+            return sum;
+        }
+        const numValues = 360;
+        let totalResults = new Array(numValues);
+
+        //double the popularity map, since hues wrap around
+        let doubledPopularityMap = new Float32Array(numValues * 2);
+        doubledPopularityMap.set(popularityMap.map);
+        doubledPopularityMap.set(popularityMap.map, numValues);
+
+        for(let i=0;i<numValues;i++){
+            popularityMap.map = doubledPopularityMap.subarray(i, i+numValues);
+            let results = medianPopularityBase2(popularityMap, numColors, numValues, i);
+            const distance = squaredDistances(results.median, results.average);
+            totalResults[i] = {
+                data: results,
+                distance: distance,
+            };
+        }
+        console.log(totalResults);
+        let minDistance = totalResults[0].distance;
+        let minIndex = 0;
+        totalResults.forEach((item, i)=>{
+            if(item.distance < minDistance){
+                minDistance = item.distance;
+                minIndex = i;
+            }
+        });
+        console.log(`min index was ${minIndex}`);
+        let ret = totalResults[minIndex].data;
+        ret.median.sort();
+        ret.average.sort();
+        return ret;
     }
     
     //Divides the range between min and max values into equal parts
@@ -228,6 +328,10 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         });
     }
     
+    function calculateAverage(list){
+        return list.reduce((acc, value)=>{ return acc + value;}, 0) / list.length;
+    }
+
     function medianPopularity(pixels, numColors){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
@@ -241,39 +345,43 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         let lightnesses2 = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
         console.log('lightnesses uniform');
         console.log(lightnesses2);
-        lightnesses = averageArrays(lightnesses, lightnesses2, .8);
+        lightnesses = averageArrays(lightnesses.average, lightnesses2, .8);
         console.log('lightness results');
         console.log(lightnesses);
         let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
         let saturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
         let saturations2 = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
-        saturations = averageArrays(saturations, saturations2, 1.2);
+        saturations = averageArrays(saturations.average, saturations2, 1.2);
         console.log('saturation results');
         console.log(saturations);
+        // const saturationAverage = calculateAverage(saturations);
         let hueFunc = (pixel)=>{
             let lightness = PixelMath.lightness(pixel);
             //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
             //TODO: find the lightness range in the image beforehand, so we can adjust this range dynamically
-            if(lightness <= lightnesses[1] || lightness >= lightnesses[lightnesses.length - 2]){
+            const lightnessFloor = lightnesses[1]; //Math.max(48, lightnesses[1]);
+            const lightnessCeil = lightnesses[lightnesses.length - 2];//Math.min(232, lightnesses[lightnesses.length - 2]);
+            if(lightness <= lightnessFloor || lightness >= lightnessCeil){
                 return null;
             }
             //also ignore hue if saturation is too low to distinguish hue
-            if(PixelMath.saturation(pixel) <= 5){
+            const satuarationFloor = 5;//Math.max(5, saturations[1]);
+            if(PixelMath.saturation(pixel) <= satuarationFloor){
                 return null;
             }
             return PixelMath.hue(pixel);
         };
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
-        let hues = medianPopularityBase(huePopularityMapObject, numColors, 360);
+        let huesMedian = medianPopularityHues(huePopularityMapObject, numColors);
         let hues2 = uniformPopularityBase(huePopularityMapObject, numColors, 360);
         console.log('median hues');
-        console.log(hues);
+        console.log(huesMedian);
         console.log('uniform hues');
         console.log(hues2);
         //uniform mode = .6, median mode = 1.5
-        const hueMix = 1.5;
+        const hueMix = 1.8;
         console.log(`hueMix is ${hueMix}`);
-        hues = averageHueArrays(hues, hues2, hueMix);
+        let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), hues2, hueMix);
         console.log('averaged hues');
         console.log(hues);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
