@@ -157,12 +157,9 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             
             lightnessMap[i] = Math.floor(totalLightness / total);
         });
-        console.log(lightnessMap);
+        // console.log(lightnessMap);
         let sortMap = new Array(hues.length);
-        let sorted = new Uint16Array(sortMap.fill().map((item, i)=>{ return [hues[i], lightnessMap[i]];}).sort((a, b)=>{ return a[1] - b[1]; }).map((item)=>{return item[0];}));
-        console.log('sorted hues');
-        console.log(sorted);
-        return sorted;
+        return new Uint16Array(sortMap.fill().map((item, i)=>{ return [hues[i], lightnessMap[i]];}).sort((a, b)=>{ return a[1] - b[1]; }).map((item)=>{return item[0];}));
     }
     
     
@@ -210,11 +207,25 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return ret;
     }
     
-    
     //weight is how much to weight towards first array
     function averageArrays(array1, array2, weight=1){
-        let counterWeight = 2 - weight;
+        const counterWeight = 2 - weight;
         return array1.map((value, index)=>{ return Math.floor((value * weight + array2[index] * counterWeight) / 2); });
+    }
+
+    //first array should be median popularity
+    //chooses median popularity over uniform popularity if it is less than threshold
+    //makes difference in uniform mode over averageArrays,, but not sure if it is worth it
+    function averageHueArrays(array1, array2, weight=1){
+        const counterWeight = 2 - weight;
+        const threshold = 16;
+        return array1.map((value, index)=>{ 
+            const value2 = array2[index];
+            if(Math.abs(value - value2) <= threshold){
+                return value;
+            }
+            return Math.floor((value * weight + value2 * counterWeight) / 2); 
+        });
     }
     
     function medianPopularity(pixels, numColors){
@@ -243,7 +254,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             let lightness = PixelMath.lightness(pixel);
             //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
             //TODO: find the lightness range in the image beforehand, so we can adjust this range dynamically
-            if(lightness <= 63 || lightness >= 246){
+            if(lightness <= lightnesses[1] || lightness >= lightnesses[lightnesses.length - 2]){
                 return null;
             }
             //also ignore hue if saturation is too low to distinguish hue
@@ -255,10 +266,21 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
         let hues = medianPopularityBase(huePopularityMapObject, numColors, 360);
         let hues2 = uniformPopularityBase(huePopularityMapObject, numColors, 360);
-        hues = averageArrays(hues, hues2, 1.5);
+        console.log('median hues');
+        console.log(hues);
+        console.log('uniform hues');
+        console.log(hues2);
+        //uniform mode = .6, median mode = 1.5
+        const hueMix = 1.5;
+        console.log(`hueMix is ${hueMix}`);
+        hues = averageHueArrays(hues, hues2, hueMix);
+        console.log('averaged hues');
+        console.log(hues);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
-        console.log(huePopularityMap);
+        // console.log(huePopularityMap);
         hues = sortHues(hues, huePopularityMap);
+        // console.log('sorted hues');
+        // console.log(hue);
         // shuffle(hues);
         console.log('hue results');
         console.log(hues);
