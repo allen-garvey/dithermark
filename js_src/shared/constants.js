@@ -1,4 +1,5 @@
 App.Constants = {
+    appName: '<?= APP_NAME; ?>',
     randomImageMaxWidth: <?= RANDOM_IMAGE_MAX_WIDTH; ?>,
     randomImageMaxHeight: <?= RANDOM_IMAGE_MAX_HEIGHT; ?>,
     maxWebworkers: <?= MAX_WEBWORKERS; ?>,

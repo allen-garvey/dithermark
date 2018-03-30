@@ -6,7 +6,7 @@
 <html>
     <head>
         <meta charset="utf-8"/>
-        <title>Dithermark</title>
+        <title><?= APP_NAME; ?></title>
         <meta name="description" content=""/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="stylesheet" type="text/css" href="/styles/style.css"/>
@@ -15,7 +15,7 @@
     <body>
         <header class="header">
             <div>
-                <h1 class="brand">Dithermark</h1>
+                <h1 class="brand"><?= APP_NAME; ?></h1>
             </div>
         </header>
         <main>

@@ -22,6 +22,7 @@
     /*
     * JS application constants
     */
+    define('APP_NAME', 'Dithermark');
     define('MAX_WEBWORKERS', 8);
     define('RANDOM_IMAGE_MAX_WIDTH', 800);
     define('RANDOM_IMAGE_MAX_HEIGHT', 600);
