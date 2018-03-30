@@ -111,6 +111,16 @@
             },
         },
         watch: {
+            saveImageFileName: function(newValue, oldValue){
+                if(newValue === oldValue){
+                    return;
+                }
+                let title = Constants.appName;
+                if(newValue){
+                    title = `${title} | ${newValue}`;
+                }
+                document.title = title;
+            },
             currentEditorThemeIndex: function(newThemeIndex, oldThemeIndex){
                 let classList = document.documentElement.classList;
                 if(oldThemeIndex !== null){

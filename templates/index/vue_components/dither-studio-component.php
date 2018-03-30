@@ -1,8 +1,5 @@
 <div>
     <div class="controls" :show="areWorkersInitialized">
-        <div class="image-title-container">
-            <h3 class="image-title">{{saveImageFileName}}</h3>
-        </div>
         <div class="controls-container">
             <div class="global-controls-panel controls-panel">
                 <div class="tabs-container">
