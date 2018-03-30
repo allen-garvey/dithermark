@@ -354,7 +354,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         saturations = averageArrays(saturations.average, saturations2, 1.2);
         console.log('saturation results');
         console.log(saturations);
-        // const saturationAverage = calculateAverage(saturations);
+        const saturationAverage = calculateAverage(saturations);
         let hueFunc = (pixel)=>{
             let lightness = PixelMath.lightness(pixel);
             //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
@@ -371,17 +371,39 @@ App.OptimizePalette = (function(Pixel, PixelMath){
             }
             return PixelMath.hue(pixel);
         };
+        //only returns the most vibrant hues
+        let vibrantHueFunc = (pixel)=>{
+            let lightness = PixelMath.lightness(pixel);
+            //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
+            //TODO: find the lightness range in the image beforehand, so we can adjust this range dynamically
+            const lightnessFloor = Math.max(48, lightnesses[1]);
+            const lightnessCeil = Math.min(232, lightnesses[lightnesses.length - 2]);
+            if(lightness <= lightnessFloor || lightness >= lightnessCeil){
+                return null;
+            }
+            //also ignore hue if saturation is too low to distinguish hue
+            const satuarationFloor = Math.max(5, saturations[Math.floor(saturations.length / 2)]);
+            if(PixelMath.saturation(pixel) <= satuarationFloor){
+                return null;
+            }
+            return PixelMath.hue(pixel);
+        };
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let vibrantHuePopularityMapObject = createPopularityMap(pixels, numColors, 360, vibrantHueFunc);
         let huesMedian = medianPopularityHues(huePopularityMapObject, numColors);
-        let hues2 = uniformPopularityBase(huePopularityMapObject, numColors, 360);
+        let vibrantHues = medianPopularityHues(vibrantHuePopularityMapObject, Math.floor(numColors / 2));
+        let huesUniform = uniformPopularityBase(huePopularityMapObject, numColors, 360);
         console.log('median hues');
         console.log(huesMedian);
+        console.log('vibrant hues');
+        console.log(vibrantHues);
         console.log('uniform hues');
-        console.log(hues2);
+        console.log(huesUniform);
         //uniform mode = .6, median mode = 1.5
-        const hueMix = 1.8;
+        const hueMix = 1.6;
         console.log(`hueMix is ${hueMix}`);
-        let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), hues2, hueMix);
+        // let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), hues2, hueMix);
+        let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), huesUniform, hueMix);
         console.log('averaged hues');
         console.log(hues);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
