@@ -7,7 +7,7 @@
     <head>
         <meta charset="utf-8"/>
         <title><?= APP_NAME; ?></title>
-        <meta name="description" content=""/>
+        <meta name="description" content="An interactive exploration of image dithering algorithms"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="stylesheet" type="text/css" href="/styles/style.css"/>
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
