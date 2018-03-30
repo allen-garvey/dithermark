@@ -24,17 +24,21 @@
                 </template>
             </select>
         </label>
-        <button class="shuffle-color-palette-button" title="Previous color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', -1, colorDitherModes.length)"><</button>
-        <button class="shuffle-color-palette-button" title="Next color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', 1, colorDitherModes.length)">></button>
+        <div>
+            <button class="shuffle-color-palette-button" title="Previous color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', -1, colorDitherModes.length)"><</button>
+            <button class="shuffle-color-palette-button" title="Next color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', 1, colorDitherModes.length)">></button>
+        </div>
     </div>
-    <div>
+    <div class="spread-content">
         <label>Color palette
             <select v-model="selectedPaletteIndex">
                 <option v-for="(palette, index) in palettes" v-bind:value="index">{{palette.title}}</option>
             </select>
         </label>
+        <div>
         <button class="shuffle-color-palette-button" title="Previous color palette" @click="cyclePropertyList('selectedPaletteIndex', -1, palettes.length, 1)"><</button>
         <button class="shuffle-color-palette-button" title="Next color palette" @click="cyclePropertyList('selectedPaletteIndex', 1, palettes.length, 1)">></button>
+        </div>
     </div>
     <div class="color-dither-number-of-colors-container">
         <label for="color_dither_num_colors_input">Color count</label>
