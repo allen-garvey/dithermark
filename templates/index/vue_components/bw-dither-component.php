@@ -1,6 +1,6 @@
 <div class="dither-controls-container controls-panel">
     <div>
-        <label>Dithering algorithm
+        <label>Algorithm
             <select v-model="selectedDitherAlgorithmIndex">
                 <optgroup v-for="ditherGroup in ditherGroups" v-bind:label="ditherGroup.title">
                     <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" v-bind:value="ditherGroup.start + index">{{ ditherAlgorithm.title }}</option>
@@ -10,7 +10,7 @@
     </div>
     <div>
         <label>
-            Lightness threshold
+            Threshold
             <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
             <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
         </label>
