@@ -1,6 +1,6 @@
 <div class="dither-controls-container controls-panel">
     <div>
-        <label>Dithering algorithm
+        <label>Algorithm
             <select v-model="selectedDitherAlgorithmIndex">
                     <optgroup v-for="ditherGroup in ditherGroups" v-bind:label="ditherGroup.title">
                         <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" v-bind:value="ditherGroup.start + index">{{ ditherAlgorithm.title }}</option>
@@ -17,7 +17,7 @@
         </div>
     </div>
     <div class="spread-content">
-        <label>Color comparison mode
+        <label>Color comparison
             <select v-model="selectedColorDitherModeIndex">
                 <template v-for="(colorDitherMode, index) in colorDitherModes">
                     <option v-bind:value="index">{{colorDitherMode.title}}</option>
@@ -37,7 +37,7 @@
         <button class="shuffle-color-palette-button" title="Next color palette" @click="cyclePropertyList('selectedPaletteIndex', 1, palettes.length, 1)">></button>
     </div>
     <div class="color-dither-number-of-colors-container">
-        <label for="color_dither_num_colors_input">Number of colors</label>
+        <label for="color_dither_num_colors_input">Color count</label>
             <input type="range" v-model.number="numColors" v-bind:min="numColorsMin" v-bind:max="numColorsMax" step="1" list="color_dither_num_colors_tickmarks" id="color_dither_num_colors_input" />
         <datalist id="color_dither_num_colors_tickmarks">
             <template v-for="n in (numColorsMax - numColorsMin + 1)">
