@@ -52,6 +52,7 @@ App.ColorPicker = (function(Pixel){
     function createPalettes(){
         return [
             {title: 'Custom', isCustom: true},
+            {title: 'Uniform', colors:   ['#201e22', '#ebe1e6', '#2d5b2d', '#795633', '#2c3838', '#a82828', '#267ace', '#b3a2c9', '#62eaa6', '#ebeb2d', '#d69e75', '#a7c38b']},
             {title: 'Primaries', colors: ['#000000', '#ffffff', '#c40000', '#000075', '#ffff8a', '#6f207a', '#f8c2f7', '#22531a', '#ff8800', '#40321e', '#485ca4', '#87d255']},
             {title: 'Galaxy', colors: ['#0d3677', '#D2ebf0', '#763a70', '#f9d2f4', '#242440', '#cd20cd', '#c5c565', '#b17633', '#554d28', '#2e337a', '#fefde9', '#181823']},
             {title: 'Ketchup', colors: ['#074400', '#fed9ff', '#ca0d0d', '#e1fade', '#7d3190', '#291a21', '#f5f5b6', '#14361f', '#516f31', '#da3f69', '#432446', '#5e111d']},
