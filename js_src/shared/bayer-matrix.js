@@ -51,13 +51,32 @@ App.BayerMatrix = (function(){
         return bayerArray;
     }
     //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2002/lectures/cs559-5.ppt
-    function createCluster(){
-        return new Uint8Array([
-            15, 11, 7, 3,
-            11, 11, 7, 3,
-            7, 7, 7, 3,
-            3, 3, 3, 3,
-        ]);
+    //dimensions should be power of 2
+    //example for 4x4
+    // return new Uint8Array([
+    //     15, 11, 7, 3,
+    //     11, 11, 7, 3,
+    //     7, 7, 7, 3,
+    //     3, 3, 3, 3,
+    // ]);
+    function createCluster(dimensions){
+        const length = dimensions * dimensions;
+        let ret = new Uint8Array(length);
+        ret[0] = length - 1;
+
+        for(let i=1;i<dimensions;i++){
+            const value = ((dimensions - i) * dimensions) - 1;
+            for(let j=0;j<i;j++){
+                ret[j*dimensions+i] = value;
+            }
+
+            const offset = i * dimensions;
+            for(let j=0;j<dimensions;j++){
+                ret[offset+j] = value;
+            }
+        }
+
+        return ret;
     }
 
     //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2004/lectures/cs559-5.ppt

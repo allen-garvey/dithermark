@@ -81,10 +81,9 @@ App.BayerWebgl = (function(Bayer){
         return ret;
     }
 
-    function createClusterWebgl(){
-        const key = 'cluster';
-        const dimensions = 4;
-        bayerMemoization[key] = bayerMemoization[key] || createBayerBuffer(dimensions, Bayer.createCluster());
+    function createClusterWebgl(dimensions){
+        const key = `cluster-${dimensions}`;
+        bayerMemoization[key] = bayerMemoization[key] || createBayerBuffer(dimensions, Bayer.createCluster(dimensions));
         let ret = bayerMemoization[key];
         //have to reverse y-axis because webgl y-axis is reversed, so that webgl and webworker
         //ordered dither gives the same results

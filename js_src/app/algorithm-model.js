@@ -32,7 +32,7 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
 		},
 		{
 			title: 'Ordered (Cluster)',
-			length: 2,
+			length: 5,
 		},
 	].map(assignStart);
     const bwDitherAlgorithms = [
@@ -133,13 +133,28 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
             	    webGlFunc: BwDither.createOrderedDither(16),
 				},
 				{
-					title: "Cluster Ordered Dither 4x4",
+					title: "Cluster Ordered Dither 2x2",
 					id: 22,
-					webGlFunc: BwDither.clusterOrderedDither,
+					webGlFunc: BwDither.createClusterOrderedDither(2),
+				},
+				{
+					title: "Cluster Ordered Dither 4x4",
+					id: 23,
+					webGlFunc: BwDither.createClusterOrderedDither(4),
+				},
+				{
+					title: "Cluster Ordered Dither 8x8",
+					id: 24,
+					webGlFunc: BwDither.createClusterOrderedDither(8),
+				},
+				{
+					title: "Cluster Ordered Dither 16x16",
+					id: 25,
+					webGlFunc: BwDither.createClusterOrderedDither(16),
 				},
 				{
 					title: "Dot Cluster Ordered Dither 4x4",
-					id: 23,
+					id: 26,
 					webGlFunc: BwDither.dotClusterOrderedDither,
 				},
 			];
@@ -166,7 +181,7 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
 		},
 		{
 			title: 'Ordered (Cluster)',
-			length: 2,
+			length: 5,
 		},
 	].map(assignStart);
             
@@ -237,13 +252,28 @@ App.AlgorithmModel = (function(BwDither, ColorDither){
                     webGlFunc: ColorDither.createHueLightnessOrderedDither(16),
 				},
 				{
-					title: "Cluster Ordered Dither 4x4",
+					title: "Cluster Ordered Dither 2x2",
 					id: 114,
+					webGlFunc: ColorDither.createClusterOrderedDither(2),
+				},
+				{
+					title: "Cluster Ordered Dither 4x4",
+					id: 115,
 					webGlFunc: ColorDither.createClusterOrderedDither(4),
 				},
 				{
+					title: "Cluster Ordered Dither 8x8",
+					id: 116,
+					webGlFunc: ColorDither.createClusterOrderedDither(8),
+				},
+				{
+					title: "Cluster Ordered Dither 16x16",
+					id: 117,
+					webGlFunc: ColorDither.createClusterOrderedDither(16),
+				},
+				{
 					title: "Dot Cluster Ordered Dither 4x4",
-					id: 115,
+					id: 118,
 					webGlFunc: ColorDither.createDotClusterOrderedDither(4),
 				},
             ];

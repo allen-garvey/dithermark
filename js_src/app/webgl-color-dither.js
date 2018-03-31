@@ -185,7 +185,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
     }
 
     function createClusterOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, clusterFunc){
-        let bayerKey = `${textureKeyPrefix}_${dimensions}`;
+        let bayerKey = `${textureKeyPrefix}-${dimensions}`;
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
             let bayerTexture = bayerTextures[bayerKey];
             if(!bayerTexture){
