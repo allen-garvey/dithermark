@@ -15,13 +15,13 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         if(x >= matrix.dimensions || y >= matrix.dimensions){
             return 0;
         }
-        var index = matrixIndexFor(matrix, x, y);
+        const index = matrixIndexFor(matrix, x, y);
         return matrix.data[index];
     }
     
     function normalizeOrderedMatrixValues(matrix, fullValue){
-        var length = matrix.data.length;
-        var fraction = Math.floor(fullValue / length);
+        const length = matrix.data.length;
+        const fraction = Math.floor(fullValue / length);
         
         for(let i=0;i<length;i++){
             matrix.data[i] = matrix.data[i] * fraction;
