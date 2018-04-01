@@ -38,6 +38,18 @@ class DitherAlgorithm {
     }
 }
 
+function printAppAlgoModel(array $algoModel){
+    foreach($algoModel as $algorithm): ?>
+			{
+				title: '<?= $algorithm->name(); ?>',
+				id: <?= $algorithm->id(); ?>,
+				<?php if($algorithm->webGlFunc() !== ''): ?>
+					webGlFunc: <?= $algorithm->webGlFunc(); ?>,
+				<?php endif; ?>
+			},
+		<?php endforeach;
+}
+
 
 function bwAlgorithmModel(): array{
     $ret = [
@@ -71,6 +83,36 @@ function bwAlgorithmModel(): array{
 
     return array_map(function($algoModel, $i){
         $algoModel->setId($i + 1);
+        return $algoModel;
+    }, $ret, array_keys($ret));
+}
+
+
+function colorAlgorithmModel(): array{
+    $idStart = count(bwAlgorithmModel()) + 1;
+    $ret = [
+        new DitherAlgorithm('Closest Color', '', 'ColorDither.closestColor'),
+        new DitherAlgorithm('Random Closest Color', '', 'ColorDither.randomClosestColor'),
+        new DitherAlgorithm('Arithmetic Dither Xor 1', '', 'ColorDither.aDitherXor1'),
+        new DitherAlgorithm('Arithmetic Dither Xor 2', '', 'ColorDither.aDitherXor2'),
+        new DitherAlgorithm('Arithmetic Dither Xor 3', '', 'ColorDither.aDitherXor3'),
+        new DitherAlgorithm('Arithmetic Dither Add 1', '', 'ColorDither.aDitherAdd1'),
+        new DitherAlgorithm('Arithmetic Dither Add 2', '', 'ColorDither.aDitherAdd2'),
+        new DitherAlgorithm('Arithmetic Dither Add 3', '', 'ColorDither.aDitherAdd3'),
+        new DitherAlgorithm('Ordered Dither 2x2', '', 'ColorDither.createOrderedDither(2)'),
+        new DitherAlgorithm('Ordered Dither 4x4', '', 'ColorDither.createOrderedDither(4)'),
+        new DitherAlgorithm('Ordered Dither 8x8', '', 'ColorDither.createOrderedDither(8)'),
+        new DitherAlgorithm('Ordered Dither 16x16', '', 'ColorDither.createOrderedDither(16)'),
+        new DitherAlgorithm('Hue-Lightness Ordered Dither 16x16', '', 'ColorDither.createHueLightnessOrderedDither(16)'),
+        new DitherAlgorithm('Cluster Ordered Dither 2x2', '', 'ColorDither.createClusterOrderedDither(2)'),
+        new DitherAlgorithm('Cluster Ordered Dither 4x4', '', 'ColorDither.createClusterOrderedDither(4)'),
+        new DitherAlgorithm('Cluster Ordered Dither 8x8', '', 'ColorDither.createClusterOrderedDither(8)'),
+        new DitherAlgorithm('Cluster Ordered Dither 16x16', '', 'ColorDither.createClusterOrderedDither(16)'),
+        new DitherAlgorithm('Dot Cluster Ordered Dither 4x4', '', 'ColorDither.createDotClusterOrderedDither(4)'),
+    ];
+
+    return array_map(function($algoModel, $i) use ($idStart){
+        $algoModel->setId($i + $idStart);
         return $algoModel;
     }, $ret, array_keys($ret));
 }

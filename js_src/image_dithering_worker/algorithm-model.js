@@ -2,7 +2,7 @@
 App.Algorithms = (function(Threshold, OrderedDither, ErrorPropDither){
     function ditherAlgorithms(){
         return {
-			<?php foreach(bwAlgorithmModel() as $algorithm): ?>
+			<?php foreach(array_merge(bwAlgorithmModel(), colorAlgorithmModel()) as $algorithm): ?>
 			<?= $algorithm->id(); ?>: {
 					title: '<?= $algorithm->name(); ?>',
 					<?php if($algorithm->workerFunc() !== ''): ?>
