@@ -26,6 +26,14 @@
                 </div>
             </div>
         </div>
+        <div class="zoom-bar-container" v-show="isImageLoaded">
+            <label>
+                Zoom
+                <input type="range" v-bind:min="zoomMin" v-bind:max="zoomMax" v-model.number="zoom"/>
+                <input type="number" v-bind:min="zoomMin" v-bind:max="zoomMax" v-model.number="zoom"/>
+                <button v-show="zoom !== 100" v-on:click="resetZoom">Reset</button>
+            </label>
+        </div>
     </div>
         <div class="image-canvas-supercontainer" v-show="isImageLoaded">
             <div class="image-canvas-container" v-bind:class="{'show-original': showOriginalImage}">

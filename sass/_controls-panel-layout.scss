@@ -22,4 +22,17 @@
 		margin: 0;
 		min-height: $global_controls_height;
 	}
+
+	.zoom-bar-container{
+		font-size: 12px;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		background-color: var(--main-bg-color);
+		box-sizing: border-box;
+		border-top: 1px solid rgba(var(--main-text-color-rgb), 0.2);
+		//-1 pixel so it hides border
+		width: calc(100% - #{$pinned_dither_controls_width});
+		padding: 4px;
+	}
 }
