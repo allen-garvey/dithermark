@@ -1,9 +1,9 @@
 App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
     
-    function createMaxtrix(dimensions){
+    function createMaxtrix(dimensions, data){
         return {
             dimensions: dimensions,
-            data: Bayer.create(dimensions),
+            data: data,
         };
     }
     
@@ -27,17 +27,17 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
             matrix.data[i] = matrix.data[i] * fraction;
         }
     }
-    
-    function createOrderedDither(dimensions){
-        var matrix = createMaxtrix(dimensions);
+
+    function createOrderedDitherBase(dimensions, matrixCreationFunc){
+        let matrix = createMaxtrix(dimensions, matrixCreationFunc(dimensions));
         normalizeOrderedMatrixValues(matrix, 256);
         
         return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-            var thresholdFraction = 255 / threshold;
+            const thresholdFraction = 255 / threshold;
             
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-                var lightness = PixelMath.lightness(pixel);
-                var matrixThreshold = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+                const lightness = PixelMath.lightness(pixel);
+                const matrixThreshold = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 
                 if(lightness > (matrixThreshold * thresholdFraction)){
                     whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
@@ -53,7 +53,9 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
     }
     
     return {
-        createOrderedDither: createOrderedDither,
+        createOrderedDither: (dimensions)=> {return createOrderedDitherBase(dimensions, Bayer.create);},
+        createClusterOrderedDither: (dimensions)=> {return createOrderedDitherBase(dimensions, Bayer.createCluster);},
+        createDotClusterOrderedDither: (dimensions)=> {return createOrderedDitherBase(dimensions, Bayer.createDotCluster);},
     };
     
 })(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath);

@@ -74,11 +74,11 @@ function bwAlgorithmModel(): array{
         new DitherAlgorithm('Ordered Dither 4x4', 'OrderedDither.createOrderedDither(4)', 'BwDither.createOrderedDither(4)'),
         new DitherAlgorithm('Ordered Dither 8x8', 'OrderedDither.createOrderedDither(8)', 'BwDither.createOrderedDither(8)'),
         new DitherAlgorithm('Ordered Dither 16x16', 'OrderedDither.createOrderedDither(16)', 'BwDither.createOrderedDither(16)'),
-        new DitherAlgorithm('Cluster Ordered Dither 2x2', '', 'BwDither.createClusterOrderedDither(2)'),
-        new DitherAlgorithm('Cluster Ordered Dither 4x4', '', 'BwDither.createClusterOrderedDither(4)'),
-        new DitherAlgorithm('Cluster Ordered Dither 8x8', '', 'BwDither.createClusterOrderedDither(8)'),
-        new DitherAlgorithm('Cluster Ordered Dither 16x16', '', 'BwDither.createClusterOrderedDither(16)'),
-        new DitherAlgorithm('Dot Cluster Ordered Dither 4x4', '', 'BwDither.dotClusterOrderedDither'),
+        new DitherAlgorithm('Cluster Ordered Dither 2x2', 'OrderedDither.createClusterOrderedDither(2)', 'BwDither.createClusterOrderedDither(2)'),
+        new DitherAlgorithm('Cluster Ordered Dither 4x4', 'OrderedDither.createClusterOrderedDither(4)', 'BwDither.createClusterOrderedDither(4)'),
+        new DitherAlgorithm('Cluster Ordered Dither 8x8', 'OrderedDither.createClusterOrderedDither(8)', 'BwDither.createClusterOrderedDither(8)'),
+        new DitherAlgorithm('Cluster Ordered Dither 16x16', 'OrderedDither.createClusterOrderedDither(16)', 'BwDither.createClusterOrderedDither(16)'),
+        new DitherAlgorithm('Dot Cluster Ordered Dither 4x4', 'OrderedDither.createDotClusterOrderedDither(4)', 'BwDither.dotClusterOrderedDither'),
     ];
 
     return array_map(function($algoModel, $i){
