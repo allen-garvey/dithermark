@@ -1,5 +1,5 @@
 <div>
-    <div class="controls" :show="areWorkersInitialized">
+    <div class="controls" v-show="areWorkersInitialized">
         <div class="controls-container">
             <div class="global-controls-panel controls-panel">
                 <div class="tabs-container">
