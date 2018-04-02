@@ -43,11 +43,16 @@
     function optimizePaletteAction(messageHeader){
         //don't need to copy the original imagedata, since we are not modifying it
         let pixels = new Uint8ClampedArray(pixelBufferOriginal);
+        let pixelsInput = pixels;
         let paletteBuffer;
         const colorQuantizationId = messageHeader.colorQuantizationModeId;
+        const colorQuantization = ColorQuantizationModes[colorQuantizationId];
+        if(colorQuantization.mutatesPixels){
+            pixelsInput = new Uint8ClampedArray(pixels);
+        }
         Timer.megapixelsPerSecond('Optimize palette', pixels.length / 4, ()=>{
-            let algoName = ColorQuantizationModes[colorQuantizationId].algo;
-            paletteBuffer = OptimizePalette[algoName](pixels, messageHeader.numColors, colorQuantizationId); 
+            let algoName = colorQuantization.algo;
+            paletteBuffer = OptimizePalette[algoName](pixelsInput, messageHeader.numColors, colorQuantizationId); 
         });
         
         postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageHeader.messageTypeId, colorQuantizationId));
