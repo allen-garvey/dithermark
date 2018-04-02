@@ -6,6 +6,7 @@
             JS_SHARED_PATH.'polyfills.js',
             JS_SHARED_PATH.'worker-headers.js',
             JS_SHARED_PATH.'color-dither-modes.js',
+            JS_SHARED_PATH.'color-quantization-modes.js',
             JS_SHARED_PATH.'timer.js',
             JS_SHARED_PATH.'pixel.js',
             JS_SHARED_PATH.'bayer-matrix.js',

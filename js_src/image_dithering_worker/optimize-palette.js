@@ -1,4 +1,4 @@
-App.OptimizePalette = (function(Pixel, PixelMath){
+App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
     
     function createPopularityMap(pixels, numColors, numDistinctValues, pixelValueFunc){
         let popularityMap = new Float32Array(numDistinctValues);
@@ -332,7 +332,7 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         return list.reduce((acc, value)=>{ return acc + value;}, 0) / list.length;
     }
 
-    function medianPopularity(pixels, numColors){
+    function medianPopularity(pixels, numColors, colorQuantizationModeId){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
                 return Math.ceil(previousBucketCapacity / Math.LN10);
@@ -400,7 +400,13 @@ App.OptimizePalette = (function(Pixel, PixelMath){
         console.log('uniform hues');
         console.log(huesUniform);
         //uniform mode = .6, median mode = 1.5
-        const hueMix = 1.6;
+        let hueMix = 1.6;
+        if(colorQuantizationModeId === ColorQuantizationModes.get('PMC_SUPER_MEDIAN').id){
+            hueMix = 2.0;
+        }
+        else if(colorQuantizationModeId === ColorQuantizationModes.get('PMC_UNIFORM').id){
+            hueMix = 0.6;
+        }
         console.log(`hueMix is ${hueMix}`);
         // let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), hues2, hueMix);
         let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), huesUniform, hueMix);
@@ -427,4 +433,4 @@ App.OptimizePalette = (function(Pixel, PixelMath){
     return {
        medianPopularity: medianPopularity,
     };
-})(App.Pixel, App.PixelMath);
+})(App.Pixel, App.PixelMath, App.ColorQuantizationModes);

@@ -24,6 +24,19 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
         
         return {buffer: copiedBuffer, pixels: copiedPixelsSubarray};
     }
+
+    function createOptimizePaletteBuffer(colors, messageTypeId, colorQuantizationModeId){
+        //faster than using for loop
+        let buffer = new Polyfills.SharedArrayBuffer(colors.length + 2);
+        let array = new Uint8Array(buffer);
+        
+        array[0] = messageTypeId;
+        array[1] = colorQuantizationModeId;
+        let copiedPixelsSubarray = array.subarray(2, array.length);
+        copiedPixelsSubarray.set(new Uint8Array(colors));
+        
+        return buffer;
+    }
     
     function createHistogramBuffer(length, messageTypeId){
         let buffer = new Polyfills.SharedArrayBuffer(length + 1);
@@ -81,7 +94,7 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
             case WorkerHeaders.HUE_HISTOGRAM:
                 return {messageTypeId: messageTypeId};
             case WorkerHeaders.OPTIMIZE_PALETTE:
-                return {messageTypeId: messageTypeId, numColors: messageData[1]};
+                return {messageTypeId: messageTypeId, numColors: messageData[1], colorQuantizationModeId: messageData[2]};
             default:
                 return null;
         }
@@ -92,6 +105,7 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
         // copyBuffer: copyBuffer,
         copyBufferWithMessageType: copyBufferWithMessageType,
         createHistogramBuffer: createHistogramBuffer,
+        createOptimizePaletteBuffer: createOptimizePaletteBuffer,
         parseMessageHeader: parseMessageHeader,
     };
 })(App.WorkerHeaders, App.Pixel, App.Polyfills);

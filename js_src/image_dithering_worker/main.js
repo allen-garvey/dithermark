@@ -45,11 +45,11 @@
         let pixels = new Uint8ClampedArray(pixelBufferOriginal);
         let paletteBuffer;
         Timer.megapixelsPerSecond('Optimize palette', pixels.length / 4, ()=>{
-           paletteBuffer = OptimizePalette.medianPopularity(pixels, messageHeader.numColors); 
+            paletteBuffer = OptimizePalette.medianPopularity(pixels, messageHeader.numColors, messageHeader.colorQuantizationModeId); 
         //    paletteBuffer = OptimizePalette.popularity(pixels, messageHeader.numColors); 
         });
         
-        postMessage(WorkerUtil.copyBufferWithMessageType(paletteBuffer, messageHeader.messageTypeId).buffer);
+        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageHeader.messageTypeId, messageHeader.colorQuantizationModeId));
     }
     
     

@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins, ColorQuantizationModes){
     
     //used for calculating webworker performance
     var webworkerStartTime;
@@ -22,7 +22,7 @@
         },
         data: function(){ 
             return{
-                selectedDitherAlgorithmIndex: 0,
+                selectedDitherAlgorithmIndex: 11,
                 hasImageBeenTransformed: false,
                 ditherGroups: AlgorithmModel.colorDitherGroups,
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
@@ -31,11 +31,13 @@
                 colorsShadow: [],
                 palettes: ColorPicker.palettes,
                 selectedPaletteIndex: null,
-                numColors: 4,
+                numColors: 12,
                 numColorsMin: 2,
                 numColorsMax: Constants.colorDitherMaxColors,
                 colorDitherModes: [...ColorDitherModes.values()],
-                selectedColorDitherModeIndex: 0,
+                selectedColorDitherModeIndex: 4,
+                colorQuantizationModes: [...ColorQuantizationModes.values()],
+                selectedColorQuantizationModeIndex: 0,
                 colorDrag: {
                     draggedIndex: null,
                 },
@@ -59,6 +61,9 @@
             },
             selectedColorDitherModeId: function(){
                 return this.colorDitherModes[this.selectedColorDitherModeIndex].id;
+            },
+            selectedColorQuantizationModeId: function(){
+                return this.colorQuantizationModes[this.selectedColorQuantizationModeIndex].id;
             },
         },
         watch: {
@@ -167,15 +172,21 @@
                         this.ditherWorkerBwMessageReceived(pixels);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE:
-                        let optimizePaletteColorCount = pixels.length / 3;
-                        optimizedPalettes[optimizePaletteColorCount] = ColorPicker.pixelsToHexArray(pixels, this.numColorsMax); 
-                        this.colorsShadow = optimizedPalettes[optimizePaletteColorCount].slice();
+                        const colorQuantizationModeId = pixels[0];
+                        const colors = pixels.subarray(1, pixels.length);
+                        this.optimizePaletteMessageReceived(colors, colorQuantizationModeId);
                         break;
                     //histogram
                     default:
                         this.histogramWorkerMessageReceived(pixels);
                         break;
                 }
+            },
+            optimizePaletteMessageReceived: function(colors, colorQuantizationModeId){
+                const colorCount = colors.length / 3;
+                const key = this.optimizePaletteMemorizationKey(colorCount, colorQuantizationModeId);
+                optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax); 
+                this.colorsShadow = optimizedPalettes[key].slice();
             },
             histogramWorkerMessageReceived: function(huePercentages){
                 Histogram.drawColorHistogram(histogramCanvas, huePercentages);
@@ -189,13 +200,17 @@
             randomizePalette: function(){
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
             },
+            optimizePaletteMemorizationKey: function(numColors, modeId){
+                return `${numColors}-${modeId}`;
+            },
             optimizePalette: function(){
-                if(optimizedPalettes[this.numColors]){
-                    this.colorsShadow = optimizedPalettes[this.numColors].slice();
+                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeId);
+                if(optimizedPalettes[key]){
+                    this.colorsShadow = optimizedPalettes[key].slice();
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
-                    worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors));
+                    worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeId));
                 });
             },
             cyclePropertyList: VueMixins.cyclePropertyList(),
@@ -246,4 +261,4 @@
     });
     
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.VueMixins);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.VueMixins, App.ColorQuantizationModes);
