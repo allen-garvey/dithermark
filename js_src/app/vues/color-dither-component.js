@@ -79,6 +79,11 @@
                     this.ditherImageWithSelectedAlgorithm();
                 }
             },
+            selectedColorQuantizationModeIndex: function(){
+                if(this.isLivePreviewEnabled){
+                    this.optimizePalette();
+                }
+            },
             numColors: function(newValue, oldValue){
                 let value = newValue;
                 if(value < this.numColorsMin){
