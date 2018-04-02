@@ -73,18 +73,21 @@
             <print-palette-button :colors="colors" />
         <?php endif; ?>
     </div>
-    <div class="spread-content">
-        <label>Optimize palette algorithm
-            <select v-model="selectedColorQuantizationModeIndex">
-                <template v-for="(colorQuantizationMode, index) in colorQuantizationModes">
-                    <option v-bind:value="index">{{colorQuantizationMode.title}}</option>
-                </template>
-            </select>
-        </label>
-        <div>
-            <button class="shuffle-color-palette-button" title="Previous optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', -1, colorQuantizationModes.length)"><</button>
-            <button class="shuffle-color-palette-button" title="Next optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', 1, colorQuantizationModes.length)">></button>
+    <fieldset>
+        <legend>Optimize palette</legend>
+        <div class="spread-content">
+            <label>Algorithm
+                <select v-model="selectedColorQuantizationModeIndex">
+                    <template v-for="(colorQuantizationMode, index) in colorQuantizationModes">
+                        <option v-bind:value="index">{{colorQuantizationMode.title}}</option>
+                    </template>
+                </select>
+            </label>
+            <div>
+                <button class="shuffle-color-palette-button" title="Previous optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', -1, colorQuantizationModes.length)"><</button>
+                <button class="shuffle-color-palette-button" title="Next optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', 1, colorQuantizationModes.length)">></button>
+            </div>
+            <button @click="optimizePalette" title="Optimize palette">Optimize</button>
         </div>
-        <button @click="optimizePalette" title="Optimize palette">Optimize</button>
-    </div>
+    </fieldset>
 </div>   
