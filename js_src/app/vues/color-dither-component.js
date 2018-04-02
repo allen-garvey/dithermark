@@ -38,6 +38,7 @@
                 selectedColorDitherModeIndex: 4,
                 colorQuantizationModes: [...ColorQuantizationModes.values()],
                 selectedColorQuantizationModeIndex: 0,
+                pendingColorQuantizations: {},
                 colorDrag: {
                     draggedIndex: null,
                 },
@@ -64,6 +65,10 @@
             },
             selectedColorQuantizationModeId: function(){
                 return this.colorQuantizationModes[this.selectedColorQuantizationModeIndex].id;
+            },
+            isSelectedColorQuantizationPending: function(){
+                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeId);
+                return this.pendingColorQuantizations[key];
             },
         },
         watch: {
@@ -129,6 +134,7 @@
                 this.hasImageBeenTransformed = false;
                 sourceWebglTexture = loadedWebglTexture;
                 optimizedPalettes = {};
+                this.pendingColorQuantizations = {};
                 
                 //draw histogram
                 this.$emit('request-worker', (worker)=>{
@@ -187,6 +193,8 @@
                 const key = this.optimizePaletteMemorizationKey(colorCount, colorQuantizationModeId);
                 optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax); 
                 this.colorsShadow = optimizedPalettes[key].slice();
+                //have to use Vue.set for object keys
+                Vue.set(this.pendingColorQuantizations, key, false);
             },
             histogramWorkerMessageReceived: function(huePercentages){
                 Histogram.drawColorHistogram(histogramCanvas, huePercentages);
@@ -205,16 +213,23 @@
             },
             optimizePalette: function(){
                 const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeId);
+                if(this.pendingColorQuantizations[key]){
+                    return;
+                }
                 if(optimizedPalettes[key]){
                     this.colorsShadow = optimizedPalettes[key].slice();
                     return;
                 }
+                //have to use Vue.set for object keys
+                Vue.set(this.pendingColorQuantizations, key, true);
                 this.$emit('request-worker', (worker)=>{
                     worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeId));
                 });
             },
             cyclePropertyList: VueMixins.cyclePropertyList(),
-            
+            /**
+            * Color palette drag stuff
+            */
             handleColorDragstart: function(e, colorIndex){
                 this.colorDrag.draggedIndex = colorIndex;
             },

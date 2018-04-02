@@ -87,7 +87,7 @@
                 <button class="shuffle-color-palette-button" title="Previous optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', -1, colorQuantizationModes.length)"><</button>
                 <button class="shuffle-color-palette-button" title="Next optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', 1, colorQuantizationModes.length)">></button>
             </div>
-            <button @click="optimizePalette" title="Optimize palette">Optimize</button>
+            <button @click="optimizePalette" v-bind:disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
         </div>
     </fieldset>
 </div>   
