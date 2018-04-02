@@ -1,4 +1,4 @@
-(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders, Histogram, OptimizePalette){
+(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders, Histogram, OptimizePalette, ColorQuantizationModes){
     var ditherAlgorithms = Algorithms.model();
     var messageHeader = {};
     var pixelBufferOriginal;
@@ -44,12 +44,13 @@
         //don't need to copy the original imagedata, since we are not modifying it
         let pixels = new Uint8ClampedArray(pixelBufferOriginal);
         let paletteBuffer;
+        const colorQuantizationId = messageHeader.colorQuantizationModeId;
         Timer.megapixelsPerSecond('Optimize palette', pixels.length / 4, ()=>{
-            paletteBuffer = OptimizePalette.medianPopularity(pixels, messageHeader.numColors, messageHeader.colorQuantizationModeId); 
-        //    paletteBuffer = OptimizePalette.popularity(pixels, messageHeader.numColors); 
+            let algoName = ColorQuantizationModes[colorQuantizationId].algo;
+            paletteBuffer = OptimizePalette[algoName](pixels, messageHeader.numColors, colorQuantizationId); 
         });
         
-        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageHeader.messageTypeId, messageHeader.colorQuantizationModeId));
+        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageHeader.messageTypeId, colorQuantizationId));
     }
     
     
@@ -85,5 +86,5 @@
         }
         
     };
-})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders, App.Histogram, App.OptimizePalette);
+})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders, App.Histogram, App.OptimizePalette, App.ColorQuantizationModes);
 

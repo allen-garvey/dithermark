@@ -401,10 +401,10 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         console.log(huesUniform);
         //uniform mode = .6, median mode = 1.5
         let hueMix = 1.6;
-        if(colorQuantizationModeId === ColorQuantizationModes.get('PMC_SUPER_MEDIAN').id){
+        if(ColorQuantizationModes[colorQuantizationModeId].key === 'PMC_SUPER_MEDIAN'){
             hueMix = 2.0;
         }
-        else if(colorQuantizationModeId === ColorQuantizationModes.get('PMC_UNIFORM').id){
+        else if(ColorQuantizationModes[colorQuantizationModeId].key === 'PMC_UNIFORM'){
             hueMix = 0.6;
         }
         console.log(`hueMix is ${hueMix}`);
@@ -428,9 +428,69 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         // console.log(ret);
         return ret;
     }
+
+    function uniformQuantization(pixels, numColors, colorQuantizationModeId){
+        let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
+                previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
+                return Math.ceil(previousBucketCapacity / Math.LN10);
+        };
+        
+        let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
+        let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
+
+        let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
+        let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
+        
+        const saturationAverage = calculateAverage(saturations);
+        let defaultHueFunc = (pixel)=>{
+            let lightness = PixelMath.lightness(pixel);
+            //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
+            const lightnessFloor = lightnesses[1];
+            const lightnessCeil = lightnesses[lightnesses.length - 2];
+            if(lightness <= lightnessFloor || lightness >= lightnessCeil){
+                return null;
+            }
+            //also ignore hue if saturation is too low to distinguish hue
+            const satuarationFloor = 5;
+            if(PixelMath.saturation(pixel) <= satuarationFloor){
+                return null;
+            }
+            return PixelMath.hue(pixel);
+        };
+        //only returns the most vibrant hues
+        let vibrantHueFunc = (pixel)=>{
+            let lightness = PixelMath.lightness(pixel);
+            //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
+            //TODO: find the lightness range in the image beforehand, so we can adjust this range dynamically
+            const lightnessesFraction = Math.ceil(lightness.length / 6);
+            const lightnessFloor = lightnesses[lightnessesFraction];
+            const lightnessCeil = lightnesses[lightnesses.length - lightnessesFraction];
+            if(lightness <= lightnessFloor || lightness >= lightnessCeil){
+                return null;
+            }
+            //also ignore hue if saturation is too low to distinguish hue
+            const satuarationFloor = saturations[1];
+            if(PixelMath.saturation(pixel) <= satuarationFloor){
+                return null;
+            }
+            return PixelMath.hue(pixel);
+        };
+        let hueFunc = defaultHueFunc;
+        if(ColorQuantizationModes[colorQuantizationModeId].key === 'UNIFORM_VIBRANT'){
+            hueFunc = vibrantHueFunc;
+        }
+        let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let hues = uniformPopularityBase(huePopularityMapObject, numColors, 360);
+        let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
+        hues = sortHues(hues, huePopularityMap);
+        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        let ret = PixelMath.hslArrayToRgb(hsl);
+        return ret;
+    }
     
     
     return {
        medianPopularity: medianPopularity,
+       uniform: uniformQuantization,
     };
 })(App.Pixel, App.PixelMath, App.ColorQuantizationModes);

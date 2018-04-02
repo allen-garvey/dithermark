@@ -36,7 +36,7 @@
                 numColorsMax: Constants.colorDitherMaxColors,
                 colorDitherModes: [...ColorDitherModes.values()],
                 selectedColorDitherModeIndex: 4,
-                colorQuantizationModes: [...ColorQuantizationModes.values()],
+                colorQuantizationModes: ColorQuantizationModes,
                 selectedColorQuantizationModeIndex: 0,
                 pendingColorQuantizations: {},
                 colorDrag: {
@@ -63,11 +63,8 @@
             selectedColorDitherModeId: function(){
                 return this.colorDitherModes[this.selectedColorDitherModeIndex].id;
             },
-            selectedColorQuantizationModeId: function(){
-                return this.colorQuantizationModes[this.selectedColorQuantizationModeIndex].id;
-            },
             isSelectedColorQuantizationPending: function(){
-                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeId);
+                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
                 return this.pendingColorQuantizations[key];
             },
         },
@@ -212,7 +209,7 @@
                 return `${numColors}-${modeId}`;
             },
             optimizePalette: function(){
-                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeId);
+                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
                 if(this.pendingColorQuantizations[key]){
                     return;
                 }
@@ -223,7 +220,7 @@
                 //have to use Vue.set for object keys
                 Vue.set(this.pendingColorQuantizations, key, true);
                 this.$emit('request-worker', (worker)=>{
-                    worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeId));
+                    worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex));
                 });
             },
             cyclePropertyList: VueMixins.cyclePropertyList(),
