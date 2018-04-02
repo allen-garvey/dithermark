@@ -332,7 +332,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return list.reduce((acc, value)=>{ return acc + value;}, 0) / list.length;
     }
 
-    function medianPopularity(pixels, numColors, colorQuantizationModeId){
+    function perceptualMedianCut(pixels, numColors, colorQuantizationModeId){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
                 return Math.ceil(previousBucketCapacity / Math.LN10);
@@ -430,11 +430,6 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
     }
 
     function uniformQuantization(pixels, numColors, colorQuantizationModeId){
-        let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
-                previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
-                return Math.ceil(previousBucketCapacity / Math.LN10);
-        };
-        
         let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
         let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
 
@@ -490,7 +485,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
     
     
     return {
-       medianPopularity: medianPopularity,
+       perceptualMedianCut: perceptualMedianCut,
        uniform: uniformQuantization,
     };
 })(App.Pixel, App.PixelMath, App.ColorQuantizationModes);
