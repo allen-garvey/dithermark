@@ -545,7 +545,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         const numColors = Math.pow(2, numCuts);
         const divisionSize = Math.round(pixelArray.length / numColors);
 
-        let ret = new Array(numColors);
+        let ret = [];
 
         for(let i=0,currentColor=1;currentColor<=numColors;i+=divisionSize,currentColor++){
             let endIndex = i+divisionSize;
@@ -570,27 +570,55 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return ret;
     }
 
+    function removeDuplicatePixelsWithinLimit(pixelArray, minSize){
+        function pixelKey(pixel){
+            return `${pixel[0]}-${pixel[1]}-${pixel[2]}`;
+        }
+        let ret = [];
+        let keys = {};
+        const maxSkipped = pixelArray.length - minSize;
+        let numSkipped = 0;
+
+        pixelArray.forEach((pixel)=>{
+            if(numSkipped < maxSkipped){
+                const key = pixelKey(pixel);
+                if(keys[key]){
+                    numSkipped++;
+                    return;
+                }
+                keys[key] = true;
+            }
+            ret.push(pixel);
+        });
+
+        return ret;
+    }
+
     //prune colors by taking darkest and lightest colors
     //and middle lightest colors
-    function mergeMedians(pixelArray, numColors){
+    function mergeMedians(medianPixels, numColors){
         let ret = new Array(numColors);
-        pixelArray = pixelArray.sort((pixel1, pixel2)=>{
+        medianPixels = medianPixels.sort((pixel1, pixel2)=>{
             return PixelMath.lightness(pixel1) - PixelMath.lightness(pixel2);
         });
-        ret[0] = pixelArray[0];
-        ret[ret.length - 1] = pixelArray[pixelArray.length - 1];
+        medianPixels = removeDuplicatePixelsWithinLimit(medianPixels, numColors);
+        if(medianPixels.length === numColors){
+            return medianPixels;
+        }
 
-        let offset = Math.floor((pixelArray.length - ret.length) / 2);
+        ret[0] = medianPixels[0];
+        ret[ret.length - 1] = medianPixels[medianPixels.length - 1];
+
+        let offset = Math.floor((medianPixels.length - ret.length) / 2);
         for(let i=1,pixelArrayOffset=offset;i<ret.length-1;i++,pixelArrayOffset++){
-            ret[i] = pixelArray[pixelArrayOffset];
+            ret[i] = medianPixels[pixelArrayOffset];
         }
         return ret;
     }
 
     function medianCut(pixels, numColors, colorQuantizationModeId){
-        const pixelCount = pixels.length / 4;
         //get number of times we need to divide pixels in half and sort
-        const numCuts = Math.ceil(Math.log2(pixelCount));
+        const numCuts = Math.ceil(Math.log2(numColors));
         let pixelArray = createMedianCutArray(pixels);
 
         let divisions = 1;
@@ -610,7 +638,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
 
         let medianColors = extractMedians(pixelArray, numCuts);
         if(medianColors.length > numColors){
-            medianColors = mergeMedians(pixelArray, numColors);
+            medianColors = mergeMedians(medianColors, numColors);
         }
 
         return pixelArrayToBuffer(medianColors);
