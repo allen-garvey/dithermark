@@ -51,11 +51,18 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
             });
         };
     }
+
+    function orderedDitherBuilder(bayerFuncName){
+        return function(dimensions){
+            return createOrderedDitherBase(dimensions, Bayer[bayerFuncName]);
+        };
+    }
     
     return {
-        createOrderedDither: (dimensions)=> {return createOrderedDitherBase(dimensions, Bayer.create);},
-        createClusterOrderedDither: (dimensions)=> {return createOrderedDitherBase(dimensions, Bayer.createCluster);},
-        createDotClusterOrderedDither: (dimensions)=> {return createOrderedDitherBase(dimensions, Bayer.createDotCluster);},
+        createOrderedDither: orderedDitherBuilder('create'),
+        createClusterOrderedDither: orderedDitherBuilder('createCluster'),
+        createDotClusterOrderedDither: orderedDitherBuilder('createDotCluster'),
+        createPatternOrderedDither: orderedDitherBuilder('createPattern'),
     };
     
 })(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath);

@@ -111,7 +111,8 @@ function bwAlgorithmModelBase(): array{
         new DitherAlgorithm('Cluster Ordered Dither 4x4', 'OrderedDither.createClusterOrderedDither(4)', 'BwDither.createClusterOrderedDither(4)'),
         new DitherAlgorithm('Cluster Ordered Dither 8x8', 'OrderedDither.createClusterOrderedDither(8)', 'BwDither.createClusterOrderedDither(8)'),
         new DitherAlgorithm('Cluster Ordered Dither 16x16', 'OrderedDither.createClusterOrderedDither(16)', 'BwDither.createClusterOrderedDither(16)'),
-        new DitherAlgorithm('Dot Cluster Ordered Dither 4x4', 'OrderedDither.createDotClusterOrderedDither(4)', 'BwDither.dotClusterOrderedDither'),
+        new DitherAlgorithm('Dot Cluster Ordered Dither 4x4', 'OrderedDither.createDotClusterOrderedDither(4)', 'BwDither.createDotClusterOrderedDither(4)'),
+        new DitherAlgorithm('Crosshatch Ordered Dither 8x8', 'OrderedDither.createPatternOrderedDither(8)', 'BwDither.createPatternOrderedDither(8)'),
     ];
 }
 
@@ -134,12 +135,13 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Ordered Dither 16x16', '', 'ColorDither.createOrderedDither(16)'),
         'Ordered (Hue-Lightness)',
         new DitherAlgorithm('Hue-Lightness Ordered Dither 16x16', '', 'ColorDither.createHueLightnessOrderedDither(16)'),
-        'Ordered (Cluster)',
+        'Ordered (Pattern)',
         new DitherAlgorithm('Cluster Ordered Dither 2x2', '', 'ColorDither.createClusterOrderedDither(2)'),
         new DitherAlgorithm('Cluster Ordered Dither 4x4', '', 'ColorDither.createClusterOrderedDither(4)'),
         new DitherAlgorithm('Cluster Ordered Dither 8x8', '', 'ColorDither.createClusterOrderedDither(8)'),
         new DitherAlgorithm('Cluster Ordered Dither 16x16', '', 'ColorDither.createClusterOrderedDither(16)'),
         new DitherAlgorithm('Dot Cluster Ordered Dither 4x4', '', 'ColorDither.createDotClusterOrderedDither(4)'),
+        new DitherAlgorithm('Crosshatch Ordered Dither 8x8', '', 'ColorDither.createPatternOrderedDither(8)'),
     ];
 }
 

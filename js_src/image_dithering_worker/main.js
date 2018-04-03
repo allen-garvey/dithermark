@@ -24,6 +24,7 @@
     function ditherAction(messageHeader){
         //dither the image
         var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
+        console.log(selectedAlgorithm);
         
         var pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
         var pixels = pixelBufferCopy.pixels;

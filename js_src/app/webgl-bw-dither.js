@@ -121,39 +121,53 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
         });
     }
     
-    function createWebGLOrderedDither(dimensions){
-        return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
-            let bayerTexture = bayerTextures[dimensions];
-            if(!bayerTexture){
-                bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.create(dimensions), dimensions);
-                bayerTextures[dimensions] = bayerTexture;
-            }
-            webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+    // function createWebGLOrderedDither(dimensions){
+    //     return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
+    //         let bayerTexture = bayerTextures[dimensions];
+    //         if(!bayerTexture){
+    //             bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.create(dimensions), dimensions);
+    //             bayerTextures[dimensions] = bayerTexture;
+    //         }
+    //         webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+    //     };
+    // }
+
+    function createOrderedDitherBase(keyPrefix, bayerFuncName){
+        return function(dimensions){
+            return function(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
+                const key = `${keyPrefix}-${dimensions}`;
+                let bayerTexture = bayerTextures[key];
+                if(!bayerTexture){
+                    bayerTexture = Bayer.createAndLoadTexture(gl, Bayer[bayerFuncName](dimensions), dimensions);
+                    bayerTextures[key] = bayerTexture;
+                }
+                webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+            };
         };
-    }
-
-    function createClusterOrderedDither(dimensions){
-        return function(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-            const key = `cluster-${dimensions}`;
-            let bayerTexture = bayerTextures[key];
-            if(!bayerTexture){
-                bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createCluster(dimensions), dimensions);
-                bayerTextures[key] = bayerTexture;
-            }
-            webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
-        }
     };
 
-    function dotClusterOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        const dimensions = 4;
-        const key = 'dot-cluster';
-        let bayerTexture = bayerTextures[key];
-        if(!bayerTexture){
-            bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createDotCluster(), dimensions);
-            bayerTextures[key] = bayerTexture;
-        }
-        webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
-    };
+    // function createClusterOrderedDither(dimensions){
+    //     return function(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
+    //         const key = `cluster-${dimensions}`;
+    //         let bayerTexture = bayerTextures[key];
+    //         if(!bayerTexture){
+    //             bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createCluster(dimensions), dimensions);
+    //             bayerTextures[key] = bayerTexture;
+    //         }
+    //         webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+    //     }
+    // };
+
+    // function dotClusterOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
+    //     const dimensions = 4;
+    //     const key = 'dot-cluster';
+    //     let bayerTexture = bayerTextures[key];
+    //     if(!bayerTexture){
+    //         bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createDotCluster(), dimensions);
+    //         bayerTextures[key] = bayerTexture;
+    //     }
+    //     webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+    // };
     
     function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel){
         let drawFunc = getDrawFunc(COLOR_REPLACE, gl, [null, 'webgl-color-replace-fshader-body']);
@@ -189,9 +203,10 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
         aDitherXor1: createArithmeticDither(ADITHER_XOR1, Shader.aDitherXor1Return),
         aDitherXor2: createArithmeticDither(ADITHER_XOR2, Shader.aDitherXor2Return),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3, Shader.aDitherXor3Return),
-        createOrderedDither: createWebGLOrderedDither,
-        createClusterOrderedDither: createClusterOrderedDither,
-        dotClusterOrderedDither: dotClusterOrderedDither,
+        createOrderedDither: createOrderedDitherBase('bayer', 'create'),
+        createClusterOrderedDither: createOrderedDitherBase('cluster', 'createCluster'),
+        createDotClusterOrderedDither: createOrderedDitherBase('dot_cluster', 'createDotCluster'),
+        createPatternOrderedDither: createOrderedDitherBase('pattern', 'createPattern'),
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    

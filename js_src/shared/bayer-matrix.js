@@ -88,10 +88,24 @@ App.BayerMatrix = (function(){
             2, 8, 4, 10,
         ]);
     }
+
+    function createPattern(dimensions){
+        return new Uint8Array([
+            47, 15, 15, 15, 15, 15, 15, 47, 
+            15, 31, 15, 15, 15, 15, 31, 15,
+            15, 15, 47, 15, 15, 47, 15, 15,
+            15, 15, 31, 63, 63, 15, 15, 15,
+            15, 15, 15, 63, 63, 15, 15, 15,
+            15, 15, 47, 15, 15, 47, 15, 15,
+            15, 31, 15, 15, 15, 15, 31, 15,
+            47, 15, 15, 15, 15, 15, 15, 47, 
+        ]);
+    }
     
     return {
         create: createBayer,
         createCluster: createCluster,
         createDotCluster: createDotCluster,
+        createPattern: createPattern
     };
 })();

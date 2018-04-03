@@ -168,23 +168,8 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
             gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerDimensions);
         });
     }
-    
-    function createOrderedDitherBase(dimensions, algoKey){
-        return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
-            let bayerTexture = bayerTextures[dimensions];
-            if(!bayerTexture){
-                bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.create(dimensions), dimensions);
-                bayerTextures[dimensions] = bayerTexture;
-            }
-            orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
-        };
-    }
-    
-    function createOrderedDither(dimensions){
-        return createOrderedDitherBase(dimensions, ORDERED_DITHER);
-    }
 
-    function createClusterOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, clusterFunc){
+    function createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, clusterFunc){
         let bayerKey = `${textureKeyPrefix}-${dimensions}`;
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
             let bayerTexture = bayerTextures[bayerKey];
@@ -195,17 +180,11 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
             orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
         };
     }
-    
-    function createClusterOrderedDither(dimensions){
-        return createClusterOrderedDitherBase(dimensions, ORDERED_DITHER, 'cluster', 'createCluster');
-    }
 
-    function createDotClusterOrderedDither(dimensions){
-        return createClusterOrderedDitherBase(dimensions, ORDERED_DITHER, 'dot-cluster', 'createDotCluster');
-    }
-    
-    function createHueLightnessOrderedDither(dimensions){
-        return createOrderedDitherBase(dimensions, HUE_LIGHTNESS_ORDERED_DITHER);
+    function orderedDitherBuilder(textureKeyPrefix, clusterFunc, algoKey=ORDERED_DITHER){
+        return function(dimensions){
+            return createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, clusterFunc);
+        };
     }
     
     function createArithmeticDither(key){
@@ -227,10 +206,11 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
     return {
         closestColor: closestColor,
         randomClosestColor: randomDither,
-        createOrderedDither: createOrderedDither,
-        createClusterOrderedDither: createClusterOrderedDither,
-        createDotClusterOrderedDither: createDotClusterOrderedDither,
-        createHueLightnessOrderedDither: createHueLightnessOrderedDither,
+        createOrderedDither: orderedDitherBuilder('bayer', 'create'),
+        createClusterOrderedDither: orderedDitherBuilder('cluster', 'createCluster'),
+        createDotClusterOrderedDither: orderedDitherBuilder('dot-cluster', 'createDotCluster'),
+        createPatternOrderedDither: orderedDitherBuilder('pattern', 'createPattern'),
+        createHueLightnessOrderedDither: orderedDitherBuilder('bayer', 'create', HUE_LIGHTNESS_ORDERED_DITHER),
         aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
         aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
         aDitherAdd3: createArithmeticDither(ADITHER_ADD3),

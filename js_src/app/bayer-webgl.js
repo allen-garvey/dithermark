@@ -52,19 +52,16 @@ App.BayerWebgl = (function(Bayer){
     * Webgl Ordered dither matrix stuff
     */
     
-    function createBayerBuffer(dimensions, bayerArray=null){
-        bayerArray = bayerArray || Bayer.create(dimensions);
-        var arrayLength = bayerArray.length;
+    function createBayerBuffer(dimensions, bayerArray){
+        const arrayLength = bayerArray.length;
         const MAX_VALUE = 256;
         const STEP = MAX_VALUE / arrayLength;
-        var retLength = 4 * arrayLength;
-        var ret = new Uint8Array(retLength);
+        const retLength = 4 * arrayLength;
+        let ret = new Uint8Array(retLength);
         
-        let index = 0;
-        for(let i=0;i<arrayLength;i++){
+        for(let i=0,index=0;i<arrayLength;i++,index+=4){
             let value = bayerArray[i] * STEP;
             ret[index] = value;
-            index += 4;
         }
         
         return ret;
@@ -72,41 +69,24 @@ App.BayerWebgl = (function(Bayer){
     
     var bayerMemoization = {};
     
-    function createBayerWebgl(dimensions){
-        bayerMemoization[dimensions] = bayerMemoization[dimensions] || createBayerBuffer(dimensions);
-        let ret = bayerMemoization[dimensions];
-        //have to reverse y-axis because webgl y-axis is reversed, so that webgl and webworker
-        //ordered dither gives the same results
-        reverseYAxis(ret, dimensions, dimensions);
-        return ret;
-    }
-
-    function createClusterWebgl(dimensions){
-        const key = `cluster-${dimensions}`;
-        bayerMemoization[key] = bayerMemoization[key] || createBayerBuffer(dimensions, Bayer.createCluster(dimensions));
-        let ret = bayerMemoization[key];
-        //have to reverse y-axis because webgl y-axis is reversed, so that webgl and webworker
-        //ordered dither gives the same results
-        reverseYAxis(ret, dimensions, dimensions);
-        return ret;
-    }
-
-    function createDotClusterWebgl(){
-        const key = 'dot-cluster';
-        const dimensions = 4;
-        bayerMemoization[key] = bayerMemoization[key] || createBayerBuffer(dimensions, Bayer.createDotCluster());
-        let ret = bayerMemoization[key];
-        //have to reverse y-axis because webgl y-axis is reversed, so that webgl and webworker
-        //ordered dither gives the same results
-        reverseYAxis(ret, dimensions, dimensions);
-        return ret;
+    function createOrderedDither(keyPrefix, bayerMatrixFunc){
+        return function(dimensions){
+            const key = `${keyPrefix}-${dimensions}`;
+            bayerMemoization[key] = bayerMemoization[key] || createBayerBuffer(dimensions, Bayer[bayerMatrixFunc](dimensions));
+            let ret = bayerMemoization[key];
+            //have to reverse y-axis because webgl y-axis is reversed, so that webgl and webworker
+            //ordered dither gives the same results
+            reverseYAxis(ret, dimensions, dimensions);
+            return ret;
+        };
     }
     
     
     return {
-        create: createBayerWebgl,
-        createCluster: createClusterWebgl,
-        createDotCluster: createDotClusterWebgl,
+        create: createOrderedDither('bayer', 'create'),
+        createCluster: createOrderedDither('cluster', 'createCluster'),
+        createDotCluster: createOrderedDither('dot_cluster', 'createDotCluster'),
+        createPattern: createOrderedDither('pattern', 'createPattern'),
         createAndLoadTexture: createAndLoadBayerTexture,
     };
 })(App.BayerMatrix);
