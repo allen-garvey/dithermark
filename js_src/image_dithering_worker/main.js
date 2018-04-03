@@ -23,16 +23,15 @@
     
     function ditherAction(messageHeader){
         //dither the image
-        var selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
-        console.log(selectedAlgorithm);
+        const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
-        var pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
-        var pixels = pixelBufferCopy.pixels;
-        var imageDataBuffer = pixelBufferCopy.buffer;
+        let pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
+        let pixels = pixelBufferCopy.pixels;
+        let imageDataBuffer = pixelBufferCopy.buffer;
         
-        var imageHeight = messageHeader.imageHeight;
-        var imageWidth = messageHeader.imageWidth;
-        var threshold = messageHeader.threshold;
+        const imageHeight = messageHeader.imageHeight;
+        const imageWidth = messageHeader.imageWidth;
+        const threshold = messageHeader.threshold;
         
         Timer.megapixelsPerSecond(`${selectedAlgorithm.title} processed in webworker`, imageHeight * imageWidth, ()=>{
           selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
@@ -61,7 +60,7 @@
     
     
     onmessage = function(e){
-        var messageData = e.data;
+        let messageData = e.data;
         
         //previous message was load image header, so load image
         if(messageHeader.messageTypeId === WorkerHeaders.LOAD_IMAGE){
