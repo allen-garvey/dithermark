@@ -332,30 +332,42 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return list.reduce((acc, value)=>{ return acc + value;}, 0) / list.length;
     }
 
-    function perceptualMedianCut(pixels, numColors, colorQuantizationModeId){
+    function getHueMix(colorQuantizationKey){
+        switch(colorQuantizationKey){
+            case 'PMC_MEDIAN':
+                return 2.0;
+            case 'PMC_BALANCED':
+                return 1.6;
+            //uniform, and vibrant uniform
+            default:
+                return 0.6;
+        }
+    }
+
+    function perceptualMedianCut(pixels, numColors, colorQuantization){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
                 return Math.ceil(previousBucketCapacity / Math.LN10);
         };
         
         let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
-        let lightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
+        let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         console.log('lightnesses median');
-        console.log(lightnesses);
-        let lightnesses2 = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
+        console.log(medianLightnesses);
+        let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
         console.log('lightnesses uniform');
-        console.log(lightnesses2);
-        lightnesses = averageArrays(lightnesses.average, lightnesses2, .8);
+        console.log(uniformLightnesses);
+        let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
         console.log('lightness results');
         console.log(lightnesses);
         let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
-        let saturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
-        let saturations2 = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
-        saturations = averageArrays(saturations.average, saturations2, 1.2);
+        let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
+        let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
+        let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
         console.log('saturation results');
         console.log(saturations);
-        const saturationAverage = calculateAverage(saturations);
-        let hueFunc = (pixel)=>{
+        // const saturationAverage = calculateAverage(saturations);
+        let defaultHueFunc = (pixel)=>{
             let lightness = PixelMath.lightness(pixel);
             //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
             //TODO: find the lightness range in the image beforehand, so we can adjust this range dynamically
@@ -388,48 +400,37 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
             }
             return PixelMath.hue(pixel);
         };
+        let hueFunc = defaultHueFunc;
+        if(colorQuantization.key === 'PMC_UNIFORM_VIBRANT'){
+            hueFunc = vibrantHueFunc;
+        }
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
-        let vibrantHuePopularityMapObject = createPopularityMap(pixels, numColors, 360, vibrantHueFunc);
         let huesMedian = medianPopularityHues(huePopularityMapObject, numColors);
-        let vibrantHues = medianPopularityHues(vibrantHuePopularityMapObject, Math.floor(numColors / 2));
-        let huesUniform = uniformPopularityBase(huePopularityMapObject, numColors, 360);
         console.log('median hues');
         console.log(huesMedian);
-        console.log('vibrant hues');
-        console.log(vibrantHues);
-        console.log('uniform hues');
-        console.log(huesUniform);
-        //uniform mode = .6, median mode = 1.5
-        let hueMix = 1.6;
-        if(ColorQuantizationModes[colorQuantizationModeId].key === 'PMC_SUPER_MEDIAN'){
-            hueMix = 2.0;
+        let hueMix = getHueMix(colorQuantization.key);
+        // console.log(`hueMix is ${hueMix}`);
+        let hues = averageArrays(huesMedian.average, huesMedian.median);
+        if(hueMix < 2.0){
+            let huesUniform = uniformPopularityBase(huePopularityMapObject, numColors, 360);
+            console.log('uniform hues');
+            console.log(huesUniform);
+            hues = averageHueArrays(hues, huesUniform, hueMix);
         }
-        else if(ColorQuantizationModes[colorQuantizationModeId].key === 'PMC_UNIFORM'){
-            hueMix = 0.6;
-        }
-        console.log(`hueMix is ${hueMix}`);
-        // let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), hues2, hueMix);
-        let hues = averageHueArrays(averageArrays(huesMedian.average, huesMedian.median), huesUniform, hueMix);
         console.log('averaged hues');
         console.log(hues);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
         // console.log(huePopularityMap);
         hues = sortHues(hues, huePopularityMap);
-        // console.log('sorted hues');
-        // console.log(hue);
-        // shuffle(hues);
         console.log('hue results');
         console.log(hues);
         let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
         console.log('hsl');
         console.log(hsl);
-        let ret = PixelMath.hslArrayToRgb(hsl);
-        // console.log('rgb');
-        // console.log(ret);
-        return ret;
+        return PixelMath.hslArrayToRgb(hsl);
     }
 
-    function uniformQuantization(pixels, numColors, colorQuantizationModeId){
+    function uniformQuantization(pixels, numColors, colorQuantization){
         let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
         let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
 
@@ -471,7 +472,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
             return PixelMath.hue(pixel);
         };
         let hueFunc = defaultHueFunc;
-        if(ColorQuantizationModes[colorQuantizationModeId].key === 'UNIFORM_VIBRANT'){
+        if(colorQuantization.key === 'UNIFORM_VIBRANT'){
             hueFunc = vibrantHueFunc;
         }
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
@@ -616,7 +617,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return ret;
     }
 
-    function medianCut(pixels, numColors, colorQuantizationModeId){
+    function medianCut(pixels, numColors, colorQuantization){
         //get number of times we need to divide pixels in half and sort
         const numCuts = Math.ceil(Math.log2(numColors));
         let pixelArray = createMedianCutArray(pixels);
