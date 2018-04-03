@@ -18,17 +18,19 @@
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
             //select first non-custom palette
+            //needs to be done here to initialize palettes correctly
             this.selectedPaletteIndex = 1;
         },
         data: function(){ 
             return{
                 selectedDitherAlgorithmIndex: 11,
-                hasImageBeenTransformed: false,
                 ditherGroups: AlgorithmModel.colorDitherGroups,
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
                 colors: [],
+                //colors shadow and draggedIndex are for dragging colors in palette
                 colorsShadow: [],
+                draggedIndex: null,
                 palettes: ColorPicker.palettes,
                 selectedPaletteIndex: null,
                 numColors: 12,
@@ -39,9 +41,6 @@
                 colorQuantizationModes: ColorQuantizationModes,
                 selectedColorQuantizationModeIndex: 0,
                 pendingColorQuantizations: {},
-                colorDrag: {
-                    draggedIndex: null,
-                },
             };
         },
         computed: {
@@ -103,7 +102,7 @@
                 }
             },
             colorsShadow: function(newValue){
-                if(this.colorDrag.draggedIndex === null){
+                if(this.draggedIndex === null){
                     this.colors = this.colorsShadow.slice();   
                 }
             },
@@ -133,7 +132,6 @@
         methods: {
             imageLoaded: function(loadedImage, loadedWebglTexture){
                 this.loadedImage = loadedImage;
-                this.hasImageBeenTransformed = false;
                 sourceWebglTexture = loadedWebglTexture;
                 optimizedPalettes = {};
                 this.pendingColorQuantizations = {};
@@ -156,7 +154,6 @@
                     return;
                 }
                 if(this.isSelectedAlgorithmWebGl){
-                    this.hasImageBeenTransformed = true;
                     Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.selectedColorDitherModeId, this.selectedColorsVec, this.numColors); 
                     });
@@ -199,7 +196,6 @@
                 Histogram.drawColorHistogram(histogramCanvas, huePercentages);
             },
             ditherWorkerMessageReceived: function(pixels){
-                this.hasImageBeenTransformed = true;
                 Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.$emit('display-transformed-image');
@@ -230,7 +226,7 @@
             * Color palette drag stuff
             */
             handleColorDragstart: function(e, colorIndex){
-                this.colorDrag.draggedIndex = colorIndex;
+                this.draggedIndex = colorIndex;
             },
             //drag functions based on: https://www.w3schools.com/html/html5_draganddrop.asp
             handleColorDragover: function(e, colorIndex){
@@ -242,12 +238,12 @@
                 }
                 let swapIndex = colorIndex;
 
-                if(this.colorDrag.draggedIndex != swapIndex){
+                if(this.draggedIndex != swapIndex){
                     let colorsCopy = this.colorsShadow.slice();
-                    let draggedColor = colorsCopy.splice(this.colorDrag.draggedIndex, 1)[0];
+                    let draggedColor = colorsCopy.splice(this.draggedIndex, 1)[0];
                     colorsCopy.splice(swapIndex, 0, draggedColor);
                     this.colorsShadow = colorsCopy;
-                    this.colorDrag.draggedIndex = swapIndex;
+                    this.draggedIndex = swapIndex;
                 }
                 
             },
@@ -256,17 +252,17 @@
             },
             //according to spec, must happen after drop
             handleColorDragend: function(e){
-                this.colorDrag.draggedIndex = null;
+                this.draggedIndex = null;
                 
                 //draggedIndex has to be null before resetting colorsShadow
                 //need to do this to trigger refresh
                 this.colorsShadow = this.colorsShadow.slice();
             },
             isBeingDragged: function(colorIndex){
-                return colorIndex === this.colorDrag.draggedIndex;
+                return colorIndex === this.draggedIndex;
             },
             shouldShowDragoverStyle: function(colorIndex){
-                return colorIndex === this.colorDrag.dragoverIndex && this.colorDrag.draggedIndex != colorIndex;
+                return colorIndex === this.dragoverIndex && this.draggedIndex != colorIndex;
             },
             idForColorPicker: function(i){
                 return `color_dither_colorpicker_${i}`;
