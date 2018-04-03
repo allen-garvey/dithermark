@@ -166,11 +166,11 @@ function colorAlgorithmModel(): array{
     $idOffset = count(bwAlgorithmModel());
     $model = array_filter(colorAlgorithmModelBase(), 'isDitherAlgorithm');
 
-    return array_map(function($algoModel, $i) use ($idOffset){
-        $algoModel->setId($i + $idOffset);
+    return array_map(function($algoModel, $i){
+        $algoModel->setId($i);
         return $algoModel;
     //have to use range instead of array_keys, since it will be indexes with optgroups
-    }, $model, range(1, count($model)));
+    }, $model, range($idOffset + 1, $idOffset + count($model)));
 }
 
 
