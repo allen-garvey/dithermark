@@ -154,19 +154,21 @@ function bwAlgorithmModel(): array{
     $model = array_filter(bwAlgorithmModelBase(), 'isDitherAlgorithm');
 
     return array_map(function($algoModel, $i){
-        $algoModel->setId($i + 1);
+        $algoModel->setId($i);
         return $algoModel;
-    }, $model, array_keys($model));
+        //have to use range instead of array_keys, since it will be indexes with optgroups
+    }, $model, range(1, count($model)));
 }
 
 function colorAlgorithmModel(): array{
-    $idStart = count(bwAlgorithmModel()) + 1;
+    $idOffset = count(bwAlgorithmModel());
     $model = array_filter(colorAlgorithmModelBase(), 'isDitherAlgorithm');
 
-    return array_map(function($algoModel, $i) use ($idStart){
-        $algoModel->setId($i + $idStart);
+    return array_map(function($algoModel, $i) use ($idOffset){
+        $algoModel->setId($i + $idOffset);
         return $algoModel;
-    }, $model, array_keys($model));
+    //have to use range instead of array_keys, since it will be indexes with optgroups
+    }, $model, range(1, count($model)));
 }
 
 
