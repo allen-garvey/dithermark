@@ -168,16 +168,13 @@
                 }
                 this.$emit('request-worker', (worker)=>{
                     webworkerStartTime = Timer.timeInMilliseconds();
-                    worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
+                    worker.postMessage(WorkerUtil.ditherWorkerColorHeader(this.loadedImage.width, this.loadedImage.height, this.selectedDitherAlgorithm.id, this.selectedColorDitherModeId, this.selectedColors));
                 });
             },
             ditherWorkerMessageReceivedDispatcher: function(messageTypeId, pixels){
                 switch(messageTypeId){
-                    case WorkerHeaders.DITHER:
+                    case WorkerHeaders.DITHER_COLOR:
                         this.ditherWorkerMessageReceived(pixels);
-                        break;
-                    case WorkerHeaders.DITHER_BW:
-                        this.ditherWorkerBwMessageReceived(pixels);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE:
                         const colorQuantizationModeId = pixels[0];

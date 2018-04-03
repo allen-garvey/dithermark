@@ -48,6 +48,25 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
         return {buffer: buffer, array: histogramArray};
     }
     
+    function parseColorDitherMessageHeader(messageData){
+
+        let messageHeader = {
+            messageTypeId: messageData[0],
+            imageWidth : messageData[1],
+            imageHeight : messageData[2],
+            algorithmId : messageData[3],
+            colorDitherModeId : messageData[4],
+        };
+
+        let colorsRaw = messageData.subarray(5);
+        let colors = [];
+        for(let i=0;i<colorsRaw.length;i+=3){
+            colors.push(colorsRaw.subarray(i, i+3));
+        }
+        messageHeader.colors = colors;
+
+        return messageHeader;
+    }
     
     function parseDitherMessageHeader(messageData){
         let messageTypeId = messageData[0];
@@ -90,6 +109,8 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
             case WorkerHeaders.DITHER:
             case WorkerHeaders.DITHER_BW:
                 return parseDitherMessageHeader(messageData);
+            case WorkerHeaders.DITHER_COLOR:
+                return parseColorDitherMessageHeader(messageData);
             case WorkerHeaders.HISTOGRAM:
             case WorkerHeaders.HUE_HISTOGRAM:
                 return {messageTypeId: messageTypeId};

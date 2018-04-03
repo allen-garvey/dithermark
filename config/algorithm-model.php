@@ -119,8 +119,8 @@ function bwAlgorithmModelBase(): array{
 function colorAlgorithmModelBase(): array{
     return [
         'Closest',
-        new DitherAlgorithm('Closest Color', '', 'ColorDither.closestColor'),
-        new DitherAlgorithm('Random Closest Color', '', 'ColorDither.randomClosestColor'),
+        new DitherAlgorithm('Closest Color', 'Threshold.closestColor', 'ColorDither.closestColor'),
+        new DitherAlgorithm('Random Closest Color', 'Threshold.randomClosestColor', 'ColorDither.randomClosestColor'),
         'Arithmetic',
         new DitherAlgorithm('Arithmetic Dither Xor 1', '', 'ColorDither.aDitherXor1'),
         new DitherAlgorithm('Arithmetic Dither Xor 2', '', 'ColorDither.aDitherXor2'),

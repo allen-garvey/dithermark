@@ -38,9 +38,9 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         return buffer;
     }
     
-    function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, colorDitherMode, selectedColors){
-        //(4 * 2) + selectedColors * 3
-        let buffer = new Polyfills.SharedArrayBuffer(8 + (selectedColors * 3));
+    function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, colorDitherMode, colorsHex){
+        //(5 * 2) + 2 *(colorsHex * 3)
+        let buffer = new Polyfills.SharedArrayBuffer(10 + (colorsHex.length * 6));
         let bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.DITHER_COLOR;
@@ -50,7 +50,7 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         bufferView[3] = algorithmId;
         bufferView[4] = colorDitherMode;
         
-        ColorPicker.prepareForWorker(selectedColors, bufferView.subarray(5));
+        ColorPicker.prepareForWorker(colorsHex, bufferView.subarray(5));
 
         return buffer;
     }

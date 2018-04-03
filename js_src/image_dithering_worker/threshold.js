@@ -1,5 +1,8 @@
 App.Threshold = (function(Image, Pixel, PixelMath){
     
+    /**
+    * BW Dither stuff
+    */
     function thresholdGenerator(thresholdFunc){
         return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
@@ -63,6 +66,27 @@ App.Threshold = (function(Image, Pixel, PixelMath){
     function randomThresholdFunc(threshold){ 
         return Math.ceil(Math.random() * threshold); 
     }
+
+
+    /**
+    * Color Dither stuff
+    */
+
+    function closestColor(pixels, imageWidth, imageHeight, colorDitherModeId, colors){
+        return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor)=>{
+            return closestColor;
+        });
+    }
+
+    function randomClosestColor(pixels, imageWidth, imageHeight, colorDitherModeId, colors){
+        return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor, secondClosestColor, closestDistance, secondClosestDistance)=>{
+            if(Math.random() * secondClosestDistance < closestDistance){
+                return secondClosestColor;
+            }
+            
+            return closestColor;
+        });
+    }
     
     return {
        image: thresholdGenerator((threshold)=>{ return threshold; }),
@@ -73,5 +97,8 @@ App.Threshold = (function(Image, Pixel, PixelMath){
        aditherAdd2: thresholdGenerator(aDitherAddFunc2),
        aditherAdd3: thresholdGenerator(aDitherAddFunc3),
        randomDither: thresholdGenerator(randomThresholdFunc),
+       //color dither functions
+       closestColor: closestColor,
+       randomClosestColor: randomClosestColor,
     };
 })(App.Image, App.Pixel, App.PixelMath);

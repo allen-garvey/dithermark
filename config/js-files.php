@@ -48,6 +48,7 @@
     function workerJsFiles(): array{
         return array_merge(sharedJsFiles(), [
             JS_WORKER_PATH.'pixel-math.js',
+            JS_WORKER_PATH.'color-dither-mode-functions.js',
             JS_WORKER_PATH.'image.js',
             JS_WORKER_PATH.'threshold.js',
             JS_WORKER_PATH.'error-prop-dither.js',

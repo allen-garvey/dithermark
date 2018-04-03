@@ -27,7 +27,6 @@
         
         let pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
         let pixels = pixelBufferCopy.pixels;
-        let imageDataBuffer = pixelBufferCopy.buffer;
         
         const imageHeight = messageHeader.imageHeight;
         const imageWidth = messageHeader.imageWidth;
@@ -37,7 +36,25 @@
           selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
         });
         
-        postMessage(imageDataBuffer);
+        postMessage(pixelBufferCopy.buffer);
+    }
+
+    function colorDitherAction(messageHeader){
+        const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
+
+        let pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
+        let pixels = pixelBufferCopy.pixels;
+
+        const imageHeight = messageHeader.imageHeight;
+        const imageWidth = messageHeader.imageWidth;
+        const colorDitherModeId = messageHeader.colorDitherModeId;
+        const colors = messageHeader.colors;
+
+        Timer.megapixelsPerSecond(`${selectedAlgorithm.title} processed in webworker`, imageHeight * imageWidth, ()=>{
+            selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, colorDitherModeId, colors); 
+          });
+
+        postMessage(pixelBufferCopy.buffer);
     }
     
     function optimizePaletteAction(messageHeader){
@@ -77,6 +94,9 @@
             case WorkerHeaders.DITHER:
             case WorkerHeaders.DITHER_BW:
                 ditherAction(messageHeader);
+                break;
+            case WorkerHeaders.DITHER_COLOR:
+                colorDitherAction(messageHeader);
                 break;
             case WorkerHeaders.HISTOGRAM:
             case WorkerHeaders.HUE_HISTOGRAM:
