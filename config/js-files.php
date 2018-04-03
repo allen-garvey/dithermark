@@ -30,8 +30,8 @@
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
             JS_APP_PATH.'fs.js',
-            JS_APP_PATH.'worker-util.js',
             JS_APP_PATH.'color-picker.js',
+            JS_APP_PATH.'worker-util.js',
             JS_APP_PATH.'canvas.js',
             JS_APP_PATH.'bayer-webgl.js',
             JS_APP_PATH.'webgl-m4.js',
