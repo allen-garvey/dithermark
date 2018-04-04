@@ -1,5 +1,5 @@
 
-App.WebGlBwDither = (function(Bayer, WebGl, Shader){
+App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer){
     const THRESHOLD = 1;
     const RANDOM_THRESHOLD = 2;
     const ORDERED_DITHER = 3;
@@ -120,17 +120,6 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
             gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerArrayDimensions);
         });
     }
-    
-    // function createWebGLOrderedDither(dimensions){
-    //     return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
-    //         let bayerTexture = bayerTextures[dimensions];
-    //         if(!bayerTexture){
-    //             bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.create(dimensions), dimensions);
-    //             bayerTextures[dimensions] = bayerTexture;
-    //         }
-    //         webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
-    //     };
-    // }
 
     function createOrderedDitherBase(keyPrefix, bayerFuncName){
         return function(dimensions){
@@ -138,7 +127,7 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
                 const key = `${keyPrefix}-${dimensions}`;
                 let bayerTexture = bayerTextures[key];
                 if(!bayerTexture){
-                    bayerTexture = Bayer.createAndLoadTexture(gl, Bayer[bayerFuncName](dimensions), dimensions);
+                    bayerTexture = BayerWebgl.createAndLoadTexture(gl, Bayer[bayerFuncName](dimensions), dimensions);
                     bayerTextures[key] = bayerTexture;
                 }
                 webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
@@ -146,29 +135,6 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
         };
     };
 
-    // function createClusterOrderedDither(dimensions){
-    //     return function(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-    //         const key = `cluster-${dimensions}`;
-    //         let bayerTexture = bayerTextures[key];
-    //         if(!bayerTexture){
-    //             bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createCluster(dimensions), dimensions);
-    //             bayerTextures[key] = bayerTexture;
-    //         }
-    //         webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
-    //     }
-    // };
-
-    // function dotClusterOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-    //     const dimensions = 4;
-    //     const key = 'dot-cluster';
-    //     let bayerTexture = bayerTextures[key];
-    //     if(!bayerTexture){
-    //         bayerTexture = Bayer.createAndLoadTexture(gl, Bayer.createDotCluster(), dimensions);
-    //         bayerTextures[key] = bayerTexture;
-    //     }
-    //     webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
-    // };
-    
     function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel){
         let drawFunc = getDrawFunc(COLOR_REPLACE, gl, [null, 'webgl-color-replace-fshader-body']);
         // Tell WebGL how to convert from clip space to pixels
@@ -211,4 +177,4 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
-})(App.BayerWebgl, App.WebGl, App.WebGlShader);
+})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix);

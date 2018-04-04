@@ -1,5 +1,5 @@
 
-App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
+App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer){
     const CLOSEST_COLOR = 0;
     const RANDOM_CLOSEST_COLOR = 1;
     const ORDERED_DITHER = 2;
@@ -169,21 +169,21 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         });
     }
 
-    function createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, clusterFunc){
+    function createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, bayerFuncName){
         let bayerKey = `${textureKeyPrefix}-${dimensions}`;
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
             let bayerTexture = bayerTextures[bayerKey];
             if(!bayerTexture){
-                bayerTexture = Bayer.createAndLoadTexture(gl, Bayer[clusterFunc](dimensions), dimensions);
+                bayerTexture = BayerWebgl.createAndLoadTexture(gl, Bayer[bayerFuncName](dimensions), dimensions);
                 bayerTextures[bayerKey] = bayerTexture;
             }
             orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
         };
     }
 
-    function orderedDitherBuilder(textureKeyPrefix, clusterFunc, algoKey=ORDERED_DITHER){
+    function orderedDitherBuilder(textureKeyPrefix, bayerFuncName, algoKey=ORDERED_DITHER){
         return function(dimensions){
-            return createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, clusterFunc);
+            return createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, bayerFuncName);
         };
     }
     
@@ -219,4 +219,4 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         aDitherXor2: createArithmeticDither(ADITHER_XOR2),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3),
     };    
-})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader);
+})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix);

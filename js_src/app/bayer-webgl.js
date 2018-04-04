@@ -3,19 +3,25 @@ App.BayerWebgl = (function(Bayer){
     
     //bayer array should be Uint8Array
     //based on: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
-    function createAndLoadBayerTexture(gl, bayerArray, bayerArrayDimensions){
-        var texture = gl.createTexture();
+    function createAndLoadBayerTexture(gl, bayerArray, bayerDimensions){
+        //prepare bayer array for texture
+        let bayerBuffer = createBayerBuffer(bayerDimensions, bayerArray);
+        //have to reverse y-axis because webgl y-axis is reversed, so that webgl and webworker
+        //ordered dither gives the same results
+        reverseYAxis(bayerBuffer, bayerDimensions, bayerDimensions);
+        
+        let texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
         
         const level = 0;
         const internalFormat = gl.RGBA;
-        const width = bayerArrayDimensions;
-        const height = bayerArrayDimensions;
+        const width = bayerDimensions;
+        const height = bayerDimensions;
         const border = 0;
         const srcFormat = gl.RGBA;
         const srcType = gl.UNSIGNED_BYTE;
         
-        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, bayerArray);
+        gl.texImage2D(gl.TEXTURE_2D, level, internalFormat, width, height, border, srcFormat, srcType, bayerBuffer);
         // gl.generateMipmap(gl.TEXTURE_2D);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
@@ -64,27 +70,7 @@ App.BayerWebgl = (function(Bayer){
         return ret;
     }
     
-    var bayerMemoization = {};
-    
-    function createOrderedDither(keyPrefix, bayerMatrixFunc){
-        return function(dimensions){
-            const key = `${keyPrefix}-${dimensions}`;
-            bayerMemoization[key] = bayerMemoization[key] || createBayerBuffer(dimensions, Bayer[bayerMatrixFunc](dimensions));
-            let ret = bayerMemoization[key];
-            //have to reverse y-axis because webgl y-axis is reversed, so that webgl and webworker
-            //ordered dither gives the same results
-            reverseYAxis(ret, dimensions, dimensions);
-            return ret;
-        };
-    }
-    
-    
     return {
-        create: createOrderedDither('bayer', 'create'),
-        createCluster: createOrderedDither('cluster', 'createCluster'),
-        createDotCluster: createOrderedDither('dot_cluster', 'createDotCluster'),
-        createPattern: createOrderedDither('pattern', 'createPattern'),
-        createHalftoneDot: createOrderedDither('halftone_dot', 'createHalftoneDot'),
         createAndLoadTexture: createAndLoadBayerTexture,
     };
 })(App.BayerMatrix);
