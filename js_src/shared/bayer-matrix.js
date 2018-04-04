@@ -101,11 +101,33 @@ App.BayerMatrix = (function(){
             47, 15, 15, 15, 15, 15, 15, 47, 
         ]);
     }
+
+    function createHalftoneDot(dimensions){
+        if(dimensions === 4){
+            return new Uint8Array([
+                0, 2, 3, 0,
+                2, 15, 12, 3,
+                3, 13, 14, 2,
+                0, 3, 2, 0,
+            ]);
+        }
+        return new Uint8Array([
+            0, 0, 15, 15, 15, 15, 0, 0, 
+            0, 15, 31, 31, 31, 31, 15, 0,
+            15, 31, 31, 47, 47, 31, 31, 15,
+            15, 31, 47, 63, 63, 47, 31, 15,
+            15, 31, 47, 63, 63, 47, 31, 15,
+            15, 31, 31, 47, 47, 31, 31, 15,
+            0, 15, 31, 31, 31, 31, 15, 0,
+            0, 0, 15, 15, 15, 15, 0, 0, 
+        ]);
+    }
     
     return {
         create: createBayer,
         createCluster: createCluster,
         createDotCluster: createDotCluster,
-        createPattern: createPattern
+        createPattern: createPattern,
+        createHalftoneDot: createHalftoneDot,
     };
 })();

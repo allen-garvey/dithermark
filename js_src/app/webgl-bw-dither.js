@@ -207,6 +207,7 @@ App.WebGlBwDither = (function(Bayer, WebGl, Shader){
         createClusterOrderedDither: createOrderedDitherBase('cluster', 'createCluster'),
         createDotClusterOrderedDither: createOrderedDitherBase('dot_cluster', 'createDotCluster'),
         createPatternOrderedDither: createOrderedDitherBase('pattern', 'createPattern'),
+        createHalftoneDot: createOrderedDitherBase('halftone_dot', 'createHalftoneDot'),
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    

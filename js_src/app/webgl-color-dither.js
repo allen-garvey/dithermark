@@ -211,6 +211,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, Bayer, Shader){
         createDotClusterOrderedDither: orderedDitherBuilder('dot-cluster', 'createDotCluster'),
         createPatternOrderedDither: orderedDitherBuilder('pattern', 'createPattern'),
         createHueLightnessOrderedDither: orderedDitherBuilder('bayer', 'create', HUE_LIGHTNESS_ORDERED_DITHER),
+        createHalftoneDot: orderedDitherBuilder('halftone_dot', 'createHalftoneDot'),
         aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
         aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
         aDitherAdd3: createArithmeticDither(ADITHER_ADD3),

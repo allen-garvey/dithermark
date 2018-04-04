@@ -100,11 +100,13 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         createClusterOrderedDither: orderedDitherBuilder('createCluster'),
         createDotClusterOrderedDither: orderedDitherBuilder('createDotCluster'),
         createPatternOrderedDither: orderedDitherBuilder('createPattern'),
+        createHalftoneDot: orderedDitherBuilder('createHalftoneDot'),
         //color dither
         createColorOrderedDither: colorOrderedDitherBuilder('create'),
         createColorClusterOrderedDither: colorOrderedDitherBuilder('createCluster'),
         createColorDotClusterOrderedDither: colorOrderedDitherBuilder('createDotCluster'),
         createColorPatternOrderedDither: colorOrderedDitherBuilder('createPattern'),
+        createHalftoneDotColor: colorOrderedDitherBuilder('createHalftoneDot'),
     };
     
 })(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath);

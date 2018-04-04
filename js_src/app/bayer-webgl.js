@@ -84,6 +84,7 @@ App.BayerWebgl = (function(Bayer){
         createCluster: createOrderedDither('cluster', 'createCluster'),
         createDotCluster: createOrderedDither('dot_cluster', 'createDotCluster'),
         createPattern: createOrderedDither('pattern', 'createPattern'),
+        createHalftoneDot: createOrderedDither('halftone_dot', 'createHalftoneDot'),
         createAndLoadTexture: createAndLoadBayerTexture,
     };
 })(App.BayerMatrix);
