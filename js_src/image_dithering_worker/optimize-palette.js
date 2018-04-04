@@ -332,18 +332,6 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return list.reduce((acc, value)=>{ return acc + value;}, 0) / list.length;
     }
 
-    function getHueMix(colorQuantizationKey){
-        switch(colorQuantizationKey){
-            case 'PMC_MEDIAN':
-                return 2.0;
-            case 'PMC_BALANCED':
-                return 1.6;
-            //uniform, and vibrant uniform
-            default:
-                return 0.6;
-        }
-    }
-
     function perceptualMedianCut(pixels, numColors, colorQuantization){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
@@ -408,7 +396,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         let huesMedian = medianPopularityHues(huePopularityMapObject, numColors);
         console.log('median hues');
         console.log(huesMedian);
-        let hueMix = getHueMix(colorQuantization.key);
+        let hueMix = colorQuantization.hueMix;
         // console.log(`hueMix is ${hueMix}`);
         let hues = averageArrays(huesMedian.average, huesMedian.median);
         if(hueMix < 2.0){
