@@ -54,14 +54,11 @@ App.BayerWebgl = (function(Bayer){
     
     function createBayerBuffer(dimensions, bayerArray){
         const arrayLength = bayerArray.length;
-        const MAX_VALUE = 256;
-        const STEP = MAX_VALUE / arrayLength;
-        const retLength = 4 * arrayLength;
-        let ret = new Uint8Array(retLength);
+        const fraction = 256 / arrayLength;
+        let ret = new Uint8Array(4 * arrayLength);
         
         for(let i=0,index=0;i<arrayLength;i++,index+=4){
-            let value = bayerArray[i] * STEP;
-            ret[index] = value;
+            ret[index] = (bayerArray[i] + 1) * fraction - 1;
         }
         
         return ret;
