@@ -87,6 +87,18 @@ App.Threshold = (function(Image, Pixel, PixelMath){
             return closestColor;
         });
     }
+
+    function colorADitherGenerator(aDitherFunc){
+        return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
+            return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel)=>{
+                if(aDitherFunc(secondClosestDistance, x, y, pixel) < closestDistance){
+                    return secondClosestColor;
+                }
+                
+                return closestColor;
+            });
+        }
+    }
     
     return {
        image: thresholdGenerator((threshold)=>{ return threshold; }),
@@ -100,5 +112,11 @@ App.Threshold = (function(Image, Pixel, PixelMath){
        //color dither functions
        closestColor: closestColor,
        randomClosestColor: randomClosestColor,
+       aditherXor1Color: colorADitherGenerator(aDitherXorFunc1),
+       aditherXor2Color: colorADitherGenerator(aDitherXorFunc2),
+       aditherXor3Color: colorADitherGenerator(aDitherXorFunc3),
+       aditherAdd1Color: colorADitherGenerator(aDitherAddFunc1),
+       aditherAdd2Color: colorADitherGenerator(aDitherAddFunc2),
+       aditherAdd3Color: colorADitherGenerator(aDitherAddFunc3),
     };
 })(App.Image, App.Pixel, App.PixelMath);

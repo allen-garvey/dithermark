@@ -82,7 +82,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
             const closestDistance = closestColors.closestDistance;
             const secondClosestDistance = closestColors.secondClosestDistance;
             
-            let outputPixel = colorChoiceFunc(closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y);
+            let outputPixel = colorChoiceFunc(closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel);
             
             pixels[i] = outputPixel[0];
             pixels[i+1] = outputPixel[1];
