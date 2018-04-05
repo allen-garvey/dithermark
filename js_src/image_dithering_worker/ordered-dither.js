@@ -24,7 +24,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         const fraction = Math.floor(fullValue / length);
         
         for(let i=0;i<length;i++){
-            matrix.data[i] = matrix.data[i] * fraction;
+            matrix.data[i] = (matrix.data[i] + 1) * fraction;
         }
     }
 
