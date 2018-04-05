@@ -214,11 +214,17 @@
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hsl-functions">
-    <?php //from: https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl ?>
+    <?php //from: https://stackoverflow.com/questions/15095909/from-rgb-to-hsv-in-opengl-glsl
+        //and http://lolengine.net/blog/2013/07/27/rgb-to-hsv-in-glsl
+     ?>
     vec3 rgb2hsv(vec3 c){
         vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
-        vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
-        vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+        <?php 
+            //vec4 p = mix(vec4(c.bg, K.wz), vec4(c.gb, K.xy), step(c.b, c.g));
+            //vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));
+        ?>
+        vec4 p = c.g < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
+        vec4 q = c.r < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
 
         float d = q.x - min(q.w, q.y);
         float e = 1.0e-10;
