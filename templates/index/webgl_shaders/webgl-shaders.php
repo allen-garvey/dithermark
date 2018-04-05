@@ -261,7 +261,7 @@
 
     float saturation(vec3 pixel){
         vec3 pixelHsv = rgb2hsv(pixel);
-        return pixel.g;
+        return pixelHsv.g;
     }
     
     float hue_distance(float hue1, float hue2){
@@ -272,7 +272,7 @@
     
     float hue(vec3 pixel){
         vec3 pixelHsv = rgb2hsv(pixel);
-        return pixel.r;
+        return pixelHsv.r;
     }
 </script>
 <script type="webgl/fragment-shader" id="webgl-closest-color-fshader">
