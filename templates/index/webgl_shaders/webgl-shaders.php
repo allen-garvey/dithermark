@@ -337,6 +337,9 @@
             vec3 currentColor = u_colors_array[i];
             float currentDistance = quick_distance(pixel.rgb, currentColor);
             if(currentDistance < shortestDistance){
+                secondShortestDistance = shortestDistance;
+                secondClosestPixel = closestPixel;
+
                 shortestDistance = currentDistance;
                 closestPixel = currentColor;
             }
