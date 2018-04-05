@@ -23,12 +23,21 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
         return Math.abs(value1 - value2);
     }
 
-    function distance2d(item1, item2){
-        const dist1 = item1[0] - item2[0];
-        const dist2 = item1[1] - item2[1];
+    function distanceHueLightness(item1, item2){
+        const dist1 = hueDistance(item1[0], item2[0]);
+        const dist2 = item1[2] - item2[2];
 
         return dist1 * dist1 + dist2 * dist2;
     }
+
+    function distanceHslWeighted(item1, item2){
+        const hueDist = hueDistance(item1[0], item2[0]);
+        const satDist = item1[1] - item2[1];
+        const lighnesstDist = item1[2] - item2[2];
+
+        return hueDist * hueDist * 8 + satDist * satDist + lighnesstDist * lighnesstDist * 32;
+    }
+
 
     function distance3d(item1, item2){
         const dist1 = item1[0] - item2[0];
@@ -50,11 +59,11 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     };
     ret[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
         pixelValue: pixelToHsl,
-        distance: distance2d,
+        distance: distanceHueLightness,
     };
     ret[ColorDitherModes.get('HSL_WEIGHTED').id] = {
         pixelValue: pixelToHsl,
-        distance: distance3d, //TODO, change to weighted distance
+        distance: distanceHslWeighted,
     };
     ret[ColorDitherModes.get('RGB').id] = {
         pixelValue: identity,
