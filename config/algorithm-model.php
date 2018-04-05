@@ -136,7 +136,7 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Ordered Dither 8x8', 'OrderedDither.createColorOrderedDither(8)', 'ColorDither.createOrderedDither(8)'),
         new DitherAlgorithm('Ordered Dither 16x16', 'OrderedDither.createColorOrderedDither(16)', 'ColorDither.createOrderedDither(16)'),
         'Ordered (Hue-Lightness)',
-        new DitherAlgorithm('Hue-Lightness Ordered Dither 16x16', '', 'ColorDither.createHueLightnessOrderedDither(16)'),
+        new DitherAlgorithm('Hue-Lightness Ordered Dither 16x16', 'OrderedDither.createHueLighnessDither(16)', 'ColorDither.createHueLightnessOrderedDither(16)'),
         'Ordered (Pattern)',
         new DitherAlgorithm('Cluster Ordered Dither 2x2', 'OrderedDither.createColorClusterOrderedDither(2)', 'ColorDither.createClusterOrderedDither(2)'),
         new DitherAlgorithm('Cluster Ordered Dither 4x4', 'OrderedDither.createColorClusterOrderedDither(4)', 'ColorDither.createClusterOrderedDither(4)'),

@@ -93,6 +93,49 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         };
     }
 
+
+    /**
+     * Hue lightness ordered dither stuff
+     * based on: http://alex-charlton.com/posts/Dithering_on_the_GPU/
+    */
+
+    function lightnessStep(l){
+        const lightnessSteps = 4.0;
+        //Quantize the lightness to one of `lightnessSteps` values
+        return Math.floor((0.5 + l * lightnessSteps)) / lightnessSteps;
+    }
+
+    function createHueLightnessOrderedDitherBase(dimensions, bayerCreationFunc){
+        let matrix = createMaxtrix(dimensions, convertBayerToFloat(bayerCreationFunc(dimensions)));
+
+        return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
+            return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel)=>{
+                const matrixFraction = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+                let color = closestColor;
+                if(matrixFraction * secondClosestDistance < closestDistance){
+                    color = secondClosestColor;
+                }
+                const hslColor = [PixelMath.hue(color), PixelMath.saturation(color), PixelMath.lightness(color)];
+                const pixelLightness = hslColor[2] / 255;
+                const l1 = lightnessStep(Math.max((pixelLightness - 0.125), 0.0));
+                const l2 = lightnessStep(Math.min((pixelLightness + 0.124), 1.0));
+                const lightnessDiff = (pixelLightness - l1) / (l2 - l1);
+                
+                const adjustedLightness = (lightnessDiff < matrixFraction) ? l1 : l2;
+                hslColor[2] = Math.round(adjustedLightness * 255);
+                let retPixel = PixelMath.hslToPixel(hslColor, pixel);
+
+                return retPixel;
+            });
+        };
+    }
+
+    function hueLightnessOrderedDitherBuilder(bayerFuncName){
+        return function(dimensions){
+            return createHueLightnessOrderedDitherBase(dimensions, Bayer[bayerFuncName]);
+        };
+    }
+
     
     return {
         //bw dither
@@ -107,6 +150,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         createColorDotClusterOrderedDither: colorOrderedDitherBuilder('createDotCluster'),
         createColorPatternOrderedDither: colorOrderedDitherBuilder('createPattern'),
         createHalftoneDotColor: colorOrderedDitherBuilder('createHalftoneDot'),
+        createHueLighnessDither: hueLightnessOrderedDitherBuilder('create'),
     };
     
 })(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath);

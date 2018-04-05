@@ -137,5 +137,6 @@ App.PixelMath = (function(Pixel){
        hue: pixelHue,
        saturation: pixelSaturation,
        hslArrayToRgb: hslArrayToRgb,
+       hslToPixel: hslToPixel,
     };
 })(App.Pixel);
