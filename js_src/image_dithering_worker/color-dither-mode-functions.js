@@ -6,10 +6,10 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     //hsl values have to be between 0.0-1.0 for 
     //comparing distances to work correctly
     function pixelToHsl(pixel){
-        let ret = new Float32Array(3);
-        ret[0] = PixelMath.hue(pixel) / 359;
-        ret[1] = PixelMath.saturation(pixel) / 100;
-        ret[2] = PixelMath.lightness(pixel) / 255;
+        let ret = new Uint16Array(3);
+        ret[0] = PixelMath.hue(pixel);
+        ret[1] = PixelMath.saturation(pixel);
+        ret[2] = PixelMath.lightness(pixel);
         return ret;
     }
 
@@ -24,16 +24,16 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     }
 
     function distanceHueLightness(item1, item2){
-        const dist1 = hueDistance(item1[0], item2[0]);
-        const dist2 = item1[2] - item2[2];
+        const dist1 = hueDistance(item1[0], item2[0]) / 359;
+        const dist2 = (item1[2] - item2[2]) / 255;
 
         return dist1 * dist1 + dist2 * dist2;
     }
 
     function distanceHslWeighted(item1, item2){
-        const hueDist = hueDistance(item1[0], item2[0]);
-        const satDist = item1[1] - item2[1];
-        const lighnesstDist = item1[2] - item2[2];
+        const hueDist = hueDistance(item1[0], item2[0]) / 359;
+        const satDist = (item1[1] - item2[1]) / 100;
+        const lighnesstDist = (item1[2] - item2[2]) / 255;
 
         return hueDist * hueDist * 8 + satDist * satDist + lighnesstDist * lighnesstDist * 32;
     }
