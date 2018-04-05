@@ -379,7 +379,8 @@
     uniform sampler2D u_bayer_texture;
     uniform float u_bayer_texture_dimensions;
     
-    float lightnessStep(float l) {
+    <?php //based on: http://alex-charlton.com/posts/Dithering_on_the_GPU/ ?>
+    float lightnessStep(float l){
         float lightnessSteps = 4.0;
         <?php //Quantize the lightness to one of `lightnessSteps` values ?>
         return floor((0.5 + l * lightnessSteps)) / lightnessSteps;
