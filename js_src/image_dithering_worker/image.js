@@ -58,13 +58,11 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
     }
 
     function colorDitherImage(pixels, imageWidth, imageHeight, colorDitherModeId, colors, colorChoiceFunc){
-        let colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
-        let pixelValueFunc = colorDitherModeFuncs.pixelValue;
-        let pixelDistanceFunc = colorDitherModeFuncs.distance;
+        const colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
+        const pixelValueFunc = colorDitherModeFuncs.pixelValue;
+        const pixelDistanceFunc = colorDitherModeFuncs.distance;
 
-        let colorValues = colors.map((color)=>{
-            return pixelValueFunc(color);
-        });
+        const colorValues = colors.map(pixelValueFunc);
 
         let y = 0;
         let x = 0;
@@ -74,15 +72,15 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
             pixel[Pixel.R_INDEX] = pixels[i];
             pixel[Pixel.G_INDEX] = pixels[i+1];
             pixel[Pixel.B_INDEX] = pixels[i+2];
-            // pixel[Pixel.A_INDEX] = pixels[i+3];
+            // pixel[Pixel.A_INDEX] = pixels[i+3]; //not necessary to set alpha
 
-            let closestColors = getClosestColors(pixelValueFunc(pixel), colorValues, pixelDistanceFunc);
+            const closestColors = getClosestColors(pixelValueFunc(pixel), colorValues, pixelDistanceFunc);
             const closestColor = colors[closestColors.closestIndex];
             const secondClosestColor = colors[closestColors.secondClosestIndex];
             const closestDistance = closestColors.closestDistance;
             const secondClosestDistance = closestColors.secondClosestDistance;
             
-            let outputPixel = colorChoiceFunc(closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel);
+            const outputPixel = colorChoiceFunc(closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel);
             
             pixels[i] = outputPixel[0];
             pixels[i+1] = outputPixel[1];
