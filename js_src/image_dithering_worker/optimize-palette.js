@@ -194,11 +194,9 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
         const valueMax = findMax(popularityMapObject.map);
         const valueMin = findMin(popularityMapObject.map);
-        const bucketFraction = Math.floor((valueMax - valueMin) / buckets.length);
+        const bucketFraction = Math.round((valueMax - valueMin) / (buckets.length - 1));
         
         buckets = buckets.map((value, i)=>{ return i * bucketFraction; });
-        //rounding down will make this less than the max value
-        buckets[buckets.length -1] = valueMax;
         return buckets;
     }
 
