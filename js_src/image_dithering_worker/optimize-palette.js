@@ -632,11 +632,78 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
 
         return pixelArrayToBuffer(medianColors);
     }
+
+    /**
+     * Popularity stuff
+    */
+
+    function popularity(pixels, numColors, colorQuantization){
+        function pixelHash(r, g, b){
+            return `${r}-${g}-${b}`;
+        }
+        function incrementMap(map, key){
+            let value = 1;
+            if(map.has(key)){
+                value = map.get(key) + 1;
+            }
+            map.set(key, value);
+        }
+        function createPopularityMap(pixels){
+            let popularityMap = new Map();
+
+            for(let i=0;i<pixels.length;i+=4){
+                //ignore transparent pixels
+                if(pixels[i+3] === 0){
+                    continue;
+                }
+                incrementMap(popularityMap, pixelHash(pixels[i], pixels[i+1], pixels[i+2]));
+            }
+            return popularityMap;
+        }
+
+        function getNewUniqueValueOrDefault(set, array){
+            for(let item of array){
+                if(!set.has(item)){
+                    set.add(item);
+                    return item;
+                }
+            }
+            return array[0];
+        }
+
+        function addColorToColors(colorKey, colors, index){
+            let colorSplit = colorKey.split('-');
+            const startIndex = index * 3;
+
+            colors[startIndex] = parseInt(colorSplit[0]);
+            colors[startIndex+1] = parseInt(colorSplit[1]);
+            colors[startIndex+2] = parseInt(colorSplit[2]);
+        }
+
+        let retColors = new Uint8Array(numColors * 3);
+        let colorsSet = new Set();
+        const fraction = pixels.length / (numColors * 4);
+
+        for(let i=1,previousEndIndex=0;i<=numColors;i++){
+            const endIndex = Math.round(i * fraction) * 4;
+            const pixelSubarray = pixels.subarray(previousEndIndex, endIndex);
+            let popularityMap = createPopularityMap(pixelSubarray);
+            let sortedValues = [...popularityMap.keys()].sort((a, b)=>{
+                return popularityMap.get(b) - popularityMap.get(a);
+            });
+            let colorKey = getNewUniqueValueOrDefault(colorsSet, sortedValues);
+            addColorToColors(colorKey, retColors, i-1);
+
+            previousEndIndex = endIndex;
+        }
+        return retColors;
+    }
     
     
     return {
        perceptualMedianCut: perceptualMedianCut,
        uniform: uniformQuantization,
        medianCut: medianCut,
+       popularity: popularity,
     };
 })(App.Pixel, App.PixelMath, App.ColorQuantizationModes);
