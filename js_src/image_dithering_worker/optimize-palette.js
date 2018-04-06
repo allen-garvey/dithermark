@@ -641,6 +641,18 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         function pixelHash(r, g, b){
             return `${r}-${g}-${b}`;
         }
+        //avoid having too many perceptually identical shades of black or white
+        function perceptualPixelHash(r, g, b){
+            const blackThreshold = 46;
+            const whiteThreshold = 240;
+            if(r < blackThreshold && g < blackThreshold && b < blackThreshold){
+                return '0-0-0';
+            }
+            if(r > whiteThreshold && g > whiteThreshold && b > whiteThreshold){
+                return '255-255-255';
+            }
+            return pixelHash(r, g, b);
+        }
         function incrementMap(map, key){
             let value = 1;
             if(map.has(key)){
@@ -648,7 +660,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
             }
             map.set(key, value);
         }
-        function createPopularityMap(pixels){
+        function createPopularityMap(pixels, pixelHashFunc){
             let popularityMap = new Map();
 
             for(let i=0;i<pixels.length;i+=4){
@@ -656,7 +668,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
                 if(pixels[i+3] === 0){
                     continue;
                 }
-                incrementMap(popularityMap, pixelHash(pixels[i], pixels[i+1], pixels[i+2]));
+                incrementMap(popularityMap, pixelHashFunc(pixels[i], pixels[i+1], pixels[i+2]));
             }
             return popularityMap;
         }
@@ -683,11 +695,15 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         let retColors = new Uint8Array(numColors * 3);
         let colorsSet = new Set();
         const fraction = pixels.length / (numColors * 4);
+        let pixelHashFunc = pixelHash;
+        if(colorQuantization.key === 'PERCEPTUAL_SPATIAL_POPULARITY'){
+            pixelHashFunc = perceptualPixelHash;
+        }
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
             const endIndex = Math.round(i * fraction) * 4;
             const pixelSubarray = pixels.subarray(previousEndIndex, endIndex);
-            let popularityMap = createPopularityMap(pixelSubarray);
+            let popularityMap = createPopularityMap(pixelSubarray, pixelHashFunc);
             let sortedValues = [...popularityMap.keys()].sort((a, b)=>{
                 return popularityMap.get(b) - popularityMap.get(a);
             });
