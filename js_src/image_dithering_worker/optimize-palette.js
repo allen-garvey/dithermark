@@ -189,28 +189,85 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return ret;
     }
     
+    function uniformDistribution(valueMin, valueMax, numDivisions){
+        let buckets = valueMax <= 255 ? new Uint8Array(numDivisions) : new Uint16Array(numDivisions);
+        const bucketFraction = Math.round((valueMax - valueMin) / (numDivisions - 1));
+        
+        buckets = buckets.map((value, i)=>{ return Math.round(i * bucketFraction) + valueMin; });
+        return buckets;
+    }
+
     //Divides the range between min and max values into equal parts
-    function uniformPopularityBase(popularityMapObject, numColors, numDistinctValues){
-        let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
+    function uniformPopularityBase(popularityMapObject, numColors){
         const valueMax = findMax(popularityMapObject.map);
         const valueMin = findMin(popularityMapObject.map);
-        const bucketFraction = Math.round((valueMax - valueMin) / (buckets.length - 1));
-        
-        buckets = buckets.map((value, i)=>{ return i * bucketFraction; });
-        return buckets;
+
+        return uniformDistribution(valueMin, valueMax, numColors);
+    }
+
+    //hue is circular, so we need to wrap the values around to find the lowest possible range
+    function hueUniformPopularity(popularityMapObject, numColors){
+        const upperValueLimit = 359;
+        //double the popularity map, since hues wrap around
+        let popularityMap = popularityMapObject.map;
+        const length = popularityMap.length;
+        let doubledPopularityMap = new Float32Array(length * 2);
+        doubledPopularityMap.set(popularityMap);
+        doubledPopularityMap.set(popularityMap, length);
+
+        let minRange = Infinity;
+        let offset = 0;
+        let globalMinValue = 0;
+        let globalMaxValue = 0;
+
+        for(let i=0;i<length;i++){
+            let shiftedPopularityMap = doubledPopularityMap.subarray(i, i+length);
+            let minValue = findMin(shiftedPopularityMap);
+            let maxValue = findMax(shiftedPopularityMap);
+            let range = maxValue - minValue;
+            if(range < minRange){
+                minRange = range;
+                offset = i;
+                globalMinValue = minValue;
+                globalMaxValue = maxValue;
+            }
+        }
+        console.log(`hue uniform distribution- minRange is ${minRange} offset is ${offset}`);
+        let baseUniformDistribution = uniformDistribution(globalMinValue, globalMaxValue, numColors);
+        //we now have to shift based on offset, and sort values
+        let ret = new Uint16Array(baseUniformDistribution.length);
+        let retIndex = 0;
+        console.log('hue uniform base distribution');
+        console.log(baseUniformDistribution);
+        // const valueOffset = offset + globalMinValue;
+        baseUniformDistribution.forEach((value, i)=>{
+            let normalizedValue = value + offset;
+            if(normalizedValue >= upperValueLimit){
+                ret[retIndex] = normalizedValue - upperValueLimit;
+                retIndex++;
+            }
+        });
+        const itemsLeft = ret.length - retIndex;
+        for(let i=0;i<itemsLeft;i++,retIndex++){
+            ret[retIndex] = baseUniformDistribution[i] + offset;
+        }
+        console.log('hue uniform distribution');
+        console.log(ret);
+        return ret;
     }
 
 
     //divides lightness into uniform segments, but assuming the range in wide enough,
     //it makes sure there is only 1 black value, and only 1 white value
-    function lightnessUniformPopularity(popularityMapObject, numColors, numDistinctValues){
+    function lightnessUniformPopularity(popularityMapObject, numColors){
+        const numDistinctValues = 256;
         const minRange = Math.floor(numDistinctValues / 2);
         const min = findMax(popularityMapObject.map);
         const max = findMax(popularityMapObject.map);
         if(max - min <= minRange){
-            return uniformPopularityBase(popularityMapObject, numColors, numDistinctValues);
+            return uniformPopularityBase(popularityMapObject, numColors);
         }
-        let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
+        let buckets = new Uint8Array(numColors);
         buckets[0] = min;
         buckets[buckets.length - 1] = max;
         const bottomOffset = Math.ceil(numDistinctValues * .18);
@@ -340,7 +397,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         console.log('lightnesses median');
         console.log(medianLightnesses);
-        let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
+        let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
         console.log('lightnesses uniform');
         console.log(uniformLightnesses);
         let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
@@ -348,7 +405,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         console.log(lightnesses);
         let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
         let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
-        let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
+        let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
         let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
         console.log('saturation results');
         console.log(saturations);
@@ -398,7 +455,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         // console.log(`hueMix is ${hueMix}`);
         let hues = averageArrays(huesMedian.average, huesMedian.median);
         if(hueMix < 2.0){
-            let huesUniform = uniformPopularityBase(huePopularityMapObject, numColors, 360);
+            let huesUniform = hueUniformPopularity(huePopularityMapObject, numColors);
             console.log('uniform hues');
             console.log(huesUniform);
             hues = averageHueArrays(hues, huesUniform, hueMix);
@@ -418,10 +475,10 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
 
     function uniformQuantization(pixels, numColors, colorQuantization){
         let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
-        let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors, 256);
+        let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
 
         let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
-        let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors, 101);
+        let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
         
         const saturationAverage = calculateAverage(saturations);
         let defaultHueFunc = (pixel)=>{
@@ -462,7 +519,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
             hueFunc = vibrantHueFunc;
         }
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
-        let hues = uniformPopularityBase(huePopularityMapObject, numColors, 360);
+        let hues = hueUniformPopularity(huePopularityMapObject, numColors);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
         hues = sortHues(hues, huePopularityMap);
         let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
