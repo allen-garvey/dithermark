@@ -19,30 +19,28 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
             popularityMap[pixelValue] = popularityMap[pixelValue] + 1;
             count++;
         }
-
-        //find minimum and maximum values in map
-        let valueMin = 0;
-        let valueMax = numDistinctValues - 1;
-        for(let i=0;i<popularityMap.length;i++){
-            if(popularityMap[i] > 0){
-                valueMin = i;
-                break;   
-            }
-        }
-        
-        for(let i=popularityMap.length-1;i>=0;i--){
-            if(popularityMap[i] > 0){
-                valueMax = i;
-                break;   
-            }
-        }
-
         return {
             map: popularityMap,
             count: count,
-            valueMin: valueMin,
-            valueMax: valueMax,
         };
+    }
+
+    function findMin(popularityMap){
+        for(let i=0;i<popularityMap.length;i++){
+            if(popularityMap[i] > 0){
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    function findMax(popularityMap){
+        for(let i=popularityMap.length-1;i>=0;i--){
+            if(popularityMap[i] > 0){
+                return i;
+            }
+        }
+        return 0;
     }
 
 
@@ -194,11 +192,13 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
     //Divides the range between min and max values into equal parts
     function uniformPopularityBase(popularityMapObject, numColors, numDistinctValues){
         let buckets = numDistinctValues <= 255 ? new Uint8Array(numColors) : new Uint16Array(numColors);
-        const bucketFraction = Math.floor((popularityMapObject.valueMax - popularityMapObject.valueMin) / buckets.length);
+        const valueMax = findMax(popularityMapObject.map);
+        const valueMin = findMin(popularityMapObject.map);
+        const bucketFraction = Math.floor((valueMax - valueMin) / buckets.length);
         
         buckets = buckets.map((value, i)=>{ return i * bucketFraction; });
         //rounding down will make this less than the max value
-        buckets[buckets.length -1] = popularityMapObject.valueMax;
+        buckets[buckets.length -1] = valueMax;
         return buckets;
     }
 
@@ -207,8 +207,8 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
     //it makes sure there is only 1 black value, and only 1 white value
     function lightnessUniformPopularity(popularityMapObject, numColors, numDistinctValues){
         const minRange = Math.floor(numDistinctValues / 2);
-        const min = popularityMapObject.valueMin;
-        const max = popularityMapObject.valueMax;
+        const min = findMax(popularityMapObject.map);
+        const max = findMax(popularityMapObject.map);
         if(max - min <= minRange){
             return uniformPopularityBase(popularityMapObject, numColors, numDistinctValues);
         }
