@@ -536,11 +536,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
             //ignore transparent pixels
             if(pixels[i+3] > 0){
                 //don't save alpha value, since we don't need it
-                ret.push([
-                    pixels[i],
-                    pixels[i+1],
-                    pixels[i+2],
-                ]);
+                ret.push(pixels.subarray(i, i+3));
             }
         }
         return ret;
