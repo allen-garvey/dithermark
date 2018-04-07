@@ -46,6 +46,15 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
 
         return dist1 * dist1 + dist2 * dist2 + dist3 * dist3;
     }
+
+    //rgb with correction for luma based on: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
+    function distanceRgbWeighted(item1, item2){
+        const distR = item1[0] - item2[0];
+        const distG = item1[1] - item2[1];
+        const distB = item1[2] - item2[2];
+
+        return distR * distR * 3 + distG * distG * 6 + distB * distB;
+    }
     
     
     let ret = {};
@@ -68,6 +77,11 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     ret[ColorDitherModes.get('RGB').id] = {
         pixelValue: identity,
         distance: distance3d,
+    };
+
+    ret[ColorDitherModes.get('RGB_WEIGHTED').id] = {
+        pixelValue: identity,
+        distance: distanceRgbWeighted,
     };
 
     return ret;
