@@ -64,9 +64,7 @@
         let paletteBuffer;
         const colorQuantizationId = messageHeader.colorQuantizationModeId;
         const colorQuantization = ColorQuantizationModes[colorQuantizationId];
-        if(colorQuantization.mutatesPixels){
-            pixelsInput = new Uint8ClampedArray(pixels);
-        }
+
         Timer.megapixelsPerSecond(`Optimize palette ${colorQuantization.title}`, pixels.length / 4, ()=>{
             let algoName = colorQuantization.algo;
             paletteBuffer = OptimizePalette[algoName](pixelsInput, messageHeader.numColors, colorQuantization); 
