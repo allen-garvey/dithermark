@@ -41,6 +41,12 @@ App.ErrorPropDither = (function(Image, Pixel, PixelMath){
         return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
             var lightness = PixelMath.lightness(pixel);
             var adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, y);
+            if(adjustedLightness > 255){
+                adjustedLightness = 255;
+            }
+            else if(adjustedLightness < 0){
+                adjustedLightness = 0;
+            }
             
             var ret;
             var currentError = 0;
@@ -48,12 +54,12 @@ App.ErrorPropDither = (function(Image, Pixel, PixelMath){
             if(adjustedLightness > threshold){
                 whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
                 ret = whitePixel;
-                currentError = lightness - 255;
+                currentError = adjustedLightness - 255;
             }
             else{
                 blackPixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
                 ret = blackPixel;
-                currentError = lightness;
+                currentError = adjustedLightness;
             }
             
             errorPropagationFunc(errorPropMatrix, x, y, currentError);
