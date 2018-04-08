@@ -1,4 +1,4 @@
-App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFunctions){
+App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFunctions, ErrorPropModel){
     /*
     ** Error propagation matrix stuff
     */
@@ -48,51 +48,17 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
    /**
      * Propagate error functions
     */
-
-    function floydSteinbergPropagation(errorPropMatrix, x, y, currentError, errorBuffer){
-        const errorPart = 1 / 16;
-        const error7 = errorPart * 7;
-        const error5 = errorPart * 5;
-        const error3 = errorPart * 3;
-        const error1 = errorPart;
-
-        errorMatrixIncrement(errorPropMatrix, x + 1, y, fillPropagateErrorBuffer(currentError, error7, errorBuffer));
-        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, fillPropagateErrorBuffer(currentError, error1, errorBuffer));
-        errorMatrixIncrement(errorPropMatrix, x, y + 1, fillPropagateErrorBuffer(currentError, error5, errorBuffer));
-        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, fillPropagateErrorBuffer(currentError, error3, errorBuffer));
-    }
-
-    function garveyPropagation(errorPropMatrix, x, y, currentError, errorBuffer){
-        const errorPart = 1 / 16;
-        
-        errorMatrixIncrement(errorPropMatrix, x + 1, y,  fillPropagateErrorBuffer(currentError, errorPart * 2, errorBuffer));
-        errorMatrixIncrement(errorPropMatrix, x + 2, y, fillPropagateErrorBuffer(currentError, errorPart, errorBuffer));
-
-        errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, fillPropagateErrorBuffer(currentError, errorPart, errorBuffer));
-        errorMatrixIncrement(errorPropMatrix, x, y + 1, fillPropagateErrorBuffer(currentError, errorPart * 2, errorBuffer));
-        errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, fillPropagateErrorBuffer(currentError, errorPart, errorBuffer));
-
-        errorMatrixIncrement(errorPropMatrix, x, y + 2, fillPropagateErrorBuffer(currentError, errorPart, errorBuffer));
-
-
-        //this unfortunately doesn't seem to make it faster
-        // let errorBuff1 = fillPropagateErrorBuffer(currentError, errorPart, errorBuffer);
-        
-        // errorMatrixIncrement(errorPropMatrix, x + 2, y, errorBuff1);
-        // errorMatrixIncrement(errorPropMatrix, x - 1, y + 1, errorBuff1);
-        // errorMatrixIncrement(errorPropMatrix, x + 1, y + 1, errorBuff1);
-        // errorMatrixIncrement(errorPropMatrix, x, y + 2, errorBuff1);
-
-        // let errorBuff2 = fillPropagateErrorBuffer(currentError, errorPart * 2, errorBuffer);
-        // errorMatrixIncrement(errorPropMatrix, x + 1, y,  errorBuff2);
-        // errorMatrixIncrement(errorPropMatrix, x, y + 1, errorBuff2);
+    function propagateError(propagationModel, errorPropMatrix, x, y, currentError, errorBuffer){
+        propagationModel.forEach((item)=>{
+            errorMatrixIncrement(errorPropMatrix, x + item.xOffset, y + item.yOffset,  fillPropagateErrorBuffer(currentError, item.errorFraction, errorBuffer));
+        });
     }
 
 
     /**
      * Base error prop functions
     */
-    function errorPropDitherBase(pixels, imageWidth, imageHeight, colorDitherModeId, colors, propagateErrorFunc){
+    function errorPropDitherBase(pixels, imageWidth, imageHeight, colorDitherModeId, colors, propagateErrorModel){
         const colorDitherMode = ColorDitherModeFunctions[colorDitherModeId];
         const pixelValueFunc = colorDitherMode.pixelValue;
         const pixelDistanceFunc = colorDitherMode.distance;
@@ -115,7 +81,7 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
 
             const currentError = errorAmountFunc(pixelAdjustedValue, colorValues[closestColors.closestIndex], currentErrorBuffer);
             
-            propagateErrorFunc(errorMatrix, x, y, currentError, errorBuffer);
+            propagateError(propagateErrorModel, errorMatrix, x, y, currentError, errorBuffer);
 
             pixel[0] = closestColor[0];
             pixel[1] = closestColor[1];
@@ -125,16 +91,16 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
         console.log(errorMatrix);
     }
 
-    function errorPropBuilder(propagateErrorFunc){
+    function errorPropBuilder(propagateErrorModel){
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
-            return errorPropDitherBase(pixels, imageWidth, imageHeight, colorDitherModeId, colors, propagateErrorFunc);
+            return errorPropDitherBase(pixels, imageWidth, imageHeight, colorDitherModeId, colors, propagateErrorModel);
         };
     }
     
     return{
-        garvey: errorPropBuilder(garveyPropagation),
-        floydSteinberg: errorPropBuilder(floydSteinbergPropagation),
+        garvey: errorPropBuilder(ErrorPropModel.garvey()),
+        floydSteinberg: errorPropBuilder(ErrorPropModel.floydSteinberg()),
     };
     
     
-})(App.Image, App.Pixel, App.PixelMath, App.ColorDitherModeFunctions);
+})(App.Image, App.Pixel, App.PixelMath, App.ColorDitherModeFunctions, App.ErrorPropModel);

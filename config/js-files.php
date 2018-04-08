@@ -51,6 +51,7 @@
             JS_WORKER_PATH.'color-dither-mode-functions.js',
             JS_WORKER_PATH.'image.js',
             JS_WORKER_PATH.'threshold.js',
+            JS_WORKER_PATH.'error-prop-model.js',
             JS_WORKER_PATH.'error-prop-dither.js',
             JS_WORKER_PATH.'error-prop-color-dither.js',
             JS_WORKER_PATH.'ordered-dither.js',
