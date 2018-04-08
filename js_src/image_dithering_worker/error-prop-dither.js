@@ -48,7 +48,7 @@ App.ErrorPropDither = (function(Image, Pixel, PixelMath){
             if(adjustedLightness > threshold){
                 whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
                 ret = whitePixel;
-                currentError = -1 * (255 - lightness);
+                currentError = lightness - 255;
             }
             else{
                 blackPixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
