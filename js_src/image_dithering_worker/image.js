@@ -28,7 +28,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
     }
 
 
-    function getClosestColors(pixelValue, colorValues, distanceFunc){
+    function findClosestColors(pixelValue, colorValues, distanceFunc){
         let closestIndex = -1;
         let secondClosestIndex = -1;
         let closestDistance = Infinity;
@@ -74,7 +74,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
             pixel[Pixel.B_INDEX] = pixels[i+2];
             // pixel[Pixel.A_INDEX] = pixels[i+3]; //not necessary to set alpha
 
-            const closestColors = getClosestColors(pixelValueFunc(pixel), colorValues, pixelDistanceFunc);
+            const closestColors = findClosestColors(pixelValueFunc(pixel), colorValues, pixelDistanceFunc);
             const closestColor = colors[closestColors.closestIndex];
             const secondClosestColor = colors[closestColors.secondClosestIndex];
             const closestDistance = closestColors.closestDistance;
@@ -100,5 +100,6 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
     return {
        transform: transformImage,
        colorDither: colorDitherImage,
+       findClosestColors: findClosestColors,
     };
 })(App.Pixel, App.ColorDitherModeFunctions);

@@ -1,5 +1,5 @@
 
-App.Algorithms = (function(Threshold, OrderedDither, ErrorPropDither){
+App.Algorithms = (function(Threshold, OrderedDither, ErrorPropDither, ErrorPropColorDither){
     function ditherAlgorithms(){
         return {
 			<?php foreach(array_merge(bwAlgorithmModel(), colorAlgorithmModel()) as $algorithm): ?>
@@ -18,4 +18,4 @@ App.Algorithms = (function(Threshold, OrderedDither, ErrorPropDither){
     return {
         model: ditherAlgorithms,
     };
-})(App.Threshold, App.OrderedDither, App.ErrorPropDither);
+})(App.Threshold, App.OrderedDither, App.ErrorPropDither, App.ErrorPropColorDither);

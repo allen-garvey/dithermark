@@ -55,33 +55,92 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
 
         return distR * distR * 3 + distG * distG * 6 + distB * distB;
     }
+
+
+    /**
+     * Functions for error prop dither
+    */
+
+    function incrementUInt8Value(value, amount){
+        const adjustedValue = value + amount;
+        if(adjustedValue > 255){
+            return 255;
+        }
+        if(adjustedValue < 0){
+            return 0;
+        }
+
+        return adjustedValue;
+    }
+
+    function incrementLightness(lightnessValue, incrementValues){
+        return incrementUInt8Value(lightnessValue, incrementValues[0]);
+    }
+
+    function incrementRgb(rgbValue, incrementValues){
+        return [
+            incrementUInt8Value(rgbValue[0], incrementValues[0]),
+            incrementUInt8Value(rgbValue[1], incrementValues[1]),
+            incrementUInt8Value(rgbValue[2], incrementValues[2]),
+        ];
+    }
+
+    function errorAmount1d(expectedValue, actualValue, buffer){
+        buffer[0] = actualValue - expectedValue;
+        return buffer;
+    }
+
+    function errorAmount2d(expectedValues, actualValues, buffer){
+        buffer[0] = actualValues[0] - expectedValues[0];
+        buffer[1] = actualValues[1] - expectedValues[1];
+        return buffer;
+    }
+
+    function errorAmount3d(expectedValues, actualValues, buffer){
+        buffer[0] = actualValues[0] - expectedValues[0];
+        buffer[1] = actualValues[1] - expectedValues[1];
+        buffer[2] = actualValues[2] - expectedValues[2];
+        return buffer;
+    }
     
     
     let ret = {};
     ret[ColorDitherModes.get('LIGHTNESS').id] = {
         pixelValue: PixelMath.lightness,
         distance: distance1d,
+        dimensions: 1,
+        incrementValue: incrementLightness,
+        errorAmount: errorAmount1d,
     };
     ret[ColorDitherModes.get('HUE').id] = {
         pixelValue: PixelMath.hue,
         distance: hueDistance,
+        dimensions: 1,
     };
     ret[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
         pixelValue: pixelToHsl,
         distance: distanceHueLightness,
+        dimensions: 2,
     };
     ret[ColorDitherModes.get('HSL_WEIGHTED').id] = {
         pixelValue: pixelToHsl,
         distance: distanceHslWeighted,
+        dimensions: 3,
     };
     ret[ColorDitherModes.get('RGB').id] = {
         pixelValue: identity,
         distance: distance3d,
+        dimensions: 3,
+        incrementValue: incrementRgb,
+        errorAmount: errorAmount3d,
     };
 
     ret[ColorDitherModes.get('RGB_WEIGHTED').id] = {
         pixelValue: identity,
         distance: distanceRgbWeighted,
+        dimensions: 3,
+        incrementValue: incrementRgb,
+        errorAmount: errorAmount3d,
     };
 
     return ret;
