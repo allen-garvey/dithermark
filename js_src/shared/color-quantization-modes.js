@@ -1,6 +1,8 @@
 App.ColorQuantizationModes = [
-    {key: 'SPATIAL_POPULARITY', title: 'Spatial Popularity', algo: 'popularity'},
-    {key: 'PERCEPTUAL_SPATIAL_POPULARITY', title: 'Perceptual Spatial Popularity', algo: 'popularity'},
+    {key: 'SPATIAL_POPULARITY', title: 'Spatial Popularity (Horizontal)', algo: 'popularity'},
+    {key: 'PERCEPTUAL_SPATIAL_POPULARITY', title: 'Perceptual Spatial Popularity (Horizontal)', algo: 'popularity'},
+    {key: 'SPATIAL_POPULARITY_VERTICAL', title: 'Spatial Popularity (Vertical)', algo: 'popularity'},
+    {key: 'PERCEPTUAL_SPATIAL_POPULARITY_VERTICAL', title: 'Perceptual Spatial Popularity (Vertical)', algo: 'popularity'},
     {key: 'UNIFORM', title: 'Perceptual Uniform', algo: 'uniform'},
     {key: 'UNIFORM_VIBRANT', title: 'Perceptual Uniform (Vibrant)', algo: 'uniform'},
     {key: 'PMC_BALANCED', title: 'Perceptual Median Cut (Balanced)', algo: 'perceptualMedianCut', hueMix: 1.6},

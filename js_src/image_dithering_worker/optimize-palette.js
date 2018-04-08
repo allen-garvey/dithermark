@@ -387,7 +387,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return list.reduce((acc, value)=>{ return acc + value;}, 0) / list.length;
     }
 
-    function perceptualMedianCut(pixels, numColors, colorQuantization){
+    function perceptualMedianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
                 return Math.ceil(previousBucketCapacity / Math.LN10);
@@ -473,7 +473,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return PixelMath.hslArrayToRgb(hsl);
     }
 
-    function uniformQuantization(pixels, numColors, colorQuantization){
+    function uniformQuantization(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
         let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
         let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
 
@@ -656,7 +656,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return ret;
     }
 
-    function medianCut(pixels, numColors, colorQuantization){
+    function medianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
         //get number of times we need to divide pixels in half and sort
         const numCuts = Math.ceil(Math.log2(numColors));
         let pixelArray = createMedianCutArray(pixels);
@@ -688,7 +688,28 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
      * Popularity stuff
     */
 
-    function popularity(pixels, numColors, colorQuantization){
+    function popularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        function rotatePixels90Degrees(pixels, imageWidth, imageHeight){
+            //not really necessary to copy alpha values as well, but this complicates
+            //the logic for the horizontal case, so we will leave them in
+            const length = pixels.length;
+            let ret = new Uint8Array(length);
+
+            const rowPixelLength = imageWidth * 4;
+            let retIndex = 0;
+            for(let x=0;x<rowPixelLength;x+=4){
+                for(let y=0;y<length;y+=rowPixelLength){
+                    const offset = y+x;
+                    ret[retIndex++] = pixels[offset];
+                    ret[retIndex++] = pixels[offset+1];
+                    ret[retIndex++] = pixels[offset+2];
+                    ret[retIndex++] = pixels[offset+3];
+                }
+            }
+
+            return ret;
+        }
+        
         function pixelHash(r, g, b){
             return `${r}-${g}-${b}`;
         }
@@ -747,8 +768,11 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         let colorsSet = new Set();
         const fraction = pixels.length / (numColors * 4);
         let pixelHashFunc = pixelHash;
-        if(colorQuantization.key === 'PERCEPTUAL_SPATIAL_POPULARITY'){
+        if(colorQuantization.key.startsWith('PERCEPTUAL')){
             pixelHashFunc = perceptualPixelHash;
+        }
+        if(colorQuantization.key.endsWith('VERTICAL')){
+            pixels = rotatePixels90Degrees(pixels, imageWidth, imageHeight);
         }
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){

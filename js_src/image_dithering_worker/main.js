@@ -69,7 +69,7 @@
 
         Timer.megapixelsPerSecond(`Optimize palette ${colorQuantization.title}`, pixels.length / 4, ()=>{
             let algoName = colorQuantization.algo;
-            paletteBuffer = OptimizePalette[algoName](pixelsInput, messageHeader.numColors, colorQuantization); 
+            paletteBuffer = OptimizePalette[algoName](pixelsInput, messageHeader.numColors, colorQuantization, imageWidth, imageHeight); 
         });
         
         postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageHeader.messageTypeId, colorQuantizationId));
