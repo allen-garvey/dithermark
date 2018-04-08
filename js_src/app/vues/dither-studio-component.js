@@ -60,6 +60,7 @@
                 isWebglSupported: false,
                 isWebglEnabled: false,
                 zoom: 100,
+                zoomDisplay: 100, //this is so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed
                 pixelateImageZoom: 100,
                 zoomMin: 10,
                 zoomMax: 400,
@@ -130,13 +131,21 @@
                 let newThemeClass = this.editorThemes[newThemeIndex].className;
                 classList.add(newThemeClass);
             },
+            zoomDisplay: function(newValue){
+                //have to check if not equal to this.zoom, or will start infinite loop
+                if(newValue !== this.zoom && newValue >= this.zoomMin && newValue <= this.zoomMax){
+                    this.zoom = newValue;
+                }
+            },
             zoom: function(newZoom, oldZoom){
+                if(newZoom === oldZoom){
+                    return;
+                }
                 let newZoomCleaned = Math.floor(newZoom);
                 if(isNaN(newZoomCleaned)){
                     this.zoom = oldZoom;
                     return;
                 }
-                
                 if(newZoomCleaned < this.zoomMin){
                     newZoomCleaned = this.zoomMin;
                 }
@@ -144,8 +153,10 @@
                     newZoomCleaned = this.zoomMax;
                 }
                 if(newZoomCleaned !== newZoom){
-                    this.zoom = newZoomCleaned;   
+                    this.zoom = newZoomCleaned;
+                    return;
                 }
+                this.zoomDisplay = this.zoom;
                 this.zoomImage();
             },
             pixelateImageZoom: function(newValue, oldValue){
