@@ -32,7 +32,12 @@
         <script type="vue/template" id="color-dither-component">
             <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-dither-component.php'); ?>
         </script>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'webgl-shaders.php') ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'vertex-shaders.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'pixel-distance-functions.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bw-dither.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-color-dither.php'); ?>
         <script type="text/javascript" src="/js/vue.min.js"></script>
         <script type="text/javascript" src="/js/app.js"></script>
     </body>
