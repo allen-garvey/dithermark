@@ -282,42 +282,6 @@
         return pixelHsv.r;
     }
 </script>
-<script type="webgl/fragment-shader" id="webgl-closest-color-fshader">
-    precision mediump float;
-    
-    varying vec2 v_texcoord;
-    uniform sampler2D u_texture;
-    
-    uniform int u_colors_array_length;
-    uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
-    
-    #{{lightnessFunction}}
-    
-    #{{hslFunctions}}
-    
-    #{{distanceFunction}}
-    
-    void main(){
-        vec4 pixel = texture2D(u_texture, v_texcoord);
-        
-        float shortestDistance = 1000.0;
-        vec3 outputPixel = pixel.rgb;
-        
-        for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-            if(i >= u_colors_array_length){
-                break;
-            }
-            vec3 currentColor = u_colors_array[i];
-            float currentDistance = quick_distance(pixel.rgb, currentColor);
-            if(currentDistance < shortestDistance){
-                shortestDistance = currentDistance;
-                outputPixel = currentColor;
-            }
-        }
-        
-        gl_FragColor = vec4(outputPixel, pixel.a);
-    }
-</script>
 <script type="webgl/fragment-shader" id="webgl-color-dither-base-fshader">
     precision mediump float;
     

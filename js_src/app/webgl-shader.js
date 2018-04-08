@@ -4,6 +4,9 @@
 */
 App.WebGlShader = (function(){
     function shaderText(id){
+        if(!id){
+            return '';
+        }
         return document.getElementById(id).textContent;
     }
     

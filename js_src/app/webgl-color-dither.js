@@ -95,7 +95,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
             return ret; 
         }
         
-        let closestColorShaderBase = shaderText('webgl-closest-color-fshader');
+        let closestColorShaderBase = generateFragmentShader(fragmentShaderBaseText);
         let orderedDitherSharedBase = generateFragmentShader(fragmentShaderBaseText, 'webgl-ordered-dither-color-declaration-fshader', 'webgl-ordered-dither-color-body-fshader');
         let hueLightnessOrderedDitherSharedBase = generateFragmentShader(fragmentShaderBaseText ,'webgl-hue-lightness-ordered-dither-color-declaration-fshader', 'webgl-hue-lightness-ordered-dither-color-body-fshader');
         let randomDitherShaderBase = generateFragmentShader(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
