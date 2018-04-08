@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins){
     //webworker stuff
     var ditherWorkers;
     
@@ -256,6 +256,7 @@
             resetZoom: function(){
                 this.zoom = 100;
             },
+            cyclePropertyList: VueMixins.cyclePropertyList,
             
             //webworker stuff
             workerMessageReceivedDispatcher: function(e){
@@ -291,4 +292,4 @@
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
     
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins);
