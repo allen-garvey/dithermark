@@ -4,15 +4,10 @@ App.ErrorPropDither = (function(Image, Pixel, PixelMath){
     ** Error propagation matrix stuff
     */
     function createErrorMaxtrix(width, height){
-        //needs to be multiplied by 2 because 16 byte ints take 2 bytes each
-        var bufferDimensions = width * height * 2;
-        var buffer = new ArrayBuffer(bufferDimensions);
-        var bufferView = new Int16Array(buffer);
-        
         return {
             width: width,
             height: height,
-            data: bufferView
+            data: new Int16Array(width * height)
         };
     }
     
