@@ -231,7 +231,7 @@
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
                 this.$emit('display-transformed-image');
             },
-            cyclePropertyList: VueMixins.cyclePropertyList(),
+            cyclePropertyList: VueMixins.cyclePropertyList,
         }
     });
     

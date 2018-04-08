@@ -221,7 +221,7 @@
                     worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex));
                 });
             },
-            cyclePropertyList: VueMixins.cyclePropertyList(),
+            cyclePropertyList: VueMixins.cyclePropertyList,
             /**
             * Color palette drag stuff
             */
