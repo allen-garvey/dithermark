@@ -188,9 +188,12 @@
                 const colorCount = colors.length / 3;
                 const key = this.optimizePaletteMemorizationKey(colorCount, colorQuantizationModeId);
                 optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax); 
-                this.colorsShadow = optimizedPalettes[key].slice();
                 //have to use Vue.set for object keys
                 Vue.set(this.pendingColorQuantizations, key, false);
+                //avoids race conditions when color quantization mode is changed before results return
+                if(this.selectedColorQuantizationModeIndex === colorQuantizationModeId){
+                    this.colorsShadow = optimizedPalettes[key].slice();
+                }
             },
             histogramWorkerMessageReceived: function(huePercentages){
                 Histogram.drawColorHistogram(histogramCanvas, huePercentages);
