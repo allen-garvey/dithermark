@@ -1,7 +1,9 @@
-(function(Timer, WorkerUtil, Pixel, Algorithms, WorkerHeaders, Histogram, OptimizePalette, ColorQuantizationModes){
-    var ditherAlgorithms = Algorithms.model();
-    var messageHeader = {};
-    var pixelBufferOriginal;
+(function(Timer, WorkerUtil, Algorithms, WorkerHeaders, Histogram, OptimizePalette, ColorQuantizationModes){
+    let ditherAlgorithms = Algorithms.model();
+    let previousMessageWasLoadImageHeader = false;
+    let pixelBufferOriginal;
+    let imageHeight = 0;
+    let imageWidth = 0;
     
     
     function histogramAction(messageHeader){
@@ -78,15 +80,15 @@
         let messageData = e.data;
         
         //previous message was load image header, so load image
-        if(messageHeader.messageTypeId === WorkerHeaders.LOAD_IMAGE){
+        if(previousMessageWasLoadImageHeader){
             if(messageData.byteLength > 0){
                 pixelBufferOriginal = messageData;
             }
-            messageHeader = {};
+            previousMessageWasLoadImageHeader = false;
             return;
         }
         //get new headers
-        messageHeader = WorkerUtil.parseMessageHeader(messageData);
+        let messageHeader = WorkerUtil.parseMessageHeader(messageData);
         //perform action based on headers
         switch(messageHeader.messageTypeId){
             case WorkerHeaders.DITHER:
@@ -103,11 +105,15 @@
             case WorkerHeaders.OPTIMIZE_PALETTE:
                 optimizePaletteAction(messageHeader);
                 break;
-            //LOAD_IMAGE just returns
+            //LOAD_IMAGE case
+            //just sets flag since it means next message will be the actual image data
             default:
-                return;
+                imageHeight = messageHeader.imageHeight;
+                imageWidth = messageHeader.imageWidth;
+                previousMessageWasLoadImageHeader = true;
+                break;
         }
         
     };
-})(App.Timer, App.WorkerUtil, App.Pixel, App.Algorithms, App.WorkerHeaders, App.Histogram, App.OptimizePalette, App.ColorQuantizationModes);
+})(App.Timer, App.WorkerUtil, App.Algorithms, App.WorkerHeaders, App.Histogram, App.OptimizePalette, App.ColorQuantizationModes);
 
