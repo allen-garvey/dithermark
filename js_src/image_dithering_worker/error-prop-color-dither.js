@@ -11,46 +11,28 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
             data: new Float32Array(width * height * dimensions),
         };
     }
-
-    function errorMatrixIndexFor(matrix, x, y){
-        return (matrix.trueWidth * y) + x * matrix.dimensions;
-    }
     
-    function errorMatrixIncrement(matrix, x, y, values){
+    function errorMatrixIncrement(matrix, x, y, error, errorFraction){
         if(x >= matrix.width || y >= matrix.height){
             return;
         }
         let matrixValues = errorMatrixValue(matrix, x, y);
         for(let i=0;i<matrixValues.length;i++){
-            matrixValues[i] = matrixValues[i] + values[i];
+            matrixValues[i] = matrixValues[i] + (error[i] * errorFraction);
         }
     }
     
     function errorMatrixValue(matrix, x, y){
-        if(x >= matrix.width || y >= matrix.height){
-            //return 0 values
-            return new Float32Array(matrix.dimensions);
-        }
-        const startIndex = errorMatrixIndexFor(matrix, x, y);
+        const startIndex = (matrix.trueWidth * y) + x * matrix.dimensions;
         return matrix.data.subarray(startIndex, startIndex + matrix.dimensions);
     }
-
-    /**
-    * Propagate error helper stuff
-    */
-   function fillPropagateErrorBuffer(error, errorFraction, errorBuffer){
-       error.forEach((value, i)=>{
-           errorBuffer[i] = value * errorFraction;
-       });
-       return errorBuffer;
-   }
 
    /**
      * Propagate error functions
     */
-    function propagateError(propagationModel, errorPropMatrix, x, y, currentError, errorBuffer){
+    function propagateError(propagationModel, errorPropMatrix, x, y, currentError){
         propagationModel.forEach((item)=>{
-            errorMatrixIncrement(errorPropMatrix, x + item.xOffset, y + item.yOffset,  fillPropagateErrorBuffer(currentError, item.errorFraction, errorBuffer));
+            errorMatrixIncrement(errorPropMatrix, x + item.xOffset, y + item.yOffset, currentError, item.errorFraction);
         });
     }
 
@@ -70,19 +52,18 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
         let errorMatrix = createErrorMaxtrix(imageWidth, imageHeight, modeDimensions);
         //this is to avoid uncessesary creation and deletion of arrays during error propagation
         let currentErrorBuffer = new Float32Array(modeDimensions);
-        let errorBuffer = new Float32Array(modeDimensions);
 
         Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
             const pixelRawValue = pixelValueFunc(pixel);
             let errorValue = errorMatrixValue(errorMatrix, x, y);
             const pixelAdjustedValue = incrementValueFunc(pixelRawValue, errorValue);
             const closestColors = Image.findClosestColors(pixelAdjustedValue, colorValues, pixelDistanceFunc);
-            const closestColor = colors[closestColors.closestIndex];
 
             const currentError = errorAmountFunc(pixelAdjustedValue, colorValues[closestColors.closestIndex], currentErrorBuffer);
             
-            propagateError(propagateErrorModel, errorMatrix, x, y, currentError, errorBuffer);
+            propagateError(propagateErrorModel, errorMatrix, x, y, currentError);
 
+            const closestColor = colors[closestColors.closestIndex];
             pixel[0] = closestColor[0];
             pixel[1] = closestColor[1];
             pixel[2] = closestColor[2];
