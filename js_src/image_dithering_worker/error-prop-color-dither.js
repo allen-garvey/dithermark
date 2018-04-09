@@ -98,8 +98,16 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
     }
     
     return{
-        garvey: errorPropBuilder(ErrorPropModel.garvey()),
         floydSteinberg: errorPropBuilder(ErrorPropModel.floydSteinberg()),
+        javisJudiceNinke: errorPropBuilder(ErrorPropModel.javisJudiceNinke()),
+        stucki: errorPropBuilder(ErrorPropModel.stucki()),
+        burkes: errorPropBuilder(ErrorPropModel.burkes()),
+        sierra3: errorPropBuilder(ErrorPropModel.sierra3()),
+        sierra2: errorPropBuilder(ErrorPropModel.sierra2()),
+        sierra1: errorPropBuilder(ErrorPropModel.sierra1()),
+        atkinson: errorPropBuilder(ErrorPropModel.atkinson()),
+        garvey: errorPropBuilder(ErrorPropModel.garvey()),
+        
     };
     
     
