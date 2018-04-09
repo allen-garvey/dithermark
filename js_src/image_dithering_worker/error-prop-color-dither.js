@@ -69,7 +69,6 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
             pixel[2] = closestColor[2];
             return pixel;
         });
-        console.log(errorMatrix);
     }
 
     function errorPropBuilder(propagateErrorModel){
