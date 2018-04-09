@@ -65,7 +65,7 @@
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
-                editorThemes: [{name: 'Light', className: 'editor-light'}, {name: 'Neutral', className: 'editor-gray'}, {name: 'Dark', className: 'editor-dark'},],
+                editorThemes: [{name: 'White', className: 'editor-white'}, {name: 'Light', className: 'editor-light'}, {name: 'Dark', className: 'editor-dark'}, {name: 'Black', className: 'editor-black'},],
                 currentEditorThemeIndex: null,
             };
         },

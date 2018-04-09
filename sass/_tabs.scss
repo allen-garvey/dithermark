@@ -3,7 +3,7 @@
 
 .tabs-container{
     display: flex;
-    border-bottom: 1px solid $border_color;
+    border-bottom: 1px solid var(--border-color);
     margin-bottom: 24px;
     
     .tab{
@@ -16,12 +16,23 @@
         
         &.active{
             cursor: auto;
-            border-color: $border_color $border_color #fff;
+            border-color: var(--border-color);
             border-bottom-color: var(--main-bg-color);
         }
         &.disabled{
             cursor: not-allowed;
             color: var(--disabled-text-color);
+        }
+    }
+}
+
+@include pinned_controls_mq{
+    .tabs-container{
+        .tab{
+            &.active{
+                border-color: var(--pinned-controls-border-color);
+                border-bottom-color: var(--pinned-controls-bg-color);
+            }
         }
     }
 }

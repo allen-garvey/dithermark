@@ -2,7 +2,7 @@
 	.controls-container{
 		position: fixed;
 		display: block;
-		background-color: var(--main-bg-color);
+		background-color: var(--pinned-controls-bg-color);
 		width: auto;
 		max-width: 100%;
 		max-height: 100%;
@@ -28,7 +28,7 @@
 		position: fixed;
 		bottom: 0;
 		left: 0;
-		background-color: var(--main-bg-color);
+		background-color: var(--pinned-controls-bg-color);
 		box-sizing: border-box;
 		border-top: 1px solid rgba(var(--main-text-color-rgb), 0.2);
 		//-1 pixel so it hides border

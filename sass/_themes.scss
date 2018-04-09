@@ -1,31 +1,55 @@
 :root{
     --main-bg-color: white;
+    --pinned-controls-bg-color: white;
     --main-text-color: black;
     --main-text-color-rgb: 0, 0, 0;
+    --disabled-text-color: #ddd;
+    --border-color: #dee2e6;
+    --pinned-controls-border-color: #dee2e6;
 }
-.editor-light{
+.editor-white{
     color: black;
     background-color: white;
     --main-bg-color: white;
+    --pinned-controls-bg-color: white;
     --main-text-color: black;
+    --main-text-color-rgb: 0, 0, 0;
     --disabled-text-color: #ddd;
-    --main-text-color-rgb: 0, 0, 0;
+    --border-color: #dee2e6;
+    --pinned-controls-border-color: #dee2e6;
 }
-
-.editor-gray{
+.editor-light{
     color: black;
-    background-color: #aaa;
-    --main-bg-color: #aaa;
+    background-color: #ccc;
+    --main-bg-color: #ccc;
+    --pinned-controls-bg-color: #ddd; //this is intentionally different from the background color, so controls are slightly lighter
     --main-text-color: black;
-    --disabled-text-color: #666;
+    --disabled-text-color: #aaa;
     --main-text-color-rgb: 0, 0, 0;
+    --border-color: #aaa;
+    --pinned-controls-border-color: #bec2c6;
 }
 
 .editor-dark{
     color: white;
+    background-color: #333;
+    --main-bg-color: #333;
+    --pinned-controls-bg-color: #444; //this is intentionally different from the background color, so controls are slightly lighter
+    --main-text-color: white;
+    --main-text-color-rgb: 255, 255, 255;
+    --disabled-text-color: #666;
+    --border-color: #6a6a6a;
+    --pinned-controls-border-color: #6a6a6a;
+}
+
+.editor-black{
+    color: white;
     background-color: black;
     --main-bg-color: black;
+    --pinned-controls-bg-color: black;
     --main-text-color: white;
-    --disabled-text-color: #666;
     --main-text-color-rgb: 255, 255, 255;
+    --disabled-text-color: #666;
+    --border-color: #7a7a7a;
+    --pinned-controls-border-color: #7a7a7a;
 }
