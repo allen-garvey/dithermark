@@ -61,16 +61,32 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
      * Functions for error prop dither
     */
 
-    function incrementUInt8Value(value, amount){
+    function incrementClampedValue(value, amount, valueMax, valueMin=0){
         const adjustedValue = value + amount;
-        if(adjustedValue > 255){
-            return 255;
+        if(adjustedValue > valueMax){
+            return valueMax;
         }
-        if(adjustedValue < 0){
-            return 0;
+        if(adjustedValue < valueMin){
+            return valueMin;
         }
 
         return adjustedValue;
+    }
+
+    function incrementUInt8Value(value, amount){
+        return incrementClampedValue(value, amount, 255);
+    }
+
+    function incrementHue(hue, incrementValues){
+        return Math.abs(Math.round(hue + incrementValues[0]) % 360);
+    }
+
+    function incrementHsl(hslValues, incrementValues){
+        return [
+            incrementHue(hslValues[0], incrementValues),
+            incrementClampedValue(hslValues[1], incrementValues[1], 100),
+            incrementUInt8Value(hslValues[2], incrementValues[2]),
+        ];
     }
 
     function incrementLightness(lightnessValue, incrementValues){
@@ -83,6 +99,18 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
             incrementUInt8Value(rgbValue[1], incrementValues[1]),
             incrementUInt8Value(rgbValue[2], incrementValues[2]),
         ];
+    }
+
+    function errorAmountHue(expectedValue, actualValue, buffer){
+        buffer[0] = (expectedValue - actualValue) % 360;
+        return buffer;
+    }
+
+    function errorAmountHsl(expectedValue, actualValue, buffer){
+        buffer[0] = Math.round(expectedValue[0] - actualValue[0]) % 360;
+        buffer[1] = Math.round(expectedValue[1] - actualValue[1]) % 100;
+        buffer[2] = expectedValue[2] - actualValue[2];
+        return buffer;
     }
 
     function errorAmount1d(expectedValue, actualValue, buffer){
@@ -116,16 +144,22 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
         pixelValue: PixelMath.hue,
         distance: hueDistance,
         dimensions: 1,
+        incrementValue: incrementHue,
+        errorAmount: errorAmountHue,
     };
     ret[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
         pixelValue: pixelToHsl,
         distance: distanceHueLightness,
-        dimensions: 2,
+        dimensions: 3, //need 3 dimensions because we are using hsl function
+        incrementValue: incrementHsl,
+        errorAmount: errorAmountHsl,
     };
     ret[ColorDitherModes.get('HSL_WEIGHTED').id] = {
         pixelValue: pixelToHsl,
         distance: distanceHslWeighted,
         dimensions: 3,
+        incrementValue: incrementHsl,
+        errorAmount: errorAmountHsl,
     };
     ret[ColorDitherModes.get('RGB').id] = {
         pixelValue: identity,
