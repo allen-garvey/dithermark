@@ -86,20 +86,20 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     }
 
     function errorAmount1d(expectedValue, actualValue, buffer){
-        buffer[0] = actualValue - expectedValue;
+        buffer[0] = expectedValue - actualValue;
         return buffer;
     }
 
     function errorAmount2d(expectedValues, actualValues, buffer){
-        buffer[0] = actualValues[0] - expectedValues[0];
-        buffer[1] = actualValues[1] - expectedValues[1];
+        buffer[0] = expectedValues[0] - actualValues[0];
+        buffer[1] = expectedValues[1] - actualValues[1];
         return buffer;
     }
 
     function errorAmount3d(expectedValues, actualValues, buffer){
-        buffer[0] = actualValues[0] - expectedValues[0];
-        buffer[1] = actualValues[1] - expectedValues[1];
-        buffer[2] = actualValues[2] - expectedValues[2];
+        buffer[0] = expectedValues[0] - actualValues[0];
+        buffer[1] = expectedValues[1] - actualValues[1];
+        buffer[2] = expectedValues[2] - actualValues[2];
         return buffer;
     }
     
