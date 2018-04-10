@@ -39,3 +39,7 @@
     //whether or not print color palette button is shown
     //(useful for when creating new color palettes)
     define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
+
+    //urls
+    define('JS_APP_URL', '/js/app.js');
+    define('JS_DITHER_WORKER_URL', '/js/dither-worker.js');

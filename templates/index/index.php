@@ -39,6 +39,6 @@
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bw-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-color-dither.php'); ?>
         <script type="text/javascript" src="/js/vue.min.js"></script>
-        <script type="text/javascript" src="/js/app.js"></script>
+        <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>
 </html>
