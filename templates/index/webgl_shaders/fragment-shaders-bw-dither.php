@@ -46,13 +46,11 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
-    float adjustedThreshold = abs(u_threshold * rand(v_texcoord.xy*u_random_seed.xy));
-    bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
+    bool shouldUseBlackPixel = pixelLightness + rand(v_texcoord.xy*u_random_seed.xy) - 0.5 < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-body">
-    float adjustedThreshold = u_threshold * arithmeticDither(v_texcoord, pixel.rgb);
-    bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
+    bool shouldUseBlackPixel = pixelLightness + arithmeticDither(v_texcoord, pixel.rgb) - 0.5 < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-declaration">
@@ -64,8 +62,7 @@
    vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
    float bayerValue = bayerPixel.r;
-   float adjustedThreshold = bayerValue * u_threshold;
-   bool shouldUseBlackPixel = pixelLightness < adjustedThreshold;
+   bool shouldUseBlackPixel = pixelLightness + bayerValue - 0.5 < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
