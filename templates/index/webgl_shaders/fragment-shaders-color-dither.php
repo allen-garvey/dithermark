@@ -46,6 +46,8 @@
         }
         
         vec3 outputPixel = closestPixel;
+
+        #{{optionalPostscript}}
         
         gl_FragColor = vec4(outputPixel, pixel.a);
     }
@@ -62,8 +64,7 @@
     adjustedPixel = clamp(adjustedPixel + vec3(bayerValue - 0.5), 0.0, 1.0);
 </script>
 <script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-declaration-fshader">
-    uniform sampler2D u_bayer_texture;
-    uniform float u_bayer_texture_dimensions;
+    <?php //ordered dither declaration gets concatenated here ?>
     
     <?php //based on: http://alex-charlton.com/posts/Dithering_on_the_GPU/ ?>
     float lightnessStep(float l){
@@ -85,14 +86,7 @@
         return hsl2rgb(vec3(hsl.rg, adjustedLightness));
     }
 </script>
-<script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-body-fshader">
-    vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
-    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
-    float bayerValue = bayerPixel.r;
-    
-    if(secondShortestDistance * bayerValue < shortestDistance){
-        outputPixel = secondClosestPixel;
-    }
+<script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-postscript-fshader">
     outputPixel = hue_lightness_dither(outputPixel, bayerValue);
 </script>
 <script type="webgl/fragment-shader" id="webgl-random-dither-color-declaration-fshader">
