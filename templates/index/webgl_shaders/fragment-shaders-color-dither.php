@@ -17,18 +17,21 @@
     
     void main(){
         vec4 pixel = texture2D(u_texture, v_texcoord);
+        vec3 adjustedPixel = pixel.rgb;
+
+        #{{customBody}}
         
         float shortestDistance = 1000.0;
         float secondShortestDistance = 1000.0;
-        vec3 closestPixel = pixel.rgb;
-        vec3 secondClosestPixel = pixel.rgb;
+        vec3 closestPixel = adjustedPixel;
+        vec3 secondClosestPixel = adjustedPixel;
         
         for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
             if(i >= u_colors_array_length){
                 break;
             }
             vec3 currentColor = u_colors_array[i];
-            float currentDistance = quick_distance(pixel.rgb, currentColor);
+            float currentDistance = quick_distance(adjustedPixel, currentColor);
             if(currentDistance < shortestDistance){
                 secondShortestDistance = shortestDistance;
                 secondClosestPixel = closestPixel;
@@ -43,8 +46,6 @@
         }
         
         vec3 outputPixel = closestPixel;
-
-        #{{customBody}}
         
         gl_FragColor = vec4(outputPixel, pixel.a);
     }
@@ -57,10 +58,8 @@
     vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
     vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
     float bayerValue = bayerPixel.r;
-    
-    if(secondShortestDistance * bayerValue < shortestDistance){
-        outputPixel = secondClosestPixel;
-    }
+    <?php //need to subtract 0.5 here, and not when bayerValue is declared, since it is also used for hue-lightness dither ?>
+    adjustedPixel = clamp(adjustedPixel + vec3(bayerValue - 0.5), 0.0, 1.0);
 </script>
 <script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-declaration-fshader">
     uniform sampler2D u_bayer_texture;
@@ -110,15 +109,10 @@
     }
 </script>
 <script type="webgl/fragment-shader" id="webgl-random-dither-color-body-fshader">
-    float randomValue = rand(v_texcoord.xy*u_random_seed.xy);
-    
-    if(secondShortestDistance * randomValue < shortestDistance){
-        outputPixel = secondClosestPixel;
-    }
+    float randomValue = rand(v_texcoord.xy*u_random_seed.xy) - 0.5;
+    adjustedPixel = clamp(adjustedPixel + vec3(randomValue), 0.0, 1.0);
 </script>
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-color-body">
-    float aDitherValue = arithmeticDither(v_texcoord, pixel.rgb);
-    if(secondShortestDistance * aDitherValue < shortestDistance){
-        outputPixel = secondClosestPixel;
-    }
+    float aDitherValue = arithmeticDither(v_texcoord, pixel.rgb) - 0.5;
+    adjustedPixel = clamp(adjustedPixel + vec3(aDitherValue), 0.0, 1.0);
 </script>
