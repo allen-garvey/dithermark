@@ -60,8 +60,8 @@
     vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
     vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
     float bayerValue = bayerPixel.r;
-    <?php //need to subtract 0.5 here, and not when bayerValue is declared, since it is also used for hue-lightness dither ?>
-    adjustedPixel = clamp(adjustedPixel + vec3(bayerValue - 0.5), 0.0, 1.0);
+    <?php //need to subtract 0.5 here, and not when bayerValue is declared, since it is also used for hue-lightness dither?>
+    adjustedPixel = clamp(adjustedPixel + vec3(<?= COLOR_DITHER_R_COEFFICIENT; ?> * (bayerValue - 0.5)), 0.0, 1.0);
 </script>
 <script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-declaration-fshader">
     <?php //ordered dither declaration gets concatenated here ?>
@@ -103,10 +103,10 @@
     }
 </script>
 <script type="webgl/fragment-shader" id="webgl-random-dither-color-body-fshader">
-    float randomValue = rand(v_texcoord.xy*u_random_seed.xy) - 0.5;
+    float randomValue = <?= COLOR_DITHER_R_COEFFICIENT; ?> * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5);
     adjustedPixel = clamp(adjustedPixel + vec3(randomValue), 0.0, 1.0);
 </script>
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-color-body">
-    float aDitherValue = arithmeticDither(v_texcoord, pixel.rgb) - 0.5;
+    float aDitherValue = <?= COLOR_DITHER_R_COEFFICIENT; ?> * (arithmeticDither(v_texcoord, pixel.rgb) - 0.5);
     adjustedPixel = clamp(adjustedPixel + vec3(aDitherValue), 0.0, 1.0);
 </script>
