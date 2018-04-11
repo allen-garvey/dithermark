@@ -189,9 +189,10 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
         return ret;
     }
     
-    function uniformDistribution(valueMin, valueMax, numDivisions){
+    function uniformDistribution(valueMin, valueMax, numDivisions, isCircular=false){
         let buckets = valueMax <= 255 ? new Uint8Array(numDivisions) : new Uint16Array(numDivisions);
-        const bucketFraction = (valueMax - valueMin) / (numDivisions - 1);
+        const divisor = isCircular ? numDivisions : numDivisions - 1;
+        const bucketFraction = (valueMax - valueMin) / divisor;
         
         buckets = buckets.map((value, i)=>{ return Math.round(i * bucketFraction) + valueMin; });
         return buckets;
