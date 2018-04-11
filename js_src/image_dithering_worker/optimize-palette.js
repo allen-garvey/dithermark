@@ -209,20 +209,20 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
     //hue is circular, so we need to wrap the values around to find the lowest possible range
     function hueUniformPopularity(popularityMapObject, numColors){
         const numDistinctValues = 360;
-        //double the popularity map, since hues wrap around
+        //we need to search in double the popularity map, since hues wrap around
         let popularityMap = popularityMapObject.map;
         const length = popularityMap.length;
         const doubledLength = length * 2;
-        let doubledPopularityMap = new Float32Array(doubledLength);
-        doubledPopularityMap.set(popularityMap);
-        doubledPopularityMap.set(popularityMap, length);
 
         //find the longest sequence of 0 values to find min range
         let longestSequenceStartIndex = 0;
         let longestSequenceLength = 0;
 
-        for(let i=0,currentSequenceStartIndex=0, currentSequenceLength=0;i<doubledLength;i++){
-            const value = doubledPopularityMap[i];
+        for(let i=0, normalizedIndex=0,currentSequenceStartIndex=0, currentSequenceLength=0;i<doubledLength;i++,normalizedIndex++){
+            if(normalizedIndex === length){
+                normalizedIndex = 0;
+            }
+            const value = popularityMap[normalizedIndex];
             if(value === 0){
                 if(currentSequenceLength > 0){
                     currentSequenceLength++;
