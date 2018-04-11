@@ -208,52 +208,63 @@ App.OptimizePalette = (function(Pixel, PixelMath, ColorQuantizationModes){
 
     //hue is circular, so we need to wrap the values around to find the lowest possible range
     function hueUniformPopularity(popularityMapObject, numColors){
-        const upperValueLimit = 359;
+        const numDistinctValues = 360;
         //double the popularity map, since hues wrap around
         let popularityMap = popularityMapObject.map;
         const length = popularityMap.length;
-        let doubledPopularityMap = new Float32Array(length * 2);
+        const doubledLength = length * 2;
+        let doubledPopularityMap = new Float32Array(doubledLength);
         doubledPopularityMap.set(popularityMap);
         doubledPopularityMap.set(popularityMap, length);
 
-        let minRange = Infinity;
-        let offset = 0;
-        let globalMinValue = 0;
-        let globalMaxValue = 0;
+        //find the longest sequence of 0 values to find min range
+        let longestSequenceStartIndex = 0;
+        let longestSequenceLength = 0;
 
-        for(let i=0;i<length;i++){
-            let shiftedPopularityMap = doubledPopularityMap.subarray(i, i+length);
-            let minValue = findMin(shiftedPopularityMap);
-            let maxValue = findMax(shiftedPopularityMap);
-            let range = maxValue - minValue;
-            if(range < minRange){
-                minRange = range;
-                offset = i;
-                globalMinValue = minValue;
-                globalMaxValue = maxValue;
+        for(let i=0,currentSequenceStartIndex=0, currentSequenceLength=0;i<doubledLength;i++){
+            const value = doubledPopularityMap[i];
+            if(value === 0){
+                if(currentSequenceLength > 0){
+                    currentSequenceLength++;
+                }
+                else{
+                    currentSequenceStartIndex = i;
+                    currentSequenceLength = 1;
+                }
+            }
+            else if(currentSequenceLength > 0){
+                if(currentSequenceLength > longestSequenceLength){
+                    longestSequenceLength = currentSequenceLength;
+                    longestSequenceStartIndex = currentSequenceStartIndex;
+                }
+                currentSequenceLength = 0;
             }
         }
-        console.log(`hue uniform distribution- minRange is ${minRange} offset is ${offset}`);
-        let baseUniformDistribution = uniformDistribution(globalMinValue, globalMaxValue, numColors);
+        const normalizedSequenceLength = Math.min(longestSequenceLength, numDistinctValues);
+        const startIndex = longestSequenceStartIndex + normalizedSequenceLength;
+        const endIndex = longestSequenceStartIndex + numDistinctValues - 1;
+        console.log(`hue uniform distribution2- minRange is ${endIndex - startIndex} offset is ${startIndex} end index is ${endIndex}`);
+        const isCircular = endIndex - startIndex + 1 === numDistinctValues;
+        let baseUniformDistribution = uniformDistribution(startIndex, endIndex, numColors, isCircular);
         //we now have to shift based on offset, and sort values
         let ret = new Uint16Array(baseUniformDistribution.length);
         let retIndex = 0;
-        console.log('hue uniform base distribution');
-        console.log(baseUniformDistribution);
+        // console.log('hue uniform2 base distribution');
+        // console.log(baseUniformDistribution);
         // const valueOffset = offset + globalMinValue;
         baseUniformDistribution.forEach((value, i)=>{
-            let normalizedValue = value + offset;
-            if(normalizedValue >= upperValueLimit){
-                ret[retIndex] = normalizedValue - upperValueLimit;
+            let normalizedValue = value;
+            if(normalizedValue >= numDistinctValues){
+                ret[retIndex] = normalizedValue - numDistinctValues;
                 retIndex++;
             }
         });
         const itemsLeft = ret.length - retIndex;
         for(let i=0;i<itemsLeft;i++,retIndex++){
-            ret[retIndex] = baseUniformDistribution[i] + offset;
+            ret[retIndex] = baseUniformDistribution[i];
         }
-        console.log('hue uniform distribution');
-        console.log(ret);
+        // console.log('hue uniform distribution2');
+        // console.log(ret);
         return ret;
     }
 
