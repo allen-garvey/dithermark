@@ -79,7 +79,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     function popularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         let retColors = new Uint8Array(numColors * 3);
         let colorsSet = new Set();
-        const fraction = pixels.length / (numColors * 4);
         let pixelHashFunc = pixelHash;
         if(colorQuantization.key.startsWith('PERCEPTUAL')){
             pixelHashFunc = perceptualPixelHash;
@@ -89,6 +88,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         }
         //remove transparent pixels
         let pixelsFiltered = Util.filterTransparentPixels(pixels);
+        const fraction = pixelsFiltered.length / (numColors * 4);
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
             const endIndex = Math.round(i * fraction) * 4;
