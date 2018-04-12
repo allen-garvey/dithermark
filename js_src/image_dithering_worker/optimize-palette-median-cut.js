@@ -1,22 +1,7 @@
 /**
  * Color quantization vanilla median cut algorithm
 */
-App.OptimizePaletteMedianCut = (function(PixelMath){
-    /**
-     * Median cut stuff
-    */
-    function createMedianCutArray(pixels){
-        let ret = [];
-        for(let i=0;i<pixels.length;i+=4){
-            //ignore transparent pixels
-            if(pixels[i+3] > 0){
-                //don't save alpha value, since we don't need it
-                ret.push(pixels.subarray(i, i+3));
-            }
-        }
-        return ret;
-    }
-
+App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     function findLongestAxis(pixels){
         let rMin = 256;
         let rMax = -1;
@@ -134,7 +119,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath){
     function medianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
         //get number of times we need to divide pixels in half and sort
         const numCuts = Math.ceil(Math.log2(numColors));
-        let pixelArray = createMedianCutArray(pixels);
+        let pixelArray = Util.createPixelArray(pixels);
 
         let divisions = 1;
         for(let i=0;i<numCuts;i++){
@@ -162,4 +147,4 @@ App.OptimizePaletteMedianCut = (function(PixelMath){
     return {
         medianCut,
     };
-})(App.PixelMath);
+})(App.PixelMath, App.OptimizePaletteUtil);
