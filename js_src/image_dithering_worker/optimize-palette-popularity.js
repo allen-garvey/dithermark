@@ -1,7 +1,7 @@
 /**
  * Color quantization popularity algorithms
 */
-App.OptimizePalettePopularity = (function(PixelMath){
+App.OptimizePalettePopularity = (function(PixelMath, Util){
     function rotatePixels90Degrees(pixels, imageWidth, imageHeight){
         //not really necessary to copy alpha values as well, but this complicates
         //the logic for the horizontal case, so we will leave them in
@@ -87,10 +87,12 @@ App.OptimizePalettePopularity = (function(PixelMath){
         if(colorQuantization.key.endsWith('VERTICAL')){
             pixels = rotatePixels90Degrees(pixels, imageWidth, imageHeight);
         }
+        //remove transparent pixels
+        let pixelsFiltered = Util.filterTransparentPixels(pixels);
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
             const endIndex = Math.round(i * fraction) * 4;
-            const pixelSubarray = pixels.subarray(previousEndIndex, endIndex);
+            const pixelSubarray = pixelsFiltered.subarray(previousEndIndex, endIndex);
             let popularityMap = createPopularityMap(pixelSubarray, pixelHashFunc);
             let sortedValues = [...popularityMap.keys()].sort((a, b)=>{
                 return popularityMap.get(b) - popularityMap.get(a);
@@ -106,4 +108,4 @@ App.OptimizePalettePopularity = (function(PixelMath){
     return {
         popularity,
     };
-})(App.PixelMath);
+})(App.PixelMath, App.OptimizePaletteUtil);
