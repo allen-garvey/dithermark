@@ -545,5 +545,6 @@ App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut){
        uniform: uniformQuantization,
        medianCut: MedianCut.medianCut,
        popularity: Popularity.popularity,
+       lightnessPopularity: Popularity.lightnessPopularity,
     };
 })(App.Pixel, App.PixelMath, App.OptimizePalettePopularity, App.OptimizePaletteMedianCut);

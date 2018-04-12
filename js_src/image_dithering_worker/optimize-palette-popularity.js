@@ -76,6 +76,8 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         colors[startIndex+2] = parseInt(colorSplit[2]);
     }
 
+    //divides an image into numColors horizontal or vertical strips, and finds the most
+    //popular color in each strip
     function popularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         let retColors = new Uint8Array(numColors * 3);
         let colorsSet = new Set();
@@ -92,6 +94,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
             const endIndex = Math.round(i * fraction) * 4;
+            //don't need to check if endIndex is too large, since subarray will just return as much as it can if it is
             const pixelSubarray = pixelsFiltered.subarray(previousEndIndex, endIndex);
             let popularityMap = createPopularityMap(pixelSubarray, pixelHashFunc);
             let sortedValues = [...popularityMap.keys()].sort((a, b)=>{
@@ -105,7 +108,40 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return retColors;
     }
 
+    //Divides an image into numColors lightness zones, and finds the most popular color in each zone
+    function lightnessPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        let retColors = new Uint8Array(numColors * 3);
+        let colorsSet = new Set();
+        let pixelHashFunc = pixelHash;
+        if(colorQuantization.key.startsWith('PERCEPTUAL')){
+            pixelHashFunc = perceptualPixelHash;
+        }
+        let pixelArray = Util.createPixelArray(pixels).sort((a, b)=>{
+            return PixelMath.lightness(a) - PixelMath.lightness(b);
+        });
+
+        const fraction = pixelArray.length / (numColors * 4);
+
+        for(let i=1,previousEndIndex=0;i<=numColors;i++){
+            const endIndex = Math.min(Math.round(i * fraction) * 4, pixelArray.length);
+            let popularityMap = new Map();
+            for(let j=previousEndIndex;j<endIndex;j++){
+                let pixel = pixelArray[j];
+                incrementMap(popularityMap, pixelHashFunc(pixel[0], pixel[1], pixel[2]));
+            }
+            let sortedValues = [...popularityMap.keys()].sort((a, b)=>{
+                return popularityMap.get(b) - popularityMap.get(a);
+            });
+            let colorKey = getNewUniqueValueOrDefault(colorsSet, sortedValues);
+            addColorToColors(colorKey, retColors, i-1);
+
+            previousEndIndex = endIndex;
+        }
+        return retColors;
+    }
+
     return {
         popularity,
+        lightnessPopularity,
     };
 })(App.PixelMath, App.OptimizePaletteUtil);
