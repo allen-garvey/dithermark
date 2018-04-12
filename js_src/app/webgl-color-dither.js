@@ -1,5 +1,5 @@
 
-App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer){
+App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer, Constants){
     const CLOSEST_COLOR = 0;
     const RANDOM_CLOSEST_COLOR = 1;
     const ORDERED_DITHER = 2;
@@ -26,15 +26,15 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     */
     function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames){
         customUniformNames = customUniformNames || [];
-        customUniformNames = customUniformNames.concat(['u_colors_array', 'u_colors_array_length']);
+        customUniformNames = customUniformNames.concat(['u_colors_array', 'u_colors_array_length', 'u_dither_r_coefficient']);
         
         var drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
         
         return function(gl, tex, texWidth, texHeight, colorsArray, colorsArrayLength, setCustomUniformsFunc){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
                 gl.uniform1i(customUniformLocations['u_colors_array_length'], colorsArrayLength);
-            
                 gl.uniform3fv(customUniformLocations['u_colors_array'], colorsArray);
+                gl.uniform1f(customUniformLocations['u_dither_r_coefficient'], Constants.ditherRCoefficient(colorsArrayLength, true));
                 
                 //set custom uniform values
                 if(setCustomUniformsFunc){
@@ -222,4 +222,4 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         aDitherXor2: createArithmeticDither(ADITHER_XOR2),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3),
     };    
-})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix);
+})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.Constants);

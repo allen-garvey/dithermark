@@ -36,14 +36,6 @@
     //color dither stuff
     define('COLOR_DITHER_MAX_COLORS', 12);
 
-    //based on the value of r from https://en.wikipedia.org/wiki/Ordered_dithering
-    //should be between 0.0 and 1.0
-    //values towards 0.0 tend to look better when there are more colors or the output color
-    //palette is narrower, while smaller colors tend to increase contrast and look better
-    //when the output palette has 2 or similar colors
-    //(note the value is a string so leading 0 is not chopped off)
-    define('COLOR_DITHER_R_COEFFICIENT', '0.5');
-
     //whether or not print color palette button is shown
     //(useful for when creating new color palettes)
     define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);

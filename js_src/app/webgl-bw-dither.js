@@ -1,5 +1,5 @@
 
-App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer){
+App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants){
     const THRESHOLD = 1;
     const RANDOM_THRESHOLD = 2;
     const ORDERED_DITHER = 3;
@@ -17,18 +17,17 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer){
     * Actual webgl function creation
     */
     function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames = []){
-        customUniformNames = customUniformNames.concat(['u_threshold', 'u_black_pixel', 'u_white_pixel']);
+        customUniformNames = customUniformNames.concat(['u_threshold', 'u_black_pixel', 'u_white_pixel', 'u_dither_r_coefficient']);
         
         var drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
         
         return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, setCustomUniformsFunc){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
-                //set threshold after converting to float
+                //initialize uniforms
                 gl.uniform1f(customUniformLocations['u_threshold'], threshold / 255);
-            
-                //set pixels
                 gl.uniform3fv(customUniformLocations['u_black_pixel'], WebGl.pixelToVec(blackPixel));
                 gl.uniform3fv(customUniformLocations['u_white_pixel'], WebGl.pixelToVec(whitePixel));
+                gl.uniform1f(customUniformLocations['u_dither_r_coefficient'], Constants.ditherRCoefficient(2, true));
                 
                 //set custom uniform values
                 if(setCustomUniformsFunc){
@@ -177,4 +176,4 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer){
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
-})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix);
+})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.Constants);

@@ -6,6 +6,7 @@
     uniform float u_threshold;
     uniform vec3 u_black_pixel;
     uniform vec3 u_white_pixel;
+    uniform float u_dither_r_coefficient;
     
     #{{customDeclaration}}
     
@@ -46,11 +47,11 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
-    bool shouldUseBlackPixel = pixelLightness + rand(v_texcoord.xy*u_random_seed.xy) - 0.5 < u_threshold;
+    bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5) < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-body">
-    bool shouldUseBlackPixel = pixelLightness + arithmeticDither(v_texcoord, pixel.rgb) - 0.5 < u_threshold;
+    bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (arithmeticDither(v_texcoord, pixel.rgb) - 0.5) < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-declaration">
@@ -62,7 +63,7 @@
    vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
    float bayerValue = bayerPixel.r;
-   bool shouldUseBlackPixel = pixelLightness + bayerValue - 0.5 < u_threshold;
+   bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (bayerValue - 0.5) < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
