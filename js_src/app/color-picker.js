@@ -69,7 +69,7 @@ App.ColorPicker = (function(Pixel){
             {title: 'Shamrock', colors: ['#a9a0a8', '#044040', '#c3b448', '#dcb3fd', '#19c778', '#c4f3d1', '#56e22f', '#cd814b', '#23afed', '#617b2f', '#17e681', '#1d9c4b']},
             {title: 'Sandcastle', colors: ['#111d84', '#daf9fe', '#db6b1a', '#4377d8', '#29106d', '#f8d792', '#c7c0d3', '#242626', '#dddb75', '#9ce4ca', '#426f50', '#fde0c1']},
             {title: 'Goldust', colors: ['#060606', '#f0f1ec', '#648eae', '#a69ae2', '#905b01', '#1e2649', '#e9e431', '#46a497', '#b66749', '#afbee7', '#e1e7c3', '#ad4f01']},
-            {title: 'Bronze', colors: ['#648eae', '#ece50a', '#a69ae2', '#845320', '#35a495', '#c0a955', '#1e2649', '#afbee7', '#e1e7c3', '#ad4f01', '#f0f1ec', '#060606']},
+            {title: 'Brass', colors: ['#648eae', '#ece50a', '#a69ae2', '#845320', '#35a495', '#c0a955', '#1e2649', '#afbee7', '#e1e7c3', '#ad4f01', '#f0f1ec', '#060606']},
             {title: 'Purple Haze', colors: ['#e7bc66', '#f96226', '#82ded0', '#c8b983', '#96192d', '#7aa8d5', '#a503d1', '#3f066f', '#57043a', '#de8786', '#db516a', '#738199']},
             {title: 'Purple Haze 2', colors: ['#9b656c', '#a201ef', '#a30528', '#19248d', '#d9eb89', '#96c6c5', '#9b1d2f', '#053646', '#6f6cf1', '#ec23ec', '#1332a2', '#b530fe']},
             {title: 'Neon', colors: ['#a101a9', '#a9a0f3', '#2c1a5e', '#8f269c', '#69ba2d', '#faa5cc', '#c5967b', '#feb180', '#51e00f', '#26c6c6', '#9ffd5d', '#bd1870']},
