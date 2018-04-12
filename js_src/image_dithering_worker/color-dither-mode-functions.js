@@ -61,20 +61,17 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
      * Functions for error prop dither
     */
 
-    function incrementClampedValue(value, amount, valueMax, valueMin=0){
-        const adjustedValue = value + amount;
-        if(adjustedValue > valueMax){
+    //returns value clamped between 0 and valueMax, inclusive
+    function clamp(value, valueMax=255){
+        const valueMin = 0;
+        if(value > valueMax){
             return valueMax;
         }
-        if(adjustedValue < valueMin){
+        else if(value < valueMin){
             return valueMin;
         }
 
-        return adjustedValue;
-    }
-
-    function incrementUInt8Value(value, amount){
-        return incrementClampedValue(value, amount, 255);
+        return value;
     }
 
     function incrementHue(hue, incrementValues){
@@ -84,20 +81,20 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     function incrementHsl(hslValues, incrementValues){
         return [
             incrementHue(hslValues[0], incrementValues),
-            incrementClampedValue(hslValues[1], incrementValues[1], 100),
-            incrementUInt8Value(hslValues[2], incrementValues[2]),
+            clamp(hslValues[1] + incrementValues[1], 100),
+            clamp(hslValues[2] + incrementValues[2]),
         ];
     }
 
     function incrementLightness(lightnessValue, incrementValues){
-        return incrementUInt8Value(lightnessValue, incrementValues[0]);
+        return clamp(lightnessValue + incrementValues[0]);
     }
 
     function incrementRgb(rgbValue, incrementValues){
         return [
-            incrementUInt8Value(rgbValue[0], incrementValues[0]),
-            incrementUInt8Value(rgbValue[1], incrementValues[1]),
-            incrementUInt8Value(rgbValue[2], incrementValues[2]),
+            clamp(rgbValue[0] + incrementValues[0]),
+            clamp(rgbValue[1] + incrementValues[1]),
+            clamp(rgbValue[2] + incrementValues[2]),
         ];
     }
 
