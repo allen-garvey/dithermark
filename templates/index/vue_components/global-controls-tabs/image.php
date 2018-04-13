@@ -4,7 +4,7 @@
     </label>
 </div>
 <div class="spread-content">
-    <label>Pixelate image
+    <label>Pixelate
         <select v-model.number="selectedPixelateImageZoom">
             <option v-for="(pixelateZoom, index) in pixelateImageZooms" v-bind:value="index">{{pixelateZoom.title}}</option>
         </select>
