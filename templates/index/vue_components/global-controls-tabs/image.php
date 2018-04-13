@@ -3,13 +3,11 @@
         <input type="checkbox" v-model="showOriginalImage"/>
     </label>
 </div>
-<div>
+<div class="spread-content">
     <label>Pixelate image
-        <select v-model.number="pixelateImageZoom">
-            <option value="100">None</option>
-            <option value="50">Medium</option>
-            <option value="25">High</option>
-            <option value="15">Ultra</option>
+        <select v-model.number="selectedPixelateImageZoom">
+            <option v-for="(pixelateZoom, index) in pixelateImageZooms" v-bind:value="index">{{pixelateZoom.title}}</option>
         </select>
     </label>
+    <?php IndexView::cyclePropertyList('selectedPixelateImageZoom', 'pixelateImageZooms', 'pixelation value'); ?>
 </div>

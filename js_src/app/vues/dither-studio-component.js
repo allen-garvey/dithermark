@@ -61,7 +61,7 @@
                 isWebglEnabled: false,
                 zoom: 100,
                 zoomDisplay: 100, //this is so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed
-                pixelateImageZoom: 100,
+                selectedPixelateImageZoom: 0,
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
@@ -109,6 +109,18 @@
                 }
 
                 return tabs;
+            },
+            pixelateImageZooms: function(){
+                return [
+                    {title: 'None', value: 100},
+                    {title: 'Low', value: 50},
+                    {title: 'Medium', value: 25},
+                    {title: 'High', value: 15},
+                    {title: 'Ultra', value: 10},
+                ];
+            },
+            pixelateImageZoom: function(){
+                return this.pixelateImageZooms[this.selectedPixelateImageZoom].value;
             },
         },
         watch: {
