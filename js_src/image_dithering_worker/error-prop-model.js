@@ -152,7 +152,7 @@ App.ErrorPropModel = (function(){
             new PropagationValue(0, 2, error1),
         ];
     }
-
+    //based on atkinson, but with further reduced bleed
     function garvey(){
         const error1 = 1 / 16;
         const error2 = error1 * 2;
@@ -161,11 +161,8 @@ App.ErrorPropModel = (function(){
             new PropagationValue(1, 0, error2),
             new PropagationValue(2, 0, error1),
 
-            new PropagationValue(-1, 1, error1),
             new PropagationValue(0, 1, error2),
             new PropagationValue(1, 1, error1),
-
-            new PropagationValue(0, 2, error1),
         ];
     }
 
