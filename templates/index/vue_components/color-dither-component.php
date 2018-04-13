@@ -7,10 +7,7 @@
                     </optgroup>
             </select>
         </label>
-        <div>
-            <button class="shuffle-color-palette-button" title="Previous algorithm" @click="cyclePropertyList('selectedDitherAlgorithmIndex', -1, ditherAlgorithms.length)"><</button>
-            <button class="shuffle-color-palette-button" title="Next algorithm" @click="cyclePropertyList('selectedDitherAlgorithmIndex', 1, ditherAlgorithms.length)">></button>
-        </div>
+        <?php IndexView::cyclePropertyList('selectedDitherAlgorithmIndex', 'ditherAlgorithms', 'algorithm'); ?>
     </div>
     <div>
         <button v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
@@ -28,10 +25,7 @@
                 </template>
             </select>
         </label>
-        <div>
-            <button class="shuffle-color-palette-button" title="Previous color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', -1, colorDitherModes.length)"><</button>
-            <button class="shuffle-color-palette-button" title="Next color mode" @click="cyclePropertyList('selectedColorDitherModeIndex', 1, colorDitherModes.length)">></button>
-        </div>
+        <?php IndexView::cyclePropertyList('selectedColorDitherModeIndex', 'colorDitherModes', 'color mode'); ?>
     </div>
     <div class="spread-content">
         <label>Color palette
@@ -39,10 +33,7 @@
                 <option v-for="(palette, index) in palettes" v-bind:value="index">{{palette.title}}</option>
             </select>
         </label>
-        <div>
-        <button class="shuffle-color-palette-button" title="Previous color palette" @click="cyclePropertyList('selectedPaletteIndex', -1, palettes.length, 1)"><</button>
-        <button class="shuffle-color-palette-button" title="Next color palette" @click="cyclePropertyList('selectedPaletteIndex', 1, palettes.length, 1)">></button>
-        </div>
+        <?php IndexView::cyclePropertyList('selectedPaletteIndex', 'palettes', 'color palette', 1); ?>
     </div>
     <div class="color-dither-number-of-colors-container">
         <label for="color_dither_num_colors_input">Color count</label>
@@ -83,10 +74,7 @@
                     </template>
                 </select>
             </label>
-            <div>
-                <button class="shuffle-color-palette-button" title="Previous optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', -1, colorQuantizationModes.length)"><</button>
-                <button class="shuffle-color-palette-button" title="Next optimize palette algorithm" @click="cyclePropertyList('selectedColorQuantizationModeIndex', 1, colorQuantizationModes.length)">></button>
-            </div>
+            <?php IndexView::cyclePropertyList('selectedColorQuantizationModeIndex', 'colorQuantizationModes', 'optimize palette algorithm'); ?>
             <button @click="optimizePalette" v-bind:disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
         </div>
     </fieldset>

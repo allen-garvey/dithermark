@@ -7,10 +7,7 @@
                 </optgroup>
             </select>
         </label>
-        <div>
-            <button class="shuffle-color-palette-button" title="Previous algorithm" @click="cyclePropertyList('selectedDitherAlgorithmIndex', -1, ditherAlgorithms.length)"><</button>
-            <button class="shuffle-color-palette-button" title="Next algorithm" @click="cyclePropertyList('selectedDitherAlgorithmIndex', 1, ditherAlgorithms.length)">></button>
-        </div>
+        <?php IndexView::cyclePropertyList('selectedDitherAlgorithmIndex', 'ditherAlgorithms', 'algorithm'); ?>
     </div>
     <div>
         <label>

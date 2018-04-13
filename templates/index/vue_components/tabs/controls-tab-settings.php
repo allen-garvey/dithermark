@@ -8,10 +8,7 @@
                 </template>
             </select>
         </label>
-        <div>
-            <button class="shuffle-color-palette-button" title="Previous theme" @click="cyclePropertyList('currentEditorThemeIndex', -1, editorThemes.length)"><</button>
-            <button class="shuffle-color-palette-button" title="Next theme" @click="cyclePropertyList('currentEditorThemeIndex', 1, editorThemes.length)">></button>
-        </div>
+        <?php IndexView::cyclePropertyList('currentEditorThemeIndex', 'editorThemes', 'theme'); ?>
     </div>
 </fieldset>
 <fieldset>
