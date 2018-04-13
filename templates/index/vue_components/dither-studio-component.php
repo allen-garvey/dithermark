@@ -7,9 +7,9 @@
                         <div class="tab" v-bind:class="{active: activeControlsTab === index, disabled: tab.isDisabled}" v-on:click="setActiveControlsTab(index, tab.isDisabled)">{{tab.name}}</div>
                     </template>
                 </div>
-                <?php foreach(['open', 'image', 'settings', 'export'] as $index => $templateFileSuffix): ?>
+                <?php foreach(['open', 'image', 'settings', 'export'] as $index => $templateName): ?>
                     <div class="controls-tab-container" v-show="activeControlsTab === <?= $index; ?>">
-                        <?php require(TEMPLATES_TABS_PATH.'controls-tab-'.$templateFileSuffix.'.php'); ?>
+                        <?php require(TEMPLATES_GLOBAL_CONTROLS_TABS_PATH.$templateName.'.php'); ?>
                     </div>
                 <?php endforeach; ?>
             </div>
