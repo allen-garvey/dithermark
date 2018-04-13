@@ -9,6 +9,16 @@
     var saveImageCanvas;
     
     var sourceWebglTexture;
+
+    //imageDimensions = height * width
+    //percentage is 0-100
+    //returns percentage 0-100
+    function calculatePixelationZoom(imageDimensions, percentage){
+        const percentageFraction = percentage / 100;
+        //based on 720 x 960 image
+        const baseDimensions = 691200 * percentageFraction;
+        return Math.ceil(baseDimensions / imageDimensions * 100);
+    }
     
     var app = Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
@@ -111,12 +121,17 @@
                 return tabs;
             },
             pixelateImageZooms: function(){
+                if(!this.isImageLoaded){
+                    return [{title: 'None', value: 100}];
+                }
+                const dimensions = this.loadedImage.height * this.loadedImage.width;
                 return [
                     {title: 'None', value: 100},
-                    {title: 'Low', value: 50},
-                    {title: 'Medium', value: 25},
-                    {title: 'High', value: 15},
-                    {title: 'Ultra', value: 10},
+                    {title: 'Low', value: calculatePixelationZoom(dimensions, 50)},
+                    {title: 'Medium', value: calculatePixelationZoom(dimensions, 25)},
+                    {title: 'High', value: calculatePixelationZoom(dimensions, 15)},
+                    {title: 'Ultra', value: calculatePixelationZoom(dimensions, 10)},
+                    {title: 'Extreme', value: calculatePixelationZoom(dimensions, 5)},
                 ];
             },
             pixelateImageZoom: function(){
