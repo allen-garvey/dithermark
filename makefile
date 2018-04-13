@@ -4,7 +4,10 @@ HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 JS_APP_SRC=$(shell find ./js_src/app -type f -name '*.js')
 JS_WORKER_SRC=$(shell find ./js_src/image_dithering_worker -type f -name '*.js')
 JS_SHARED_SRC=$(shell find ./js_src/shared -type f -name '*.js')
-JS_CONFIG=$(shell find ./inc -type f -name '*.php')
+
+PHP_MODELS=$(shell find ./inc/models -type f -name '*.php')
+PHP_VIEWS=$(shell find ./inc/views -type f -name '*.php')
+PHP_CONFIG=inc/config.php
 
 JS_APP_TEMPLATE=templates/app.js.php
 JS_WORKER_TEMPLATE=templates/worker.js.php
@@ -34,16 +37,16 @@ $(JS_OUTPUT_DIR):
 $(VUE_OUTPUT): $(VUE_SRC)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
 
-$(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_APP_TEMPLATE)
+$(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_APP_TEMPLATE)
 	php $(JS_APP_TEMPLATE) > $(JS_APP_OUTPUT)
 
-$(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_WORKER_TEMPLATE)
+$(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_WORKER_TEMPLATE)
 	php $(JS_WORKER_TEMPLATE) > $(JS_WORKER_OUTPUT)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	npm run gulp
 
-$(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') inc/config.php
+$(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') $(PHP_CONFIG) $(PHP_VIEWS)
 	php templates/index/index.php > $(HTML_INDEX)
 	
 watch_js:
