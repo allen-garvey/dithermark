@@ -121,18 +121,16 @@
                 return tabs;
             },
             pixelateImageZooms: function(){
-                if(!this.isImageLoaded){
-                    return [{title: 'None', value: 100}];
-                }
-                const dimensions = this.loadedImage.height * this.loadedImage.width;
-                return [
-                    {title: 'None', value: 100},
-                    {title: 'Low', value: calculatePixelationZoom(dimensions, 50)},
-                    {title: 'Medium', value: calculatePixelationZoom(dimensions, 25)},
-                    {title: 'High', value: calculatePixelationZoom(dimensions, 15)},
-                    {title: 'Ultra', value: calculatePixelationZoom(dimensions, 10)},
-                    {title: 'Extreme', value: calculatePixelationZoom(dimensions, 5)},
-                ];
+                const dimensions = this.isImageLoaded ? this.loadedImage.height * this.loadedImage.width : 0;
+                const zooms = [100, 50, 25, 20, 15, 12, 10, 7, 5, 2];
+
+                return zooms.map((zoom, i)=>{
+                    const title = i===0 ? 'None': i;
+                    return {
+                        title,
+                        value: calculatePixelationZoom(dimensions, zoom),
+                    };
+                });
             },
             pixelateImageZoom: function(){
                 return this.pixelateImageZooms[this.selectedPixelateImageZoom].value;
