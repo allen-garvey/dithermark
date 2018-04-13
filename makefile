@@ -4,7 +4,7 @@ HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 JS_APP_SRC=$(shell find ./js_src/app -type f -name '*.js')
 JS_WORKER_SRC=$(shell find ./js_src/image_dithering_worker -type f -name '*.js')
 JS_SHARED_SRC=$(shell find ./js_src/shared -type f -name '*.js')
-JS_CONFIG=$(shell find ./config -type f -name '*.php')
+JS_CONFIG=$(shell find ./inc -type f -name '*.php')
 
 JS_APP_TEMPLATE=templates/app.js.php
 JS_WORKER_TEMPLATE=templates/worker.js.php
@@ -43,7 +43,7 @@ $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(JS_CONFIG) $(JS_WORKER_
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	npm run gulp
 
-$(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') config/config.php
+$(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') inc/config.php
 	php templates/index/index.php > $(HTML_INDEX)
 	
 watch_js:

@@ -3,7 +3,9 @@
     * File path constants
     */
     define('ROOT_PATH', dirname(__FILE__, 2).DIRECTORY_SEPARATOR);
-    define('CONFIG_PATH', ROOT_PATH.'config'.DIRECTORY_SEPARATOR);
+    define('INC_PATH', ROOT_PATH.'inc'.DIRECTORY_SEPARATOR);
+    define('VIEWS_PATH', INC_PATH.'views'.DIRECTORY_SEPARATOR);
+    define('MODELS_PATH', INC_PATH.'models'.DIRECTORY_SEPARATOR);
     
     //php templates paths
     define('TEMPLATES_PATH', ROOT_PATH.'templates'.DIRECTORY_SEPARATOR);

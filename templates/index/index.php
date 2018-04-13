@@ -1,5 +1,5 @@
 <?php
-    require_once('config'.DIRECTORY_SEPARATOR.'config.php');
+    require_once('inc'.DIRECTORY_SEPARATOR.'config.php');
 ?>
 
 <!DOCTYPE html>
