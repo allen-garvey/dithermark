@@ -16,12 +16,17 @@
 
 ## Getting Started
 
-* 
-* 
+* Clone or download this repository
+* Open a command line and `cd` into the project directory
+* Type `make install` to setup the project for the first time
+* Type `make` to compile the project
+* (If you run into any errors at this point, first check that you have all the needed dependencies for the project. Then type `make clean`, `make install`, and `make` again, and see if that fixes your problem).
+* Type `npm start` to start a local development server, after which you should be able to view the site at [localhost:3000](http://localhost:3000)
 
-## Caveats
+## Know Issues
 
-* A `UInt16Array` is used to transmit image width and height information to webworkers, meaning that images with a width or height greater than 65535 pixels will not be processed correctly
+* If the image size is greater than browser WebGL context paramater `MAX_TEXTURE_SIZE`, only the lower left corner of the image will be dithered
+* A `UInt16Array` is used to transmit image width and height information to webworkers, meaning that images with a width or height greater than 65535 pixels in either dimension will not be processed correctly
 
 ## License
 
