@@ -26,7 +26,12 @@ CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
 all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
 
-setup: $(PUBLIC_HTML_DIR) $(JS_OUTPUT_DIR)
+install: $(PUBLIC_HTML_DIR) $(JS_OUTPUT_DIR)
+	npm install
+
+#don't use PUBLIC_HTML_DIR variable, to guard against it becoming unset
+clean:
+	rm -rf ./public_html
 
 $(PUBLIC_HTML_DIR):
 	mkdir -p $(PUBLIC_HTML_DIR)
