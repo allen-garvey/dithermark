@@ -108,17 +108,15 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return retColors;
     }
 
-    //Divides an image into numColors lightness zones, and finds the most popular color in each zone
-    function lightnessPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+    //Divides an image into zones based on sort function, and finds the most popular color in each zome
+    function sortedPopularity(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelSortFunc){
         let retColors = new Uint8Array(numColors * 3);
         let colorsSet = new Set();
         let pixelHashFunc = pixelHash;
-        if(colorQuantization.key.startsWith('PERCEPTUAL')){
+        if(isPerceptual){
             pixelHashFunc = perceptualPixelHash;
         }
-        let pixelArray = Util.createPixelArray(pixels).sort((a, b)=>{
-            return PixelMath.lightness(a) - PixelMath.lightness(b);
-        });
+        let pixelArray = Util.createPixelArray(pixels).sort(pixelSortFunc);
 
         const fraction = pixelArray.length / (numColors * 4);
 
@@ -140,8 +138,27 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return retColors;
     }
 
+    //Divides an image into numColors lightness zones, and finds the most popular color in each zone
+    function lightnessPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.key.startsWith('PERCEPTUAL'), (a, b)=>{
+            return PixelMath.lightness(a) - PixelMath.lightness(b);
+        });
+    }
+
+    //Divides an image into numColors hue zones, and finds the most popular color in each zone
+    function huePopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.key.startsWith('PERCEPTUAL'), (a, b)=>{
+            const hueDiff = PixelMath.hue(a) - PixelMath.hue(b); 
+            if(hueDiff === 0){
+                return PixelMath.lightness(a) - PixelMath.lightness(b);
+            }
+            return hueDiff;
+        });
+    }
+
     return {
         popularity,
         lightnessPopularity,
+        huePopularity,
     };
 })(App.PixelMath, App.OptimizePaletteUtil);

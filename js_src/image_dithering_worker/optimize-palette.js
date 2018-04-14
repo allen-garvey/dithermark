@@ -546,5 +546,6 @@ App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut){
        medianCut: MedianCut.medianCut,
        popularity: Popularity.popularity,
        lightnessPopularity: Popularity.lightnessPopularity,
+       huePopularity: Popularity.huePopularity,
     };
 })(App.Pixel, App.PixelMath, App.OptimizePalettePopularity, App.OptimizePaletteMedianCut);
