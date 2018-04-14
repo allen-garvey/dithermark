@@ -22,16 +22,23 @@
     
     var app = Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
-        mounted: function(){
+        created: function(){
+            this.currentEditorThemeIndex = 0;
+            
+            fileInput.addEventListener('change', (e)=>{
+                Fs.openImageFile(e, this.loadImage);
+                fileInput.value = null;
+            }, false);
+
             WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
                 ditherWorkers = workers;
                 ditherWorkers.forEach((ditherWorker)=>{
                     ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
                  });
-                 this.areWorkersInitialized = true;
             });
-            
-            let refs = this.$refs;
+        },
+        mounted: function(){
+            const refs = this.$refs;
             originalImageCanvas = Canvas.create(refs.originalImageCanvas);
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
@@ -43,19 +50,12 @@
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             saveImageCanvas = Canvas.create(refs.saveImageCanvas);
             
-            this.currentEditorThemeIndex = 0;
             //check for webgl support
             this.isWebglSupported = !!this.transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported;
-
-            fileInput.addEventListener('change', (e)=>{
-                Fs.openImageFile(e, this.loadImage);
-                fileInput.value = null;
-            }, false);  
         },
         data: function(){
             return {
-                areWorkersInitialized: false,
                 activeDitherTab: 1,
                 activeControlsTab: 0,
                 sourceCanvas: null,
