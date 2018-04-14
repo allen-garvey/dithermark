@@ -20,6 +20,7 @@
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
             this.selectedPaletteIndex = 1;
+            this.numColors = this.numColorsMax;
         },
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
@@ -37,7 +38,7 @@
                 draggedIndex: null,
                 palettes: Palettes.get(),
                 selectedPaletteIndex: null,
-                numColors: 12,
+                numColors: null,
                 numColorsMin: 2,
                 numColorsMax: Constants.colorDitherMaxColors,
                 colorDitherModes: [...ColorDitherModes.values()],
