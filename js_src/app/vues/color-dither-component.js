@@ -68,6 +68,9 @@
                 const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
                 return this.pendingColorQuantizations[key];
             },
+            currentPalette: function(){
+                return this.palettes[this.selectedPaletteIndex];
+            },
         },
         watch: {
             isLivePreviewEnabled: function(newValue){
@@ -113,16 +116,14 @@
                 if(this.isLivePreviewEnabled && !ColorPicker.areColorArraysIdentical(newValue.slice(0, this.numColors), oldValue.slice(0, this.numColors))){
                     this.ditherImageWithSelectedAlgorithm();
                 }
-                let currentPalette = this.palettes[this.selectedPaletteIndex];
                 //set palette to custom if a color is changed
-                if(!currentPalette.isCustom && !ColorPicker.areColorArraysIdentical(this.colors, currentPalette.colors)){
+                if(!this.currentPalette.isCustom && !ColorPicker.areColorArraysIdentical(this.colors, this.currentPalette.colors)){
                     this.selectedPaletteIndex = 0;
                 }
             },
-            selectedPaletteIndex: function(newValue){
-                let palette = this.palettes[newValue];
-                if(!palette.isCustom){
-                    this.colorsShadow = palette.colors.slice();
+            currentPalette: function(newValue){
+                if(!this.currentPalette.isCustom){
+                    this.colorsShadow = this.currentPalette.colors.slice();
                 }
             },
             selectedColorDitherModeIndex: function(newValue){
