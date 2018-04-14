@@ -14,12 +14,14 @@
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
         props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
-        mounted: function(){
-            //have to get canvases here, because DOM manipulation needs to happen in mounted hook
-            histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
+        created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
             this.selectedPaletteIndex = 1;
+        },
+        mounted: function(){
+            //have to get canvases here, because DOM manipulation needs to happen in mounted hook
+            histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
         },
         data: function(){ 
             return{
