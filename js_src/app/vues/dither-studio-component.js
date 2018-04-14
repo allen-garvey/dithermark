@@ -14,6 +14,9 @@
     //percentage is 0-100
     //returns percentage 0-100
     function calculatePixelationZoom(imageDimensions, percentage){
+        if(percentage >= 100){
+            return 100;
+        }
         const percentageFraction = percentage / 100;
         //based on 720 x 960 image
         const baseDimensions = 691200 * percentageFraction;
