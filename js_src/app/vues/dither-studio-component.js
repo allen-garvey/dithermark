@@ -122,9 +122,8 @@
             },
             pixelateImageZooms: function(){
                 const dimensions = this.isImageLoaded ? this.loadedImage.height * this.loadedImage.width : 0;
-                const zooms = [100, 50, 25, 20, 15, 12, 10, 7, 5, 2];
 
-                return zooms.map((zoom, i)=>{
+                return [100, 50, 25, 20, 15, 12, 10, 7, 5, 2].map((zoom, i)=>{
                     const title = i===0 ? 'None': i;
                     return {
                         title,
