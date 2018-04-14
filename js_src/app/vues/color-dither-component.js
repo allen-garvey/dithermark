@@ -10,6 +10,8 @@
     var optimizedPalettes;
     
     var sourceWebglTexture = null;
+
+    var numPalettesSaved = 0;
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
@@ -226,6 +228,17 @@
                 this.$emit('request-worker', (worker)=>{
                     worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex));
                 });
+            },
+            savePalette: function(){
+                this.palettes.push(Palettes.generateUserSavedPalette(this.colors.slice(), ++numPalettesSaved));
+                this.selectedPaletteIndex = this.palettes.length - 1;
+            },
+            deletePalette: function(){
+                //we change the selectedPaletteIndex to 0 first, 
+                //so that the current colors will persist after the palette is deleted
+                const indexToDelete = this.selectedPaletteIndex;
+                this.selectedPaletteIndex = 0;
+                this.palettes.splice(indexToDelete, 1);
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
             /**

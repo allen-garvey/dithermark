@@ -28,9 +28,22 @@ App.ColorPalettes = (function(){
             {title: 'Crystals', colors: ['#a0d5c2', '#054b9c', '#013faf', '#bff698', '#52a297', '#d12b4c', '#4319aa', '#ea11a7', '#cb9045', '#fb7198', '#370107', '#107679']},
         ];
     }
+
+    function generateUserSavedPaletteTitle(savedPaletteId){
+        return `Saved Palette ${savedPaletteId}`;
+    }
+
+    function generateUserSavedPalette(colors, savedPaletteId){
+        return {
+            title: generateUserSavedPaletteTitle(savedPaletteId),
+            colors: colors,
+            isSaved: true,
+        };
+    }
     
     return {
         get: getPalettes,
+        generateUserSavedPalette,
     };
     
 })();

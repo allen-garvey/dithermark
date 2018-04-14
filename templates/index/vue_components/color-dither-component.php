@@ -58,11 +58,16 @@
             </template>
         </div>
     </div>
-    <div>
-        <button @click="randomizePalette">Randomize palette</button>
-        <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
-            <print-palette-button :colors="colors" />
-        <?php endif; ?>
+    <div class="spread-content">
+        <div>
+            <button @click="randomizePalette" title="Set color palette to random colors">Randomize palette</button>
+            <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
+                <print-palette-button :colors="colors" />
+            <?php endif; ?>
+        </div>
+        <?php //these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both) ?>
+        <button v-show="currentPalette.isCustom" @click="savePalette">Save Palette</button>
+        <button v-show="currentPalette.isSaved" @click="deletePalette">Delete Palette</button>
     </div>
     <fieldset>
         <legend>Optimize palette</legend>
