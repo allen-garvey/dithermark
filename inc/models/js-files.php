@@ -19,6 +19,7 @@
         if(ENABLE_PRINT_COLOR_PALETTE_BUTTON){
             $ret[] = JS_VUES_PATH.'print-palette-component.js';
         }
+        $ret[] = JS_VUES_PATH.'modal-prompt-component.js';
         $ret[] = JS_VUES_PATH.'bw-dither-component.js';
         $ret[] = JS_VUES_PATH.'color-dither-component.js';
         $ret[] = JS_VUES_PATH.'dither-studio-component.js';

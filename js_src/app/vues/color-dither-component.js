@@ -212,6 +212,12 @@
             randomizePalette: function(){
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
             },
+            showRenamePalette: function(){
+                this.$refs.renamePaletteModal.show(this.currentPalette.title);
+            },
+            renamePalette: function(newTitle){
+                this.currentPalette.title = newTitle;
+            },
             optimizePaletteMemorizationKey: function(numColors, modeId){
                 return `${numColors}-${modeId}`;
             },

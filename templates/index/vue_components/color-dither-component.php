@@ -64,6 +64,7 @@
             <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
                 <print-palette-button :colors="colors" />
             <?php endif; ?>
+            <button v-show="currentPalette.isSaved" @click="showRenamePalette">Rename palette</button>
         </div>
         <?php //these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both) ?>
         <button v-show="currentPalette.isCustom" @click="savePalette">Save Palette</button>
@@ -83,4 +84,5 @@
             <button @click="optimizePalette" v-bind:disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
         </div>
     </fieldset>
+    <modal-prompt ref="renamePaletteModal" v-on:modal-success="renamePalette" />
 </div>   

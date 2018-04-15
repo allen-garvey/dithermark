@@ -33,6 +33,9 @@
         <script type="vue/template" id="color-dither-component">
             <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-dither-component.php'); ?>
         </script>
+        <script type="vue/template" id="modal-prompt-component">
+            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'modal-prompt-component.php'); ?>
+        </script>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'vertex-shaders.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>
