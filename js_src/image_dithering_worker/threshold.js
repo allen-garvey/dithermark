@@ -45,7 +45,8 @@ App.Threshold = (function(Image, Pixel, PixelMath){
     }
     
     function aDitherXorFunc3(threshold, x, y, pixel){
-        let mask = (aDitherMask2(x, y, pixel[0]) + aDitherMask2(x, y, pixel[1]) + aDitherMask2(x, y, pixel[2])) / 3;
+        const coeficient = 3 / 255;
+        let mask = (aDitherMask2(x, y, Math.floor(pixel[0] * coeficient)) + aDitherMask2(x, y, Math.floor(pixel[1] * coeficient)) + aDitherMask2(x, y, Math.floor(pixel[2] * coeficient))) / 3;
         return threshold * mask;
     }
     
@@ -59,7 +60,8 @@ App.Threshold = (function(Image, Pixel, PixelMath){
     }
     
     function aDitherAddFunc3(threshold, x, y, pixel){
-        let mask = (aDitherMask4(x, y, pixel[0]) + aDitherMask4(x, y, pixel[1]) + aDitherMask4(x, y, pixel[2])) / 3;
+        const coeficient = 3 / 255;
+        let mask = (aDitherMask4(x, y, Math.floor(pixel[0] * coeficient)) + aDitherMask4(x, y, Math.floor(pixel[1] * coeficient)) + aDitherMask4(x, y, Math.floor(pixel[2] * coeficient))) / 3;
         return threshold * mask;
     }
     

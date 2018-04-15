@@ -25,9 +25,9 @@ App.WebGlShader = (function(){
         generateBitwiseFunctionsText: generateBitwiseFunctionsText,
         aDitherAdd1Return: 'aDitherMask3(x, y)',
         aDitherAdd2Return: '(aDitherMask4(x, y, 0) + aDitherMask4(x, y, 1) + aDitherMask4(x, y, 2)) / 3.0',
-        aDitherAdd3Return: '(aDitherMask4(x, y, int(pixel.r * 255.)) + aDitherMask4(x, y, int(pixel.g * 255.)) + aDitherMask4(x, y, int(pixel.b * 255.))) / 3.0',
+        aDitherAdd3Return: '(aDitherMask4(x, y, int(pixel.r * 3.)) + aDitherMask4(x, y, int(pixel.g * 3.)) + aDitherMask4(x, y, int(pixel.b * 3.))) / 3.0',
         aDitherXor1Return: 'aDitherMask1(x, y)',
         aDitherXor2Return: '(aDitherMask2(x, y, 0) + aDitherMask2(x, y, 1) + aDitherMask2(x, y, 2)) / 3.0',
-        aDitherXor3Return: '(aDitherMask2(x, y, int(pixel.r * 255.)) + aDitherMask2(x, y, int(pixel.g * 255.)) + aDitherMask2(x, y, int(pixel.b * 255.))) / 3.0',
+        aDitherXor3Return: '(aDitherMask2(x, y, int(pixel.r * 3.)) + aDitherMask2(x, y, int(pixel.g * 3.)) + aDitherMask2(x, y, int(pixel.b * 3.))) / 3.0',
     };
 })();
