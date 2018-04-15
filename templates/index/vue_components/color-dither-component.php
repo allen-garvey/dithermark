@@ -67,8 +67,8 @@
             <button v-show="currentPalette.isSaved" @click="showRenamePalette">Rename palette</button>
         </div>
         <?php //these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both) ?>
-        <button v-show="currentPalette.isCustom" @click="savePalette">Save Palette</button>
-        <button v-show="currentPalette.isSaved" @click="deletePalette">Delete Palette</button>
+        <button v-show="currentPalette.isCustom" @click="savePalette">Save palette</button>
+        <button v-show="currentPalette.isSaved" @click="deletePalette">Delete palette</button>
     </div>
     <fieldset>
         <legend>Optimize palette</legend>
