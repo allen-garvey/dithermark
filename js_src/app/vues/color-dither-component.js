@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins, ColorQuantizationModes, Palettes){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins, ColorQuantizationModes, Palettes, UserSettings){
     
     //used for calculating webworker performance
     var webworkerStartTime;
@@ -21,6 +21,7 @@
             //needs to be done here to initialize palettes correctly
             this.selectedPaletteIndex = 1;
             this.numColors = this.numColorsMax;
+            this.palettes = Palettes.get().concat(UserSettings.getPalettes());
         },
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
@@ -28,7 +29,7 @@
         },
         data: function(){ 
             return{
-                selectedDitherAlgorithmIndex: 11,
+                selectedDitherAlgorithmIndex: 20,
                 ditherGroups: AlgorithmModel.colorDitherGroups,
                 ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
@@ -36,7 +37,7 @@
                 //colors shadow and draggedIndex are for dragging colors in palette
                 colorsShadow: [],
                 draggedIndex: null,
-                palettes: Palettes.get(),
+                palettes: [],
                 selectedPaletteIndex: null,
                 numColors: null,
                 numColorsMin: 2,
@@ -209,15 +210,6 @@
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                 this.$emit('display-transformed-image');
             },
-            randomizePalette: function(){
-                this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
-            },
-            showRenamePalette: function(){
-                this.$refs.renamePaletteModal.show(this.currentPalette.title);
-            },
-            renamePalette: function(newTitle){
-                this.currentPalette.title = newTitle;
-            },
             optimizePaletteMemorizationKey: function(numColors, modeId){
                 return `${numColors}-${modeId}`;
             },
@@ -236,9 +228,13 @@
                     worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex));
                 });
             },
+            randomizePalette: function(){
+                this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
+            },
             savePalette: function(){
                 this.palettes.push(Palettes.generateUserSavedPalette(this.colors.slice(), ++numPalettesSaved));
                 this.selectedPaletteIndex = this.palettes.length - 1;
+                this.saveUserPalettes();
             },
             deletePalette: function(){
                 //we change the selectedPaletteIndex to 0 first, 
@@ -246,6 +242,19 @@
                 const indexToDelete = this.selectedPaletteIndex;
                 this.selectedPaletteIndex = 0;
                 this.palettes.splice(indexToDelete, 1);
+                this.saveUserPalettes();
+            },
+            showRenamePalette: function(){
+                this.$refs.renamePaletteModal.show(this.currentPalette.title);
+            },
+            renamePalette: function(newTitle){
+                this.currentPalette.title = newTitle;
+                this.saveUserPalettes();
+            },
+            saveUserPalettes: function(){
+                UserSettings.savePalettes(this.palettes.filter((palette)=>{
+                    return palette.isSaved;
+                }));
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
             /**
@@ -297,4 +306,4 @@
     });
     
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.VueMixins, App.ColorQuantizationModes, App.ColorPalettes);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.VueMixins, App.ColorQuantizationModes, App.ColorPalettes, App.UserSettings);

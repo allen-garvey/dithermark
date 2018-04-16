@@ -30,6 +30,7 @@
 
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
+            JS_APP_PATH.'user-settings.js',
             JS_APP_PATH.'fs.js',
             JS_APP_PATH.'color-picker.js',
             JS_APP_PATH.'color-palettes.js',
