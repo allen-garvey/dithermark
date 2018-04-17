@@ -1,5 +1,5 @@
 
-App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants){
+App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util){
     const THRESHOLD = 1;
     const RANDOM_THRESHOLD = 2;
     const ORDERED_DITHER = 3;
@@ -86,7 +86,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants){
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-            gl.uniform2f(customUniformLocations['u_random_seed'], Math.random(), Math.random());
+            gl.uniform2f(customUniformLocations['u_random_seed'], Util.generateRandomSeed(), Util.generateRandomSeed());
         });
     }
     
@@ -176,4 +176,4 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants){
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
     };    
-})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.Constants);
+})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil);

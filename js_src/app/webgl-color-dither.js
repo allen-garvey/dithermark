@@ -1,5 +1,5 @@
 
-App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer, Constants){
+App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer, Constants, Util){
     const CLOSEST_COLOR = 0;
     const RANDOM_CLOSEST_COLOR = 1;
     const ORDERED_DITHER = 2;
@@ -148,7 +148,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength, (gl, customUniformLocations)=>{
-            gl.uniform2f(customUniformLocations['u_random_seed'], Math.random(), Math.random());
+            gl.uniform2f(customUniformLocations['u_random_seed'], Util.generateRandomSeed(), Util.generateRandomSeed());
         });
     }
     
@@ -222,4 +222,4 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         aDitherXor2: createArithmeticDither(ADITHER_XOR2),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3),
     };    
-})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.Constants);
+})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil);
