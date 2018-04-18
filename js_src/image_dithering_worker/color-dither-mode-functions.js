@@ -61,19 +61,6 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
      * Functions for error prop dither
     */
 
-    //returns value clamped between 0 and valueMax, inclusive
-    function clamp(value, valueMax=255){
-        const valueMin = 0;
-        if(value > valueMax){
-            return valueMax;
-        }
-        else if(value < valueMin){
-            return valueMin;
-        }
-
-        return value;
-    }
-
     function incrementHue(hue, incrementValues){
         return Math.abs(Math.round(hue + incrementValues[0]) % 360);
     }
@@ -81,20 +68,20 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     function incrementHsl(hslValues, incrementValues){
         return [
             incrementHue(hslValues[0], incrementValues),
-            clamp(hslValues[1] + incrementValues[1], 100),
-            clamp(hslValues[2] + incrementValues[2]),
+            PixelMath.clamp(hslValues[1] + incrementValues[1], 100),
+            PixelMath.clamp(hslValues[2] + incrementValues[2]),
         ];
     }
 
     function incrementLightness(lightnessValue, incrementValues){
-        return clamp(lightnessValue + incrementValues[0]);
+        return PixelMath.clamp(lightnessValue + incrementValues[0]);
     }
 
     function incrementRgb(rgbValue, incrementValues){
         return [
-            clamp(rgbValue[0] + incrementValues[0]),
-            clamp(rgbValue[1] + incrementValues[1]),
-            clamp(rgbValue[2] + incrementValues[2]),
+            PixelMath.clamp(rgbValue[0] + incrementValues[0]),
+            PixelMath.clamp(rgbValue[1] + incrementValues[1]),
+            PixelMath.clamp(rgbValue[2] + incrementValues[2]),
         ];
     }
 

@@ -130,6 +130,19 @@ App.PixelMath = (function(Pixel){
         
         return pixel;
     }
+
+    //returns value clamped between 0 and valueMax, inclusive
+    function clamp(value, valueMax=255){
+        const valueMin = 0;
+        if(value > valueMax){
+            return valueMax;
+        }
+        else if(value < valueMin){
+            return valueMin;
+        }
+
+        return value;
+    }
     
     
     return {
@@ -138,5 +151,6 @@ App.PixelMath = (function(Pixel){
        saturation: pixelSaturation,
        hslArrayToRgb: hslArrayToRgb,
        hslToPixel: hslToPixel,
+       clamp,
     };
 })(App.Pixel);
