@@ -23,9 +23,7 @@
         #{{customBody}}
         
         float shortestDistance = 1000.0;
-        float secondShortestDistance = 1000.0;
         vec3 closestPixel = adjustedPixel;
-        vec3 secondClosestPixel = adjustedPixel;
         
         for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
             if(i >= u_colors_array_length){
@@ -34,15 +32,8 @@
             vec3 currentColor = u_colors_array[i];
             float currentDistance = quick_distance(adjustedPixel, currentColor);
             if(currentDistance < shortestDistance){
-                secondShortestDistance = shortestDistance;
-                secondClosestPixel = closestPixel;
-
                 shortestDistance = currentDistance;
                 closestPixel = currentColor;
-            }
-            else if(currentDistance < secondShortestDistance){
-                secondShortestDistance = currentDistance;
-                secondClosestPixel = currentColor;
             }
         }
         
