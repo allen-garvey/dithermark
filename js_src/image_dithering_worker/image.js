@@ -28,33 +28,19 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, Constants, PixelMath){
     }
 
 
-    function findClosestColors(pixelValue, colorValues, distanceFunc){
-        let closestIndex = -1;
-        let secondClosestIndex = -1;
+    function findClosestColorIndex(pixelValue, colorValues, distanceFunc){
+        let closestIndex = 0;
         let closestDistance = Infinity;
-        let secondClosestDistance = Infinity;
 
         colorValues.forEach((colorValue, i)=>{
             const distance = distanceFunc(pixelValue, colorValue);
             if(distance < closestDistance){
-                secondClosestDistance = closestDistance;
-                secondClosestIndex = closestIndex;
                 closestIndex = i;
                 closestDistance = distance;
             }
-            else if(distance < secondClosestDistance){
-                secondClosestDistance = distance;
-                secondClosestIndex = i;
-            }
         });
 
-        return {
-            closestIndex,
-            closestDistance,
-            secondClosestIndex,
-            secondClosestDistance
-        };
-
+        return closestIndex;
     }
 
     function identity(value){
@@ -87,9 +73,8 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, Constants, PixelMath){
                 pixel[Pixel.G_INDEX] = PixelMath.clamp(pixel[Pixel.G_INDEX] + pixelAdjustmentValue);
                 pixel[Pixel.B_INDEX] = PixelMath.clamp(pixel[Pixel.B_INDEX] + pixelAdjustmentValue);
             }
-
-            const closestColors = findClosestColors(pixelValueFunc(pixel), colorValues, pixelDistanceFunc);
-            const closestColor = colors[closestColors.closestIndex];
+            
+            const closestColor = colors[findClosestColorIndex(pixelValueFunc(pixel), colorValues, pixelDistanceFunc)];
             //postscriptFunc is for hue-lightness dither
             const outputPixel = postscriptFunc(closestColor, x, y, pixel);
 
@@ -111,6 +96,6 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, Constants, PixelMath){
     return {
        transform: transformImage,
        colorDither: colorDitherImage,
-       findClosestColors: findClosestColors,
+       findClosestColorIndex,
     };
 })(App.Pixel, App.ColorDitherModeFunctions, App.Constants, App.PixelMath);

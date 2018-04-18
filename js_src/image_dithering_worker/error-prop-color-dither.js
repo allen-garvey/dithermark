@@ -54,19 +54,15 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
         let currentErrorBuffer = new Float32Array(modeDimensions);
 
         Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-            const pixelRawValue = pixelValueFunc(pixel);
             let errorValue = errorMatrixValue(errorMatrix, x, y);
-            const pixelAdjustedValue = incrementValueFunc(pixelRawValue, errorValue);
-            const closestColors = Image.findClosestColors(pixelAdjustedValue, colorValues, pixelDistanceFunc);
-
-            const currentError = errorAmountFunc(pixelAdjustedValue, colorValues[closestColors.closestIndex], currentErrorBuffer);
+            const pixelAdjustedValue = incrementValueFunc(pixelValueFunc(pixel), errorValue);
+            const closestColorIndex = Image.findClosestColorIndex(pixelAdjustedValue, colorValues, pixelDistanceFunc);
             
+            const closestColorValue = colorValues[closestColorIndex];
+            const currentError = errorAmountFunc(pixelAdjustedValue, closestColorValue, currentErrorBuffer);
             propagateError(propagateErrorModel, errorMatrix, x, y, currentError);
 
-            const closestColor = colors[closestColors.closestIndex];
-            pixel[0] = closestColor[0];
-            pixel[1] = closestColor[1];
-            pixel[2] = closestColor[2];
+            pixel.set(colors[closestColorIndex]);
             return pixel;
         });
     }
