@@ -1,5 +1,5 @@
 
-App.Image = (function(Pixel, ColorDitherModeFunctions){
+App.Image = (function(Pixel, ColorDitherModeFunctions, Constants, PixelMath){
     function transformImage(pixels, imageWidth, imageHeight, pixelTransformFunc){
         let y = 0;
         let x = 0;
@@ -57,11 +57,18 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
 
     }
 
-    function colorDitherImage(pixels, imageWidth, imageHeight, colorDitherModeId, colors, colorChoiceFunc){
+    function identity(value){
+        return value;
+    }
+
+    function colorDitherImage(pixels, imageWidth, imageHeight, colorDitherModeId, colors, pixelAdjustmentFunc, postscriptFunc=null){
         const colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
         const pixelValueFunc = colorDitherModeFuncs.pixelValue;
         const pixelDistanceFunc = colorDitherModeFuncs.distance;
-
+        if(!postscriptFunc){
+            postscriptFunc = identity;
+        }
+        const ditherRCoefficient = Constants.ditherRCoefficient(colors.length);
         const colorValues = colors.map(pixelValueFunc);
 
         let y = 0;
@@ -74,14 +81,18 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
             pixel[Pixel.B_INDEX] = pixels[i+2];
             // pixel[Pixel.A_INDEX] = pixels[i+3]; //not necessary to set alpha
 
+            const pixelAdjustmentValue = pixelAdjustmentFunc(x, y, pixel) * ditherRCoefficient;
+            if(pixelAdjustmentValue !== 0){
+                pixel[Pixel.R_INDEX] = PixelMath.clamp(pixel[Pixel.R_INDEX] + pixelAdjustmentValue);
+                pixel[Pixel.G_INDEX] = PixelMath.clamp(pixel[Pixel.G_INDEX] + pixelAdjustmentValue);
+                pixel[Pixel.B_INDEX] = PixelMath.clamp(pixel[Pixel.B_INDEX] + pixelAdjustmentValue);
+            }
+
             const closestColors = findClosestColors(pixelValueFunc(pixel), colorValues, pixelDistanceFunc);
             const closestColor = colors[closestColors.closestIndex];
-            const secondClosestColor = colors[closestColors.secondClosestIndex];
-            const closestDistance = closestColors.closestDistance;
-            const secondClosestDistance = closestColors.secondClosestDistance;
-            
-            const outputPixel = colorChoiceFunc(closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel);
-            
+            //postscriptFunc is for hue-lightness dither
+            const outputPixel = postscriptFunc(closestColor, x, y, pixel);
+
             pixels[i] = outputPixel[0];
             pixels[i+1] = outputPixel[1];
             pixels[i+2] = outputPixel[2];
@@ -102,4 +113,4 @@ App.Image = (function(Pixel, ColorDitherModeFunctions){
        colorDither: colorDitherImage,
        findClosestColors: findClosestColors,
     };
-})(App.Pixel, App.ColorDitherModeFunctions);
+})(App.Pixel, App.ColorDitherModeFunctions, App.Constants, App.PixelMath);

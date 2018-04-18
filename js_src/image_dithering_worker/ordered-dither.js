@@ -68,28 +68,28 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         let floatData = new Float32Array(length);
         
         bayerMatrix.forEach((value, i)=>{
-            floatData[i] = (value + 1) / highestValue;
+            floatData[i] = ((value + 1) / highestValue) - 0.5;
         });
         return floatData;
     }
 
-    function createColorOrderedDitherBase(dimensions, bayerCreationFunc){
+    function createColorOrderedDither(dimensions, bayerCreationFunc, postscriptFuncBuilder=null){
         let matrix = createMaxtrix(dimensions, convertBayerToFloat(bayerCreationFunc(dimensions)));
+        let postscriptFunc = null;
+        if(postscriptFuncBuilder){
+            postscriptFunc = postscriptFuncBuilder(matrix);
+        }
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
-            return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y)=>{
-                const matrixFraction = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
-                if(matrixFraction * secondClosestDistance < closestDistance){
-                    return secondClosestColor;
-                }
-                return closestColor;
-            });
+            return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (x, y)=>{
+                return matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+            }, postscriptFunc);
         };
     }
 
-    function colorOrderedDitherBuilder(bayerFuncName){
+    function colorOrderedDitherBuilder(bayerFuncName, postscriptFuncBuilder=null){
         return function(dimensions){
-            return createColorOrderedDitherBase(dimensions, Bayer[bayerFuncName]);
+            return createColorOrderedDither(dimensions, Bayer[bayerFuncName], postscriptFuncBuilder);
         };
     }
 
@@ -105,34 +105,24 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         return Math.floor((0.5 + l * lightnessSteps)) / lightnessSteps;
     }
 
-    function createHueLightnessOrderedDitherBase(dimensions, bayerCreationFunc){
-        let matrix = createMaxtrix(dimensions, convertBayerToFloat(bayerCreationFunc(dimensions)));
+    function hueLightnessPostscriptFuncBuilder(matrix){
+        const hslColor = new Uint16Array(3);
+        return (color, x, y, pixel)=>{
+            const matrixFraction = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+            hslColor[0] = PixelMath.hue(color);
+            hslColor[1] = PixelMath.saturation(color);
+            const pixelLightness = PixelMath.lightness(color) / 255;
+            
+            const l1 = lightnessStep(Math.max(pixelLightness - 0.125, 0.0));
+            const l2 = lightnessStep(Math.min(pixelLightness + 0.124, 1.0));
+            const lightnessDiff = (pixelLightness - l1) / (l2 - l1);
+            
+            //have to add 0.5 back to matrix value, since we subtracted 0.5 when we converted the bayer matrix to float
+            const adjustedLightness = (lightnessDiff < matrixFraction + 0.5) ? l1 : l2;
+            hslColor[2] = Math.round(adjustedLightness * 255);
+            let retPixel = PixelMath.hslToPixel(hslColor, pixel);
 
-        return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
-            return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel)=>{
-                const matrixFraction = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
-                let color = closestColor;
-                if(matrixFraction * secondClosestDistance < closestDistance){
-                    color = secondClosestColor;
-                }
-                const hslColor = [PixelMath.hue(color), PixelMath.saturation(color), PixelMath.lightness(color)];
-                const pixelLightness = hslColor[2] / 255;
-                const l1 = lightnessStep(Math.max((pixelLightness - 0.125), 0.0));
-                const l2 = lightnessStep(Math.min((pixelLightness + 0.124), 1.0));
-                const lightnessDiff = (pixelLightness - l1) / (l2 - l1);
-                
-                const adjustedLightness = (lightnessDiff < matrixFraction) ? l1 : l2;
-                hslColor[2] = Math.round(adjustedLightness * 255);
-                let retPixel = PixelMath.hslToPixel(hslColor, pixel);
-
-                return retPixel;
-            });
-        };
-    }
-
-    function hueLightnessOrderedDitherBuilder(bayerFuncName){
-        return function(dimensions){
-            return createHueLightnessOrderedDitherBase(dimensions, Bayer[bayerFuncName]);
+            return retPixel;
         };
     }
 
@@ -150,7 +140,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         createColorDotClusterOrderedDither: colorOrderedDitherBuilder('createDotCluster'),
         createColorPatternOrderedDither: colorOrderedDitherBuilder('createPattern'),
         createHalftoneDotColor: colorOrderedDitherBuilder('createHalftoneDot'),
-        createHueLighnessDither: hueLightnessOrderedDitherBuilder('create'),
+        createHueLighnessDither: colorOrderedDitherBuilder('create', hueLightnessPostscriptFuncBuilder),
     };
     
 })(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath);

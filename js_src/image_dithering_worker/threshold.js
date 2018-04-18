@@ -73,33 +73,16 @@ App.Threshold = (function(Image, Pixel, PixelMath){
     /**
     * Color Dither stuff
     */
-
-    function closestColor(pixels, imageWidth, imageHeight, colorDitherModeId, colors){
-        return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor)=>{
-            return closestColor;
-        });
-    }
-
-    function randomClosestColor(pixels, imageWidth, imageHeight, colorDitherModeId, colors){
-        return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor, secondClosestColor, closestDistance, secondClosestDistance)=>{
-            if(Math.random() * secondClosestDistance < closestDistance){
-                return secondClosestColor;
-            }
-            
-            return closestColor;
-        });
-    }
-
-    function colorADitherGenerator(aDitherFunc){
+    function colorDitherBuilder(pixelAdjustmentFunc){
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
-            return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (closestColor, secondClosestColor, closestDistance, secondClosestDistance, x, y, pixel)=>{
-                if(aDitherFunc(secondClosestDistance, x, y, pixel) < closestDistance){
-                    return secondClosestColor;
-                }
-                
-                return closestColor;
-            });
-        }
+            return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, pixelAdjustmentFunc);
+        };
+    }
+
+    function colorADitherFuncGenerator(aDitherFunc){
+        return (x, y, pixel)=>{
+            return aDitherFunc(1, x, y, pixel) - 0.5;
+        };
     }
     
     return {
@@ -112,13 +95,13 @@ App.Threshold = (function(Image, Pixel, PixelMath){
        aditherAdd3: thresholdGenerator(aDitherAddFunc3),
        randomDither: thresholdGenerator(randomThresholdFunc),
        //color dither functions
-       closestColor: closestColor,
-       randomClosestColor: randomClosestColor,
-       aditherXor1Color: colorADitherGenerator(aDitherXorFunc1),
-       aditherXor2Color: colorADitherGenerator(aDitherXorFunc2),
-       aditherXor3Color: colorADitherGenerator(aDitherXorFunc3),
-       aditherAdd1Color: colorADitherGenerator(aDitherAddFunc1),
-       aditherAdd2Color: colorADitherGenerator(aDitherAddFunc2),
-       aditherAdd3Color: colorADitherGenerator(aDitherAddFunc3),
+       closestColor: colorDitherBuilder(()=>{return 0;}),
+       randomClosestColor: colorDitherBuilder(()=>{return (Math.random() - 0.5);}),
+       aditherXor1Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherXorFunc1)),
+       aditherXor2Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherXorFunc2)),
+       aditherXor3Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherXorFunc3)),
+       aditherAdd1Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherAddFunc1)),
+       aditherAdd2Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherAddFunc2)),
+       aditherAdd3Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherAddFunc3)),
     };
 })(App.Image, App.Pixel, App.PixelMath);
