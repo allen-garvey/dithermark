@@ -69,8 +69,8 @@
         vec3 hsl = rgb2hsl(pixel);
     
         float pixelLightness = hsl.b;
-        float l1 = lightnessStep(max((pixelLightness - 0.125), 0.0));
-        float l2 = lightnessStep(min((pixelLightness + 0.124), 1.0));
+        float l1 = lightnessStep(max(pixelLightness - 0.125, 0.0));
+        float l2 = lightnessStep(min(pixelLightness + 0.124, 1.0));
         float lightnessDiff = (pixelLightness - l1) / (l2 - l1);
         
         float adjustedLightness = (lightnessDiff < bayerValue) ? l1 : l2;
