@@ -41,10 +41,8 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         });
     }
 
-    function extractMedians(pixelArray, numCuts){
+    function extractMedians(pixelArray, numCuts, divisionSize){
         const numColors = Math.pow(2, numCuts);
-        const divisionSize = Math.round(pixelArray.length / numColors);
-
         let ret = [];
 
         for(let i=0,currentColor=1;currentColor<=numColors;i+=divisionSize,currentColor++){
@@ -58,9 +56,8 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         return ret;
     }
 
-    function extractAverages(pixelArray, numCuts){
+    function extractAverages(pixelArray, numCuts, divisionSize){
         const numColors = Math.pow(2, numCuts);
-        const divisionSize = Math.round(pixelArray.length / numColors);
 
         let ret = [];
 
@@ -150,8 +147,10 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         let pixelArray = Util.createPixelArray(pixels);
 
         let divisions = 1;
-        for(let i=0;i<numCuts;i++){
+        let finalDivisionSize = 0;
+        for(let i=0;i<=numCuts;i++){
             const divisionSize = Math.round(pixelArray.length / divisions);
+            finalDivisionSize = divisionSize;
             for(let j=0, currentDivision=1;currentDivision<=divisions;j+=divisionSize,currentDivision++){
                 let endIndex = j+divisionSize;
                 //last index might not be slighty smaller or larger than necessary,
@@ -163,8 +162,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
             }
             divisions *= 2;
         }
-
-        let medianColors = colorQuantization.key.endsWith('MEDIAN') ? extractMedians(pixelArray, numCuts) : extractAverages(pixelArray, numCuts);
+        let medianColors = colorQuantization.key.endsWith('MEDIAN') ? extractMedians(pixelArray, numCuts, finalDivisionSize) : extractAverages(pixelArray, numCuts, finalDivisionSize);
         if(medianColors.length > numColors){
             medianColors = mergeMedians(medianColors, numColors);
         }
