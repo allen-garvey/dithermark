@@ -17,10 +17,9 @@
         if(percentage >= 100){
             return 100;
         }
-        const percentageFraction = percentage / 100;
-        //based on 720 x 960 image
-        const baseDimensions = 691200 * percentageFraction;
-        return Math.ceil(baseDimensions / imageDimensions * 100);
+        //based on 720 x 960 image, since large images won't be pixelized enough
+        const baseDimensions = Math.min(691200, imageDimensions) * percentage;
+        return Math.ceil(baseDimensions / imageDimensions);
     }
     
     var app = Vue.component('dither-studio', {
