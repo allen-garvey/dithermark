@@ -11,6 +11,9 @@ App.Histogram = (function(Pixel, PixelMath){
         
         for(let i=0;i<pixels.length;i+=4){
             const pixel = Pixel.create(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
+            if(pixel[Pixel.A_INDEX] === 0){
+                continue;
+            }
             const index = pixelHashFunc(pixel);
             if(index >= 0){
                 histogramArray[index] = histogramArray[index] + 1;
