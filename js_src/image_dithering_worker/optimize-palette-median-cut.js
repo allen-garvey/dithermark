@@ -98,14 +98,14 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     //prune colors by taking darkest and lightest colors
     //and middle lightest colors
     function mergeMedians(medianPixels, numColors){
-        let ret = new Array(numColors);
-        medianPixels = medianPixels.sort((pixel1, pixel2)=>{
-            return PixelMath.lightness(pixel1) - PixelMath.lightness(pixel2);
-        });
         medianPixels = removeDuplicatePixelsWithinLimit(medianPixels, numColors);
         if(medianPixels.length === numColors){
             return medianPixels;
         }
+        let ret = new Array(numColors);
+        medianPixels = medianPixels.sort((pixel1, pixel2)=>{
+            return PixelMath.lightness(pixel1) - PixelMath.lightness(pixel2);
+        });
 
         ret[0] = medianPixels[0];
         ret[ret.length - 1] = medianPixels[medianPixels.length - 1];
