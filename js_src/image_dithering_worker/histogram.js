@@ -7,27 +7,28 @@ App.Histogram = (function(Pixel, PixelMath){
     function createHistogram(pixels, histogramPercentages, uniqueValues, pixelHashFunc){
         
         //can't use int array, since we may overflow it
-        let histogramArray = new Float32Array(uniqueValues);
+        const histogramArray = new Float32Array(uniqueValues);
         
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = Pixel.create(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
-            let index = pixelHashFunc(pixel);
-            histogramArray[index] = histogramArray[index] + 1;
+            const pixel = Pixel.create(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
+            const index = pixelHashFunc(pixel);
+            if(index >= 0){
+                histogramArray[index] = histogramArray[index] + 1;
+            }
         }
-        
         //find maximum value so we can normalize values
-        let max = histogramArray.reduce((currentMax, element)=>{
+        const max = histogramArray.reduce((currentMax, element)=>{
             return Math.max(currentMax, element);
         }, 0);
         
         //calculate each unique values percentage of bar height
-        for(let i=0;i<histogramArray.length;i++){
-            let percentage = 0;
-            //dividing by 0 will be infinity
-            if(max > 0){
-                percentage = Math.ceil(histogramArray[i] / max * 100);
+        //if max is 0, no need to do anything, since percentages should already be 0ed out,
+        //and dividing by 0 will be infinity anyway
+        if(max > 0){
+            for(let i=0;i<histogramArray.length;i++){
+                const percentage = Math.ceil(histogramArray[i] / max * 100);
+                histogramPercentages[i] = percentage;
             }
-            histogramPercentages[i] = percentage;
         }
     }
     
@@ -36,7 +37,12 @@ App.Histogram = (function(Pixel, PixelMath){
     }
     
     function createHueHistogram(pixels, histogramPercentages){
-        return createHistogram(pixels, histogramPercentages, 360, PixelMath.hue);
+        return createHistogram(pixels, histogramPercentages, 360, (pixel)=>{
+            if(PixelMath.saturation(pixel) === 0){
+                return -1;
+            }
+            return PixelMath.hue(pixel);
+        });
     }
     
     return {
