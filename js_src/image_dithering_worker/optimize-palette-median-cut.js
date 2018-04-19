@@ -12,10 +12,10 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         pixels.forEach((pixel)=>{
             rMin = Math.min(pixel[0], rMin);
             rMax = Math.max(pixel[0], rMax);
-            gMin = Math.min(pixel[0], gMin);
-            gMax = Math.max(pixel[0], gMax);
-            bMin = Math.min(pixel[0], bMin);
-            bMax = Math.max(pixel[0], bMax);
+            gMin = Math.min(pixel[1], gMin);
+            gMax = Math.max(pixel[1], gMax);
+            bMin = Math.min(pixel[2], bMin);
+            bMax = Math.max(pixel[2], bMax);
         });
         const rRange = rMax - rMin;
         const gRange = gMax - gMin;
