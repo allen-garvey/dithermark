@@ -58,6 +58,34 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         return ret;
     }
 
+    function extractAverages(pixelArray, numCuts){
+        const numColors = Math.pow(2, numCuts);
+        const divisionSize = Math.round(pixelArray.length / numColors);
+
+        let ret = [];
+
+        for(let i=0,currentColor=1;currentColor<=numColors;i+=divisionSize,currentColor++){
+            let endIndex = i+divisionSize;
+            if(currentColor === numColors){
+                endIndex = pixelArray.length;
+            }
+            let pixelAvg = new Float32Array(3);
+            const pixelCount = endIndex - i;
+            for(let j=i;j<endIndex;j++){
+                let pixel = pixelArray[j];
+                pixelAvg[0] = pixelAvg[0] + pixel[0];
+                pixelAvg[1] = pixelAvg[1] + pixel[1];
+                pixelAvg[2] = pixelAvg[2] + pixel[2];
+            }
+            let retPixel = new Uint8ClampedArray(3);
+            retPixel[0] = Math.round(pixelAvg[0] / pixelCount);
+            retPixel[1] = Math.round(pixelAvg[1] / pixelCount);
+            retPixel[2] = Math.round(pixelAvg[2] / pixelCount);
+            ret.push(retPixel);
+        }
+        return ret;
+    }
+
     function pixelArrayToBuffer(pixelArray){
         let ret = new Uint8Array(pixelArray.length * 3);
         for(let i=0,offset=0;i<pixelArray.length;i++, offset+=3){
@@ -136,7 +164,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
             divisions *= 2;
         }
 
-        let medianColors = extractMedians(pixelArray, numCuts);
+        let medianColors = colorQuantization.key.endsWith('MEDIAN') ? extractMedians(pixelArray, numCuts) : extractAverages(pixelArray, numCuts);
         if(medianColors.length > numColors){
             medianColors = mergeMedians(medianColors, numColors);
         }
