@@ -227,6 +227,23 @@
                     saveImageLink.click();
                 });
             },
+            loadImageFromUrlFailed: function(error){
+                const resError = JSON.parse(error.message);
+                console.log(resError);
+                this.isCurrentlyLoadingRandomImage = false;
+            },
+            loadImageUrl: function(){
+                //TODO: replace with modal
+                const imageUrl = prompt('Enter an image url', '');
+                if(!imageUrl){
+                    return;
+                }
+                this.isCurrentlyLoadingRandomImage = true;
+                Fs.openImageUrl(imageUrl, (image, file)=>{
+                    this.loadImage(image, file);
+                    this.isCurrentlyLoadingRandomImage = false;
+                }).catch(this.loadImageFromUrlFailed);
+            },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
                 const imageWidth = Math.min(window.innerWidth, Constants.randomImageMaxWidth);
@@ -236,7 +253,7 @@
                 Fs.openImageUrl(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
-                }, 'unsplash-random-image');
+                }, 'unsplash-random-image').catch(this.loadImageFromUrlFailed);
             },
             loadImage: function(image, file){
                 this.loadedImage = {
