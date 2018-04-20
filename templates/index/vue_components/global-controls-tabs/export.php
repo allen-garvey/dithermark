@@ -1,6 +1,6 @@
 <div>
     <label>File name
-        <input placeholder="File name" v-model="saveImageFileName" /><span>{{saveImageFileExtension}}</span>
+        <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" /><span>{{saveImageFileExtension}}</span>
     </label>
 </div>
 <div>
