@@ -2,11 +2,11 @@ App.Fs = (function(Constants){
     const imageElement = new Image();
 
     function openImageFile(e, imageLoadFunc) {
-        var files = e.target.files;
+        const files = e.target.files;
         if(files.length < 1){
             return;
         }
-        var file = files[0];
+        const file = files[0];
         if(!file.type.startsWith('image/')){
             return;
         }
@@ -17,26 +17,26 @@ App.Fs = (function(Constants){
         imageElement.src = URL.createObjectURL(file);
     }
     
-    function openRandomImage(imageLoadFunc){
-        
-        let imageWidth = Math.min(window.innerWidth, Constants.randomImageMaxWidth);
-        let imageHeight = Math.min(window.innerHeight, Constants.randomImageMaxHeight);
-        let randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
-        
-        imageElement.onload = ()=> {
-            imageLoadFunc(imageElement, {
-                name: 'unsplash-random-image.jpg',
-                type: 'image/jpeg',
-            });
-        };
-        
+    function openImageUrl(imageUrl, imageLoadFunc, imageName=null){
+        //get image name from url if not specified
+        if(!imageName){
+            const urlSplit = imageUrl.split('/');
+            imageName = urlSplit[urlSplit.length - 1];
+        }
         //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        fetch(randomImageUrl).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
+        return fetch(imageUrl).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
+            imageElement.onload = ()=> {
+                imageLoadFunc(imageElement, {
+                    name: imageName,
+                    type: imageBlob.type,
+                });
+            };
             imageElement.src = URL.createObjectURL(imageBlob);
         });
     }
     
     function saveImage(canvas, fileType, callback){
+        //edge and mobile safari don't support toBlob
         if(!canvas.toBlob){
             callback(canvas.toDataURL(fileType));
         }
@@ -48,9 +48,9 @@ App.Fs = (function(Constants){
     }
     
     return {
-        openImageFile: openImageFile,
-        openRandomImage: openRandomImage,
-        saveImage: saveImage,
+        openImageFile,
+        openImageUrl,
+        saveImage,
     };
     
 })(App.Constants);

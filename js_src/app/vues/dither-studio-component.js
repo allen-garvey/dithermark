@@ -229,11 +229,14 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
+                const imageWidth = Math.min(window.innerWidth, Constants.randomImageMaxWidth);
+                const imageHeight = Math.min(window.innerHeight, Constants.randomImageMaxHeight);
+                const randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
                 
-                Fs.openRandomImage((image, file)=>{
+                Fs.openImageUrl(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
-                });
+                }, 'unsplash-random-image');
             },
             loadImage: function(image, file){
                 this.loadedImage = {
