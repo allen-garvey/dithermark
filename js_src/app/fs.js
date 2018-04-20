@@ -24,7 +24,17 @@ App.Fs = (function(Constants){
             imageName = urlSplit[urlSplit.length - 1];
         }
         //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
-        return fetch(imageUrl).then((res)=>{ return res.blob(); }).then((imageBlob)=>{
+        return fetch(imageUrl).then((res)=>{ 
+            //error in response code will not throw error
+            if(!res.ok){
+                throw Error(JSON.stringify({
+                    status: res.status,
+                    statusText: res.statusText,
+                    url: res.url,
+                }));
+            }
+            return res.blob(); 
+        }).then((imageBlob)=>{
             imageElement.onload = ()=> {
                 imageLoadFunc(imageElement, {
                     name: imageName,
