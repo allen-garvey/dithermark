@@ -27,11 +27,13 @@ App.Fs = (function(Constants){
         return fetch(imageUrl).then((res)=>{ 
             //error in response code will not throw error
             if(!res.ok){
-                throw Error(JSON.stringify({
+                const error = Error('Problem fetching image url');
+                error.responseError = {
                     status: res.status,
                     statusText: res.statusText,
                     url: res.url,
-                }));
+                };
+                throw error;
             }
             return res.blob(); 
         }).then((imageBlob)=>{

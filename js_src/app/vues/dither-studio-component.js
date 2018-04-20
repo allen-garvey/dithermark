@@ -228,8 +228,12 @@
                 });
             },
             loadImageFromUrlFailed: function(error){
-                const resError = JSON.parse(error.message);
-                console.log(resError);
+                if(error.responseError){
+                    console.log(error.responseError);
+                }
+                else{
+                    console.log(`Other error loading url ${error.message}`);
+                }
                 this.isCurrentlyLoadingRandomImage = false;
             },
             loadImageUrl: function(){
