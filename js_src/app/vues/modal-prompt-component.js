@@ -3,21 +3,33 @@
         template: document.getElementById('modal-prompt-component'),
         data: function(){
             return {
-                paletteName: '',
+                labelValue: '',
+                inputValue: '',
+                okButtonValue: '',
                 showModal: false,
+                inputType: 'text',
+                okCallback: null,
             };
         },
         methods: {
-            show: function(paletteName){
-                console.log('show called');
-                this.paletteName = paletteName;
+            setupOptions: function(options){
+                this.okButtonValue = options.okButtonValue || 'Ok';
+                this.inputType = options.inputType || 'text';
+            },
+            show: function(labelValue, inputValue, okCallback, options={}){
+                this.inputValue = inputValue;
+                this.labelValue = labelValue;
+                this.okCallback = okCallback;
+                this.setupOptions(options);
                 this.showModal = true;
             },
             cancelAction: function(){
                 this.showModal = false;
             },
             okAction: function(){
-                this.$emit('modal-success', this.paletteName);
+                if(this.okCallback){
+                    this.okCallback(this.inputValue);
+                }
                 this.showModal = false;
             },
         }
