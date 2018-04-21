@@ -236,9 +236,10 @@
                 }
                 this.isCurrentlyLoadingRandomImage = false;
             },
-            loadImageUrl: function(){
-                //TODO: replace with modal
-                const imageUrl = prompt('Enter an image url', '');
+            showOpenImageUrlPrompt: function(){
+                this.showModalPrompt('Image Url', '', this.loadImageUrl, {okButtonValue: 'Open', inputType: 'url', placeholder: 'http://example.com/image.jpg'});
+            },
+            loadImageUrl: function(imageUrl){
                 if(!imageUrl){
                     return;
                 }
