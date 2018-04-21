@@ -8,9 +8,18 @@
                 placeholder: '',
                 okButtonValue: '',
                 showModal: false,
+                inputFocused: false,
                 inputType: 'text',
                 okCallback: null,
             };
+        },
+        updated: function(){
+            //unfortunately have to do this here, or focus will not work, because in the show method,
+            //the modal is still hidden
+            if(this.showModal && !this.inputFocused){
+                this.inputFocused = true;
+                this.$refs.input.focus();
+            }
         },
         methods: {
             setupOptions: function(options){
@@ -23,6 +32,7 @@
                 this.labelValue = labelValue;
                 this.okCallback = okCallback;
                 this.setupOptions(options);
+                this.inputFocused = false;
                 this.showModal = true;
             },
             cancelAction: function(){
