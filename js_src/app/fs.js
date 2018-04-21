@@ -1,6 +1,15 @@
 App.Fs = (function(Constants){
     const imageElement = new Image();
 
+    class HttpRequestError extends Error{
+        constructor(message, statusCode, statusMessage, url) {
+            super(message);
+            this.statusCode = statusCode;
+            this.statusMessage = statusMessage;
+            this.url = url;
+          }
+    }
+
     function openImageFile(e, imageLoadFunc) {
         const files = e.target.files;
         if(files.length < 1){
@@ -27,13 +36,7 @@ App.Fs = (function(Constants){
         return fetch(imageUrl).then((res)=>{ 
             //error in response code will not throw error
             if(!res.ok){
-                const error = Error('Problem fetching image url');
-                error.responseError = {
-                    status: res.status,
-                    statusText: res.statusText,
-                    url: res.url,
-                };
-                throw error;
+                throw new HttpRequestError('Problem fetching image url', res.status, res.statusText, res.url);
             }
             return res.blob(); 
         }).then((imageBlob)=>{

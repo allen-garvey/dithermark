@@ -227,13 +227,8 @@
                     saveImageLink.click();
                 });
             },
-            loadImageFromUrlFailed: function(error){
-                if(error.responseError){
-                    console.log(error.responseError);
-                }
-                else{
-                    console.log(`Other error loading url ${error.message}`);
-                }
+            loadImageFromUrlFailed: function(error, imageUrl){
+                console.log(`${error.name} error loading url ${error.message}`);
                 this.isCurrentlyLoadingRandomImage = false;
             },
             showOpenImageUrlPrompt: function(){
@@ -247,7 +242,9 @@
                 Fs.openImageUrl(imageUrl, (image, file)=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingRandomImage = false;
-                }).catch(this.loadImageFromUrlFailed);
+                }).catch((error)=>{
+                    this.loadImageFromUrlFailed(error, imageUrl);
+                });
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingRandomImage = true;
