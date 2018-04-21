@@ -346,6 +346,9 @@
                 let worker = ditherWorkers.getNextWorker();
                 callback(worker);
             },
+            showModalPrompt: function(...modalPromptArgs){
+                this.$refs.modalPromptComponent.show(...modalPromptArgs);
+            },
         }
     });
     

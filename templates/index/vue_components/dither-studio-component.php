@@ -22,7 +22,7 @@
                     <bw-dither-section ref="bwDitherSection" @request-worker="onWorkerRequested" @display-transformed-image="zoomImage" :transform-canvas-web-gl="transformCanvasWebGl" :transform-canvas="transformCanvas" :source-canvas="sourceCanvas" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />  
                 </div>
                 <div v-show="activeDitherTab === 1">
-                    <color-dither-section ref="colorDitherSection" @request-worker="onWorkerRequested" @display-transformed-image="zoomImage" :transform-canvas-web-gl="transformCanvasWebGl" :transform-canvas="transformCanvas" :source-canvas="sourceCanvas" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />
+                    <color-dither-section ref="colorDitherSection" @request-modal-prompt="showModalPrompt" @request-worker="onWorkerRequested" @display-transformed-image="zoomImage" :transform-canvas-web-gl="transformCanvasWebGl" :transform-canvas="transformCanvas" :source-canvas="sourceCanvas" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />
                 </div>
             </div>
         </div>
@@ -46,4 +46,5 @@
                 <canvas ref="transformCanvasOutput" class="output-canvas"></canvas><?php //output from dither as shown to user, after zoom ?>
             </div>
         </div>
+    <modal-prompt ref="modalPromptComponent" />
 </div>

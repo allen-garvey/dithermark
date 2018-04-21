@@ -245,7 +245,7 @@
                 this.saveUserPalettes();
             },
             showRenamePalette: function(){
-                this.$refs.renamePaletteModal.show('Palette name', this.currentPalette.title, this.renamePalette, {okButtonValue: 'Save'});
+                this.$emit('request-modal-prompt', 'Palette name', this.currentPalette.title, this.renamePalette, {okButtonValue: 'Save'});
             },
             renamePalette: function(newTitle){
                 this.currentPalette.title = newTitle;

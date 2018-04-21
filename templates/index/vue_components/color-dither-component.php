@@ -84,5 +84,4 @@
             <button @click="optimizePalette" v-bind:disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
         </div>
     </fieldset>
-    <modal-prompt ref="renamePaletteModal" />
 </div>   
