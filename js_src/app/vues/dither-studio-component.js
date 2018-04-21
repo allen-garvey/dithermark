@@ -68,7 +68,7 @@
                 saveImageFileName: '',
                 saveImageFileType: 'image/png',
                 isLivePreviewEnabled: true,
-                isCurrentlyLoadingRandomImage: false,
+                isCurrentlyLoadingImageUrl: false,
                 isWebglSupported: false,
                 isWebglEnabled: false,
                 zoom: 100,
@@ -229,7 +229,7 @@
             },
             loadImageFromUrlFailed: function(error, imageUrl){
                 console.log(`${error.name} error loading url ${error.message}`);
-                this.isCurrentlyLoadingRandomImage = false;
+                this.isCurrentlyLoadingImageUrl = false;
             },
             showOpenImageUrlPrompt: function(){
                 this.showModalPrompt('Image Url', '', this.loadImageUrl, {okButtonValue: 'Open', inputType: 'url', placeholder: 'http://example.com/image.jpg'});
@@ -238,23 +238,23 @@
                 if(!imageUrl){
                     return;
                 }
-                this.isCurrentlyLoadingRandomImage = true;
+                this.isCurrentlyLoadingImageUrl = true;
                 Fs.openImageUrl(imageUrl, (image, file)=>{
                     this.loadImage(image, file);
-                    this.isCurrentlyLoadingRandomImage = false;
+                    this.isCurrentlyLoadingImageUrl = false;
                 }).catch((error)=>{
                     this.loadImageFromUrlFailed(error, imageUrl);
                 });
             },
             loadRandomImage: function(){
-                this.isCurrentlyLoadingRandomImage = true;
+                this.isCurrentlyLoadingImageUrl = true;
                 const imageWidth = Math.min(window.innerWidth, Constants.randomImageMaxWidth);
                 const imageHeight = Math.min(window.innerHeight, Constants.randomImageMaxHeight);
                 const randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
                 
                 Fs.openImageUrl(randomImageUrl, (image, file)=>{
                     this.loadImage(image, file);
-                    this.isCurrentlyLoadingRandomImage = false;
+                    this.isCurrentlyLoadingImageUrl = false;
                 }, 'unsplash-random-image').catch(this.loadImageFromUrlFailed);
             },
             loadImage: function(image, file){
