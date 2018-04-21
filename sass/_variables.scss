@@ -1,5 +1,15 @@
 $highlight_color: magenta;
 
+//alert colors based on bootstrap
+$danger_text_color: #721c24;
+$danger_border_color: #f5c6cb;
+$danger_background_color: #f8d7da;
+$danger_link_color: #491217;
+
+$warning_text_color: #856404;
+$warning_border_color: #ffeeba;
+$warning_background_color: #fff3cd;
+
 //controls panel layout variables
 $global_controls_height: 180px;
 $pinned_dither_controls_width: 448px;
@@ -7,6 +17,8 @@ $pinned_dither_controls_min_height: 400px;
 //padding to left and right of canvas when controls are pinned so controls don't overlap 
 $pinned_controls_canvas_padding: $pinned_dither_controls_width + 30px;
 $pinned_controls_mq_width: 1080px;
+
+$alerts_max_width: 1000px;
 
 //controls variables
 $controls_gutter: 20px;

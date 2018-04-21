@@ -1,0 +1,41 @@
+//alerts based on bootstrap alerts
+
+.alerts-container{
+    max-width: 100vw;
+}
+@include alerts_mq{
+    .alerts-container{
+        max-width: $alerts_max_width;
+    }
+}
+.alert-close-button:after{
+    //multiplication sign
+    content: '\00d7';
+    display: block;
+    text-align: right;
+    cursor: pointer;
+}
+.alert-close-button:hover:after{
+    font-weight: bold;
+}
+.alert{
+    display: inline-block;
+    padding: 0.75em 1.25em;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-danger{
+    color: $danger_text_color;
+    border-color: $danger_border_color;
+    background-color: $danger_background_color;
+
+    .alert-link{
+        color: $danger_link_color;
+    }
+}
+.alert-warning{
+    color: $warning_text_color;
+    border-color: $warning_border_color;
+    background-color: $warning_background_color;
+}

@@ -3,3 +3,9 @@
         @content;
     }
 }
+
+@mixin alerts_mq{
+    @media screen and (min-width: $pinned_dither_controls_width + $alerts_max_width){
+        @content;
+    }
+}
