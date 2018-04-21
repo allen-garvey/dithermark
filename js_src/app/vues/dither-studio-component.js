@@ -80,6 +80,7 @@
                 editorThemes: [{name: 'White', className: 'editor-white'}, {name: 'Light', className: 'editor-light'}, {name: 'Dark', className: 'editor-dark'}, {name: 'Black', className: 'editor-black'},],
                 currentEditorThemeIndex: null,
                 openImageUrlErrorMessage: null,
+                showWebglWarningMessage: false,
             };
         },
         computed: {
@@ -136,6 +137,20 @@
             },
             pixelateImageZoom: function(){
                 return this.pixelateImageZooms[this.selectedPixelateImageZoom].value;
+            },
+            webglWarningMessage: function(){
+                //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+                //for integers only
+                function formatInteger(d){
+                    return d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                }
+                //I have no idea what units MAX_TEXTURE_SIZE is in, and no resource seems to explain this,
+                //but multiplying it by 2048 seems to get the maximum image dimensions webgl will dither 
+                const maxTextureDimensions = this.transformCanvasWebGl.maxTextureSize * 2048;
+                if(this.isImageLoaded && this.isWebglEnabled && this.loadedImage.height*this.loadedImage.width > maxTextureDimensions){
+                    return `It appears that the image you just opened has larger total dimensions than your max WebGL texture size of ${formatInteger(maxTextureDimensions)} pixels. It is recommended you either: disable WebGL in settings (this will decrease performance), pixelate the image, or crop or resize the image in the image editor of you choice and then reopen it.`;
+                }
+                return '';
             },
         },
         watch: {
@@ -267,6 +282,8 @@
                     fileSize: file.size,
                     fileType: file.type,
                 };
+                //show webgl warning if any, until user closes it
+                this.showWebglWarningMessage = true;
                 this.saveImageFileName = file.name.replace(/\.(png|bmp|jpg|jpeg)$/i, '');
                 this.saveImageFileType = file.type;
                 Canvas.loadImage(originalImageCanvas, image);

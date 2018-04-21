@@ -4,7 +4,9 @@
             <div @click="openImageUrlErrorMessage=null" class="alert-close-button"></div>
             {{openImageUrlErrorMessage.beforeUrl}} <a :href="openImageUrlErrorMessage.url" class="alert-link">{{openImageUrlErrorMessage.url}}</a> {{openImageUrlErrorMessage.afterUrl}}
         </div>
-        <div class="alert alert-warning" v-if="false">
+        <div class="alert alert-warning" v-if="showWebglWarningMessage &amp;&amp; webglWarningMessage">
+            <div @click="showWebglWarningMessage=false" class="alert-close-button"></div>
+            {{webglWarningMessage}}
         </div>
     </div>
     <div class="controls">
