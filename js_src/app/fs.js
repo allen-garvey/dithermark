@@ -10,6 +10,14 @@ App.Fs = (function(Constants){
           }
     }
 
+    class UnsupportedFileTypeError extends Error{
+        constructor(message, url, fileType) {
+            super(message);
+            this.url = url;
+            this.fileType = fileType;
+          }
+    }
+
     function openImageFile(e, imageLoadFunc) {
         const files = e.target.files;
         if(files.length < 1){
@@ -39,15 +47,53 @@ App.Fs = (function(Constants){
                 throw new HttpRequestError('Problem fetching image url', res.status, res.statusText, res.url);
             }
             return res.blob(); 
-        }).then((imageBlob)=>{
+        }).then((blob)=>{
+            if(!blob.type.startsWith('image')){
+                throw new UnsupportedFileTypeError('File does not appear to be an image', imageUrl, blob.type);
+            }
             imageElement.onload = ()=> {
                 imageLoadFunc(imageElement, {
                     name: imageName,
-                    type: imageBlob.type,
+                    type: blob.type,
                 });
             };
-            imageElement.src = URL.createObjectURL(imageBlob);
+            imageElement.src = URL.createObjectURL(blob);
         });
+    }
+    //so that urls are escaped properly, message is divided into beforeUrl, url and afterUrl parts
+    //assembled message will read:
+    //{{message.beforeUrl}} <a :href="message.url">{{message.url}}</a> {{message.afterUrl}}
+    function messageForOpenImageUrlError(error, imageUrl){
+        let url = imageUrl;
+        let beforeUrl = 'Could not open';
+        let afterUrl = 'It is recommended you first download the image to your device, and then open it from there.';
+        //error from fetch, most likely due to CORS
+        if(error instanceof TypeError){
+            afterUrl = `This is mostly likely due to CORS. ${afterUrl}`;
+        }
+        else if(error instanceof UnsupportedFileTypeError){
+            url = error.url;
+            afterUrl = `It appears to be a ${error.fileType} file rather than an image.`;
+        }
+        else if(error instanceof HttpRequestError){
+            url = error.url;
+            if(error.statusCode === 404){
+                beforeUrl = '';
+                afterUrl = 'was not found';
+            }
+            else if(error.statusCode >= 500){
+                afterUrl = 'due to server error.';
+            }
+            else if(error.statusCode >= 400){
+                afterUrl = `This is most likely due to lacking proper authentication. ${afterUrl}`;
+            }
+        }
+
+        return {
+            beforeUrl,
+            url,
+            afterUrl,
+        };
     }
     
     function saveImage(canvas, fileType, callback){
@@ -66,6 +112,7 @@ App.Fs = (function(Constants){
         openImageFile,
         openImageUrl,
         saveImage,
+        messageForOpenImageUrlError,
     };
     
 })(App.Constants);

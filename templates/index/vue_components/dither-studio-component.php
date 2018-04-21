@@ -1,4 +1,12 @@
 <div>
+    <div class="alerts-container">
+        <div class="alert alert-danger" v-if="openImageUrlErrorMessage">
+            <div @click="openImageUrlErrorMessage=null" class="alert-close-button"></div>
+            {{openImageUrlErrorMessage.beforeUrl}} <a :href="openImageUrlErrorMessage.url" class="alert-link">{{openImageUrlErrorMessage.url}}</a> {{openImageUrlErrorMessage.afterUrl}}
+        </div>
+        <div class="alert alert-warning" v-if="false">
+        </div>
+    </div>
     <div class="controls">
         <div class="controls-container">
             <div class="global-controls-panel controls-panel">

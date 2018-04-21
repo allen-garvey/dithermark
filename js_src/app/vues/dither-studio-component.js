@@ -79,6 +79,7 @@
                 showOriginalImage: true,
                 editorThemes: [{name: 'White', className: 'editor-white'}, {name: 'Light', className: 'editor-light'}, {name: 'Dark', className: 'editor-dark'}, {name: 'Black', className: 'editor-black'},],
                 currentEditorThemeIndex: null,
+                openImageUrlErrorMessage: null,
             };
         },
         computed: {
@@ -228,7 +229,7 @@
                 });
             },
             loadImageFromUrlFailed: function(error, imageUrl){
-                console.log(`${error.name} error loading url ${error.message}`);
+                this.openImageUrlErrorMessage = Fs.messageForOpenImageUrlError(error, imageUrl);
                 this.isCurrentlyLoadingImageUrl = false;
             },
             showOpenImageUrlPrompt: function(){
@@ -258,6 +259,7 @@
                 }, 'unsplash-random-image').catch(this.loadImageFromUrlFailed);
             },
             loadImage: function(image, file){
+                this.openImageUrlErrorMessage = null;
                 this.loadedImage = {
                     width: image.width,
                     height: image.height,
