@@ -5,6 +5,7 @@
             return {
                 labelValue: '',
                 inputValue: '',
+                placeholder: '',
                 okButtonValue: '',
                 showModal: false,
                 inputType: 'text',
@@ -15,6 +16,7 @@
             setupOptions: function(options){
                 this.okButtonValue = options.okButtonValue || 'Ok';
                 this.inputType = options.inputType || 'text';
+                this.placeholder = options.placeholder || '';
             },
             show: function(labelValue, inputValue, okCallback, options={}){
                 this.inputValue = inputValue;
