@@ -6,6 +6,8 @@
 @include alerts_mq{
     .alerts-container{
         max-width: $alerts_max_width;
+        position: fixed;
+        left: calc(95vw - #{$alerts_max_width + $pinned_dither_controls_width});
     }
 }
 .alert-close-button:after{
