@@ -11,11 +11,9 @@
     var histogramCanvas;
     var histogramCanvasIndicator;
     
-    var sourceWebglTexture = null;
-    
     var component = Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
-        props: ['componentId', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestDisplayTransformedImage'],
+        props: ['componentId', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
@@ -127,19 +125,20 @@
                     this.ditherImageWithSelectedAlgorithm();
                     return;
                 }
-                Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                    WebGlBwDither.colorReplace(this.transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                    Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
+                        WebGlBwDither.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                    });
+                    transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                    this.requestDisplayTransformedImage(this.componentId);
                 });
-                this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                this.requestDisplayTransformedImage(this.componentId);
             },
             resetColorReplace: function(){
                 this.colorReplaceColors = [ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE, ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE];
             },
-            imageLoaded: function(loadedImage, loadedWebglTexture){
+            imageLoaded: function(loadedImage){
                 this.loadedImage = loadedImage;
                 this.hasImageBeenTransformed = false;
-                sourceWebglTexture = loadedWebglTexture;
                 
                 //draw histogram
                 this.$emit('request-worker', (worker)=>{
@@ -166,14 +165,16 @@
                     return;
                 }
                 if(this.isSelectedAlgorithmWebGl){
-                    this.hasImageBeenTransformed = true;
-                    Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                        this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                    this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl, sourceWebglTexture)=>{
+                        this.hasImageBeenTransformed = true;
+                        Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
+                            this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
+                        });
+                        //have to copy to 2d context, since chrome will clear webgl context after switching tabs
+                        //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
+                        transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                        this.requestDisplayTransformedImage(this.componentId);
                     });
-                    //have to copy to 2d context, since chrome will clear webgl context after switching tabs
-                    //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
-                    this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                    this.requestDisplayTransformedImage(this.componentId);
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
@@ -199,37 +200,45 @@
                 Histogram.drawBwHistogram(histogramCanvas, heightPercentages);
             },
             ditherWorkerMessageReceived: function(pixels){
-                this.hasImageBeenTransformed = true;
-                Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
-                console.log(Timer.megapixelsMessage(`${this.selectedDitherAlgorithm.title} total time            `, this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
-                this.requestDisplayTransformedImage(this.componentId);
+                this.requestCanvases(this.componentId, (transformCanvas)=>{
+                    this.hasImageBeenTransformed = true;
+                    Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
+                    console.log(Timer.megapixelsMessage(`${this.selectedDitherAlgorithm.title} total time            `, this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
+                    this.requestDisplayTransformedImage(this.componentId);
+                });
             },
             ditherWorkerBwMessageReceived: function(pixels){
-                var gl = this.transformCanvasWebGl.gl;
                 this.freeTransformedImageBwTexture();
-                transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(gl, pixels, this.loadedImage.width, this.loadedImage.height);
+                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                    transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(transformCanvasWebGl.gl, pixels, this.loadedImage.width, this.loadedImage.height);
+                });
             },
             freeTransformedImageBwTexture: function(){
                 if(!this.isWebglSupported || !transformedImageBwTexture){
                     return;
                 }
-                let gl = this.transformCanvasWebGl.gl;
-                gl.deleteTexture(transformedImageBwTexture);
+                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                    transformCanvasWebGl.gl.deleteTexture(transformedImageBwTexture);
+                });
+                //to avoid weird errors, we will do this reset the variables here, even if requestCanvases fails
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
             },
             saveTexture: function(){
-                let sourceCanvas = this.transformCanvas;
-                let gl = this.transformCanvasWebGl.gl;
-                let texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
-                this.savedTextures.push(texture);
+                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                    let sourceCanvas = transformCanvas;
+                    let gl = transformCanvasWebGl.gl;
+                    let texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
+                    this.savedTextures.push(texture);
+                });
             },
             combineDitherTextures: function(){
-                let textures = this.savedTextures.splice(0,3);
-                let gl = this.transformCanvasWebGl.gl;
-                WebGlBwDither.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
-                this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                this.requestDisplayTransformedImage(this.componentId);
+                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                    let textures = this.savedTextures.splice(0,3);
+                    WebGlBwDither.textureCombine(transformCanvasWebGl.gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
+                    transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                    this.requestDisplayTransformedImage(this.componentId);
+                });
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
         }

@@ -8,14 +8,12 @@
 
     //caching for optimize palette
     var optimizedPalettes;
-    
-    var sourceWebglTexture = null;
 
     var numPalettesSaved = 0;
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
-        props: ['componentId', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestDisplayTransformedImage'],
+        props: ['componentId', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
         created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
@@ -137,9 +135,8 @@
             },
         },
         methods: {
-            imageLoaded: function(loadedImage, loadedWebglTexture){
+            imageLoaded: function(loadedImage){
                 this.loadedImage = loadedImage;
-                sourceWebglTexture = loadedWebglTexture;
                 optimizedPalettes = {};
                 this.pendingColorQuantizations = {};
                 
@@ -161,13 +158,15 @@
                     return;
                 }
                 if(this.isSelectedAlgorithmWebGl){
-                    Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                        this.selectedDitherAlgorithm.webGlFunc(this.transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.selectedColorDitherModeId, this.selectedColorsVec, this.numColors); 
+                    this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl, sourceWebglTexture)=>{
+                        Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
+                            this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.selectedColorDitherModeId, this.selectedColorsVec, this.numColors); 
+                        });
+                        //have to copy to 2d context, since chrome will clear webgl context after switching tabs
+                        //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
+                        transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                        this.requestDisplayTransformedImage(this.componentId);
                     });
-                    //have to copy to 2d context, since chrome will clear webgl context after switching tabs
-                    //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
-                    this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                    this.requestDisplayTransformedImage(this.componentId);
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
@@ -206,9 +205,11 @@
                 Histogram.drawColorHistogram(histogramCanvas, huePercentages);
             },
             ditherWorkerMessageReceived: function(pixels){
-                Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
-                console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
-                this.requestDisplayTransformedImage(this.componentId);
+                this.requestCanvases(this.componentId, (transformCanvas)=>{
+                    Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
+                    console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
+                    this.requestDisplayTransformedImage(this.componentId);
+                });
             },
             optimizePaletteMemorizationKey: function(numColors, modeId){
                 return `${numColors}-${modeId}`;

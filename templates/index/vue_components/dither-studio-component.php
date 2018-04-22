@@ -29,10 +29,10 @@
                     <div class="tab" :class="{active: activeDitherComponentId === colorDitherComponentId}" @click="loadDitherTab(colorDitherComponentId)">Color Dither</div>
                 </div>
                 <div v-show="activeDitherComponentId === bwDitherComponentId">
-                    <bw-dither-section ref="bwDitherSection" :component-id="bwDitherComponentId" @request-worker="onWorkerRequested" :request-display-transformed-image="onRequestDisplayTransformedImage" :transform-canvas-web-gl="transformCanvasWebGl" :transform-canvas="transformCanvas" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />  
+                    <bw-dither-section ref="bwDitherSection" :component-id="bwDitherComponentId" @request-worker="onWorkerRequested" :request-canvases="onCanvasesRequested" :request-display-transformed-image="onRequestDisplayTransformedImage" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />  
                 </div>
                 <div v-show="activeDitherComponentId === colorDitherComponentId">
-                    <color-dither-section ref="colorDitherSection" :component-id="colorDitherComponentId" @request-modal-prompt="showModalPrompt" @request-worker="onWorkerRequested" :request-display-transformed-image="onRequestDisplayTransformedImage" :transform-canvas-web-gl="transformCanvasWebGl" :transform-canvas="transformCanvas" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />
+                    <color-dither-section ref="colorDitherSection" :component-id="colorDitherComponentId" @request-worker="onWorkerRequested" :request-canvases="onCanvasesRequested" :request-display-transformed-image="onRequestDisplayTransformedImage" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" @request-modal-prompt="showModalPrompt" />
                 </div>
             </div>
         </div>

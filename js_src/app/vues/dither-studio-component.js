@@ -226,7 +226,7 @@
                 this.activeDitherComponentId = componentId;
                 //TODO don't reload image if tab has already loaded it- instead create active tab hook
                 if(this.isImageLoaded){
-                    this.activeDitherSection.imageLoaded(this.imageHeader, sourceWebglTexture);   
+                    this.activeDitherSection.imageLoaded(this.imageHeader);   
                 }
             },
             /*
@@ -326,17 +326,12 @@
                 }
                 
                 //call selected tab image loaded hook here
-                this.activeDitherSection.imageLoaded(imageHeader, sourceWebglTexture);
+                this.activeDitherSection.imageLoaded(imageHeader);
             },
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 Canvas.scale(this.transformCanvas, transformCanvasOutput, scaleAmount);
-            },
-            onRequestDisplayTransformedImage: function(componentId){
-                if(componentId === this.activeDitherComponentId){
-                    this.zoomImage();
-                }
             },
             resetZoom: function(){
                 this.zoom = 100;
@@ -364,6 +359,16 @@
                         break;
                     default:
                         break;
+                }
+            },
+            onRequestDisplayTransformedImage: function(componentId){
+                if(componentId === this.activeDitherComponentId){
+                    this.zoomImage();
+                }
+            },
+            onCanvasesRequested: function(componentId, callback){
+                if(componentId === this.activeDitherComponentId){
+                    callback(this.transformCanvas, this.transformCanvasWebGl, sourceWebglTexture);
                 }
             },
             onWorkerRequested: function(callback){
