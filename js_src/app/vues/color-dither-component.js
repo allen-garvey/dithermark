@@ -15,7 +15,7 @@
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
-        props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'displayTransformedImageCallback'],
+        props: ['componentId', 'sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestDisplayTransformedImage'],
         created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
@@ -153,7 +153,7 @@
                 }
                 else{
                     //if live preview is not enabled, transform canvas will be blank unless we do this
-                    this.displayTransformedImageCallback();
+                    this.requestDisplayTransformedImage(this.componentId);
                 }
             },
             ditherImageWithSelectedAlgorithm: function(){
@@ -167,7 +167,7 @@
                     //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                     //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
                     this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                    this.displayTransformedImageCallback();
+                    this.requestDisplayTransformedImage(this.componentId);
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
@@ -208,7 +208,7 @@
             ditherWorkerMessageReceived: function(pixels){
                 Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                 console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
-                this.displayTransformedImageCallback();
+                this.requestDisplayTransformedImage(this.componentId);
             },
             optimizePaletteMemorizationKey: function(numColors, modeId){
                 return `${numColors}-${modeId}`;

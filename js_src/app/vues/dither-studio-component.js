@@ -333,6 +333,11 @@
                 Canvas.scale(this.sourceCanvas, sourceCanvasOutput, scaleAmount);
                 Canvas.scale(this.transformCanvas, transformCanvasOutput, scaleAmount);
             },
+            onRequestDisplayTransformedImage: function(componentId){
+                if(componentId === this.activeDitherComponentId){
+                    this.zoomImage();
+                }
+            },
             resetZoom: function(){
                 this.zoom = 100;
             },
