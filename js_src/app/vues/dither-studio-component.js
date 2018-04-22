@@ -58,7 +58,9 @@
         },
         data: function(){
             return {
-                activeDitherTab: 1,
+                bwDitherComponentId: 0,
+                colorDitherComponentId: 1,
+                activeDitherComponentId: 1,
                 activeControlsTab: 0,
                 sourceCanvas: null,
                 transformCanvas: null,
@@ -99,7 +101,7 @@
                 };
             },
             activeDitherSection: function(){
-                if(this.activeDitherTab === 0){
+                if(this.activeDitherComponentId === this.bwDitherComponentId){
                     return this.$refs.bwDitherSection;
                 }
                 return this.$refs.colorDitherSection;
@@ -211,18 +213,18 @@
             /*
             * Tabs
             */
-           setActiveControlsTab: function(tabIndex, isDisabled){
-            if(isDisabled){
-                return;
-            }
-            this.activeControlsTab = tabIndex;
-           },
-            loadDitherTab: function(tabIndex){
-                if(tabIndex === this.activeDitherTab){
+            setActiveControlsTab: function(tabIndex, isDisabled){
+                if(isDisabled){
                     return;
                 }
-                this.activeDitherTab = tabIndex;
-                //todo don't reload image if tab has already loaded it- instead create active tab hook
+                this.activeControlsTab = tabIndex;
+            },
+            loadDitherTab: function(componentId){
+                if(componentId === this.activeDitherComponentId){
+                    return;
+                }
+                this.activeDitherComponentId = componentId;
+                //TODO don't reload image if tab has already loaded it- instead create active tab hook
                 if(this.isImageLoaded){
                     this.activeDitherSection.imageLoaded(this.imageHeader, sourceWebglTexture);   
                 }

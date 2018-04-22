@@ -25,13 +25,13 @@
             </div>
             <div class="super-dither-controls-container" v-show="isImageLoaded">
                 <div class="tabs-container">
-                    <div class="tab" :class="{active: activeDitherTab === 0}" @click="loadDitherTab(0)">BW Dither</div>
-                    <div class="tab" :class="{active: activeDitherTab === 1}" @click="loadDitherTab(1)">Color Dither</div>
+                    <div class="tab" :class="{active: activeDitherComponentId === bwDitherComponentId}" @click="loadDitherTab(bwDitherComponentId)">BW Dither</div>
+                    <div class="tab" :class="{active: activeDitherComponentId === colorDitherComponentId}" @click="loadDitherTab(colorDitherComponentId)">Color Dither</div>
                 </div>
-                <div v-show="activeDitherTab === 0">
+                <div v-show="activeDitherComponentId === bwDitherComponentId">
                     <bw-dither-section ref="bwDitherSection" @request-worker="onWorkerRequested" :display-transformed-image-callback="zoomImage" :transform-canvas-web-gl="transformCanvasWebGl" :transform-canvas="transformCanvas" :source-canvas="sourceCanvas" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />  
                 </div>
-                <div v-show="activeDitherTab === 1">
+                <div v-show="activeDitherComponentId === colorDitherComponentId">
                     <color-dither-section ref="colorDitherSection" @request-modal-prompt="showModalPrompt" @request-worker="onWorkerRequested" :display-transformed-image-callback="zoomImage" :transform-canvas-web-gl="transformCanvasWebGl" :transform-canvas="transformCanvas" :source-canvas="sourceCanvas" :is-webgl-enabled="isWebglEnabled" :is-webgl-supported="isWebglSupported" :is-live-preview-enabled="isLivePreviewEnabled" />
                 </div>
             </div>
