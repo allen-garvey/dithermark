@@ -87,47 +87,6 @@ App.WebGl = (function(m4, Bayer){
         return texture;
     }
     
-    // function createAndLoadTextureFromGl(gl, sourceGl, imageWidth, imageHeight) {
-    //     const texture = gl.createTexture();
-        
-    //     gl.bindTexture(gl.TEXTURE_2D, texture);
-        
-    //     let pixels = new Uint8Array(imageWidth * imageHeight * 4);
-    //     sourceGl.readPixels(0, 0, imageWidth, imageHeight, sourceGl.RGBA, sourceGl.UNSIGNED_BYTE, pixels);
-        
-    //     //read pixels reverses y-axis, so we have to correct this so that
-    //     //textures created from webgl and non-webgl contexts can co-exist
-    //     Bayer.reverseYAxis(pixels, imageWidth, imageHeight);
-    //     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-    
-    //     // let's assume all images are not a power of 2
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        
-    //     return texture;
-    // }
-    
-    // function createAndLoadTextureFromBuffer(gl, buffer, imageWidth, imageHeight) {
-    //     let pixels = new Uint8Array(buffer);
-    //     return createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight);
-    // }
-    
-    // function createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight) {
-    //     var texture = gl.createTexture();
-        
-    //     gl.bindTexture(gl.TEXTURE_2D, texture);
-        
-    //     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
-    
-    //     // let's assume all images are not a power of 2
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        
-    //     return texture;
-    // }
-    
     /*
     * Actual webgl function creation
     */
@@ -231,9 +190,6 @@ App.WebGl = (function(m4, Bayer){
     
     return {
         createAndLoadTexture: createAndLoadTexture,
-        // createAndLoadTextureFromGl: createAndLoadTextureFromGl,
-        // createAndLoadTextureFromBuffer: createAndLoadTextureFromBuffer,
-        // createAndLoadTextureFromArray: createAndLoadTextureFromArray,
         createDrawImageFunc: createWebGLDrawImageFunc,
     };    
 })(App.M4, App.BayerMatrix);
