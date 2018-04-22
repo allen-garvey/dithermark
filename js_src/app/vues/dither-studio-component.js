@@ -238,8 +238,15 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
-                Canvas.scale(transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
-                Fs.saveImage(saveImageCanvas.canvas, this.loadedImage.fileType, (objectUrl)=>{
+                //if the image is pixelated, that means the transformCanvas is scaled down,
+                //so we have to scale it back up to 100% first. Otherwise, we can just use the transformCanvas
+                //directly, for a performance gain
+                let sourceCanvas = transformCanvas;
+                if(this.pixelateImageZoom !== 100){
+                    Canvas.scale(transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
+                    sourceCanvas = saveImageCanvas;
+                }
+                Fs.saveImage(sourceCanvas.canvas, this.loadedImage.fileType, (objectUrl)=>{
                     saveImageLink.href = objectUrl;
                     saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                     saveImageLink.click();
