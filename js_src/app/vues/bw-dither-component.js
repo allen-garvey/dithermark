@@ -13,7 +13,7 @@
     
     var component = Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
-        props: ['componentId', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
+        props: ['componentId', 'isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
@@ -145,9 +145,7 @@
                     worker.postMessage(WorkerUtil.histogramWorkerHeader());
                 });
                 
-                if(this.isWebglSupported){
-                    this.freeTransformedImageBwTexture();
-                }
+                this.freeTransformedImageBwTexture();
                 
                 if(this.isLivePreviewEnabled){
                     this.ditherImageWithSelectedAlgorithm();   
@@ -214,7 +212,7 @@
                 });
             },
             freeTransformedImageBwTexture: function(){
-                if(!this.isWebglSupported || !transformedImageBwTexture){
+                if(!transformedImageBwTexture){
                     return;
                 }
                 this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{

@@ -13,7 +13,7 @@
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
-        props: ['componentId', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
+        props: ['componentId', 'isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
         created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
