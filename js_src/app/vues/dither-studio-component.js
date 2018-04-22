@@ -5,6 +5,8 @@
     //canvases
     var sourceCanvas;
     var originalImageCanvas;
+    var transformCanvas;
+    var transformCanvasWebGl;
     var sourceCanvasOutput;
     var transformCanvasOutput;
     var saveImageCanvas;
@@ -47,14 +49,14 @@
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             
             sourceCanvas = Canvas.create(refs.sourceCanvas);
-            this.transformCanvas = Canvas.create(refs.transformCanvas);
-            this.transformCanvasWebGl = Canvas.createWebgl(refs.transformCanvasWebgl);
+            transformCanvas = Canvas.create(refs.transformCanvas);
+            transformCanvasWebGl = Canvas.createWebgl(refs.transformCanvasWebgl);
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             saveImageCanvas = Canvas.create(refs.saveImageCanvas);
             
             //check for webgl support
-            this.isWebglSupported = !!this.transformCanvasWebGl.gl;
+            this.isWebglSupported = !!transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported;
         },
         data: function(){
@@ -63,8 +65,6 @@
                 colorDitherComponentId: 1,
                 activeDitherComponentId: 1,
                 activeControlsTab: 0,
-                transformCanvas: null,
-                transformCanvasWebGl: null,
                 //loadedImage has properties: width, height, fileName, fileType, fileSize
                 loadedImage: null,
                 saveImageFileName: '',
@@ -148,7 +148,7 @@
                 }
                 //I have no idea what units MAX_TEXTURE_SIZE is in, and no resource seems to explain this,
                 //but multiplying it by 2048 seems to get the maximum image dimensions webgl will dither 
-                const maxTextureDimensions = this.transformCanvasWebGl.maxTextureSize * 2048;
+                const maxTextureDimensions = transformCanvasWebGl.maxTextureSize * 2048;
                 if(this.isImageLoaded && this.isWebglEnabled && this.loadedImage.height*this.loadedImage.width > maxTextureDimensions){
                     return `It appears that the image you just opened has larger total dimensions than your max WebGL texture size of ${formatInteger(maxTextureDimensions)} pixels. It is recommended you either: disable WebGL in settings (this will decrease performance), pixelate the image, or crop or resize the image in the image editor of you choice and then reopen it.`;
                 }
@@ -238,7 +238,7 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
-                Canvas.scale(this.transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
+                Canvas.scale(transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
                 Fs.saveImage(saveImageCanvas.canvas, this.loadedImage.fileType, (objectUrl)=>{
                     saveImageLink.href = objectUrl;
                     saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
@@ -295,10 +295,10 @@
             imagePixelationChanged: function(canvas, imageHeader){
                 let scaleAmount = this.pixelateImageZoom / 100;
                 Canvas.scale(canvas, sourceCanvas, scaleAmount);
-                Canvas.scale(canvas, this.transformCanvas, scaleAmount);
+                Canvas.scale(canvas, transformCanvas, scaleAmount);
                 
-                this.transformCanvasWebGl.canvas.width = imageHeader.width;
-                this.transformCanvasWebGl.canvas.height = imageHeader.height;
+                transformCanvasWebGl.canvas.width = imageHeader.width;
+                transformCanvasWebGl.canvas.height = imageHeader.height;
                 
                 //adjust zoom
                 this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
@@ -321,8 +321,8 @@
                 
                 //todo could potentially wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
-                    this.transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                    transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
                 
                 //call selected tab image loaded hook here
@@ -331,7 +331,7 @@
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
-                Canvas.scale(this.transformCanvas, transformCanvasOutput, scaleAmount);
+                Canvas.scale(transformCanvas, transformCanvasOutput, scaleAmount);
             },
             resetZoom: function(){
                 this.zoom = 100;
@@ -368,7 +368,7 @@
             },
             onCanvasesRequested: function(componentId, callback){
                 if(componentId === this.activeDitherComponentId){
-                    callback(this.transformCanvas, this.transformCanvasWebGl, sourceWebglTexture);
+                    callback(transformCanvas, transformCanvasWebGl, sourceWebglTexture);
                 }
             },
             onWorkerRequested: function(callback){
