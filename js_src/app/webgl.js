@@ -30,14 +30,16 @@
  */
 
 App.WebGl = (function(m4, Bayer){
-    
+    /*
+    * Shader and program creation
+    */
     //based on: https://webglfundamentals.org/webgl/lessons/webgl-fundamentals.html
     function createShader(gl, type, source) {
-        var shader = gl.createShader(type);
+        const shader = gl.createShader(type);
         gl.shaderSource(shader, source);
         gl.compileShader(shader);
-        var success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
-        if (success) {
+        const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
+        if(success){
             return shader;
         }
         //something went wrong
@@ -55,12 +57,12 @@ App.WebGl = (function(m4, Bayer){
     
     
     function createProgram(gl, vertexShader, fragmentShader) {
-        var program = gl.createProgram();
+        const program = gl.createProgram();
         gl.attachShader(program, vertexShader);
         gl.attachShader(program, fragmentShader);
         gl.linkProgram(program);
-        var success = gl.getProgramParameter(program, gl.LINK_STATUS);
-        if (success) {
+        const success = gl.getProgramParameter(program, gl.LINK_STATUS);
+        if(success){
             return program;
         }
         //something went wrong
@@ -68,8 +70,11 @@ App.WebGl = (function(m4, Bayer){
         gl.deleteProgram(program);
     }
     
+    /*
+    * Textures
+    */
     function createAndLoadTexture(gl, imageData) {
-        var texture = gl.createTexture();
+        const texture = gl.createTexture();
         
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
@@ -82,60 +87,46 @@ App.WebGl = (function(m4, Bayer){
         return texture;
     }
     
-    function createAndLoadTextureFromGl(gl, sourceGl, imageWidth, imageHeight) {
-        var texture = gl.createTexture();
+    // function createAndLoadTextureFromGl(gl, sourceGl, imageWidth, imageHeight) {
+    //     const texture = gl.createTexture();
         
-        gl.bindTexture(gl.TEXTURE_2D, texture);
+    //     gl.bindTexture(gl.TEXTURE_2D, texture);
         
-        let pixels = new Uint8Array(imageWidth * imageHeight * 4);
-        sourceGl.readPixels(0, 0, imageWidth, imageHeight, sourceGl.RGBA, sourceGl.UNSIGNED_BYTE, pixels);
+    //     let pixels = new Uint8Array(imageWidth * imageHeight * 4);
+    //     sourceGl.readPixels(0, 0, imageWidth, imageHeight, sourceGl.RGBA, sourceGl.UNSIGNED_BYTE, pixels);
         
-        //read pixels reverses y-axis, so we have to correct this so that
-        //textures created from webgl and non-webgl contexts can co-exist
-        Bayer.reverseYAxis(pixels, imageWidth, imageHeight);
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    //     //read pixels reverses y-axis, so we have to correct this so that
+    //     //textures created from webgl and non-webgl contexts can co-exist
+    //     Bayer.reverseYAxis(pixels, imageWidth, imageHeight);
+    //     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     
-        // let's assume all images are not a power of 2
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    //     // let's assume all images are not a power of 2
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         
-        return texture;
-    }
+    //     return texture;
+    // }
     
     // function createAndLoadTextureFromBuffer(gl, buffer, imageWidth, imageHeight) {
     //     let pixels = new Uint8Array(buffer);
     //     return createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight);
     // }
     
-    function createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight) {
-        var texture = gl.createTexture();
+    // function createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight) {
+    //     var texture = gl.createTexture();
         
-        gl.bindTexture(gl.TEXTURE_2D, texture);
+    //     gl.bindTexture(gl.TEXTURE_2D, texture);
         
-        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    //     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, imageWidth, imageHeight, 0, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
     
-        // let's assume all images are not a power of 2
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+    //     // let's assume all images are not a power of 2
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+    //     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         
-        return texture;
-    }
-    
-    /*
-    * Pixel stuff
-    */
-    
-    function pixelToVec(pixel, rgbOnly=true){
-        let length = rgbOnly ? 3 : pixel.length;
-        let vec = new Float32Array(length);
-        
-        for(let i=0;i<length;i++){
-            vec[i] = pixel[i] / 255.0;
-        }
-        return vec;
-    }
+    //     return texture;
+    // }
     
     /*
     * Actual webgl function creation
@@ -144,7 +135,7 @@ App.WebGl = (function(m4, Bayer){
     //multiple textures based on: https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html
     function createWebGLDrawImageFunc(gl, vertexShaderText, fragmentShaderText, customUniformNames=[]){
         // setup GLSL program
-        var program = createProgram(gl, createVertexShader(gl, vertexShaderText), createFragmentShader(gl, fragmentShaderText));
+        const program = createProgram(gl, createVertexShader(gl, vertexShaderText), createFragmentShader(gl, fragmentShaderText));
         //if program is string, that means there was an error compiling
         if(typeof program === 'string'){
             console.log(program);
@@ -152,25 +143,25 @@ App.WebGl = (function(m4, Bayer){
         }
         
         // look up where the vertex data needs to go.
-        var positionLocation = gl.getAttribLocation(program, 'a_position');
-        var texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
+        const positionLocation = gl.getAttribLocation(program, 'a_position');
+        const texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
         
         // lookup uniforms
-        var matrixLocation = gl.getUniformLocation(program, 'u_matrix');
-        var textureLocation = gl.getUniformLocation(program, 'u_texture');
+        const matrixLocation = gl.getUniformLocation(program, 'u_matrix');
+        const textureLocation = gl.getUniformLocation(program, 'u_texture');
         
         //lookup custom uniforms
-        var customUniformLocations = {};
+        const customUniformLocations = {};
         customUniformNames.forEach((customUniformName)=>{
             customUniformLocations[customUniformName] = gl.getUniformLocation(program, customUniformName);
         });
         
         // Create a buffer.
-        var positionBuffer = gl.createBuffer();
+        const positionBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
         
         // Put a unit quad in the buffer
-        var positions = [
+        const positions = [
         0, 0,
         0, 1,
         1, 0,
@@ -181,11 +172,11 @@ App.WebGl = (function(m4, Bayer){
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
         
         // Create a buffer for texture coords
-        var texcoordBuffer = gl.createBuffer();
+        const texcoordBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
         
         // Put texcoords in the buffer
-        var texcoords = [
+        const texcoords = [
         0, 0,
         0, 1,
         1, 0,
@@ -196,8 +187,6 @@ App.WebGl = (function(m4, Bayer){
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         
         return function(gl, tex, texWidth, texHeight, setCustomUniformsFunc=(gl, customUniformLocations)=>{}) {
-            var dstX = 0; 
-            var dstY = 0;
             gl.bindTexture(gl.TEXTURE_2D, tex);
             
             // Tell WebGL to use our shader program pair
@@ -212,9 +201,11 @@ App.WebGl = (function(m4, Bayer){
             gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
             
             // this matrix will convert from pixels to clip space
-            var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+            let matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
             
             // this matrix will translate our quad to dstX, dstY
+            const dstX = 0; 
+            const dstY = 0;
             matrix = m4.translate(matrix, dstX, dstY, 0);
             
             // this matrix will scale our 1 unit quad
@@ -239,14 +230,10 @@ App.WebGl = (function(m4, Bayer){
     
     
     return {
-        createVertexShader: createVertexShader,
-        createFragmentShader: createFragmentShader,
-        createProgram: createProgram,
         createAndLoadTexture: createAndLoadTexture,
-        createAndLoadTextureFromGl: createAndLoadTextureFromGl,
+        // createAndLoadTextureFromGl: createAndLoadTextureFromGl,
         // createAndLoadTextureFromBuffer: createAndLoadTextureFromBuffer,
-        createAndLoadTextureFromArray: createAndLoadTextureFromArray,
-        pixelToVec: pixelToVec,
+        // createAndLoadTextureFromArray: createAndLoadTextureFromArray,
         createDrawImageFunc: createWebGLDrawImageFunc,
     };    
 })(App.M4, App.BayerMatrix);

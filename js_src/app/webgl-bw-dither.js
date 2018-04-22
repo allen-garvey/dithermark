@@ -25,8 +25,8 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util)
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
                 //initialize uniforms
                 gl.uniform1f(customUniformLocations['u_threshold'], threshold / 255);
-                gl.uniform3fv(customUniformLocations['u_black_pixel'], WebGl.pixelToVec(blackPixel));
-                gl.uniform3fv(customUniformLocations['u_white_pixel'], WebGl.pixelToVec(whitePixel));
+                gl.uniform3fv(customUniformLocations['u_black_pixel'], pixelToVec(blackPixel));
+                gl.uniform3fv(customUniformLocations['u_white_pixel'], pixelToVec(whitePixel));
                 gl.uniform1f(customUniformLocations['u_dither_r_coefficient'], Constants.ditherRCoefficient(2, true));
                 
                 //set custom uniform values
@@ -47,7 +47,21 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util)
         }
         return drawFunc;
     }
-    
+
+    /*
+    * Pixel utility stuff
+    */
+    function pixelToVec(pixel, rgbOnly=true){
+        let length = rgbOnly ? 3 : pixel.length;
+        let vec = new Float32Array(length);
+        
+        for(let i=0;i<length;i++){
+            vec[i] = pixel[i] / 255.0;
+        }
+        return vec;
+    }
+
+
     /*
     * Shader caching
     */
