@@ -3,6 +3,7 @@
     var ditherWorkers;
     
     //canvases
+    var sourceCanvas;
     var originalImageCanvas;
     var sourceCanvasOutput;
     var transformCanvasOutput;
@@ -45,7 +46,7 @@
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             
-            this.sourceCanvas = Canvas.create(refs.sourceCanvas);
+            sourceCanvas = Canvas.create(refs.sourceCanvas);
             this.transformCanvas = Canvas.create(refs.transformCanvas);
             this.transformCanvasWebGl = Canvas.createWebgl(refs.transformCanvasWebgl);
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
@@ -62,7 +63,6 @@
                 colorDitherComponentId: 1,
                 activeDitherComponentId: 1,
                 activeControlsTab: 0,
-                sourceCanvas: null,
                 transformCanvas: null,
                 transformCanvasWebGl: null,
                 //loadedImage has properties: width, height, fileName, fileType, fileSize
@@ -294,7 +294,7 @@
             },
             imagePixelationChanged: function(canvas, imageHeader){
                 let scaleAmount = this.pixelateImageZoom / 100;
-                Canvas.scale(canvas, this.sourceCanvas, scaleAmount);
+                Canvas.scale(canvas, sourceCanvas, scaleAmount);
                 Canvas.scale(canvas, this.transformCanvas, scaleAmount);
                 
                 this.transformCanvasWebGl.canvas.width = imageHeader.width;
@@ -311,7 +311,7 @@
                 }
                 
                 //load image into the webworkers
-                var buffer = Canvas.createSharedImageBuffer(this.sourceCanvas);
+                var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
@@ -322,7 +322,7 @@
                 //todo could potentially wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
                     this.transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, this.sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                    sourceWebglTexture = WebGl.createAndLoadTexture(this.transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
                 
                 //call selected tab image loaded hook here
@@ -330,7 +330,7 @@
             },
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
-                Canvas.scale(this.sourceCanvas, sourceCanvasOutput, scaleAmount);
+                Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 Canvas.scale(this.transformCanvas, transformCanvasOutput, scaleAmount);
             },
             onRequestDisplayTransformedImage: function(componentId){

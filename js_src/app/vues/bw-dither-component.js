@@ -15,7 +15,7 @@
     
     var component = Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
-        props: ['componentId', 'sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestDisplayTransformedImage'],
+        props: ['componentId', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'requestDisplayTransformedImage'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
