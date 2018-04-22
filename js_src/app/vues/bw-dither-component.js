@@ -15,7 +15,7 @@
     
     var component = Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
-        props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled'],
+        props: ['sourceCanvas', 'transformCanvas', 'transformCanvasWebGl', 'isWebglEnabled', 'isWebglSupported', 'isLivePreviewEnabled', 'displayTransformedImageCallback'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
@@ -131,7 +131,7 @@
                     WebGlBwDither.colorReplace(this.transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                 });
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                this.$emit('display-transformed-image');
+                this.displayTransformedImageCallback();
             },
             resetColorReplace: function(){
                 this.colorReplaceColors = [ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE, ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE];
@@ -155,7 +155,7 @@
                 }
                 else{
                     //if live preview is not enabled, transform canvas will be blank unless we do this
-                    this.$emit('display-transformed-image');
+                    this.displayTransformedImageCallback();
                 }
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not really worth it to check
@@ -173,7 +173,7 @@
                     //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                     //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
                     this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                    this.$emit('display-transformed-image');
+                    this.displayTransformedImageCallback();
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
@@ -202,7 +202,7 @@
                 this.hasImageBeenTransformed = true;
                 Canvas.replaceImageWithArray(this.transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                 console.log(Timer.megapixelsMessage(`${this.selectedDitherAlgorithm.title} total time            `, this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
-                this.$emit('display-transformed-image');
+                this.displayTransformedImageCallback();
             },
             ditherWorkerBwMessageReceived: function(pixels){
                 var gl = this.transformCanvasWebGl.gl;
@@ -229,7 +229,7 @@
                 let gl = this.transformCanvasWebGl.gl;
                 WebGlBwDither.textureCombine(gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
                 this.transformCanvas.context.drawImage(this.transformCanvasWebGl.canvas, 0, 0);
-                this.$emit('display-transformed-image');
+                this.displayTransformedImageCallback();
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
         }
