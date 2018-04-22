@@ -29,7 +29,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-App.WebGl = (function(m4, Bayer){
+App.WebGl = (function(m4){
     /*
     * Shader and program creation
     */
@@ -192,4 +192,4 @@ App.WebGl = (function(m4, Bayer){
         createAndLoadTexture: createAndLoadTexture,
         createDrawImageFunc: createWebGLDrawImageFunc,
     };    
-})(App.M4, App.BayerMatrix);
+})(App.M4);
