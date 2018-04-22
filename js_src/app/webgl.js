@@ -63,7 +63,7 @@ App.WebGl = (function(m4, Bayer){
         if (success) {
             return program;
         }
-        
+        //something went wrong
         console.log(gl.getProgramInfoLog(program));
         gl.deleteProgram(program);
     }
@@ -142,11 +142,13 @@ App.WebGl = (function(m4, Bayer){
     */
     
     //multiple textures based on: https://webglfundamentals.org/webgl/lessons/webgl-2-textures.html
-    function createWebGLDrawImageFunc(gl, vertexShaderText, fragmentShaderText, customUniformNames){
+    function createWebGLDrawImageFunc(gl, vertexShaderText, fragmentShaderText, customUniformNames=[]){
         // setup GLSL program
         var program = createProgram(gl, createVertexShader(gl, vertexShaderText), createFragmentShader(gl, fragmentShaderText));
+        //if program is string, that means there was an error compiling
         if(typeof program === 'string'){
-            console.log(program);   
+            console.log(program);
+            return;
         }
         
         // look up where the vertex data needs to go.
@@ -159,11 +161,9 @@ App.WebGl = (function(m4, Bayer){
         
         //lookup custom uniforms
         var customUniformLocations = {};
-        if(customUniformNames){
-            customUniformNames.forEach((customUniformName)=>{
-                customUniformLocations[customUniformName] = gl.getUniformLocation(program, customUniformName);
-            });
-        }
+        customUniformNames.forEach((customUniformName)=>{
+            customUniformLocations[customUniformName] = gl.getUniformLocation(program, customUniformName);
+        });
         
         // Create a buffer.
         var positionBuffer = gl.createBuffer();
@@ -195,7 +195,7 @@ App.WebGl = (function(m4, Bayer){
         ];
         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(texcoords), gl.STATIC_DRAW);
         
-        return function(gl, tex, texWidth, texHeight, setCustomUniformsFunc) {
+        return function(gl, tex, texWidth, texHeight, setCustomUniformsFunc=(gl, customUniformLocations)=>{}) {
             var dstX = 0; 
             var dstY = 0;
             gl.bindTexture(gl.TEXTURE_2D, tex);
@@ -230,9 +230,7 @@ App.WebGl = (function(m4, Bayer){
             gl.bindTexture(gl.TEXTURE_2D, tex);
             
             //set custom uniform values
-            if(setCustomUniformsFunc){
-                setCustomUniformsFunc(gl, customUniformLocations);
-            }
+            setCustomUniformsFunc(gl, customUniformLocations);
             
             // draw the quad (2 triangles, 6 vertices)
             gl.drawArrays(gl.TRIANGLES, 0, 6);
