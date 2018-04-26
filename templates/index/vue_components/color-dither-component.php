@@ -45,31 +45,31 @@
         </datalist>
         <input type="number" v-model.number="numColors" v-bind:min="numColorsMin" v-bind:max="numColorsMax" step="1" />
     </div>
-    <div class="color-replace-super-container">
-        <div class="color-replace-title-container">
-            <h5 class="color-replace-title">Colors</h5>
+    <fieldset>
+        <legend>Color palette</legend>
+        <div class="color-replace-super-container">
+            <div class="colors-list-container" @dragover="handleColorDragover">
+                <template v-for="(color, i) in colors">
+                    <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" @dragend="handleColorDragend" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i), 'color-disabled': i >= numColors}">
+                        <label v-bind:for="idForColorPicker(i)">{{i+1}}</label>
+                        <input type="color" v-bind:id="idForColorPicker(i)" v-model="colorsShadow[i]" v-bind:disabled="i >= numColors" />
+                    </div>
+                </template>
+            </div>
         </div>
-        <div class="colors-list-container" @dragover="handleColorDragover">
-            <template v-for="(color, i) in colors">
-                <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" @dragend="handleColorDragend" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i), 'color-disabled': i >= numColors}">
-                    <label v-bind:for="idForColorPicker(i)">{{i+1}}</label>
-                    <input type="color" v-bind:id="idForColorPicker(i)" v-model="colorsShadow[i]" v-bind:disabled="i >= numColors" />
-                </div>
-            </template>
+        <div class="spread-content">
+            <div>
+                <button class="btn btn-default btn-sm" @click="randomizePalette" title="Set color palette to random colors">Randomize</button>
+                <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
+                    <print-palette-button :colors="colors" />
+                <?php endif; ?>
+                <button class="btn btn-default btn-sm" v-show="currentPalette.isSaved" @click="showRenamePalette">Rename</button>
+            </div>
+            <?php //these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both) ?>
+            <button class="btn btn-primary btn-sm" v-show="currentPalette.isCustom" @click="savePalette">Save</button>
+            <button class="btn btn-danger btn-sm" v-show="currentPalette.isSaved" @click="deletePalette">Delete</button>
         </div>
-    </div>
-    <div class="spread-content">
-        <div>
-            <button class="btn btn-default btn-sm" @click="randomizePalette" title="Set color palette to random colors">Randomize palette</button>
-            <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
-                <print-palette-button :colors="colors" />
-            <?php endif; ?>
-            <button class="btn btn-default btn-sm" v-show="currentPalette.isSaved" @click="showRenamePalette">Rename palette</button>
-        </div>
-        <?php //these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both) ?>
-        <button class="btn btn-primary btn-sm" v-show="currentPalette.isCustom" @click="savePalette">Save palette</button>
-        <button class="btn btn-danger btn-sm" v-show="currentPalette.isSaved" @click="deletePalette">Delete palette</button>
-    </div>
+    </fieldset>
     <fieldset>
         <legend>Optimize palette</legend>
         <div class="spread-content">

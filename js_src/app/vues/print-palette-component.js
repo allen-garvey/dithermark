@@ -1,6 +1,6 @@
 (function(Vue){
     Vue.component('print-palette-button', {
-        template: `<button class="btn btn-default btn-sm" @click="printPalette" title="Print current color palette to console">Print palette</button>`,
+        template: `<button class="btn btn-default btn-sm" @click="printPalette" title="Print current color palette to console">Print</button>`,
         props: ['colors'],
         methods: {
             printPalette: function(){
