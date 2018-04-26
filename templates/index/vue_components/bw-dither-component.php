@@ -29,7 +29,7 @@
         <legend>Color substitution</legend>
         <label>Black<input type="color" v-model="colorReplaceColors[0]" /></label>
         <label>White<input type="color" v-model="colorReplaceColors[1]" /></label>
-        <button v-on:click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults">Reset colors</button>
+        <button class="btn btn-default" v-on:click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
     </fieldset>
     <div>
         <button v-on:click="saveTexture">Save texture</button>
