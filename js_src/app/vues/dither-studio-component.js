@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes){
     //webworker stuff
     var ditherWorkers;
     
@@ -81,7 +81,7 @@
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
-                editorThemes: [{name: 'White', className: 'editor-white'}, {name: 'Light', className: 'editor-light'}, {name: 'Dark', className: 'editor-dark'}, {name: 'Black', className: 'editor-black'},],
+                editorThemes: EditorThemes.get(),
                 currentEditorThemeIndex: null,
                 openImageErrorMessage: null,
                 showWebglWarningMessage: false,
@@ -394,4 +394,4 @@
     var fileInput = document.createElement('input');
     fileInput.type = 'file';
     
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes);
