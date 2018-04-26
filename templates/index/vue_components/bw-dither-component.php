@@ -17,7 +17,7 @@
         </label>
     </div>
     <div>
-        <button v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
+        <button class="btn btn-success btn-sm" v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
     </div>
     <div class="histogram-super-container">
         <div class="histogram-container" style="width: <?= HISTOGRAM_BW_WIDTH.'px'; ?>; height: <?= HISTOGRAM_HEIGHT.'px'; ?>;">
@@ -32,7 +32,7 @@
         <button class="btn btn-default btn-sm" v-on:click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
     </fieldset>
     <div>
-        <button v-on:click="saveTexture">Save texture</button>
-        <button v-show="savedTextures.length >= 3" v-on:click="combineDitherTextures">Combine textures</button>
+        <button class="btn btn-default btn-sm" v-on:click="saveTexture">Save texture</button>
+        <button class="btn btn-default btn-sm" v-show="savedTextures.length >= 3" v-on:click="combineDitherTextures">Combine textures</button>
     </div>
 </div>
