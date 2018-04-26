@@ -25,15 +25,12 @@
             <canvas ref="histogramCanvas" class="histogram-canvas" width="<?= HISTOGRAM_BW_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Lightness histogram"></canvas>
         </div>
     </div>
-
-    <div class="color-replace-super-container">
-        <div class="color-replace-title-container">
-            <h5 class="color-replace-title">Color substitution</h5>
-        </div>
+    <fieldset>
+        <legend>Color substitution</legend>
         <label>Black<input type="color" v-model="colorReplaceColors[0]" /></label>
         <label>White<input type="color" v-model="colorReplaceColors[1]" /></label>
         <button v-on:click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults">Reset colors</button>
-    </div>
+    </fieldset>
     <div>
         <button v-on:click="saveTexture">Save texture</button>
         <button v-show="savedTextures.length >= 3" v-on:click="combineDitherTextures">Combine textures</button>
