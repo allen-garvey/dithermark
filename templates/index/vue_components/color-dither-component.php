@@ -47,15 +47,13 @@
     </div>
     <fieldset>
         <legend>Color palette</legend>
-        <div class="color-replace-super-container">
-            <div class="colors-list-container" @dragover="handleColorDragover">
-                <template v-for="(color, i) in colors">
-                    <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" @dragend="handleColorDragend" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i), 'color-disabled': i >= numColors}">
-                        <label v-bind:for="idForColorPicker(i)">{{i+1}}</label>
-                        <input type="color" v-bind:id="idForColorPicker(i)" v-model="colorsShadow[i]" v-bind:disabled="i >= numColors" />
-                    </div>
-                </template>
-            </div>
+        <div class="colors-list-container" @dragover="handleColorDragover">
+            <template v-for="(color, i) in colors">
+                <div class="color-container" draggable="true" @dragstart="handleColorDragstart($event, i)" @dragover="handleColorDragover($event, i)" @drop="handleColorDrop($event, i)" @dragend="handleColorDragend" v-bind:class="{'dragged-over': shouldShowDragoverStyle(i), 'dragged': isBeingDragged(i), 'color-disabled': i >= numColors}">
+                    <label v-bind:for="idForColorPicker(i)">{{i+1}}</label>
+                    <input type="color" v-bind:id="idForColorPicker(i)" v-model="colorsShadow[i]" v-bind:disabled="i >= numColors" />
+                </div>
+            </template>
         </div>
         <div class="spread-content">
             <div>
