@@ -5,8 +5,8 @@
             <input ref="input" tabindex="1" :type="inputType" :placeholder="placeholder" v-model="inputValue" @keyup.enter="okAction" />
         </label>
         <div class="modal-buttons-container">
-            <button tabindex="2" @click="cancelAction">Cancel</button>
-            <button tabindex="3" @click="okAction">{{okButtonValue}}</button>
+            <button class="btn btn-default" tabindex="2" @click="cancelAction">Cancel</button>
+            <button class="btn btn-primary" tabindex="3" @click="okAction">{{okButtonValue}}</button>
         </div>
     </div>
 </div>

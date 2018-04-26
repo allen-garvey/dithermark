@@ -60,15 +60,15 @@
     </div>
     <div class="spread-content">
         <div>
-            <button @click="randomizePalette" title="Set color palette to random colors">Randomize palette</button>
+            <button class="btn btn-default btn-sm" @click="randomizePalette" title="Set color palette to random colors">Randomize palette</button>
             <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
                 <print-palette-button :colors="colors" />
             <?php endif; ?>
-            <button v-show="currentPalette.isSaved" @click="showRenamePalette">Rename palette</button>
+            <button class="btn btn-default btn-sm" v-show="currentPalette.isSaved" @click="showRenamePalette">Rename palette</button>
         </div>
         <?php //these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both) ?>
-        <button v-show="currentPalette.isCustom" @click="savePalette">Save palette</button>
-        <button v-show="currentPalette.isSaved" @click="deletePalette">Delete palette</button>
+        <button class="btn btn-primary btn-sm" v-show="currentPalette.isCustom" @click="savePalette">Save palette</button>
+        <button class="btn btn-danger btn-sm" v-show="currentPalette.isSaved" @click="deletePalette">Delete palette</button>
     </div>
     <fieldset>
         <legend>Optimize palette</legend>
@@ -82,7 +82,7 @@
             </label>
             <?php IndexView::cyclePropertyList('selectedColorQuantizationModeIndex', 'colorQuantizationModes', 'optimize palette algorithm'); ?>
             <div v-show="isSelectedColorQuantizationPending">Working&hellip;</div>
-            <button @click="optimizePalette" v-bind:disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
+            <button class="btn btn-primary btn-sm" @click="optimizePalette" v-bind:disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
         </div>
     </fieldset>
 </div>   

@@ -1,0 +1,107 @@
+/*
+* minimal button styles based on Bootstrap 3 buttons with default theme
+*/
+
+.btn{
+    padding: 6px 12px;
+    line-height: 1.42857;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+
+    color: #fff;
+    text-shadow: 0 -1px 0 rgba(0,0,0,0.2);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
+    background-repeat: repeat-x;
+
+    &:hover, &:focus{
+        background-position: 0 -15px;
+    }
+    &:focus{
+        outline: 5px auto -webkit-focus-ring-color;
+        outline-offset: -2px;
+    }
+    &:active{
+        background-image: none;
+        box-shadow: inset 0 3px 5px rgba(0,0,0,0.125);
+    }
+}
+.btn-sm, .btn-xs{
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+.btn-xs{
+    padding: 1px 5px;
+}
+.btn-default{
+    color: #333;
+    background-color: #fff;
+    background-image: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
+    border-color: #ccc;
+
+    &:hover, &:focus{
+        background-color: #d4d4d4;
+        border-color: #8c8c8c;
+    }
+
+    &:active{
+        background-color: #e0e0e0;
+        border-color: #dbdbdb;
+    }
+}
+.btn-primary{
+    background-color: #337ab7;
+    background-image: linear-gradient(to bottom, #337ab7 0%, #265a88 100%);
+    border-color: #245580;
+
+    &:hover, &:focus{
+        background-color: #265a88;
+        border-color: #204d74;
+    }
+    &:focus{
+        border-color: #122b40;
+    }
+    &:active{
+        background-color: #265a88;
+        border-color: #245580;
+    }
+}
+.btn-success{
+    background-color: #5cb85c;
+    background-image: linear-gradient(to bottom, #5cb85c 0%, #419641 100%);
+    border-color: #3e8f3e;
+
+    &:hover, &:focus{
+        background-color: #419641;
+        border-color: #255625;
+    }
+    &:hover{
+        border-color: #398439;
+    }
+    &:focus{
+        border-color: #255625;
+    }
+    &:active{
+        background-color: #419641;
+        border-color: #3e8f3e;
+    }
+}
+.btn-danger{
+    background-color: #d9534f;
+    background-image: linear-gradient(to bottom, #d9534f 0%, #c12e2a 100%);
+    border-color: #b92c28;
+
+    &:hover, &:focus{
+        background-color: #c12e2a;
+        border-color: #ac2925;
+    }
+    &:focus{
+        border-color: #761c19;
+    }
+    &:active{
+        background-color: #c12e2a;
+        border-color: #b92c28;
+    }
+}
