@@ -31,7 +31,9 @@
             this.currentEditorThemeIndex = 0;
             
             fileInput.addEventListener('change', (e)=>{
-                Fs.openImageFile(e, this.loadImage);
+                Fs.openImageFile(e, this.loadImage, (errorMessage)=>{
+                    this.openImageErrorMessage = errorMessage;
+                });
                 fileInput.value = null;
             }, false);
 
@@ -81,7 +83,7 @@
                 showOriginalImage: true,
                 editorThemes: [{name: 'White', className: 'editor-white'}, {name: 'Light', className: 'editor-light'}, {name: 'Dark', className: 'editor-dark'}, {name: 'Black', className: 'editor-black'},],
                 currentEditorThemeIndex: null,
-                openImageUrlErrorMessage: null,
+                openImageErrorMessage: null,
                 showWebglWarningMessage: false,
             };
         },
@@ -253,7 +255,7 @@
                 });
             },
             loadImageFromUrlFailed: function(error, imageUrl){
-                this.openImageUrlErrorMessage = Fs.messageForOpenImageUrlError(error, imageUrl);
+                this.openImageErrorMessage = Fs.messageForOpenImageUrlError(error, imageUrl);
                 this.isCurrentlyLoadingImageUrl = false;
             },
             showOpenImageUrlPrompt: function(){
@@ -283,7 +285,7 @@
                 }, 'unsplash-random-image').catch(this.loadImageFromUrlFailed);
             },
             loadImage: function(image, file){
-                this.openImageUrlErrorMessage = null;
+                this.openImageErrorMessage = null;
                 this.loadedImage = {
                     width: image.width,
                     height: image.height,

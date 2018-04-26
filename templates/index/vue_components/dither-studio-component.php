@@ -1,8 +1,13 @@
 <div>
     <div class="alerts-container">
-        <div class="alert alert-danger" v-if="openImageUrlErrorMessage">
-            <div @click="openImageUrlErrorMessage=null" class="alert-close-button"></div>
-            {{openImageUrlErrorMessage.beforeUrl}} <a :href="openImageUrlErrorMessage.url" class="alert-link">{{openImageUrlErrorMessage.url}}</a> {{openImageUrlErrorMessage.afterUrl}}
+        <div class="alert alert-danger" v-if="openImageErrorMessage">
+            <div @click="openImageErrorMessage=null" class="alert-close-button"></div>
+            <template v-if="typeof openImageErrorMessage === 'object'">
+                {{openImageErrorMessage.beforeUrl}} <a :href="openImageErrorMessage.url" class="alert-link">{{openImageErrorMessage.url}}</a> {{openImageErrorMessage.afterUrl}}
+            </template>
+            <template v-else>
+                {{openImageErrorMessage}}
+            </template>
         </div>
         <div class="alert alert-warning" v-if="showWebglWarningMessage &amp;&amp; webglWarningMessage">
             <div @click="showWebglWarningMessage=false" class="alert-close-button"></div>

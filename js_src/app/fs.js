@@ -18,16 +18,15 @@ App.Fs = (function(Constants){
           }
     }
 
-    function openImageFile(e, imageLoadFunc) {
+    function openImageFile(e, imageLoadFunc, errFunc) {
         const files = e.target.files;
         if(files.length < 1){
-            return;
+            return errFunc('No files selected');;
         }
         const file = files[0];
         if(!file.type.startsWith('image/')){
-            return;
+            return errFunc(`${file.name} appears to be of type ${file.type} rather than an image`);
         }
-        
         imageElement.onload = ()=> {
             imageLoadFunc(imageElement, file);
         };
