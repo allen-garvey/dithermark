@@ -22,6 +22,12 @@ input[disabled="disabled"], button[disabled="disabled"]{
     cursor: not-allowed;
 }
 
+fieldset{
+    border: 1px solid rgba(10, 10, 10, 0.2);
+    border-radius: 2px;
+    padding: 8px;
+}
+
 .super-label{
     margin-right: 30px;
 }
