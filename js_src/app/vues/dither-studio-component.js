@@ -13,6 +13,10 @@
     
     var sourceWebglTexture;
 
+    //saving and loading image elements
+    var saveImageLink;
+    var fileInput;
+
     //imageDimensions = height * width
     //percentage is 0-100
     //returns percentage 0-100
@@ -29,6 +33,11 @@
         template: document.getElementById('dither-studio-component'),
         created: function(){
             this.currentEditorThemeIndex = 0;
+
+            //initialize saving and loading image elements
+            saveImageLink = document.createElement('a');
+            fileInput = document.createElement('input');
+            fileInput.type = 'file';
             
             fileInput.addEventListener('change', (e)=>{
                 Fs.openImageFile(e, this.loadImage, (errorMessage)=>{
@@ -389,9 +398,4 @@
             },
         }
     });
-    
-    var saveImageLink = document.createElement('a');
-    var fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    
 })(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes);
