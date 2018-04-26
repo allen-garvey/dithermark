@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings){
     //webworker stuff
     var ditherWorkers;
     
@@ -32,8 +32,6 @@
     var app = Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         created: function(){
-            this.currentEditorThemeIndex = 0;
-
             //initialize saving and loading image elements
             saveImageLink = document.createElement('a');
             fileInput = document.createElement('input');
@@ -66,9 +64,14 @@
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             saveImageCanvas = Canvas.create(refs.saveImageCanvas);
             
+            //load global settings
+            const globalSettings = UserSettings.getGlobalSettings();
+            this.currentEditorThemeIndex = EditorThemes.indexForKey(this.editorThemes, globalSettings.editorThemeKey);
+            this.showOriginalImage = globalSettings.showOriginalImage;
+            this.isLivePreviewEnabled = globalSettings.isLivePreviewEnabled;
             //check for webgl support
             this.isWebglSupported = !!transformCanvasWebGl.gl;
-            this.isWebglEnabled = this.isWebglSupported;
+            this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
         },
         data: function(){
             return {
@@ -179,12 +182,24 @@
             },
             currentEditorThemeIndex: function(newThemeIndex, oldThemeIndex){
                 let classList = document.documentElement.classList;
+                //this will be null on original page load
                 if(oldThemeIndex !== null){
                     let oldThemeClass = this.editorThemes[oldThemeIndex].className;
                     classList.remove(oldThemeClass);
+                    //no need to save settings on page load, when we are loading the setting
+                    this.saveGlobalSettings();
                 }
                 let newThemeClass = this.editorThemes[newThemeIndex].className;
                 classList.add(newThemeClass);
+            },
+            showOriginalImage: function(){
+                this.saveGlobalSettings();
+            },
+            isWebglEnabled: function(){
+                this.saveGlobalSettings();
+            },
+            isLivePreviewEnabled: function(){
+                this.saveGlobalSettings();
             },
             zoomDisplay: function(newValue){
                 //have to check if not equal to this.zoom, or will start infinite loop
@@ -221,6 +236,12 @@
             },
         },
         methods: {
+            /**
+             * Settings
+             */
+            saveGlobalSettings: function(){
+                UserSettings.saveGlobalSettings(this.editorThemes[this.currentEditorThemeIndex].key, this.isWebglEnabled, this.isLivePreviewEnabled, this.showOriginalImage);
+            },
             /*
             * Tabs
             */
@@ -398,4 +419,4 @@
             },
         }
     });
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings);
