@@ -18,7 +18,7 @@ input[type="checkbox"]{
     flex-basis: calc(50% - #{$controls_gutter});
 }
 .global-controls-panel{
-    margin-right: $controls_gutter;
+    margin: 0 $controls_gutter 16px 0;
 }
 
 .controls{
@@ -108,4 +108,11 @@ input[type="color"]{
         width: calc(100% - 188px);
         vertical-align: bottom;
     }
+}
+
+/*
+* Canvases
+*/
+.image-canvas-supercontainer{
+    overflow-x: scroll;
 }

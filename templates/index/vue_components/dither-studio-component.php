@@ -1,4 +1,4 @@
-<div>
+<div class="app-container">
     <div class="alerts-container">
         <div class="alert alert-danger" v-if="openImageErrorMessage">
             <div @click="openImageErrorMessage=null" class="alert-close-button"></div>

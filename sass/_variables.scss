@@ -16,7 +16,10 @@ $pinned_dither_controls_width: 454px;
 $pinned_dither_controls_min_height: 400px;
 //padding to left and right of canvas when controls are pinned so controls don't overlap 
 $pinned_controls_canvas_padding: $pinned_dither_controls_width + 30px;
+
+//media queries
 $pinned_controls_mq_width: 1080px;
+$sticky_controls_mq_width: 932px;
 
 $alerts_max_width: 1000px;
 

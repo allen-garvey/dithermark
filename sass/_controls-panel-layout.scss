@@ -1,4 +1,34 @@
+//styles for tablets
+@include sticky_controls_mq{
+	.app-container{
+		//has to be inline-block for position: sticky to work
+		display: inline-block;
+	}
+
+	.controls{
+		position: -webkit-sticky;
+		position: sticky;
+		left: 0;
+		//has to be inline-flex for position: sticky to work
+		display: inline-flex;
+	}
+	.image-canvas-supercontainer{
+		overflow-x: initial;
+	}
+}
+
+
+//styles for desktop
 @include pinned_controls_mq{
+	//reset tablet styles
+	.app-container{
+		display: block;
+	}
+	.controls{
+		position: static;
+		display: flex;
+	}
+	//desktop styles
 	.controls-container{
 		position: fixed;
 		display: block;
@@ -14,8 +44,7 @@
 	}
 
 	.super-dither-controls-container, .global-controls-panel{
-		border: 1px solid rgba(var(--main-text-color-rgb), 0.2);
-		border-top: none;
+		border-left: 1px solid rgba(var(--main-text-color-rgb), 0.2);
 		padding: 8px;
 	}
 	.global-controls-panel{
