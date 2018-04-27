@@ -46,7 +46,7 @@
                 Zoom
                 <input type="range" :min="zoomMin" :max="zoomMax" v-model.number="zoom"/>
                 <input type="number" :min="zoomMin" :max="zoomMax" v-model.number="zoomDisplay" @keyup.enter="zoom = zoomDisplay"/>
-                <button v-show="zoom !== 100" @click="resetZoom">Reset</button>
+                <button class="btn btn-default btn-sm" v-show="zoom !== 100" @click="resetZoom" title="Reset zoom to 100%">Reset</button>
             </label>
         </div>
     </div>
