@@ -15,10 +15,10 @@
     <legend>Performance</legend>
     <div class="spread-content">
         <label>Live preview
-            <input type="checkbox" v-model="isLivePreviewEnabled"/>
+            <input type="checkbox" v-model="isLivePreviewEnabled" title="Immediately transform image when controls change"/>
         </label>
-        <label v-if="isWebglSupported">Enable WebGL
-            <input type="checkbox" v-model="isWebglEnabled"/>
+        <label v-if="isWebglSupported">Use WebGL
+            <input type="checkbox" v-model="isWebglEnabled" title="Use WebGL to speed up performance when possible"/>
         </label>
     </div>
 </fieldset>
