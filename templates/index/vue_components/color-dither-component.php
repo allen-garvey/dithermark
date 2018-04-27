@@ -55,7 +55,7 @@
                 </div>
             </template>
         </div>
-        <div class="spread-content">
+        <div class="spread-content palette-buttons-container">
             <div>
                 <button class="btn btn-default btn-sm" @click="randomizePalette" title="Set color palette to random colors">Randomize</button>
                 <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>

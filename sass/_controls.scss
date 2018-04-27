@@ -92,6 +92,10 @@ input[type="color"]{
         }
     }
 }
+.palette-buttons-container{
+    //reduce upper margin from color inputs
+    margin: -8px 0 8px;
+}
 
 /*
 * zoom container
