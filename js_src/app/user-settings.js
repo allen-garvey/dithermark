@@ -29,7 +29,7 @@ App.UserSettings = (function(){
         return {
             isWebglEnabled: true,
             isLivePreviewEnabled: true,
-            showOriginalImage: true,
+            showOriginalImage: false,
         };
     }
 
