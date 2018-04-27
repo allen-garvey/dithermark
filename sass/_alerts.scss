@@ -2,12 +2,17 @@
 
 .alerts-container{
     max-width: 100vw;
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    //so position sticky works
+    display: inline-block;
+    word-break: break-all;
 }
-@include alerts_mq{
+@include pinned_controls_mq{
     .alerts-container{
-        max-width: $alerts_max_width;
-        position: fixed;
-        left: calc(95vw - #{$alerts_max_width + $pinned_dither_controls_width});
+        top: 0;
+        max-width: calc(100vw - #{$pinned_dither_controls_width});
     }
 }
 .alert-close-button:after{
