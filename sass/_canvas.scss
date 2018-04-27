@@ -1,15 +1,15 @@
 /*
 * Canvases
 */
-$canvasMargin: 25px;
 
 .image-canvas-supercontainer{
     display: flex;
     justify-content: center;
+    overflow-x: scroll;
 }
 
 .image-canvas-container{
-    margin-top: $canvasMargin;
+    margin-top: 12px;
     //non-fixed styles only
     display: grid;
     max-width: 100%;

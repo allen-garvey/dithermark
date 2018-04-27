@@ -19,7 +19,7 @@ $pinned_controls_canvas_padding: $pinned_dither_controls_width + 30px;
 
 //media queries
 $pinned_controls_mq_width: 1080px;
-$sticky_controls_mq_width: 932px;
+$sticky_controls_mq_width: 440px;
 
 $alerts_max_width: 1000px;
 
@@ -27,3 +27,6 @@ $alerts_max_width: 1000px;
 $controls_gutter: 20px;
 $controlsWidth: 900px;
 $superContainerMargin: 16px;
+
+//canvases
+$canvasMargin: 25px;

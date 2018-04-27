@@ -13,10 +13,6 @@ input[type="checkbox"]{
     width: $controlsWidth;
     max-width: 100%;
 }
-
-.controls-container > div{
-    flex-basis: calc(50% - #{$controls_gutter});
-}
 .global-controls-panel{
     margin: 0 $controls_gutter 16px 0;
 }
@@ -24,11 +20,15 @@ input[type="checkbox"]{
 .controls{
     display: flex;
     flex-direction: column;
-    align-items: center;
+    //22px to account for vertical scrollbar width
+    max-width: calc(100vw - 22px);
+    &, & > *{
+        box-sizing: border-box;
+    }
 }
 
 
-.controls-container .controls-panel > *{
+.controls-panel > *{
     margin-bottom: 3px;
 }
 
@@ -53,7 +53,7 @@ input[type="color"]{
 }
 
 .color-dither-number-of-colors-container{
-    margin-top: 24px;
+    margin-top: 16px;
     display: flex;
     flex-wrap: wrap;
     & > *{
@@ -108,11 +108,4 @@ input[type="color"]{
         width: calc(100% - 188px);
         vertical-align: bottom;
     }
-}
-
-/*
-* Canvases
-*/
-.image-canvas-supercontainer{
-    overflow-x: scroll;
 }
