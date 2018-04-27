@@ -1,5 +1,10 @@
 .header{
     padding: 8px 16px 4px;
+    position: -webkit-sticky;
+    position: sticky;
+    left: 0;
+    //so position sticky works
+    display: inline-block;
 }
 
 .brand{
