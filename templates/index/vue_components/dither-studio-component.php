@@ -16,7 +16,7 @@
     </div>
     <div class="controls">
         <div class="controls-container">
-            <div class="global-controls-panel controls-panel">
+            <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
                 <div class="tabs-container">
                     <template v-for="(tab, index) in globalControlsTabs">
                         <div class="tab" :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)">{{tab.name}}</div>
@@ -41,7 +41,7 @@
                 </div>
             </div>
         </div>
-        <div class="zoom-bar-container" v-show="isImageLoaded">
+        <div class="zoom-bar-container" v-if="isImageLoaded">
             <label>
                 Zoom
                 <input type="range" :min="zoomMin" :max="zoomMax" v-model.number="zoom"/>
