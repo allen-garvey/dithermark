@@ -28,5 +28,8 @@ $controls_gutter: 20px;
 $controlsWidth: 900px;
 $superContainerMargin: 16px;
 
+//controls borders
+$controls_border: 1px solid rgba(var(--main-text-color-rgb), 0.1);
+
 //canvases
 $canvasMargin: 25px;

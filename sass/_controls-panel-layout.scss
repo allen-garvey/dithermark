@@ -45,12 +45,19 @@
 	}
 
 	.super-dither-controls-container, .global-controls-panel{
-		border-left: 1px solid rgba(var(--main-text-color-rgb), 0.2);
+		border-left: $controls_border;
 		padding: 8px;
 	}
 	.global-controls-panel{
 		margin: 0;
 		min-height: $global_controls_height;
+		
+		//for before image has loaded
+		//and there are no controls below it
+		&.no-image{
+			border-bottom: $controls_border;
+			border-radius: 3px;
+		}
 	}
 
 	.zoom-bar-container{
@@ -60,7 +67,7 @@
 		left: 0;
 		background-color: var(--pinned-controls-bg-color);
 		box-sizing: border-box;
-		border-top: 1px solid rgba(var(--main-text-color-rgb), 0.2);
+		border-top: $controls_border;
 		//-1 pixel so it hides border
 		width: calc(100% - #{$pinned_dither_controls_width});
 		padding: 4px;
