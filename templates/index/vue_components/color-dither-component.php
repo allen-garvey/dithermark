@@ -1,4 +1,7 @@
 <div class="dither-controls-container controls-panel">
+    <div class="histogram-container" style="width: <?= HISTOGRAM_COLOR_WIDTH.'px'; ?>; height: <?= HISTOGRAM_HEIGHT.'px'; ?>;">
+        <canvas ref="histogramCanvas" width="<?= HISTOGRAM_COLOR_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Hue histogram"></canvas>
+    </div>
     <div class="spread-content">
         <label>Algorithm
             <select v-model="selectedDitherAlgorithmIndex">
@@ -11,11 +14,6 @@
     </div>
     <div>
         <button class="btn btn-success btn-sm"  v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
-    </div>
-    <div class="histogram-super-container">
-        <div class="histogram-container" style="width: <?= HISTOGRAM_COLOR_WIDTH.'px'; ?>; height: <?= HISTOGRAM_HEIGHT.'px'; ?>;">
-            <canvas ref="histogramCanvas" width="<?= HISTOGRAM_COLOR_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Hue histogram"></canvas>
-        </div>
     </div>
     <div class="spread-content">
         <label>Color comparison
