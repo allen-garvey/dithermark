@@ -7,7 +7,7 @@
     left: 0;
     //so position sticky works
     display: inline-block;
-    word-break: break-all;
+    word-break: break-word;
 }
 @include pinned_controls_mq{
     .alerts-container{
