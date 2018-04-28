@@ -21,9 +21,6 @@
 //styles for desktop
 @include pinned_controls_mq{
 	//reset tablet styles
-	.app-container{
-		display: block;
-	}
 	.controls{
 		position: static;
 		display: flex;
