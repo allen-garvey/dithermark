@@ -14,6 +14,7 @@
             {{webglWarningMessage}}
         </div>
     </div>
+    <div class="hint-container" v-if="!isImageLoaded">Open an image to begin</div>
     <div class="controls">
         <div class="controls-container">
             <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
@@ -50,16 +51,16 @@
             </label>
         </div>
     </div>
-        <div class="image-canvas-supercontainer" v-show="isImageLoaded">
-            <div class="image-canvas-container" :class="{'show-original': showOriginalImage}">
-                <canvas ref="saveImageCanvas" class="hidden"></canvas><?php //used when saving image, so pixelated images are scaled correctly ?>
-                <canvas ref="originalImageCanvas" class="hidden"></canvas><?php //original non-pixelated image loaded by user ?>
-                <canvas ref="sourceCanvas" class="hidden"></canvas><?php //pixelated-image used as source to dithers ?>
-                <canvas ref="transformCanvas" class="hidden"></canvas><?php //output from dither ?>
-                <canvas ref="transformCanvasWebgl" class="hidden"></canvas><?php //output from webgl, copied to above because otherwise chrome will freak out when we change tabs ?>
-                <canvas ref="sourceCanvasOutput" class="output-canvas" v-show="showOriginalImage"></canvas><?php //original image as displayed to the user, after zoomed and pixelated ?>
-                <canvas ref="transformCanvasOutput" class="output-canvas"></canvas><?php //output from dither as shown to user, after zoom ?>
-            </div>
+    <div class="image-canvas-supercontainer" v-show="isImageLoaded">
+        <div class="image-canvas-container" :class="{'show-original': showOriginalImage}">
+            <canvas ref="saveImageCanvas" class="hidden"></canvas><?php //used when saving image, so pixelated images are scaled correctly ?>
+            <canvas ref="originalImageCanvas" class="hidden"></canvas><?php //original non-pixelated image loaded by user ?>
+            <canvas ref="sourceCanvas" class="hidden"></canvas><?php //pixelated-image used as source to dithers ?>
+            <canvas ref="transformCanvas" class="hidden"></canvas><?php //output from dither ?>
+            <canvas ref="transformCanvasWebgl" class="hidden"></canvas><?php //output from webgl, copied to above because otherwise chrome will freak out when we change tabs ?>
+            <canvas ref="sourceCanvasOutput" class="output-canvas" v-show="showOriginalImage"></canvas><?php //original image as displayed to the user, after zoomed and pixelated ?>
+            <canvas ref="transformCanvasOutput" class="output-canvas"></canvas><?php //output from dither as shown to user, after zoom ?>
         </div>
+    </div>
     <modal-prompt ref="modalPromptComponent" />
 </div>

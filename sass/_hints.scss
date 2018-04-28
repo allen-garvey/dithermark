@@ -1,0 +1,23 @@
+/*
+* Styles for hints, used for before images are loaded on how to use app
+*/
+
+.hint-container{
+    color: var(--hint-text-color);
+    font-size: 1.25em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 3em;
+    //have to have min-width since app-container
+    //needs to be display: inline-block for stick alerts to work
+    //-22px for width of vertical scrollbar
+    min-width: calc(100vw - 22px);
+}
+
+@include pinned_controls_mq{
+    .hint-container{
+        font-size: 1.6em;
+        min-height: 50vh;
+    }
+}
