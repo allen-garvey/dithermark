@@ -1,5 +1,5 @@
 
-App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer, Constants, Util){
+App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer, Constants, Util, ArrayUtil){
     const CLOSEST_COLOR = 0;
     const RANDOM_CLOSEST_COLOR = 1;
     const ORDERED_DITHER = 2;
@@ -14,10 +14,8 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     //creates container to lookup something by algorithm and color mode
     function createLookupContainer(){
         //should be length of algorithm keys
-        let ret = new Array(10);
-        //need to do it like this, otherwise we will be passing a reference to the same object
-        //https://stackoverflow.com/questions/35578478/array-prototype-fill-with-object-passes-reference-and-not-new-instance
-        return ret.fill().map(()=>{return {};});
+        const numAlgoKeys = 10;
+        return ArrayUtil.create(numAlgoKeys, ()=>{return {};});
     }
     
     
@@ -222,4 +220,4 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         aDitherXor2: createArithmeticDither(ADITHER_XOR2),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3),
     };    
-})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil);
+})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil, App.ArrayUtil);

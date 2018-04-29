@@ -1,4 +1,4 @@
-App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut){
+App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut, ArrayUtil){
     
     function createPopularityMap(pixels, numColors, numDistinctValues, pixelValueFunc){
         let popularityMap = new Float32Array(numDistinctValues);
@@ -325,8 +325,7 @@ App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut){
             lightnessMap[i] = Math.floor(totalLightness / total);
         });
         // console.log(lightnessMap);
-        let sortMap = new Array(hues.length);
-        return new Uint16Array(sortMap.fill().map((item, i)=>{ return [hues[i], lightnessMap[i]];}).sort((a, b)=>{ return a[1] - b[1]; }).map((item)=>{return item[0];}));
+        return new Uint16Array(ArrayUtil.create(hues.length, (i)=>{ return [hues[i], lightnessMap[i]];}).sort((a, b)=>{ return a[1] - b[1]; }).map((item)=>{return item[0];}));
     }
     
     
@@ -548,4 +547,4 @@ App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut){
        lightnessPopularity: Popularity.lightnessPopularity,
        huePopularity: Popularity.huePopularity,
     };
-})(App.Pixel, App.PixelMath, App.OptimizePalettePopularity, App.OptimizePaletteMedianCut);
+})(App.Pixel, App.PixelMath, App.OptimizePalettePopularity, App.OptimizePaletteMedianCut, App.ArrayUtil);

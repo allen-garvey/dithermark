@@ -1,5 +1,5 @@
 //color picker helper functionality
-App.ColorPicker = (function(Pixel){
+App.ColorPicker = (function(Pixel, ArrayUtil){
     function parseHex(hex, callback){
         let r = parseInt(hex.substring(1, 3), 16);
         let g = parseInt(hex.substring(3, 5), 16);
@@ -58,7 +58,7 @@ App.ColorPicker = (function(Pixel){
     }
     
     function randomPalette(numColors){
-        return Array(numColors).fill().map(randomHexColor);
+        return ArrayUtil.create(numColors, randomHexColor);
     }
     
     //based on: https://stackoverflow.com/questions/7837456/how-to-compare-arrays-in-javascript?page=1&tab=votes#tab-top
@@ -75,8 +75,7 @@ App.ColorPicker = (function(Pixel){
             }
             return hex;
         }
-        let ret = new Array(length);
-        ret.fill('#000000');
+        let ret = new Array(length).fill('#000000');
         for(let i=0,index=0;i<pixels.length;i+=3,index++){
             ret[index] = `#${numToHex(pixels[i])}${numToHex(pixels[i+1])}${numToHex(pixels[i+2])}`;
         }
@@ -95,4 +94,4 @@ App.ColorPicker = (function(Pixel){
         pixelsToHexArray: pixelsToHexArray,
     };
     
-})(App.Pixel);
+})(App.Pixel, App.ArrayUtil);
