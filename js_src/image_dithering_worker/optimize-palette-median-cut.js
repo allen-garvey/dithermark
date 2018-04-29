@@ -118,31 +118,33 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     }
 
     function medianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
-        //get number of times we need to divide pixels in half and sort
-        const numCuts = Math.ceil(Math.log2(numColors));
-        let pixelArray = Util.createPixelArray(pixels);
+        //find nearest power of 2 that is greater than the number of colors
+        const numCuts = Math.pow(2, Math.ceil(Math.log2(numColors)));
 
-        let colors = [];
-        const extractColorFunc = colorQuantization.key.endsWith('MEDIAN') ? pixelArrayMedian : pixelArrayAverage;
-        
-        for(let i=0, divisions=1;i<=numCuts;i++,divisions*=2){
-            const divisionSize = Math.round(pixelArray.length / divisions);
-            
-            for(let j=0, currentDivision=1;currentDivision<=divisions;j+=divisionSize,currentDivision++){
-                let endIndex = j+divisionSize;
-                //last index might not be slighty smaller or larger than necessary,
-                //so set it to array length to be sure
-                if(currentDivision === divisions){
-                    endIndex = pixelArray.length;
-                }
-                const subarray = pixelArray.slice(j, endIndex);
-                sortOnLongestAxis(subarray);
-                if(i === numCuts){
-                    colors.push(extractColorFunc(subarray));
-                }
-            }
+        let cuts = [Util.createPixelArray(pixels)];
+
+        while(cuts.length != numCuts){
+            let newCuts = [];
+            cuts.forEach((cut)=>{
+                sortOnLongestAxis(cut);
+                const half = Math.ceil(cut.length / 2);
+                newCuts.push(cut.slice(0, half));
+                newCuts.push(cut.slice(half, cut.length));
+            });
+            cuts = newCuts;
         }
-        
+
+        let extractColorFunc = pixelArrayAverage;
+        if(colorQuantization.key.endsWith('MEDIAN')){
+            //only have to sort 1 last time if we are taking the median, since for average the order doesn't matter
+            extractColorFunc = (cut) =>{
+                return pixelArrayMedian(sortOnLongestAxis(cut));
+            };
+        }
+        let colors = cuts.map((cut)=>{
+            return extractColorFunc(cut);
+        });
+
         if(colors.length > numColors){
             colors = mergeMedians(colors, numColors);
         }
