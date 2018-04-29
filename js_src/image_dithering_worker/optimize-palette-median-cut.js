@@ -1,7 +1,7 @@
 /**
  * Color quantization vanilla median cut algorithm
 */
-App.OptimizePaletteMedianCut = (function(PixelMath, Util, ArrayUtil){
+App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     function findLongestAxis(pixels){
         let rMin = 256;
         let rMax = -1;
@@ -34,22 +34,11 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util, ArrayUtil){
         }
     }
 
-    function countingSort(pixelArray, pixelIndex){
-        const buckets = ArrayUtil.create(256, ()=>{ return []; });
-        pixelArray.forEach((pixel)=>{
-            buckets[pixel[pixelIndex]].push(pixel);
-        });
-        let ret = [];
-
-        buckets.forEach((bucket)=>{
-            ret = ret.concat(bucket);
-        });
-        return ret;
-    }
-
     function sortOnLongestAxis(pixels){
         const sortIndex = findLongestAxis(pixels);
-        return countingSort(pixels, sortIndex);
+        return pixels.sort((a, b)=>{
+            return a[sortIndex] - b[sortIndex];
+        });
     }
 
     function pixelArrayAverage(pixelArray){
@@ -137,7 +126,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util, ArrayUtil){
         while(cuts.length != numCuts){
             let newCuts = [];
             cuts.forEach((cut)=>{
-                cut = sortOnLongestAxis(cut);
+                sortOnLongestAxis(cut);
                 const half = Math.ceil(cut.length / 2);
                 newCuts.push(cut.slice(0, half));
                 newCuts.push(cut.slice(half, cut.length));
@@ -166,4 +155,4 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util, ArrayUtil){
     return {
         medianCut,
     };
-})(App.PixelMath, App.OptimizePaletteUtil, App.ArrayUtil);
+})(App.PixelMath, App.OptimizePaletteUtil);
