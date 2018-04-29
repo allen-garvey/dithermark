@@ -15,4 +15,5 @@ App.ColorQuantizationModes = [
     {key: 'PMC_UNIFORM', title: 'Perceptual Median Cut (Uniform)', algo: 'perceptualMedianCut', hueMix: 0.6},
     {key: 'MEDIAN_CUT_MEDIAN', title: 'Median Cut (Median)', algo: 'medianCut'},
     {key: 'MEDIAN_CUT_AVERAGE', title: 'Median Cut (Average)', algo: 'medianCut'},
+    {key: 'RGB_QUANT', title: 'RGB Quant', algo: 'rgbQuant'},
 ];

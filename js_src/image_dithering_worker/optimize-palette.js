@@ -1,4 +1,4 @@
-App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut, ArrayUtil){
+App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut, ArrayUtil, RgbQuant){
     
     function createPopularityMap(pixels, numColors, numDistinctValues, pixelValueFunc){
         let popularityMap = new Float32Array(numDistinctValues);
@@ -546,5 +546,6 @@ App.OptimizePalette = (function(Pixel, PixelMath, Popularity, MedianCut, ArrayUt
        popularity: Popularity.popularity,
        lightnessPopularity: Popularity.lightnessPopularity,
        huePopularity: Popularity.huePopularity,
+       rgbQuant: RgbQuant.rgbQuant,
     };
-})(App.Pixel, App.PixelMath, App.OptimizePalettePopularity, App.OptimizePaletteMedianCut, App.ArrayUtil);
+})(App.Pixel, App.PixelMath, App.OptimizePalettePopularity, App.OptimizePaletteMedianCut, App.ArrayUtil, App.RgbQuant);
