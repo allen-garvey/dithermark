@@ -14,13 +14,12 @@
 //     boxPxls: 2,              // min-population threshold (if method = 2)
 //     initColors: 4096,        // # of top-occurring colors  to start with (if method = 1)
 //     minHueCols: 0,           // # of colors per hue group to evaluate regardless of counts, to retain low-count hues
-//     useCache: true,          // enables caching for perf usually, but can reduce perf in some cases, like pre-def palettes
 //     cacheFreq: 10,           // min color occurance count needed to qualify for caching
 //     colorDist: "euclidean",  // method used to determine color distance, can also be "manhattan"
 // };
 
 App.RgbQuant = (function(){
-	function RgbQuant(opts) {
+	function RgbQuant(opts){
 		opts = opts || {};
 
 		// 1 = by global population, 2 = subregion population threshold
@@ -58,7 +57,7 @@ App.RgbQuant = (function(){
 		// {i32:rgb}
 		this.i32rgb = {};
 		// enable color caching (also incurs overhead of cache misses and cache building)
-		this.useCache = opts.useCache !== false;
+		this.useCache = false;
 		// min color occurance count needed to qualify for caching
 		this.cacheFreq = opts.cacheFreq || 10;
 		// selection of color-distance equation
@@ -66,52 +65,45 @@ App.RgbQuant = (function(){
 	}
 
 	//pixels is UInt8ClampedArray of pixel data
-	RgbQuant.prototype.sample = function sample(pixels, imageWidth) {
-        let buf32 = new Uint32Array(pixels.buffer);
-		switch (this.method) {
-			case 1: this.colorStats1D(buf32); break;
-			case 2: this.colorStats2D(buf32, imageWidth); break;
+	RgbQuant.prototype.sample = function(pixels, imageWidth){
+		let buf32 = new Uint32Array(pixels.buffer);
+		if(this.method === 1){
+			this.colorStats1D(buf32);
+		}
+		else{
+			this.colorStats2D(buf32, imageWidth);
 		}
 	};
 
 	// reduces histogram to palette, remaps & memoizes reduced colors
-	RgbQuant.prototype.buildPal = function buildPal() {
-		if (this.idxrgb.length > 0 && this.idxrgb.length <= this.colors) return;
+	RgbQuant.prototype.buildPal = function(){
+		let histG  = this.histogram;
+		let sorted = sortedHashKeys(histG);
+		let idxi32 = sorted;
 
-		var histG  = this.histogram,
-			sorted = sortedHashKeys(histG, true);
+		if(this.method === 1){
+			let cols = this.initColors;
+			let freq = histG[sorted[cols - 1]];
 
-		switch (this.method) {
-			case 1:
-				var cols = this.initColors,
-					last = sorted[cols - 1],
-					freq = histG[last];
+			idxi32 = sorted.slice(0, cols);
 
-				var idxi32 = sorted.slice(0, cols);
+			// add any cut off colors with same freq as last
+			let pos = cols;
+			const len = sorted.length;
+			while(pos < len && histG[sorted[pos]] == freq){
+				idxi32.push(sorted[pos++]);
+			}
 
-				// add any cut off colors with same freq as last
-				var pos = cols, len = sorted.length;
-				while (pos < len && histG[sorted[pos]] == freq)
-					idxi32.push(sorted[pos++]);
-
-				// inject min huegroup colors
-				if (this.hueStats)
-					this.hueStats.inject(idxi32);
-
-				break;
-			case 2:
-				var idxi32 = sorted;
-				break;
+			// inject min huegroup colors
+			if(this.hueStats){
+				this.hueStats.inject(idxi32);
+			}
 		}
 
 		// int32-ify values
-		idxi32 = idxi32.map(function(v){return +v;});
+		idxi32 = idxi32.map(function(v){ return +v; });
 
 		this.reducePal(idxi32);
-
-		// build cache of top histogram colors
-		if (this.useCache)
-			this.cacheHistogram(idxi32);
 	};
 
 	RgbQuant.prototype.palette = function palette() {
@@ -119,12 +111,10 @@ App.RgbQuant = (function(){
 		return new Uint8Array((new Uint32Array(this.idxi32)).buffer);
 	};
 
-	RgbQuant.prototype.prunePal = function prunePal(keep) {
-		var i32;
-
-		for (var j = 0; j < this.idxrgb.length; j++) {
-			if (!keep[j]) {
-				i32 = this.idxi32[j];
+	RgbQuant.prototype.prunePal = function(keep){
+		for(let j = 0; j < this.idxrgb.length; j++){
+			if(!keep[j]){
+				const i32 = this.idxi32[j];
 				this.idxrgb[j] = null;
 				this.idxi32[j] = null;
 				delete this.i32idx[i32];
@@ -240,7 +230,7 @@ App.RgbQuant = (function(){
 	};
 
 	// global top-population
-	RgbQuant.prototype.colorStats1D = function colorStats1D(buf32) {
+	RgbQuant.prototype.colorStats1D = function(buf32){
 		var histG = this.histogram,
 			num = 0, col,
 			len = buf32.length;
@@ -270,7 +260,7 @@ App.RgbQuant = (function(){
 	// population threshold within subregions
 	// FIXME: this can over-reduce (few/no colors same?), need a way to keep
 	// important colors that dont ever reach local thresholds (gradients?)
-	RgbQuant.prototype.colorStats2D = function colorStats2D(buf32, width) {
+	RgbQuant.prototype.colorStats2D = function(buf32, width){
 		var boxW = this.boxSize[0],
 			boxH = this.boxSize[1],
 			area = boxW * boxH,
@@ -308,13 +298,7 @@ App.RgbQuant = (function(){
 	};
 
 	// TOTRY: use HUSL - http://boronine.com/husl/
-	RgbQuant.prototype.nearestColor = function nearestColor(i32) {
-		var idx = this.nearestIndex(i32);
-		return idx === null ? 0 : this.idxi32[idx];
-	};
-
-	// TOTRY: use HUSL - http://boronine.com/husl/
-	RgbQuant.prototype.nearestIndex = function nearestIndex(i32) {
+	RgbQuant.prototype.nearestIndex = function(i32){
 		// alpha 0 returns null index
 		if ((i32 & 0xff000000) >> 24 == 0)
 			return null;
@@ -343,11 +327,6 @@ App.RgbQuant = (function(){
 		}
 
 		return idx;
-	};
-
-	RgbQuant.prototype.cacheHistogram = function cacheHistogram(idxi32) {
-		for (var i = 0, i32 = idxi32[i]; i < idxi32.length && this.histogram[i32] >= this.cacheFreq; i32 = idxi32[i++])
-			this.i32idx[i32] = this.nearestIndex(i32);
 	};
 
 	function HueStats(numGroups, minCols) {
@@ -407,9 +386,9 @@ App.RgbQuant = (function(){
 	};
 
 	// Rec. 709 (sRGB) luma coef
-	var Pr = .2126,
-		Pg = .7152,
-		Pb = .0722;
+	const Pr = .2126;
+	const Pg = .7152;
+	const Pb = .0722;
 
 	// http://alienryderflex.com/hsp.html
 	function rgb2lum(r,g,b) {
@@ -420,11 +399,11 @@ App.RgbQuant = (function(){
 		);
 	}
 
-	var rd = 255,
-		gd = 255,
-		bd = 255;
+	const rd = 255;
+	const gd = 255;
+	const bd = 255;
 
-	var euclMax = Math.sqrt(Pr*rd*rd + Pg*gd*gd + Pb*bd*bd);
+	const euclMax = Math.sqrt(Pr*rd*rd + Pg*gd*gd + Pb*bd*bd);
 	// perceptual Euclidean color distance
 	function distEuclidean(rgb0, rgb1) {
 		var rd = rgb1[0]-rgb0[0],
@@ -434,7 +413,7 @@ App.RgbQuant = (function(){
 		return Math.sqrt(Pr*rd*rd + Pg*gd*gd + Pb*bd*bd) / euclMax;
 	}
 
-	var manhMax = Pr*rd + Pg*gd + Pb*bd;
+	const manhMax = Pr*rd + Pg*gd + Pb*bd;
 	// perceptual Manhattan color distance
 	function distManhattan(rgb0, rgb1) {
 		var rd = Math.abs(rgb1[0]-rgb0[0]),
@@ -465,9 +444,6 @@ App.RgbQuant = (function(){
 			}
 			h /= 6;
 		}
-//		h = Math.floor(h * 360)
-//		s = Math.floor(s * 100)
-//		l = Math.floor(l * 100)
 		return {
 			h: h,
 			s: s,
@@ -489,90 +465,82 @@ App.RgbQuant = (function(){
 		}
 	}
 
-	function typeOf(val) {
+	function typeOf(val){
 		return Object.prototype.toString.call(val).slice(8,-1);
 	}
 
-	var sort = isArrSortStable() ? Array.prototype.sort : stableSort;
+	const sort = isArrSortStable() ? Array.prototype.sort : stableSort;
 
 	// must be used via stableSort.call(arr, fn)
-	function stableSort(fn) {
-		var type = typeOf(this[0]);
-
-		if (type == "Number" || type == "String") {
-			var ord = {}, len = this.length, val;
-
-			for (var i = 0; i < len; i++) {
-				val = this[i];
-				if (ord[val] || ord[val] === 0) continue;
-				ord[val] = i;
+	function stableSort(fn){
+		const ord = new Map();
+		this.forEach((item, index)=>{
+			if(!ord.has(item)){
+				ord.set(item, index);
 			}
+		});
 
-			return this.sort(function(a,b) {
-				return fn(a,b) || ord[a] - ord[b];
-			});
-		}
-		else {
-			var ord = this.map(function(v){return v});
-
-			return this.sort(function(a,b) {
-				return fn(a,b) || ord.indexOf(a) - ord.indexOf(b);
-			});
-		}
+		return this.sort(function(a,b) {
+			return fn(a,b) || ord.get(a) - ord.get(b);
+		});
 	}
 
 	// test if js engine's Array#sort implementation is stable
-	function isArrSortStable() {
-		var str = "abcdefghijklmnopqrstuvwxyz";
+	function isArrSortStable(){
+		const str = 'abcdefghijklmnopqrstuvwxyz';
 
-		return "xyzvwtursopqmnklhijfgdeabc" == str.split("").sort(function(a,b) {
+		return 'xyzvwtursopqmnklhijfgdeabc' == str.split('').sort(function(a,b){
 			return ~~(str.indexOf(b)/2.3) - ~~(str.indexOf(a)/2.3);
-		}).join("");
+		}).join('');
 	}
 
 	// partitions a rect of wid x hgt into
 	// array of bboxes of w0 x h0 (or less)
-	function makeBoxes(wid, hgt, w0, h0) {
-		var wnum = ~~(wid/w0), wrem = wid%w0,
-			hnum = ~~(hgt/h0), hrem = hgt%h0,
-			xend = wid-wrem, yend = hgt-hrem;
+	function makeBoxes(width, height, w0, h0){
+		const wrem = width % w0;
+		const hrem = height % h0;
+		const xend = width - wrem;
+		const yend = height - hrem;
 
-		var bxs = [];
-		for (var y = 0; y < hgt; y += h0)
-			for (var x = 0; x < wid; x += w0)
-				bxs.push({x:x, y:y, w:(x==xend?wrem:w0), h:(y==yend?hrem:h0)});
+		let bxs = [];
+		for (let y = 0; y < height; y += h0){
+			for(let x = 0; x < width; x += w0){
+				bxs.push({
+					x,
+					y, 
+					w: (x == xend ? wrem : w0),
+					h: (y == yend ? hrem : h0),
+				});
+			}
+		}
 
 		return bxs;
 	}
 
 	// iterates @bbox within a parent rect of width @wid; calls @fn, passing index within parent
-	function iterBox(bbox, wid, fn) {
-		var b = bbox,
-			i0 = b.y * wid + b.x,
-			i1 = (b.y + b.h - 1) * wid + (b.x + b.w - 1),
-			cnt = 0, incr = wid - b.w + 1, i = i0;
+	function iterBox(bbox, wid, fn){
+		let i = bbox.y * wid + bbox.x;
+		const i1 = (bbox.y + bbox.h - 1) * wid + (bbox.x + bbox.w - 1);
+		let cnt = 0;
+		const incr = wid - bbox.w + 1;
 
-		do {
+		do{
 			fn.call(this, i);
-			i += (++cnt % b.w == 0) ? incr : 1;
-		} while (i <= i1);
+			i += (++cnt % bbox.w == 0) ? incr : 1;
+		}while(i <= i1);
 	}
 
 	// returns array of hash keys sorted by their values
-	function sortedHashKeys(obj, desc) {
-		var keys = [];
-
-		for (var key in obj)
-			keys.push(key);
-
-		return sort.call(keys, function(a,b) {
-			return desc ? obj[b] - obj[a] : obj[a] - obj[b];
+	function sortedHashKeys(obj){
+		return sort.call(Object.keys(obj), function(a,b){
+			return obj[b] - obj[a];
 		});
 	}
 	
 
-
-
+	/**
+	 * Added shim functions for optimize palette compatibility
+	*/
 	function formatPaletteBuffer(paletteBuffer, numColors){
 		const ret = new Uint8Array(numColors * 3);
 		for(let sourceIndex=0,destIndex=0;sourceIndex<paletteBuffer.length;sourceIndex+=4,destIndex+=3){
