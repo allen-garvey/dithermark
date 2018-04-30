@@ -16,7 +16,7 @@
 //     colorDist: "euclidean",  // method used to determine color distance, can also be "manhattan"
 // };
 
-App.RgbQuant = (function(){
+App.OptimizePaletteRgbQuant = (function(){
 	function RgbQuant(opts){
 		opts = opts || {};
 
