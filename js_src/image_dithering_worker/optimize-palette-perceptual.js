@@ -434,7 +434,9 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
                 return null;
             }
             //also ignore hue if saturation is too low to distinguish hue
-            const satuarationFloor = 5;//Math.max(5, saturations[1]);
+            //TODO: pick between saturation floors - some images look better with one than the other
+            // const satuarationFloor = 5;
+            const satuarationFloor = Math.max(5, Math.min(saturations[1], 20));
             if(PixelMath.saturation(pixel) <= satuarationFloor){
                 return null;
             }
