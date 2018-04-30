@@ -515,7 +515,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
             let lightness = PixelMath.lightness(pixel);
             //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
             //TODO: find the lightness range in the image beforehand, so we can adjust this range dynamically
-            const lightnessesFraction = Math.ceil(lightnesses.length / 6);
+            const lightnessesFraction = Math.ceil(lightnesses.length / numColors);
             const lightnessFloor = lightnesses[lightnessesFraction];
             const lightnessCeil = lightnesses[lightnesses.length - lightnessesFraction];
             if(lightness <= lightnessFloor || lightness >= lightnessCeil){
