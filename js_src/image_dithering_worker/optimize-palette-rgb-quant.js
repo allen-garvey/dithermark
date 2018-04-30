@@ -212,12 +212,11 @@ App.RgbQuant = (function(){
 
 	// global top-population
 	RgbQuant.prototype.colorStats1D = function(buf32){
-		var histG = this.histogram,
-			num = 0, col,
-			len = buf32.length;
+		const histG = this.histogram;
+		const len = buf32.length;
 
 		for(let i=0;i<len;i++){
-			col = buf32[i];
+			let col = buf32[i];
 
 			// skip transparent
 			if((col & 0xff000000) >> 24 == 0){
@@ -236,32 +235,37 @@ App.RgbQuant = (function(){
 	// population threshold within subregions
 	// FIXME: this can over-reduce (few/no colors same?), need a way to keep
 	// important colors that dont ever reach local thresholds (gradients?)
-	RgbQuant.prototype.colorStats2D = function(buf32, width){
-		var boxW = this.boxSize[0],
-			boxH = this.boxSize[1],
-			area = boxW * boxH,
-			boxes = makeBoxes(width, buf32.length / width, boxW, boxH),
-			histG = this.histogram,
-			self = this;
+	RgbQuant.prototype.colorStats2D = function(buf32, imageWidth){
+		const boxWidth = this.boxSize[0];
+		const boxHeight = this.boxSize[1];
+		let area = boxWidth * boxHeight;
+		let boxes = makeBoxes(imageWidth, buf32.length / imageWidth, boxWidth, boxHeight);
+		const histG = this.histogram;
+		const self = this;
 
-		boxes.forEach(function(box) {
-			var effc = Math.max(Math.round((box.w * box.h) / area) * self.boxPxls, 2),
-				histL = {}, col;
+		boxes.forEach(function(box){
+			const effc = Math.max(Math.round((box.w * box.h) / area) * self.boxPxls, 2);
+			const histL = {};
 
-			iterBox(box, width, function(i) {
-				col = buf32[i];
+			iterBox(box, imageWidth, function(i){
+				const col = buf32[i];
 
 				// skip transparent
-				if ((col & 0xff000000) >> 24 == 0) return;
-
-				if (col in histG)
-					histG[col]++;
-				else if (col in histL) {
-					if (++histL[col] >= effc)
-						histG[col] = histL[col];
+				if((col & 0xff000000) >> 24 == 0){
+					return;
 				}
-				else
+
+				if(col in histG){
+					histG[col]++;
+				}
+				else if(col in histL){
+					if (++histL[col] >= effc){
+						histG[col] = histL[col];
+					}
+				}
+				else{
 					histL[col] = 1;
+				}
 			});
 		});
 	};
