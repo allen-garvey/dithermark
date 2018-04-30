@@ -56,10 +56,6 @@ App.RgbQuant = (function(){
 		this.i32idx = {};
 		// {i32:rgb}
 		this.i32rgb = {};
-		// enable color caching (also incurs overhead of cache misses and cache building)
-		this.useCache = false;
-		// min color occurance count needed to qualify for caching
-		this.cacheFreq = opts.cacheFreq || 10;
 		// selection of color-distance equation
 		this.colorDist = opts.colorDist == 'manhattan' ? distManhattan : distEuclidean;
 	}
@@ -303,9 +299,6 @@ App.RgbQuant = (function(){
 		if ((i32 & 0xff000000) >> 24 == 0)
 			return null;
 
-		if (this.useCache && (""+i32) in this.i32idx)
-			return this.i32idx[i32];
-
 		var min = 1000,
 			idx,
 			rgb = [
@@ -399,11 +392,10 @@ App.RgbQuant = (function(){
 		);
 	}
 
-	const rd = 255;
-	const gd = 255;
-	const bd = 255;
+	const rgbMaxValue = 255;
+	const rgbMaxValueSquared = rgbMaxValue * rgbMaxValue; 
 
-	const euclMax = Math.sqrt(Pr*rd*rd + Pg*gd*gd + Pb*bd*bd);
+	const euclMax = Math.sqrt(Pr*rgbMaxValueSquared + Pg*rgbMaxValueSquared + Pb*rgbMaxValueSquared);
 	// perceptual Euclidean color distance
 	function distEuclidean(rgb0, rgb1) {
 		var rd = rgb1[0]-rgb0[0],
@@ -413,7 +405,7 @@ App.RgbQuant = (function(){
 		return Math.sqrt(Pr*rd*rd + Pg*gd*gd + Pb*bd*bd) / euclMax;
 	}
 
-	const manhMax = Pr*rd + Pg*gd + Pb*bd;
+	const manhMax = Pr*rgbMaxValue + Pg*rgbMaxValue + Pb*rgbMaxValue;
 	// perceptual Manhattan color distance
 	function distManhattan(rgb0, rgb1) {
 		var rd = Math.abs(rgb1[0]-rgb0[0]),
@@ -445,8 +437,8 @@ App.RgbQuant = (function(){
 			h /= 6;
 		}
 		return {
-			h: h,
-			s: s,
+			h,
+			s,
 			l: rgb2lum(r,g,b),
 		};
 	}
