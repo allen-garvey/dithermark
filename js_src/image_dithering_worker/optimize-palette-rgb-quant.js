@@ -63,21 +63,22 @@ App.OptimizePaletteRgbQuant = (function(){
 
 	// reduces histogram to palette, remaps & memoizes reduced colors
 	RgbQuant.prototype.buildPal = function(){
-		let histG  = this.histogram;
-		let sorted = sortedHashKeys(histG);
+		let histogram  = this.histogram;
+		let sorted = sortedHashKeys(histogram);
 		let idxi32 = sorted;
 
 		if(this.method === 1){
-			let cols = this.initColors;
-			let freq = histG[sorted[cols - 1]];
+			//take the most popular colors in image
+			const mostPopularColorsCount = this.initColors;
+			idxi32 = sorted.slice(0, mostPopularColorsCount);
+			const leastPopularColorFrequency = histogram[idxi32[idxi32.length - 1]];
 
-			idxi32 = sorted.slice(0, cols);
-
-			// add any cut off colors with same freq as last
-			let pos = cols;
+			//continue to add colors if they appear with the same frequency
+			//as the least popular color in slice
+			let currentIndex = mostPopularColorsCount;
 			const len = sorted.length;
-			while(pos < len && histG[sorted[pos]] == freq){
-				idxi32.push(sorted[pos++]);
+			while(currentIndex < len && histogram[sorted[currentIndex]] === leastPopularColorFrequency){
+				idxi32.push(sorted[currentIndex++]);
 			}
 		}
 
@@ -92,142 +93,94 @@ App.OptimizePaletteRgbQuant = (function(){
 		return new Uint8Array((new Uint32Array(this.idxi32)).buffer);
 	};
 
-	RgbQuant.prototype.prunePal = function(keep){
-		for(let j = 0; j < this.idxrgb.length; j++){
-			if(!keep[j]){
-				const i32 = this.idxi32[j];
-				this.idxrgb[j] = null;
-				this.idxi32[j] = null;
-				delete this.i32idx[i32];
-			}
-		}
-	};
-
 	// reduces similar colors from an importance-sorted Uint32 rgba array
 	RgbQuant.prototype.reducePal = function reducePal(idxi32) {
-		// if pre-defined palette's length exceeds target
-		if (this.idxrgb.length > this.colors) {
-			// quantize histogram to existing palette
-			var len = idxi32.length, keep = {}, uniques = 0, idx, pruned = false;
-
-			for (var i = 0; i < len; i++) {
-				// palette length reached, unset all remaining colors (sparse palette)
-				if (uniques == this.colors && !pruned) {
-					this.prunePal(keep);
-					pruned = true;
-				}
-
-				idx = this.nearestIndex(idxi32[i]);
-
-				if (uniques < this.colors && !keep[idx]) {
-					keep[idx] = true;
-					uniques++;
-				}
-			}
-
-			if (!pruned) {
-				this.prunePal(keep);
-				pruned = true;
-			}
-		}
 		// reduce histogram to create initial palette
-		else {
-			// build full rgb palette
-			var idxrgb = idxi32.map(function(i32) {
-				return [
-					(i32 & 0xff),
-					(i32 & 0xff00) >> 8,
-					(i32 & 0xff0000) >> 16,
-				];
+		// build full rgb palette
+		let idxrgb = idxi32.map((i32)=>{
+			return [
+				(i32 & 0xff),
+				(i32 & 0xff00) >> 8,
+				(i32 & 0xff0000) >> 16,
+			];
+		});
+
+		const len = idxrgb.length;
+		let paletteLength = len;
+		let threshold = this.initDist;
+		let memDist = [];
+
+		while(paletteLength > this.colors){
+			memDist = [];
+
+			// iterate palette
+			for(let pixel1Index = 0; pixel1Index < len; pixel1Index++){
+				const pixel1 = idxrgb[pixel1Index];
+				if(!pixel1){
+					continue;
+				}
+				for(let pixel2Index = pixel1Index + 1; pixel2Index < len; pixel2Index++){
+					const pixel2 = idxrgb[pixel2Index];
+					if(!pixel2){
+						continue;
+					}
+					const distance = this.colorDist(pixel1, pixel2);
+
+					if(distance < threshold){
+						// store index,rgb,dist
+						memDist.push([pixel2Index, pixel2, distance]);
+
+						// kill squashed value
+						delete(idxrgb[pixel2Index]);
+						paletteLength--;
+					}
+				}
+			}
+
+			// if palette is still much larger than target, increment by larger initDist
+			threshold += (paletteLength > this.colors * 3) ? this.initDist : this.distIncr;
+		}
+
+		// if palette is over-reduced, re-add removed colors with largest distances from last round
+		if(paletteLength < this.colors){
+			// sort descending
+			sort.call(memDist, function(a,b){
+				return b[2] - a[2];
 			});
 
-			var len = idxrgb.length,
-				palLen = len,
-				thold = this.initDist;
-
-			// palette already at or below desired length
-			if (palLen > this.colors) {
-				while (palLen > this.colors) {
-					var memDist = [];
-
-					// iterate palette
-					for (var i = 0; i < len; i++) {
-						var pxi = idxrgb[i], i32i = idxi32[i];
-						if (!pxi) continue;
-
-						for (var j = i + 1; j < len; j++) {
-							var pxj = idxrgb[j], i32j = idxi32[j];
-							if (!pxj) continue;
-
-							var dist = this.colorDist(pxi, pxj);
-
-							if (dist < thold) {
-								// store index,rgb,dist
-								memDist.push([j, pxj, i32j, dist]);
-
-								// kill squashed value
-								delete(idxrgb[j]);
-								palLen--;
-							}
-						}
-					}
-
-					// palette reduction pass
-					// console.log("palette length: " + palLen);
-
-					// if palette is still much larger than target, increment by larger initDist
-					thold += (palLen > this.colors * 3) ? this.initDist : this.distIncr;
-				}
-
-				// if palette is over-reduced, re-add removed colors with largest distances from last round
-				if (palLen < this.colors) {
-					// sort descending
-					sort.call(memDist, function(a,b) {
-						return b[3] - a[3];
-					});
-
-					var k = 0;
-					while (palLen < this.colors) {
-						// re-inject rgb into final palette
-						idxrgb[memDist[k][0]] = memDist[k][1];
-
-						palLen++;
-						k++;
-					}
-				}
+			for(let k=0;paletteLength<this.colors;paletteLength++,k++){
+				// re-inject rgb into final palette
+				idxrgb[memDist[k][0]] = memDist[k][1];
 			}
+		}
 
-			var len = idxrgb.length;
-			for (var i = 0; i < len; i++) {
-				if (!idxrgb[i]) continue;
-
-				this.idxrgb.push(idxrgb[i]);
-				this.idxi32.push(idxi32[i]);
-
-				this.i32idx[idxi32[i]] = this.idxi32.length - 1;
-				this.i32rgb[idxi32[i]] = idxrgb[i];
+		//can't reuse old len variable, since we have modified idxrgb length in while loop
+		for(let i=0;i<idxrgb.length;i++) {
+			if(!idxrgb[i]){
+				continue;
 			}
+			this.idxi32.push(idxi32[i]);
 		}
 	};
 
 	// global top-population
 	RgbQuant.prototype.colorStats1D = function(buf32){
-		const histG = this.histogram;
+		const histogram = this.histogram;
 		const len = buf32.length;
 
 		for(let i=0;i<len;i++){
-			let col = buf32[i];
+			let pixel = buf32[i];
 
 			// skip transparent
-			if((col & 0xff000000) >> 24 == 0){
+			if((pixel & 0xff000000) >> 24 == 0){
                 continue;
             }
 
-			if(col in histG){
-                histG[col]++;
+			if(pixel in histogram){
+                histogram[pixel]++;
             }
 			else{
-                histG[col] = 1;
+                histogram[pixel] = 1;
             }
 		}
 	};
