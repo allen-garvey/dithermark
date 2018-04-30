@@ -34,7 +34,7 @@ App.OptimizePaletteRgbQuant = (function(){
 		// subregion partitioning box size
 		this.boxSize = opts.boxSize || [64,64];
 		// number of same pixels required within box for histogram inclusion
-		this.boxPxls = opts.boxPxls || 2;
+		this.boxPixels = opts.boxPxls || 2;
 
 		// accumulated histogram
 		this.histogram = {};
@@ -88,13 +88,13 @@ App.OptimizePaletteRgbQuant = (function(){
 		this.reducePal(idxi32);
 	};
 
-	RgbQuant.prototype.palette = function palette() {
+	RgbQuant.prototype.palette = function(){
 		this.buildPal();
 		return new Uint8Array((new Uint32Array(this.idxi32)).buffer);
 	};
 
 	// reduces similar colors from an importance-sorted Uint32 rgba array
-	RgbQuant.prototype.reducePal = function reducePal(idxi32) {
+	RgbQuant.prototype.reducePal = function(idxi32){
 		// reduce histogram to create initial palette
 		// build full rgb palette
 		let idxrgb = idxi32.map((i32)=>{
@@ -109,7 +109,6 @@ App.OptimizePaletteRgbQuant = (function(){
 		let paletteLength = len;
 		let threshold = this.initDist;
 		let memDist = [];
-
 		while(paletteLength > this.colors){
 			memDist = [];
 
@@ -147,15 +146,14 @@ App.OptimizePaletteRgbQuant = (function(){
 			sort.call(memDist, function(a,b){
 				return b[2] - a[2];
 			});
-
 			for(let k=0;paletteLength<this.colors;paletteLength++,k++){
 				// re-inject rgb into final palette
 				idxrgb[memDist[k][0]] = memDist[k][1];
 			}
 		}
 
-		//can't reuse old len variable, since we have modified idxrgb length in while loop
-		for(let i=0;i<idxrgb.length;i++) {
+		//can't use forEach() here, since it will omit deleted items
+		for(let i=0;i<len;i++) {
 			if(!idxrgb[i]){
 				continue;
 			}
@@ -191,65 +189,39 @@ App.OptimizePaletteRgbQuant = (function(){
 	RgbQuant.prototype.colorStats2D = function(buf32, imageWidth){
 		const boxWidth = this.boxSize[0];
 		const boxHeight = this.boxSize[1];
-		let area = boxWidth * boxHeight;
-		let boxes = makeBoxes(imageWidth, buf32.length / imageWidth, boxWidth, boxHeight);
-		const histG = this.histogram;
-		const self = this;
+		let boxArea = boxWidth * boxHeight;
+		const boxes = makeBoxes(imageWidth, buf32.length / imageWidth, boxWidth, boxHeight);
+		const histogram = this.histogram;
+		const boxPixels = this.boxPixels;
 
-		boxes.forEach(function(box){
-			const effc = Math.max(Math.round((box.w * box.h) / area) * self.boxPxls, 2);
-			const histL = {};
+		boxes.forEach((box)=>{
+			//need to find actual area of box and compare it with boxArea, since it might be less
+			//pixelFrequencyThreshold is the minimum number of identical pixels in box needed for it to be added to
+			//global histogram
+			const pixelFrequencyThreshold = Math.max(Math.round((box.width * box.height) / boxArea) * boxPixels, 2);
+			const boxHistogram = {};
 
-			iterBox(box, imageWidth, function(i){
-				const col = buf32[i];
+			iteratePixelsInBox(box, imageWidth, (i)=>{
+				const pixel = buf32[i];
 
 				// skip transparent
-				if((col & 0xff000000) >> 24 == 0){
+				if((pixel & 0xff000000) >> 24 == 0){
 					return;
 				}
 
-				if(col in histG){
-					histG[col]++;
+				if(pixel in histogram){
+					histogram[pixel]++;
 				}
-				else if(col in histL){
-					if (++histL[col] >= effc){
-						histG[col] = histL[col];
+				else if(pixel in boxHistogram){
+					if (++boxHistogram[pixel] >= pixelFrequencyThreshold){
+						histogram[pixel] = boxHistogram[pixel];
 					}
 				}
 				else{
-					histL[col] = 1;
+					boxHistogram[pixel] = 1;
 				}
 			});
 		});
-	};
-
-	// TOTRY: use HUSL - http://boronine.com/husl/
-	RgbQuant.prototype.nearestIndex = function(i32){
-		// alpha 0 returns null index
-		if ((i32 & 0xff000000) >> 24 == 0)
-			return null;
-
-		var min = 1000,
-			idx,
-			rgb = [
-				(i32 & 0xff),
-				(i32 & 0xff00) >> 8,
-				(i32 & 0xff0000) >> 16,
-			],
-			len = this.idxrgb.length;
-
-		for (var i = 0; i < len; i++) {
-			if (!this.idxrgb[i]) continue;		// sparse palettes
-
-			var dist = this.colorDist(rgb, this.idxrgb[i]);
-
-			if (dist < min) {
-				min = dist;
-				idx = i;
-			}
-		}
-
-		return idx;
 	};
 
 	// Rec. 709 (sRGB) luma coef
@@ -258,41 +230,40 @@ App.OptimizePaletteRgbQuant = (function(){
 	const Pb = .0722;
 
 	const rgbMaxValue = 255;
-	const rgbMaxValueSquared = rgbMaxValue * rgbMaxValue; 
 
-	const euclMax = Math.sqrt(Pr*rgbMaxValueSquared + Pg*rgbMaxValueSquared + Pb*rgbMaxValueSquared);
+	const euclMax = Math.sqrt(rgbMaxValue * rgbMaxValue * (Pr + Pg + Pb));
 	// perceptual Euclidean color distance
 	function distEuclidean(rgb0, rgb1) {
-		var rd = rgb1[0]-rgb0[0],
-			gd = rgb1[1]-rgb0[1],
-			bd = rgb1[2]-rgb0[2];
+		const rDist = rgb1[0]-rgb0[0];
+		const gDist = rgb1[1]-rgb0[1];
+		const bDist = rgb1[2]-rgb0[2];
 
-		return Math.sqrt(Pr*rd*rd + Pg*gd*gd + Pb*bd*bd) / euclMax;
+		return Math.sqrt(Pr*rDist*rDist + Pg*gDist*gDist + Pb*bDist*bDist) / euclMax;
 	}
 
-	const manhMax = Pr*rgbMaxValue + Pg*rgbMaxValue + Pb*rgbMaxValue;
+	const manhMax = rgbMaxValue * (Pr + Pg + Pb);
 	// perceptual Manhattan color distance
 	function distManhattan(rgb0, rgb1) {
-		var rd = Math.abs(rgb1[0]-rgb0[0]),
-			gd = Math.abs(rgb1[1]-rgb0[1]),
-			bd = Math.abs(rgb1[2]-rgb0[2]);
+		const rDist = Math.abs(rgb1[0]-rgb0[0]);
+		const gDist = Math.abs(rgb1[1]-rgb0[1]);
+		const bDist = Math.abs(rgb1[2]-rgb0[2]);
 
-		return (Pr*rd + Pg*gd + Pb*bd) / manhMax;
+		return (Pr*rDist + Pg*gDist + Pb*bDist) / manhMax;
 	}
 
 	const sort = isArrSortStable() ? Array.prototype.sort : stableSort;
 
 	// must be used via stableSort.call(arr, fn)
 	function stableSort(fn){
-		const ord = new Map();
+		const initialOrder = new Map();
 		this.forEach((item, index)=>{
-			if(!ord.has(item)){
-				ord.set(item, index);
+			if(!initialOrder.has(item)){
+				initialOrder.set(item, index);
 			}
 		});
 
 		return this.sort((a,b)=>{
-			return fn(a,b) || ord.get(a) - ord.get(b);
+			return fn(a,b) || initialOrder.get(a) - initialOrder.get(b);
 		});
 	}
 
@@ -307,20 +278,20 @@ App.OptimizePaletteRgbQuant = (function(){
 
 	// partitions a rect of wid x hgt into
 	// array of bboxes of w0 x h0 (or less)
-	function makeBoxes(width, height, w0, h0){
-		const wrem = width % w0;
-		const hrem = height % h0;
+	function makeBoxes(width, height, boxWidth, boxHeight){
+		const wrem = width % boxWidth;
+		const hrem = height % boxHeight;
 		const xend = width - wrem;
 		const yend = height - hrem;
 
 		let bxs = [];
-		for (let y = 0; y < height; y += h0){
-			for(let x = 0; x < width; x += w0){
+		for(let y = 0; y < height; y += boxHeight){
+			for(let x = 0; x < width; x += boxWidth){
 				bxs.push({
 					x,
 					y, 
-					w: (x == xend ? wrem : w0),
-					h: (y == yend ? hrem : h0),
+					width: (x == xend ? wrem : boxWidth),
+					height: (y == yend ? hrem : boxHeight),
 				});
 			}
 		}
@@ -328,15 +299,15 @@ App.OptimizePaletteRgbQuant = (function(){
 	}
 
 	// iterates @bbox within a parent rect of width @wid; calls @fn, passing index within parent
-	function iterBox(bbox, wid, fn){
-		let i = bbox.y * wid + bbox.x;
-		const i1 = (bbox.y + bbox.h - 1) * wid + (bbox.x + bbox.w - 1);
+	function iteratePixelsInBox(box, imageWidth, fn){
+		let i = box.y * imageWidth + box.x;
+		const i1 = (box.y + box.height - 1) * imageWidth + (box.x + box.width - 1);
 		let cnt = 0;
-		const incr = wid - bbox.w + 1;
+		const incr = imageWidth - box.width + 1;
 
 		do{
-			fn.call(this, i);
-			i += (++cnt % bbox.w == 0) ? incr : 1;
+			fn(i);
+			i += (++cnt % box.width == 0) ? incr : 1;
 		}while(i <= i1);
 	}
 
