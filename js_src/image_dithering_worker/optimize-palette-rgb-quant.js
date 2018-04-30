@@ -13,8 +13,6 @@
 //     boxSize: [64,64],        // subregion dims (if method = 2)
 //     boxPxls: 2,              // min-population threshold (if method = 2)
 //     initColors: 4096,        // # of top-occurring colors  to start with (if method = 1)
-//     minHueCols: 0,           // # of colors per hue group to evaluate regardless of counts, to retain low-count hues
-//     cacheFreq: 10,           // min color occurance count needed to qualify for caching
 //     colorDist: "euclidean",  // method used to determine color distance, can also be "manhattan"
 // };
 
@@ -32,14 +30,6 @@ App.RgbQuant = (function(){
 		this.initDist = opts.initDist || 0.01;
 		// subsequent passes threshold
 		this.distIncr = opts.distIncr || 0.005;
-		// palette grouping
-		this.hueGroups = opts.hueGroups || 10;
-		this.satGroups = opts.satGroups || 10;
-		this.lumGroups = opts.lumGroups || 10;
-		// if > 0, enables hues stats and min-color retention per group
-		this.minHueCols = opts.minHueCols || 0;
-		// HueStats instance
-		this.hueStats = this.minHueCols ? new HueStats(this.hueGroups, this.minHueCols) : null;
 
 		// subregion partitioning box size
 		this.boxSize = opts.boxSize || [64,64];
@@ -88,11 +78,6 @@ App.RgbQuant = (function(){
 			const len = sorted.length;
 			while(pos < len && histG[sorted[pos]] == freq){
 				idxi32.push(sorted[pos++]);
-			}
-
-			// inject min huegroup colors
-			if(this.hueStats){
-				this.hueStats.inject(idxi32);
 			}
 		}
 
@@ -239,11 +224,6 @@ App.RgbQuant = (function(){
                 continue;
             }
 
-			// collect hue stats
-			if(this.hueStats){
-                this.hueStats.check(col);
-            }
-
 			if(col in histG){
                 histG[col]++;
             }
@@ -274,10 +254,6 @@ App.RgbQuant = (function(){
 				// skip transparent
 				if ((col & 0xff000000) >> 24 == 0) return;
 
-				// collect hue stats
-				if (self.hueStats)
-					self.hueStats.check(col);
-
 				if (col in histG)
 					histG[col]++;
 				else if (col in histL) {
@@ -288,9 +264,6 @@ App.RgbQuant = (function(){
 					histL[col] = 1;
 			});
 		});
-
-		if (this.hueStats)
-			this.hueStats.inject(histG);
 	};
 
 	// TOTRY: use HUSL - http://boronine.com/husl/
@@ -322,75 +295,10 @@ App.RgbQuant = (function(){
 		return idx;
 	};
 
-	function HueStats(numGroups, minCols) {
-		this.numGroups = numGroups;
-		this.minCols = minCols;
-		this.stats = {};
-
-		for (var i = -1; i < numGroups; i++)
-			this.stats[i] = {num: 0, cols: []};
-
-		this.groupsFull = 0;
-	}
-
-	HueStats.prototype.check = function checkHue(i32) {
-		if (this.groupsFull == this.numGroups + 1)
-			this.check = function() {return;};
-
-		var r = (i32 & 0xff),
-			g = (i32 & 0xff00) >> 8,
-			b = (i32 & 0xff0000) >> 16,
-			hg = (r == g && g == b) ? -1 : hueGroup(rgb2hsl(r,g,b).h, this.numGroups),
-			gr = this.stats[hg],
-			min = this.minCols;
-
-		gr.num++;
-
-		if (gr.num > min)
-			return;
-		if (gr.num == min)
-			this.groupsFull++;
-
-		if (gr.num <= min)
-			this.stats[hg].cols.push(i32);
-	};
-
-	HueStats.prototype.inject = function injectHues(histG) {
-		for (var i = -1; i < this.numGroups; i++) {
-			if (this.stats[i].num <= this.minCols) {
-				switch (typeOf(histG)) {
-					case "Array":
-						this.stats[i].cols.forEach(function(col){
-							if (histG.indexOf(col) == -1)
-								histG.push(col);
-						});
-						break;
-					case "Object":
-						this.stats[i].cols.forEach(function(col){
-							if (!histG[col])
-								histG[col] = 1;
-							else
-								histG[col]++;
-						});
-						break;
-				}
-			}
-		}
-	};
-
 	// Rec. 709 (sRGB) luma coef
 	const Pr = .2126;
 	const Pg = .7152;
 	const Pb = .0722;
-
-	// http://alienryderflex.com/hsp.html
-	function rgb2lum(r,g,b) {
-		return Math.sqrt(
-			Pr * r*r +
-			Pg * g*g +
-			Pb * b*b
-		);
-	}
 
 	const rgbMaxValue = 255;
 	const rgbMaxValueSquared = rgbMaxValue * rgbMaxValue; 
@@ -415,52 +323,6 @@ App.RgbQuant = (function(){
 		return (Pr*rd + Pg*gd + Pb*bd) / manhMax;
 	}
 
-	// http://rgb2hsl.nichabi.com/javascript-function.php
-	function rgb2hsl(r, g, b) {
-		var max, min, h, s, l, d;
-		r /= 255;
-		g /= 255;
-		b /= 255;
-		max = Math.max(r, g, b);
-		min = Math.min(r, g, b);
-		l = (max + min) / 2;
-		if (max == min) {
-			h = s = 0;
-		} else {
-			d = max - min;
-			s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-			switch (max) {
-				case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-				case g:	h = (b - r) / d + 2; break;
-				case b:	h = (r - g) / d + 4; break
-			}
-			h /= 6;
-		}
-		return {
-			h,
-			s,
-			l: rgb2lum(r,g,b),
-		};
-	}
-
-	function hueGroup(hue, segs) {
-		var seg = 1/segs,
-			haf = seg/2;
-
-		if (hue >= 1 - haf || hue <= haf)
-			return 0;
-
-		for (var i = 1; i < segs; i++) {
-			var mid = i*seg;
-			if (hue >= mid - haf && hue <= mid + haf)
-				return i;
-		}
-	}
-
-	function typeOf(val){
-		return Object.prototype.toString.call(val).slice(8,-1);
-	}
-
 	const sort = isArrSortStable() ? Array.prototype.sort : stableSort;
 
 	// must be used via stableSort.call(arr, fn)
@@ -472,7 +334,7 @@ App.RgbQuant = (function(){
 			}
 		});
 
-		return this.sort(function(a,b) {
+		return this.sort((a,b)=>{
 			return fn(a,b) || ord.get(a) - ord.get(b);
 		});
 	}
@@ -481,7 +343,7 @@ App.RgbQuant = (function(){
 	function isArrSortStable(){
 		const str = 'abcdefghijklmnopqrstuvwxyz';
 
-		return 'xyzvwtursopqmnklhijfgdeabc' == str.split('').sort(function(a,b){
+		return 'xyzvwtursopqmnklhijfgdeabc' == str.split('').sort((a,b)=>{
 			return ~~(str.indexOf(b)/2.3) - ~~(str.indexOf(a)/2.3);
 		}).join('');
 	}
@@ -505,7 +367,6 @@ App.RgbQuant = (function(){
 				});
 			}
 		}
-
 		return bxs;
 	}
 
@@ -524,7 +385,7 @@ App.RgbQuant = (function(){
 
 	// returns array of hash keys sorted by their values
 	function sortedHashKeys(obj){
-		return sort.call(Object.keys(obj), function(a,b){
+		return sort.call(Object.keys(obj), (a,b)=>{
 			return obj[b] - obj[a];
 		});
 	}
