@@ -1,29 +1,34 @@
 //styles for tablets
-@include sticky_controls_mq{
-	.app-container{
-		//has to be inline-block for position: sticky to work
-		display: inline-block;
-	}
 
-	.controls{
-		position: -webkit-sticky;
-		position: sticky;
-		left: 0;
-		//has to be inline-flex for position: sticky to work
-		display: inline-flex;
-	}
-	.image-canvas-supercontainer{
-		overflow-x: initial;
-	}
-}
+//unfortunately we can't use position sticky because
+//while it works on desktop browsers, mobile devices
+//don't let it stick for some reason, so we have to resort to
+//horizontal scrollbars for now
+// @include sticky_controls_mq{
+// 	.app-container{
+// 		//has to be inline-block for position: sticky to work
+// 		display: inline-block;
+// 	}
+
+// 	.controls{
+// 		position: -webkit-sticky;
+// 		position: sticky;
+// 		left: 0;
+// 		//has to be inline-flex for position: sticky to work
+// 		display: inline-flex;
+// 	}
+// 	.image-canvas-supercontainer{
+// 		overflow-x: initial;
+// 	}
+// }
 
 
 //styles for desktop
 @include pinned_controls_mq{
 	//reset tablet styles
 	.controls{
-		position: static;
-		display: flex;
+		// position: static;
+		// display: flex;
 		align-items: center;
 	}
 	//desktop styles
