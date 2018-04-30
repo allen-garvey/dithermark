@@ -17,13 +17,13 @@
 // };
 
 App.OptimizePaletteRgbQuant = (function(){
-	function RgbQuant(opts){
+	function RgbQuant(numColors, opts){
 		opts = opts || {};
 
 		// 1 = by global population, 2 = subregion population threshold
 		this.method = opts.method || 2;
 		// desired final palette size
-		this.colors = opts.colors;
+		this.colors = numColors;
 		// # of highest-frequency colors to start with for palette reduction
 		this.initColors = opts.initColors || 4096;
 		// color-distance threshold for initial reduction pass
@@ -36,16 +36,6 @@ App.OptimizePaletteRgbQuant = (function(){
 		// number of same pixels required within box for histogram inclusion
 		this.boxPixels = opts.boxPxls || 2;
 
-		// accumulated histogram
-		this.histogram = {};
-		// palette - rgb triplets
-		this.idxrgb = [];
-		// palette - int32 vals
-		this.idxi32 = [];
-		// reverse lookup {i32:idx}
-		this.i32idx = {};
-		// {i32:rgb}
-		this.i32rgb = {};
 		// selection of color-distance equation
 		this.colorDist = opts.colorDist == 'manhattan' ? distManhattan : distEuclidean;
 	}
@@ -54,16 +44,13 @@ App.OptimizePaletteRgbQuant = (function(){
 	RgbQuant.prototype.sample = function(pixels, imageWidth){
 		let buf32 = new Uint32Array(pixels.buffer);
 		if(this.method === 1){
-			this.colorStats1D(buf32);
+			return this.colorStats1D(buf32);
 		}
-		else{
-			this.colorStats2D(buf32, imageWidth);
-		}
+		return this.colorStats2D(buf32, imageWidth);
 	};
 
 	// reduces histogram to palette, remaps & memoizes reduced colors
-	RgbQuant.prototype.buildPal = function(){
-		let histogram  = this.histogram;
+	RgbQuant.prototype.buildPalette = function(histogram){
 		let sorted = sortedHashKeys(histogram);
 		let idxi32 = sorted;
 
@@ -85,16 +72,15 @@ App.OptimizePaletteRgbQuant = (function(){
 		// int32-ify values
 		idxi32 = idxi32.map(function(v){ return +v; });
 
-		this.reducePal(idxi32);
+		return this.reducePalette(idxi32);
 	};
 
-	RgbQuant.prototype.palette = function(){
-		this.buildPal();
-		return new Uint8Array((new Uint32Array(this.idxi32)).buffer);
+	RgbQuant.prototype.palette = function(histogram){
+		return new Uint8Array((new Uint32Array(this.buildPalette(histogram))).buffer);
 	};
 
 	// reduces similar colors from an importance-sorted Uint32 rgba array
-	RgbQuant.prototype.reducePal = function(idxi32){
+	RgbQuant.prototype.reducePalette = function(idxi32){
 		// reduce histogram to create initial palette
 		// build full rgb palette
 		let idxrgb = idxi32.map((i32)=>{
@@ -151,19 +137,20 @@ App.OptimizePaletteRgbQuant = (function(){
 				idxrgb[memDist[k][0]] = memDist[k][1];
 			}
 		}
-
+		const idxi32Ret = [];
 		//can't use forEach() here, since it will omit deleted items
 		for(let i=0;i<len;i++) {
 			if(!idxrgb[i]){
 				continue;
 			}
-			this.idxi32.push(idxi32[i]);
+			idxi32Ret.push(idxi32[i]);
 		}
+		return idxi32Ret;
 	};
 
 	// global top-population
 	RgbQuant.prototype.colorStats1D = function(buf32){
-		const histogram = this.histogram;
+		const histogram = {};
 		const len = buf32.length;
 
 		for(let i=0;i<len;i++){
@@ -181,6 +168,7 @@ App.OptimizePaletteRgbQuant = (function(){
                 histogram[pixel] = 1;
             }
 		}
+		return histogram;
 	};
 
 	// population threshold within subregions
@@ -191,7 +179,7 @@ App.OptimizePaletteRgbQuant = (function(){
 		const boxHeight = this.boxSize[1];
 		let boxArea = boxWidth * boxHeight;
 		const boxes = makeBoxes(imageWidth, buf32.length / imageWidth, boxWidth, boxHeight);
-		const histogram = this.histogram;
+		const histogram = {};
 		const boxPixels = this.boxPixels;
 
 		boxes.forEach((box)=>{
@@ -222,6 +210,7 @@ App.OptimizePaletteRgbQuant = (function(){
 				}
 			});
 		});
+		return histogram;
 	};
 
 	// Rec. 709 (sRGB) luma coef
@@ -334,15 +323,13 @@ App.OptimizePaletteRgbQuant = (function(){
     
     function rgbQuant(pixels, numColors, colorQuantization, imageWidth, _imageHeight){
         let options = {
-			colors: numColors,
 			method: colorQuantization.method,
 		};
 		if(colorQuantization.colorDist){
 			options.colorDist = colorQuantization.colorDist;
 		}
-        const q = new RgbQuant(options);
-        q.sample(pixels, imageWidth);
-        const palette = q.palette();
+        const q = new RgbQuant(numColors, options);
+        const palette = q.palette(q.sample(pixels, imageWidth));
 		return formatPaletteBuffer(palette, numColors);
     }
 
