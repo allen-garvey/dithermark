@@ -17,6 +17,38 @@
 // };
 
 App.OptimizePaletteRgbQuant = (function(){
+	/**
+	 * Distances
+	 */
+	//distance constants
+	// Rec. 709 (sRGB) luma coef
+	const Pr = .2126;
+	const Pg = .7152;
+	const Pb = .0722;
+
+	const rgbMaxValue = 255;
+	const euclMax = Math.sqrt(rgbMaxValue * rgbMaxValue * (Pr + Pg + Pb));
+	const manhMax = rgbMaxValue * (Pr + Pg + Pb);
+
+	// perceptual Euclidean color distance
+	function distEuclidean(rgb0, rgb1) {
+		const rDist = rgb1[0]-rgb0[0];
+		const gDist = rgb1[1]-rgb0[1];
+		const bDist = rgb1[2]-rgb0[2];
+
+		return Math.sqrt(rDist*rDist*Pr + gDist*gDist*Pg + bDist*bDist*Pb);
+	}
+
+	// perceptual Manhattan color distance
+	function distManhattan(rgb0, rgb1) {
+		const rDist = Math.abs(rgb1[0]-rgb0[0]);
+		const gDist = Math.abs(rgb1[1]-rgb0[1]);
+		const bDist = Math.abs(rgb1[2]-rgb0[2]);
+
+		return Pr*rDist + Pg*gDist + Pb*bDist;
+	}
+
+
 	function RgbQuant(numColors, opts){
 		opts = opts || {};
 
@@ -26,18 +58,32 @@ App.OptimizePaletteRgbQuant = (function(){
 		this.colors = numColors;
 		// # of highest-frequency colors to start with for palette reduction
 		this.initColors = opts.initColors || 4096;
-		// color-distance threshold for initial reduction pass
-		this.initDist = opts.initDist || 0.01;
-		// subsequent passes threshold
-		this.distIncr = opts.distIncr || 0.005;
 
 		// subregion partitioning box size
 		this.boxSize = opts.boxSize || [64,64];
 		// number of same pixels required within box for histogram inclusion
 		this.boxPixels = opts.boxPxls || 2;
-
+		
+		// color-distance threshold for initial reduction pass
+		this.initDist = opts.initDist || 0.01;
+		// subsequent passes threshold
+		this.distIncr = opts.distIncr || 0.005;
 		// selection of color-distance equation
-		this.colorDist = opts.colorDist == 'manhattan' ? distManhattan : distEuclidean;
+		
+		//normalize distances so that distance functions have to do less work
+		if(opts.colorDist == 'manhattan'){
+			this.colorDist = distManhattan;
+			this.initDist *= manhMax;
+			this.distIncr *= manhMax;
+		}
+		else{
+			this.colorDist = distEuclidean;
+			this.initDist *= euclMax;
+			this.distIncr *= euclMax;
+
+			// this.initDist = this.initDist * this.initDist;
+			// this.distIncr = this.distIncr * this.distIncr;
+		}
 	}
 
 	//pixels is UInt8ClampedArray of pixel data
@@ -212,33 +258,6 @@ App.OptimizePaletteRgbQuant = (function(){
 		});
 		return histogram;
 	};
-
-	// Rec. 709 (sRGB) luma coef
-	const Pr = .2126;
-	const Pg = .7152;
-	const Pb = .0722;
-
-	const rgbMaxValue = 255;
-
-	const euclMax = Math.sqrt(rgbMaxValue * rgbMaxValue * (Pr + Pg + Pb));
-	// perceptual Euclidean color distance
-	function distEuclidean(rgb0, rgb1) {
-		const rDist = rgb1[0]-rgb0[0];
-		const gDist = rgb1[1]-rgb0[1];
-		const bDist = rgb1[2]-rgb0[2];
-
-		return Math.sqrt(Pr*rDist*rDist + Pg*gDist*gDist + Pb*bDist*bDist) / euclMax;
-	}
-
-	const manhMax = rgbMaxValue * (Pr + Pg + Pb);
-	// perceptual Manhattan color distance
-	function distManhattan(rgb0, rgb1) {
-		const rDist = Math.abs(rgb1[0]-rgb0[0]);
-		const gDist = Math.abs(rgb1[1]-rgb0[1]);
-		const bDist = Math.abs(rgb1[2]-rgb0[2]);
-
-		return (Pr*rDist + Pg*gDist + Pb*bDist) / manhMax;
-	}
 
 	const sort = isArrSortStable() ? Array.prototype.sort : stableSort;
 
