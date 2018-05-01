@@ -72,7 +72,7 @@
             <label>Algorithm
                 <select v-model="selectedColorQuantizationModeIndex">
                     <optgroup v-for="colorQuantizationGroup in colorQuantizationGroups" v-bind:label="colorQuantizationGroup.title">
-                        <option v-for="(colorQuantizationMode, index) in colorQuantizationModes.slice(colorQuantizationGroup.start, colorQuantizationGroup.start + colorQuantizationGroup.length)" v-bind:value="colorQuantizationGroup.start + index">{{ colorQuantizationMode.title }}</option>
+                        <option v-for="(colorQuantizationMode, index) in colorQuantizationModes.slice(colorQuantizationGroup.start, colorQuantizationGroup.start + colorQuantizationGroup.length)" v-bind:value="colorQuantizationGroup.start + index">{{ colorQuantizationMode }}</option>
                     </optgroup>
                 </select>
             </label>

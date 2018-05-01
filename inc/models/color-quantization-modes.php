@@ -13,10 +13,8 @@ class ColorQuantizationMode {
         $this->options = $options;
     }
 
-    public function toArrayForApp(): array{
-        return [
-            'title' => $this->title,
-        ];
+    public function getTitle(): string{
+        return $this->title;
     }
 
     public function toArrayForWorker(): array{
@@ -111,7 +109,7 @@ function colorQuantizationGroups(): array{
 
 function colorQuantizationModesApp(): array{
     return array_map(function($mode){
-        return $mode->toArrayForApp();
+        return $mode->getTitle();
     }, colorQuantizationModes());
 }
 
