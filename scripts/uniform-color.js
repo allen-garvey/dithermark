@@ -1,5 +1,5 @@
 /**
- * Script used to assist generating Uniform color palettes
+ * Script used to assist generating 'Uniform' color palettes
  */
 (function(){
     //uniform color 1 hues
