@@ -2,7 +2,7 @@
     <div class="modal-overlay" @click="cancelAction"></div>
     <div class="modal-container">
         <label>{{labelValue}}
-            <input ref="input" tabindex="1" :type="inputType" :placeholder="placeholder" v-model="inputValue" @keyup.enter="okAction" />
+            <input ref="input" class="modal-input" tabindex="1" :type="inputType" :placeholder="placeholder" v-model="inputValue" @keyup.enter="okAction" />
         </label>
         <div class="modal-buttons-container">
             <button class="btn btn-default" tabindex="2" @click="cancelAction">Cancel</button>
