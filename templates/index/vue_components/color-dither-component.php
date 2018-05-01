@@ -71,9 +71,9 @@
         <div class="spread-content">
             <label>Algorithm
                 <select v-model="selectedColorQuantizationModeIndex">
-                    <template v-for="(colorQuantizationMode, index) in colorQuantizationModes">
-                        <option v-bind:value="index">{{colorQuantizationMode.title}}</option>
-                    </template>
+                    <optgroup v-for="colorQuantizationGroup in colorQuantizationGroups" v-bind:label="colorQuantizationGroup.title">
+                        <option v-for="(colorQuantizationMode, index) in colorQuantizationModes.slice(colorQuantizationGroup.start, colorQuantizationGroup.start + colorQuantizationGroup.length)" v-bind:value="colorQuantizationGroup.start + index">{{ colorQuantizationMode.title }}</option>
+                    </optgroup>
                 </select>
             </label>
             <?php IndexView::cyclePropertyList('selectedColorQuantizationModeIndex', 'colorQuantizationModes', 'optimize palette algorithm'); ?>

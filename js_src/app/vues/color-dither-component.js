@@ -43,6 +43,7 @@
                 colorDitherModes: [...ColorDitherModes.values()],
                 selectedColorDitherModeIndex: 4,
                 colorQuantizationModes: ColorQuantizationModes.modes,
+                colorQuantizationGroups: ColorQuantizationModes.groups,
                 selectedColorQuantizationModeIndex: 0,
                 pendingColorQuantizations: {},
             };
