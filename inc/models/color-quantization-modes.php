@@ -86,23 +86,27 @@ function colorQuantizationGroups(): array{
         ];
     }
 
-    $lastIndex = count($groups) - 1;
-    foreach($groups as $index => $group){
-        //normalize start indexes
+    //need to normalize start indexes first
+    $groups = array_map(function($group, $index){
         $group['start'] = $group['start'] - $index;
+        return $group;
+    }, $groups, array_keys($groups));
+
+
+    $lastIndex = count($groups) - 1;
+    $colorQuantizationModesBaseLength = count($colorQuantizationModesBase);
+
+    return array_map(function($group, $index) use ($groups, $lastIndex, $colorQuantizationModesBaseLength){
         if($index === $lastIndex){
-            $length = count($colorQuantizationModesBase) - $group['start'] - 1;
+            $length = $colorQuantizationModesBaseLength - $group['start'] - 1;
         }
         else{
-            $length = $groups[$index + 1]['start'] - $group['start'] - 1;
+            $length = $groups[$index + 1]['start'] - $group['start'];
         }
         $group['length'] = $length;
-        //php works by value, so need to reassign here
-        $groups[$index] = $group;
-    }
+        return $group;
 
-
-    return $groups;
+    }, $groups, array_keys($groups));
 }
 
 function colorQuantizationModesApp(): array{
