@@ -7,7 +7,6 @@
             JS_SHARED_PATH.'array-util.js',
             JS_SHARED_PATH.'worker-headers.js',
             JS_SHARED_PATH.'color-dither-modes.js',
-            JS_SHARED_PATH.'color-quantization-modes.js',
             JS_SHARED_PATH.'timer.js',
             JS_SHARED_PATH.'pixel.js',
             JS_SHARED_PATH.'bayer-matrix.js',
@@ -31,6 +30,7 @@
 
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
+            JS_APP_PATH.'color-quantization-modes.js',
             JS_APP_PATH.'user-settings.js',
             JS_APP_PATH.'editor-themes.js',
             JS_APP_PATH.'fs.js',
@@ -53,6 +53,7 @@
     
     function workerJsFiles(): array{
         return array_merge(sharedJsFiles(), [
+            JS_WORKER_PATH.'color-quantization-modes.js',
             JS_WORKER_PATH.'pixel-math.js',
             JS_WORKER_PATH.'color-dither-mode-functions.js',
             JS_WORKER_PATH.'image.js',

@@ -42,7 +42,7 @@
                 numColorsMax: Constants.colorDitherMaxColors,
                 colorDitherModes: [...ColorDitherModes.values()],
                 selectedColorDitherModeIndex: 4,
-                colorQuantizationModes: ColorQuantizationModes,
+                colorQuantizationModes: ColorQuantizationModes.modes,
                 selectedColorQuantizationModeIndex: 0,
                 pendingColorQuantizations: {},
             };

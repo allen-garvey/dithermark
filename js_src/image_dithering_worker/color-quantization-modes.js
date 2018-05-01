@@ -1,0 +1,1 @@
+App.ColorQuantizationModes = <?= json_encode(colorQuantizationModesWorker()); ?>;
