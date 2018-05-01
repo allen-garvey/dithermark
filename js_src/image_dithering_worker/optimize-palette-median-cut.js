@@ -135,7 +135,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         }
 
         let extractColorFunc = pixelArrayAverage;
-        if(colorQuantization.key.endsWith('MEDIAN')){
+        if(colorQuantization.isMedian){
             //only have to sort 1 last time if we are taking the median, since for average the order doesn't matter
             extractColorFunc = (cut) =>{
                 return pixelArrayMedian(sortOnLongestAxis(cut));

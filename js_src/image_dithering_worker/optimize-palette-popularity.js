@@ -82,10 +82,10 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         let retColors = new Uint8Array(numColors * 3);
         let colorsSet = new Set();
         let pixelHashFunc = pixelHash;
-        if(colorQuantization.key.startsWith('PERCEPTUAL')){
+        if(colorQuantization.isPerceptual){
             pixelHashFunc = perceptualPixelHash;
         }
-        if(colorQuantization.key.endsWith('VERTICAL')){
+        if(colorQuantization.isVertical){
             pixels = rotatePixels90Degrees(pixels, imageWidth, imageHeight);
         }
         //remove transparent pixels
@@ -140,14 +140,14 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
     //Divides an image into numColors lightness zones, and finds the most popular color in each zone
     function lightnessPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.key.startsWith('PERCEPTUAL'), (a, b)=>{
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
             return PixelMath.lightness(a) - PixelMath.lightness(b);
         });
     }
 
     //Divides an image into numColors hue zones, and finds the most popular color in each zone
     function huePopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.key.startsWith('PERCEPTUAL'), (a, b)=>{
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
             const hueDiff = PixelMath.hue(a) - PixelMath.hue(b); 
             if(hueDiff === 0){
                 return PixelMath.lightness(a) - PixelMath.lightness(b);

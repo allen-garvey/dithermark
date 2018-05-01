@@ -464,7 +464,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
             return PixelMath.hue(pixel);
         };
         let hueFunc = defaultHueFunc;
-        if(colorQuantization.key === 'PMC_UNIFORM_VIBRANT'){
+        if(colorQuantization.isVibrant){
             hueFunc = vibrantHueFunc;
         }
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
@@ -537,7 +537,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
             return PixelMath.hue(pixel);
         };
         let hueFunc = defaultHueFunc;
-        if(colorQuantization.key === 'UNIFORM_VIBRANT'){
+        if(colorQuantization.isVibrant){
             hueFunc = vibrantHueFunc;
         }
         let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
