@@ -20,6 +20,7 @@
 @include pinned_controls_mq{
     .image-canvas-supercontainer{
         justify-content: flex-start;
+        overflow-x: initial;
     }
     .output-canvas + .output-canvas{
         margin-left: $canvasMargin;
