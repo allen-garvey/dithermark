@@ -1,10 +1,10 @@
 <?php
 
 class ColorQuantizationMode {
-    protected $key;
-    protected $title;
-    protected $algorithmName;
-    protected $options;
+    protected $key; //for debugging purposes only
+    protected $title; //display title for user, and for timer
+    protected $algorithmName; //name of optimize-palette function
+    protected $options; //additional key-values to be stored on model and passed to function
 
     function __construct(string $key, string $title, string $algorithmName, array $options=[]) {
         $this->key = $key;
