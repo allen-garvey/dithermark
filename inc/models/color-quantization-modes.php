@@ -58,8 +58,8 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('HUE_POPULARITY', 'Hue Popularity', 'huePopularity'),
         new ColorQuantizationMode('PERCEPTUAL_HUE_POPULARITY', 'Perceptual Hue Popularity', 'huePopularity'),
         'Median Cut',
-        new ColorQuantizationMode('MEDIAN_CUT_MEDIAN', 'Median Cut (Median)', 'medianCut'),
         new ColorQuantizationMode('MEDIAN_CUT_AVERAGE', 'Median Cut (Average)', 'medianCut'),
+        new ColorQuantizationMode('MEDIAN_CUT_MEDIAN', 'Median Cut (Median)', 'medianCut'),
     ];
 }
 
