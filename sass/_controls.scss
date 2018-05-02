@@ -97,6 +97,12 @@ input[type="color"]{
     margin: -8px 0 8px;
 }
 
+//optimize palette
+.optimize-palette-pending{
+    color: var(--hint-text-color);
+    font-size: 14px;
+}
+
 /*
 * zoom container
 */
