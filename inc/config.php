@@ -21,6 +21,19 @@
     define('JS_VUES_PATH', JS_APP_PATH.'vues'.DIRECTORY_SEPARATOR);
     define('JS_SHARED_PATH', JS_SRC_PATH.'shared'.DIRECTORY_SEPARATOR);
     define('JS_WORKER_PATH', JS_SRC_PATH.'image_dithering_worker'.DIRECTORY_SEPARATOR);
+
+    /**
+     * URLs
+     * */
+    define('BASE_URL', '/');
+    define('CSS_URL_BASE', BASE_URL.'styles/');
+    define('JS_URL_BASE', BASE_URL.'js/');
+
+    define('CSS_APP_URL', CSS_URL_BASE.'style.css');
+
+    define('JS_APP_URL', JS_URL_BASE.'app.js');
+    define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.js');
+    define('JS_VUE_URL', JS_URL_BASE.'vue.min.js');
     
     /*
     * JS application constants
@@ -42,7 +55,3 @@
     //whether or not print color palette button is shown
     //(useful for when creating new color palettes)
     define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
-
-    //urls
-    define('JS_APP_URL', '/js/app.js');
-    define('JS_DITHER_WORKER_URL', '/js/dither-worker.js');

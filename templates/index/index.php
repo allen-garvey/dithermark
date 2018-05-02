@@ -10,7 +10,7 @@
         <title><?= APP_NAME; ?></title>
         <meta name="description" content="An interactive, in-browser exploration of image dithering and color quantization algorithms"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <link rel="stylesheet" type="text/css" href="/styles/style.css"/>
+        <link rel="stylesheet" type="text/css" href="<?= CSS_APP_URL; ?>"/>
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
     </head>
     <body>
@@ -42,7 +42,7 @@
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'pixel-distance-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bw-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-color-dither.php'); ?>
-        <script type="text/javascript" src="/js/vue.min.js"></script>
+        <script type="text/javascript" src="<?= JS_VUE_URL; ?>"></script>
         <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>
 </html>
