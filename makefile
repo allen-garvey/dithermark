@@ -25,13 +25,17 @@ JS_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/dither-worker.js
 JS_APP_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/app.min.js
 JS_WORKER_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/dither-worker.min.js
 
-
-
+#VUE js files
 VUE_SRC=node_modules/vue/dist/vue.min.js
 VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
 
+#css
 CSS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/styles
 CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
+
+#optional dminjs js minifier
+DMINJS_DIR=dminjs
+DMINJS_BIN=$(DMINJS_DIR)/bin/dminjs
 
 
 all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
@@ -39,9 +43,16 @@ all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_IND
 install: $(PUBLIC_HTML_DIR) $(JS_OUTPUT_DIR)
 	npm install
 
+#used when changing between PHP_BUILD_MODES
+reset:
+	rm -f $(JS_APP_OUTPUT)
+	rm -f $(JS_WORKER_OUTPUT)
+	rm -f $(HTML_INDEX)
+
 #don't use PUBLIC_HTML_DIR variable, to guard against it becoming unset
-clean:
+clean: reset
 	rm -rf ./public_html
+	rm -rf ./dminjs
 
 #target specific variable
 release: PHP_BUILD_MODE=release
@@ -62,17 +73,23 @@ $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(J
 $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_WORKER_TEMPLATE)
 	php $(JS_WORKER_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_WORKER_OUTPUT)
 
-$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT)
-	cat $(JS_APP_OUTPUT) > $(JS_APP_OUTPUT_RELEASE)
+$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT) $(DMINJS_BIN)
+	$(DMINJS_BIN) $(JS_APP_OUTPUT) > $(JS_APP_OUTPUT_RELEASE)
 
-$(JS_WORKER_OUTPUT_RELEASE): $(JS_WORKER_OUTPUT)
-	cat $(JS_WORKER_OUTPUT) > $(JS_WORKER_OUTPUT_RELEASE)
+$(JS_WORKER_OUTPUT_RELEASE): $(JS_WORKER_OUTPUT) $(DMINJS_BIN)
+	$(DMINJS_BIN) $(JS_WORKER_OUTPUT) > $(JS_WORKER_OUTPUT_RELEASE)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	npm run gulp
 
 $(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') $(PHP_CONFIG) $(PHP_VIEWS)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
+
+$(DMINJS_DIR):
+	git clone https://github.com/allen-garvey/dminjs.git
+
+$(DMINJS_BIN): $(DMINJS_DIR)
+	make -C $(DMINJS_DIR)
 	
 watch_js:
 	while true; do \
