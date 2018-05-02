@@ -340,15 +340,18 @@ App.OptimizePaletteRgbQuant = (function(){
 		return ret;
 	}
     
-    function rgbQuant(pixels, numColors, colorQuantization, imageWidth, _imageHeight){
+    function rgbQuant(pixels, numColors, colorQuantization, imageWidth, _imageHeight, progressCallback){
         let options = {
 			method: colorQuantization.method,
 		};
 		if(colorQuantization.colorDist){
 			options.colorDist = colorQuantization.colorDist;
 		}
-        const q = new RgbQuant(numColors, options);
-        const palette = q.palette(q.sample(pixels, imageWidth));
+		const q = new RgbQuant(numColors, options);
+		const histogram = q.sample(pixels, imageWidth);
+		//roughly half done here
+		progressCallback(50);
+        const palette = q.palette(histogram);
 		return formatPaletteBuffer(palette, numColors);
     }
 

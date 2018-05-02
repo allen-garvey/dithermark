@@ -6,4 +6,5 @@ App.WorkerHeaders = {
     HUE_HISTOGRAM: 4, //color dither hue histogram
     DITHER_COLOR: 5, //dithering in color
     OPTIMIZE_PALETTE: 6, //color dither optimize palette
+    OPTIMIZE_PALETTE_PROGRESS: 7, //used by optimize palette worker to send progress percentage, only header that does not get sent to workers
 };

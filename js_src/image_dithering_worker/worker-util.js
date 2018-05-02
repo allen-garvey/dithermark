@@ -37,6 +37,18 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
         
         return buffer;
     }
+
+    //percent done is integer 1-100
+    function createOptimizePaletteProgressBuffer(colorQuantizationModeId, colorCount, percentage){
+        let buffer = new Polyfills.SharedArrayBuffer(4);
+        let array = new Uint8Array(buffer);
+        array[0] = WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS;
+        array[1] = colorQuantizationModeId;
+        array[2] = colorCount;
+        array[3] = percentage;
+        
+        return buffer;
+    }
     
     function createHistogramBuffer(length, messageTypeId){
         let buffer = new Polyfills.SharedArrayBuffer(length + 1);
@@ -124,9 +136,10 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
     
     return {
         // copyBuffer: copyBuffer,
-        copyBufferWithMessageType: copyBufferWithMessageType,
-        createHistogramBuffer: createHistogramBuffer,
-        createOptimizePaletteBuffer: createOptimizePaletteBuffer,
-        parseMessageHeader: parseMessageHeader,
+        copyBufferWithMessageType,
+        createHistogramBuffer,
+        createOptimizePaletteBuffer,
+        createOptimizePaletteProgressBuffer,
+        parseMessageHeader,
     };
 })(App.WorkerHeaders, App.Pixel, App.Polyfills);

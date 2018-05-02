@@ -77,7 +77,7 @@
                 </select>
             </label>
             <?php IndexView::cyclePropertyList('selectedColorQuantizationModeIndex', 'colorQuantizationModes', 'optimize palette algorithm'); ?>
-            <div v-show="isSelectedColorQuantizationPending">Working&hellip;</div>
+            <div v-show="isSelectedColorQuantizationPending">{{selectedColorQuantizationPendingMessage}}</div>
             <button class="btn btn-primary btn-sm" @click="optimizePalette" v-bind:disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
         </div>
     </fieldset>

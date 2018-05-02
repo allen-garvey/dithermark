@@ -117,13 +117,18 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         return ret;
     }
 
-    function medianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
+    function medianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         //find nearest power of 2 that is greater than the number of colors
         const numCuts = Math.pow(2, Math.ceil(Math.log2(numColors)));
 
         let cuts = [Util.createPixelArray(pixels)];
-
+        //approximately 10% done
+        progressCallback(10);
         while(cuts.length != numCuts){
+            //approximately 50% done here
+            if(cuts.length === numCuts / 4){
+                progressCallback(50);
+            }
             let newCuts = [];
             cuts.forEach((cut)=>{
                 sortOnLongestAxis(cut);

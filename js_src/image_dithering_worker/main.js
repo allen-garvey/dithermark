@@ -59,6 +59,12 @@
         postMessage(pixelBufferCopy.buffer);
     }
     
+    function createOptimizePaletteProgressCallback(colorQuantizationModeId, numColors){
+        return (percentage)=>{
+            postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(colorQuantizationModeId, numColors, percentage));
+        };
+    }
+
     function optimizePaletteAction(messageHeader){
         //don't need to copy the original imagedata, since we are not modifying it
         let pixels = new Uint8ClampedArray(pixelBufferOriginal);
@@ -66,13 +72,16 @@
         let paletteBuffer;
         const colorQuantizationId = messageHeader.colorQuantizationModeId;
         const colorQuantization = ColorQuantizationModes[colorQuantizationId];
+        const messageTypeId = messageHeader.messageTypeId;
+        const numColors = messageHeader.numColors;
+        const progressCallback = createOptimizePaletteProgressCallback(colorQuantizationId, numColors);
 
         Timer.megapixelsPerSecond(`Optimize palette ${colorQuantization.title}`, pixels.length / 4, ()=>{
             let algoName = colorQuantization.algo;
-            paletteBuffer = OptimizePalette[algoName](pixelsInput, messageHeader.numColors, colorQuantization, imageWidth, imageHeight); 
+            paletteBuffer = OptimizePalette[algoName](pixelsInput, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
         });
         
-        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageHeader.messageTypeId, colorQuantizationId));
+        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageTypeId, colorQuantizationId));
     }
     
     

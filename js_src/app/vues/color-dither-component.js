@@ -65,7 +65,19 @@
             },
             isSelectedColorQuantizationPending: function(){
                 const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
-                return this.pendingColorQuantizations[key];
+                return this.pendingColorQuantizations[key] > 0;
+            },
+            selectedColorQuantizationPendingMessage: function(){
+                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
+                const percentage = this.pendingColorQuantizations[key];
+                const messageBase = 'Working…';
+                if(percentage === 1){
+                    return messageBase;
+                }
+                if(percentage > 0){
+                    return `${messageBase} ${percentage}%`;
+                }
+                return '';
             },
             currentPalette: function(){
                 return this.palettes[this.selectedPaletteIndex];
@@ -170,19 +182,27 @@
                     worker.postMessage(WorkerUtil.ditherWorkerColorHeader(this.loadedImage.width, this.loadedImage.height, this.selectedDitherAlgorithm.id, this.selectedColorDitherModeId, this.selectedColors));
                 });
             },
-            ditherWorkerMessageReceivedDispatcher: function(messageTypeId, pixels){
+            ditherWorkerMessageReceivedDispatcher: function(messageTypeId, messageBody){
                 switch(messageTypeId){
                     case WorkerHeaders.DITHER_COLOR:
-                        this.ditherWorkerMessageReceived(pixels);
+                        this.ditherWorkerMessageReceived(messageBody);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE:
-                        const colorQuantizationModeId = pixels[0];
-                        const colors = pixels.subarray(1, pixels.length);
+                        const colorQuantizationModeId = messageBody[0];
+                        const colors = messageBody.subarray(1, messageBody.length);
                         this.optimizePaletteMessageReceived(colors, colorQuantizationModeId);
+                        break;
+                    case WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS:
+                        const key = this.optimizePaletteMemorizationKey(messageBody[1], messageBody[0]);
+                        //check to make sure still pending and not done first, to avoid race condition
+                        if(this.pendingColorQuantizations[key]){
+                            //have to use Vue.set for object keys
+                            Vue.set(this.pendingColorQuantizations, key, messageBody[2]);
+                        }
                         break;
                     //histogram
                     default:
-                        this.histogramWorkerMessageReceived(pixels);
+                        this.histogramWorkerMessageReceived(messageBody);
                         break;
                 }
             },
@@ -219,7 +239,7 @@
                     return;
                 }
                 //have to use Vue.set for object keys
-                Vue.set(this.pendingColorQuantizations, key, true);
+                Vue.set(this.pendingColorQuantizations, key, 1);
                 this.$emit('request-worker', (worker)=>{
                     worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex));
                 });
