@@ -212,8 +212,9 @@
                 optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax); 
                 //have to use Vue.set for object keys
                 Vue.set(this.pendingColorQuantizations, key, false);
-                //avoids race conditions when color quantization mode is changed before results return
-                if(this.selectedColorQuantizationModeIndex === colorQuantizationModeId){
+                //avoids race conditions when color quantization mode or number of colors is changed before results return
+                const currentKey = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
+                if(key === currentKey){
                     this.colorsShadow = optimizedPalettes[key].slice();
                 }
             },
