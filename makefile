@@ -1,20 +1,30 @@
+PHP_BUILD_MODE=debug
+
 PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
+#js source files
 JS_APP_SRC=$(shell find ./js_src/app -type f -name '*.js')
 JS_WORKER_SRC=$(shell find ./js_src/image_dithering_worker -type f -name '*.js')
 JS_SHARED_SRC=$(shell find ./js_src/shared -type f -name '*.js')
 
+#php source
 PHP_MODELS=$(shell find ./inc/models -type f -name '*.php')
 PHP_VIEWS=$(shell find ./inc/views -type f -name '*.php')
 PHP_CONFIG=inc/config.php
 
+#JS source php builders
 JS_APP_TEMPLATE=templates/app.js.php
 JS_WORKER_TEMPLATE=templates/worker.js.php
 
+#JS output files
 JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
 JS_APP_OUTPUT=$(JS_OUTPUT_DIR)/app.js
 JS_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/dither-worker.js
+#JS release output files
+JS_APP_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/app.min.js
+JS_WORKER_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/dither-worker.min.js
+
 
 
 VUE_SRC=node_modules/vue/dist/vue.min.js
@@ -33,6 +43,10 @@ install: $(PUBLIC_HTML_DIR) $(JS_OUTPUT_DIR)
 clean:
 	rm -rf ./public_html
 
+#target specific variable
+release: PHP_BUILD_MODE=release
+release: all $(JS_APP_OUTPUT_RELEASE) $(JS_WORKER_OUTPUT_RELEASE)
+
 $(PUBLIC_HTML_DIR):
 	mkdir -p $(PUBLIC_HTML_DIR)
 
@@ -43,16 +57,22 @@ $(VUE_OUTPUT): $(VUE_SRC)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
 
 $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_APP_TEMPLATE)
-	php $(JS_APP_TEMPLATE) > $(JS_APP_OUTPUT)
+	php $(JS_APP_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_APP_OUTPUT)
 
 $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_WORKER_TEMPLATE)
-	php $(JS_WORKER_TEMPLATE) > $(JS_WORKER_OUTPUT)
+	php $(JS_WORKER_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_WORKER_OUTPUT)
+
+$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT)
+	cat $(JS_APP_OUTPUT) > $(JS_APP_OUTPUT_RELEASE)
+
+$(JS_WORKER_OUTPUT_RELEASE): $(JS_WORKER_OUTPUT)
+	cat $(JS_WORKER_OUTPUT) > $(JS_WORKER_OUTPUT_RELEASE)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	npm run gulp
 
 $(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') $(PHP_CONFIG) $(PHP_VIEWS)
-	php templates/index/index.php > $(HTML_INDEX)
+	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
 	
 watch_js:
 	while true; do \

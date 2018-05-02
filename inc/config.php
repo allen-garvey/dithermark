@@ -1,4 +1,13 @@
 <?php
+    //get build mode from command-line arguments
+    if(count($argv) > 1 && $argv[1] === 'release'){
+        define('BUILD_MODE_RELEASE', true);
+    }
+    else{
+        define('BUILD_MODE_RELEASE', false);
+    }
+
+
     /*
     * File path constants
     */
@@ -31,8 +40,14 @@
 
     define('CSS_APP_URL', CSS_URL_BASE.'style.css');
 
-    define('JS_APP_URL', JS_URL_BASE.'app.js');
-    define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.js');
+    if(BUILD_MODE_RELEASE){
+        define('JS_APP_URL', JS_URL_BASE.'app.min.js');
+        define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.min.js');
+    }
+    else{
+        define('JS_APP_URL', JS_URL_BASE.'app.js');
+        define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.js');
+    }
     define('JS_VUE_URL', JS_URL_BASE.'vue.min.js');
     
     /*
@@ -50,8 +65,14 @@
     define('HISTOGRAM_COLOR_WIDTH', 1 * 360);
     
     //color dither stuff
+    //needs to be here because webgl shaders also rely on this constant
     define('COLOR_DITHER_MAX_COLORS', 12);
 
     //whether or not print color palette button is shown
     //(useful for when creating new color palettes)
-    define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
+    if(BUILD_MODE_RELEASE){
+        define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', false);
+    }
+    else{
+        define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
+    }
