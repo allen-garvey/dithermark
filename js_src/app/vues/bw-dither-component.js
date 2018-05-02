@@ -4,9 +4,6 @@
     var isDitherWorkerBwWorking = false;
     var transformedImageBwTexture = null;
     
-    //used for calculating webworker performance
-    var webworkerStartTime;
-    
     //canvas stuff
     var histogramCanvas;
     var histogramCanvasIndicator;
@@ -176,7 +173,6 @@
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
-                    webworkerStartTime = Timer.timeInMilliseconds();
                     worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
                 });
             },
@@ -201,7 +197,6 @@
                 this.requestCanvases(this.componentId, (transformCanvas)=>{
                     this.hasImageBeenTransformed = true;
                     Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
-                    console.log(Timer.megapixelsMessage(`${this.selectedDitherAlgorithm.title} total time            `, this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                     this.requestDisplayTransformedImage(this.componentId);
                 });
             },

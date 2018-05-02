@@ -1,8 +1,4 @@
 (function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins, ColorQuantizationModes, Palettes, UserSettings){
-    
-    //used for calculating webworker performance
-    var webworkerStartTime;
-    
     //canvas stuff
     var histogramCanvas;
 
@@ -171,7 +167,6 @@
                     return;
                 }
                 this.$emit('request-worker', (worker)=>{
-                    webworkerStartTime = Timer.timeInMilliseconds();
                     worker.postMessage(WorkerUtil.ditherWorkerColorHeader(this.loadedImage.width, this.loadedImage.height, this.selectedDitherAlgorithm.id, this.selectedColorDitherModeId, this.selectedColors));
                 });
             },
@@ -208,7 +203,6 @@
             ditherWorkerMessageReceived: function(pixels){
                 this.requestCanvases(this.componentId, (transformCanvas)=>{
                     Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
-                    console.log(Timer.megapixelsMessage(this.selectedDitherAlgorithm.title + ' webworker', this.loadedImage.width * this.loadedImage.height, (Timer.timeInMilliseconds() - webworkerStartTime) / 1000));
                     this.requestDisplayTransformedImage(this.componentId);
                 });
             },
