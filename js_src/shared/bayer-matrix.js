@@ -1,6 +1,6 @@
 
 App.BayerMatrix = (function(){
-    /* iterative bayer matrix creation function based on recursive definition from
+    /** iterative bayer matrix creation function based on recursive definition from
      * https://github.com/tromero/BayerMatrix/blob/master/MakeBayer.py
      * @param dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
     */
