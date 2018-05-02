@@ -1,3 +1,7 @@
+/**
+ * Used for performance timing
+ * if changing public functions, make sure to update timer-dummy.js for release builds
+*/
 App.Timer = (function(){
     
     let timeInMilliseconds;

@@ -1,13 +1,17 @@
 <?php
     
     function sharedJsFiles(): array{
+        $timerSource = JS_SHARED_PATH.'timer-dummy.js';
+        if(ENABLE_TIMER_LOGGING){
+            $timerSource = JS_SHARED_PATH.'timer.js';
+        }
         return [
             JS_SHARED_PATH.'constants.js',
             JS_SHARED_PATH.'polyfills.js',
             JS_SHARED_PATH.'array-util.js',
             JS_SHARED_PATH.'worker-headers.js',
             JS_SHARED_PATH.'color-dither-modes.js',
-            JS_SHARED_PATH.'timer.js',
+            $timerSource,
             JS_SHARED_PATH.'pixel.js',
             JS_SHARED_PATH.'bayer-matrix.js',
         ];

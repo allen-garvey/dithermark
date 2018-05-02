@@ -68,11 +68,14 @@
     //needs to be here because webgl shaders also rely on this constant
     define('COLOR_DITHER_MAX_COLORS', 12);
 
-    //whether or not print color palette button is shown
-    //(useful for when creating new color palettes)
     if(BUILD_MODE_RELEASE){
         define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', false);
+        define('ENABLE_TIMER_LOGGING', false);
     }
     else{
+        //whether or not print color palette button is shown
+        //(useful for when creating new color palettes)
         define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
+        //used for performance logging for dither and optimize palette
+        define('ENABLE_TIMER_LOGGING', true);
     }
