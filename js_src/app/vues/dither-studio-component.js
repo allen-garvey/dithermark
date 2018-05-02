@@ -391,12 +391,8 @@
                     case WorkerHeaders.HISTOGRAM:
                         this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
                         break;
-                    case WorkerHeaders.HUE_HISTOGRAM:
-                    case WorkerHeaders.DITHER_COLOR:
-                    case WorkerHeaders.OPTIMIZE_PALETTE:
-                        this.$refs.colorDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
-                        break;
                     default:
+                        this.$refs.colorDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
                         break;
                 }
             },
