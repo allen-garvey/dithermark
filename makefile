@@ -57,6 +57,8 @@ clean: reset
 #target specific variable
 release: PHP_BUILD_MODE=release
 release: all $(JS_APP_OUTPUT_RELEASE) $(JS_WORKER_OUTPUT_RELEASE)
+	rm -f $(JS_APP_OUTPUT)
+	rm -f $(JS_WORKER_OUTPUT)
 
 $(PUBLIC_HTML_DIR):
 	mkdir -p $(PUBLIC_HTML_DIR)
