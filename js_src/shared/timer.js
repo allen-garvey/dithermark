@@ -35,9 +35,6 @@ App.Timer = (function(){
     }
     
     return {
-        time: timeFunction,
         megapixelsPerSecond: timeFunctionMegapixels,
-        timeInMilliseconds: timeInMilliseconds,
-        megapixelsMessage: timeFunctionMegapixelsMessage,
     };
 })();
