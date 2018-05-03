@@ -134,12 +134,14 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         createDotClusterOrderedDither: orderedDitherBuilder('createDotCluster'),
         createPatternOrderedDither: orderedDitherBuilder('createPattern'),
         createHalftoneDot: orderedDitherBuilder('createHalftoneDot'),
+        createHatch: orderedDitherBuilder('createHatch'),
         //color dither
         createColorOrderedDither: colorOrderedDitherBuilder('create'),
         createColorClusterOrderedDither: colorOrderedDitherBuilder('createCluster'),
         createColorDotClusterOrderedDither: colorOrderedDitherBuilder('createDotCluster'),
         createColorPatternOrderedDither: colorOrderedDitherBuilder('createPattern'),
         createHalftoneDotColor: colorOrderedDitherBuilder('createHalftoneDot'),
+        createColorHatch: colorOrderedDitherBuilder('createHatch'),
         createHueLighnessDither: colorOrderedDitherBuilder('create', hueLightnessPostscriptFuncBuilder),
     };
     

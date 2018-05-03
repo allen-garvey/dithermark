@@ -89,6 +89,17 @@ App.BayerMatrix = (function(){
         ]);
     }
 
+    //diagonal hatch pattern
+    function createHatch(){
+        return new Uint8Array([
+            15, 7, 0, 7,
+            7, 0, 7, 15,
+            0, 7, 15, 7,
+            7, 15, 7, 0,
+        ]);
+    }
+
+    //fishnet pattern
     function createPattern(dimensions){
         return new Uint8Array([
             47, 15, 15, 15, 15, 15, 15, 47, 
@@ -125,9 +136,10 @@ App.BayerMatrix = (function(){
     
     return {
         create: createBayer,
-        createCluster: createCluster,
-        createDotCluster: createDotCluster,
-        createPattern: createPattern,
-        createHalftoneDot: createHalftoneDot,
+        createCluster,
+        createDotCluster,
+        createPattern,
+        createHalftoneDot,
+        createHatch,
     };
 })();
