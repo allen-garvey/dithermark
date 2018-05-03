@@ -101,6 +101,8 @@ input[type="color"]{
 .optimize-palette-pending{
     color: var(--hint-text-color);
     font-size: 14px;
+    min-width: 8em;
+    max-width: 100%;
 }
 
 /*
