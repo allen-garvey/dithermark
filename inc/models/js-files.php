@@ -6,7 +6,6 @@
             $timerSource = JS_SHARED_PATH.'timer.js';
         }
         return [
-            JS_SHARED_PATH.'constants.js',
             JS_SHARED_PATH.'polyfills.js',
             JS_SHARED_PATH.'array-util.js',
             JS_SHARED_PATH.'worker-headers.js',
@@ -38,6 +37,7 @@
 
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
+            JS_APP_PATH.'constants.js',
             JS_APP_PATH.'color-quantization-modes.js',
             JS_APP_PATH.'user-settings.js',
             JS_APP_PATH.'editor-themes.js',
