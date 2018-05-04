@@ -36,6 +36,11 @@
         <script type="vue/template" id="modal-prompt-component">
             <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'modal-prompt-component.php'); ?>
         </script>
+        <?php if(ENABLE_TEXTURE_COMBINE): ?>
+            <script type="vue/template" id="texture-combine-component">
+                <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'texture-combine-component.php'); ?>
+            </script>
+        <?php endif; ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'vertex-shaders.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>

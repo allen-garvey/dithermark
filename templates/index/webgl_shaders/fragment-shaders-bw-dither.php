@@ -72,22 +72,24 @@
 </script>
 
 <?php //the following are the shaders used to combine 3 textures into a single output ?>
-<script type="webgl/fragment-shader" id="webgl-combine-dither-fshader-declaration">
-    uniform sampler2D u_texture_2;
-    uniform sampler2D u_texture_3;
-</script>
+<?php if(ENABLE_TEXTURE_COMBINE): ?>
+    <script type="webgl/fragment-shader" id="webgl-combine-dither-fshader-declaration">
+        uniform sampler2D u_texture_2;
+        uniform sampler2D u_texture_3;
+    </script>
 
-<script type="webgl/fragment-shader" id="webgl-combine-dither-fshader-body">
-   vec4 pixel2 = texture2D(u_texture_2, v_texcoord);
-   vec4 pixel3 = texture2D(u_texture_3, v_texcoord);
-   
-   vec3 majorityPixel;
-   if(pixel == pixel2 || pixel == pixel3){
-        majorityPixel = pixel.rgb;
-    }
-    else{
-        majorityPixel = pixel2.rbg;
-    }
-   
-    bool shouldUseBlackPixel = majorityPixel == u_black_pixel;
-</script>
+    <script type="webgl/fragment-shader" id="webgl-combine-dither-fshader-body">
+    vec4 pixel2 = texture2D(u_texture_2, v_texcoord);
+    vec4 pixel3 = texture2D(u_texture_3, v_texcoord);
+    
+    vec3 majorityPixel;
+    if(pixel == pixel2 || pixel == pixel3){
+            majorityPixel = pixel.rgb;
+        }
+        else{
+            majorityPixel = pixel2.rbg;
+        }
+    
+        bool shouldUseBlackPixel = majorityPixel == u_black_pixel;
+    </script>
+<?php endif; ?>

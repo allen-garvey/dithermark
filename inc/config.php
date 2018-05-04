@@ -71,6 +71,7 @@
     if(BUILD_MODE_RELEASE){
         define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', false);
         define('ENABLE_TIMER_LOGGING', false);
+        define('ENABLE_TEXTURE_COMBINE', false);
     }
     else{
         //whether or not print color palette button is shown
@@ -78,4 +79,8 @@
         define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
         //used for performance logging for dither and optimize palette
         define('ENABLE_TIMER_LOGGING', true);
+        //used in bw dither to combine the outputs of 3 separate dithers into 1 result image
+        //while interesting, not as cool as hoped, and adds user complexity, so it is not included
+        //in the release
+        define('ENABLE_TEXTURE_COMBINE', true);
     }

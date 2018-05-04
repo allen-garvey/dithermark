@@ -29,8 +29,7 @@
         <label>White<input type="color" v-model="colorReplaceColors[1]" /></label>
         <button class="btn btn-default btn-sm" v-on:click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
     </fieldset>
-    <div>
-        <button class="btn btn-default btn-sm" v-on:click="saveTexture">Save texture</button>
-        <button class="btn btn-default btn-sm" v-show="savedTextures.length >= 3" v-on:click="combineDitherTextures">Combine textures</button>
-    </div>
+    <?php if(ENABLE_TEXTURE_COMBINE): ?>
+        <texture-combine :loaded-image="loadedImage" :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"/>
+    <?php endif; ?>
 </div>

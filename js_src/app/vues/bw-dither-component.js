@@ -11,12 +11,13 @@
     var component = Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
         props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
+        created: function(){
+            this.resetColorReplace();
+        },
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
             histogramCanvasIndicator = Canvas.create(this.$refs.histogramCanvasIndicator, true);
-            
-            this.resetColorReplace();
         },
         data: function(){ 
             return{
@@ -28,7 +29,6 @@
                 colorReplaceColors: [],
                 ditherGroups: AlgorithmModel.bwDitherGroups,
                 ditherAlgorithms: AlgorithmModel.bwDitherAlgorithms,
-                savedTextures: [],
                 loadedImage: null,
             };
         },
@@ -216,22 +216,6 @@
                 //to avoid weird errors, we will do this reset the variables here, even if requestCanvases fails
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
-            },
-            saveTexture: function(){
-                this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
-                    let sourceCanvas = transformCanvas;
-                    let gl = transformCanvasWebGl.gl;
-                    let texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
-                    this.savedTextures.push(texture);
-                });
-            },
-            combineDitherTextures: function(){
-                this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
-                    let textures = this.savedTextures.splice(0,3);
-                    WebGlBwDither.textureCombine(transformCanvasWebGl.gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
-                    transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                    this.requestDisplayTransformedImage();
-                });
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
         }
