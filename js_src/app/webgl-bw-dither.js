@@ -1,5 +1,5 @@
 
-App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util, DitherUtil){
+App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil){
     const THRESHOLD = 1;
     const RANDOM_THRESHOLD = 2;
     const ORDERED_DITHER = 3;
@@ -27,7 +27,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util,
                 gl.uniform1f(customUniformLocations['u_threshold'], threshold / 255);
                 gl.uniform3fv(customUniformLocations['u_black_pixel'], pixelToVec(blackPixel));
                 gl.uniform3fv(customUniformLocations['u_white_pixel'], pixelToVec(whitePixel));
-                gl.uniform1f(customUniformLocations['u_dither_r_coefficient'], Constants.ditherRCoefficient(2, true));
+                gl.uniform1f(customUniformLocations['u_dither_r_coefficient'], DitherUtil.ditherRCoefficient(2, true));
                 
                 //set custom uniform values
                 if(setCustomUniformsFunc){
@@ -192,4 +192,4 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util,
 
     return exports;
     
-})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil, App.DitherUtil);
+})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.WebGlUtil, App.DitherUtil);

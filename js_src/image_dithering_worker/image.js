@@ -1,5 +1,5 @@
 
-App.Image = (function(Pixel, ColorDitherModeFunctions, Constants, PixelMath){
+App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
     function transformImage(pixels, imageWidth, imageHeight, pixelTransformFunc){
         let y = 0;
         let x = 0;
@@ -54,7 +54,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, Constants, PixelMath){
         if(!postscriptFunc){
             postscriptFunc = identity;
         }
-        const ditherRCoefficient = Constants.ditherRCoefficient(colors.length);
+        const ditherRCoefficient = DitherUtil.ditherRCoefficient(colors.length);
         const colorValues = colors.map(pixelValueFunc);
 
         let y = 0;
@@ -98,4 +98,4 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, Constants, PixelMath){
        colorDither: colorDitherImage,
        findClosestColorIndex,
     };
-})(App.Pixel, App.ColorDitherModeFunctions, App.Constants, App.PixelMath);
+})(App.Pixel, App.ColorDitherModeFunctions, App.DitherUtil, App.PixelMath);

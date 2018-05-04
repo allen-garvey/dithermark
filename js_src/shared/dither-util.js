@@ -2,6 +2,14 @@
  * Dithering utility functions shared between app and worker
 */
 App.DitherUtil = (function(Bayer){
+    //based on the value of r from https://en.wikipedia.org/wiki/Ordered_dithering
+    //formula is hightestValue / cube_root(numColors)
+    //for webgl highestValue is 1.0, while for webworker it should be 255
+    function ditherRCoefficient(numColors, isWebgl){
+        const highestValue = isWebgl ? 1.0 : 255;
+        return highestValue / Math.cbrt(numColors);
+    }
+
     /**
     * Used to automagically generated exports based on patterns in BayerMatrix module
     */
@@ -22,6 +30,7 @@ App.DitherUtil = (function(Bayer){
 
     return {
         generateBayerKeys,
+        ditherRCoefficient,
     };
 
 })(App.BayerMatrix);
