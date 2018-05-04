@@ -101,6 +101,36 @@ App.BayerMatrix = (function(){
         ]);
     }
 
+    //diagonal hatch pattern
+    //to upper left
+    //(reflection of hatchRight)
+    function hatchLeft(dimensions){
+        return new Uint8Array([
+            7, 0, 7, 15,
+            15, 7, 0, 7,
+            7, 15, 7, 0,
+            0, 7, 15, 7,
+        ]);
+    }
+
+    function hatchVertical(dimensions){
+        return new Uint8Array([
+            7, 0, 7, 15,
+            7, 0, 7, 15,
+            7, 0, 7, 15,
+            7, 0, 7, 15,
+        ]);
+    }
+
+    function hatchHorizontal(dimensions){
+        return new Uint8Array([
+            7, 7, 7, 7,
+            0, 0, 0, 0,
+            7, 7, 7, 7,
+            15, 15, 15, 15,
+        ]);
+    }
+
     //fishnet pattern
     function fishnet(dimensions){
         return new Uint8Array([
@@ -143,6 +173,9 @@ App.BayerMatrix = (function(){
         square,
         cluster,
         hatchRight,
+        hatchLeft,
+        hatchVertical,
+        hatchHorizontal,
         fishnet,
         dot,
     };
