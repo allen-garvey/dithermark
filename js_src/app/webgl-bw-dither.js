@@ -1,5 +1,5 @@
 
-App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util){
+App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util, DitherUtil){
     const THRESHOLD = 1;
     const RANDOM_THRESHOLD = 2;
     const ORDERED_DITHER = 3;
@@ -172,8 +172,8 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util)
             gl.bindTexture(gl.TEXTURE_2D, textures[2]);
         });
     }
-    
-    return {
+
+    const exports = {
         threshold: webGLThreshold,
         randomThreshold: webGLRandomThreshold,
         aDitherAdd1: createArithmeticDither(ADITHER_ADD1, Shader.aDitherAdd1Return),
@@ -182,13 +182,14 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Constants, Util)
         aDitherXor1: createArithmeticDither(ADITHER_XOR1, Shader.aDitherXor1Return),
         aDitherXor2: createArithmeticDither(ADITHER_XOR2, Shader.aDitherXor2Return),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3, Shader.aDitherXor3Return),
-        createOrderedDither: createOrderedDitherBase('bayer', 'create'),
-        createClusterOrderedDither: createOrderedDitherBase('cluster', 'createCluster'),
-        createDotClusterOrderedDither: createOrderedDitherBase('dot_cluster', 'createDotCluster'),
-        createPatternOrderedDither: createOrderedDitherBase('pattern', 'createPattern'),
-        createHalftoneDot: createOrderedDitherBase('halftone_dot', 'createHalftoneDot'),
-        createHatchOrderedDither: createOrderedDitherBase('hatch', 'createHatch'),
         colorReplace: webGLColorReplace,
         textureCombine: webGL3TextureCombine,
-    };    
-})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil);
+    };
+
+    DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey)=>{
+        exports[bwDitherKey] = createOrderedDitherBase(orderedDitherKey, orderedDitherKey);
+    });
+
+    return exports;
+    
+})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil, App.DitherUtil);

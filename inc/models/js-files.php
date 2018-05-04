@@ -14,6 +14,7 @@
             $timerSource,
             JS_SHARED_PATH.'pixel.js',
             JS_SHARED_PATH.'bayer-matrix.js',
+            JS_SHARED_PATH.'dither-util.js',
         ];
     }
     

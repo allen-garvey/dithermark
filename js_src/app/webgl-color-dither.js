@@ -1,5 +1,5 @@
 
-App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer, Constants, Util, ArrayUtil){
+App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Bayer, Constants, Util, ArrayUtil, DitherUtil){
     const CLOSEST_COLOR = 0;
     const RANDOM_CLOSEST_COLOR = 1;
     const ORDERED_DITHER = 2;
@@ -203,22 +203,24 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
             });
         };
     }
-    
-    return {
+
+    const exports = {
         closestColor: closestColor,
         randomClosestColor: randomDither,
-        createOrderedDither: orderedDitherBuilder('bayer', 'create'),
-        createClusterOrderedDither: orderedDitherBuilder('cluster', 'createCluster'),
-        createDotClusterOrderedDither: orderedDitherBuilder('dot-cluster', 'createDotCluster'),
-        createPatternOrderedDither: orderedDitherBuilder('pattern', 'createPattern'),
-        createHueLightnessOrderedDither: orderedDitherBuilder('bayer', 'create', HUE_LIGHTNESS_ORDERED_DITHER),
-        createHalftoneDot: orderedDitherBuilder('halftone_dot', 'createHalftoneDot'),
-        createHatchOrderedDither: orderedDitherBuilder('hatch', 'createHatch'),
         aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
         aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
         aDitherAdd3: createArithmeticDither(ADITHER_ADD3),
         aDitherXor1: createArithmeticDither(ADITHER_XOR1),
         aDitherXor2: createArithmeticDither(ADITHER_XOR2),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3),
-    };    
-})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil, App.ArrayUtil);
+        createHueLightnessOrderedDither: orderedDitherBuilder('bayer', 'bayer', HUE_LIGHTNESS_ORDERED_DITHER),
+    };
+
+    DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{
+        exports[colorDitherKey] = orderedDitherBuilder(orderedDitherKey, orderedDitherKey);
+    });
+
+
+    return exports;
+        
+})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.Constants, App.WebGlUtil, App.ArrayUtil, App.DitherUtil);

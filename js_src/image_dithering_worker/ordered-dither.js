@@ -1,4 +1,4 @@
-App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
+App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
     
     function createMaxtrix(dimensions, data){
         return {
@@ -126,23 +126,18 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath){
         };
     }
 
-    
-    return {
-        //bw dither
-        createOrderedDither: orderedDitherBuilder('create'),
-        createClusterOrderedDither: orderedDitherBuilder('createCluster'),
-        createDotClusterOrderedDither: orderedDitherBuilder('createDotCluster'),
-        createPatternOrderedDither: orderedDitherBuilder('createPattern'),
-        createHalftoneDot: orderedDitherBuilder('createHalftoneDot'),
-        createHatch: orderedDitherBuilder('createHatch'),
-        //color dither
-        createColorOrderedDither: colorOrderedDitherBuilder('create'),
-        createColorClusterOrderedDither: colorOrderedDitherBuilder('createCluster'),
-        createColorDotClusterOrderedDither: colorOrderedDitherBuilder('createDotCluster'),
-        createColorPatternOrderedDither: colorOrderedDitherBuilder('createPattern'),
-        createHalftoneDotColor: colorOrderedDitherBuilder('createHalftoneDot'),
-        createColorHatch: colorOrderedDitherBuilder('createHatch'),
-        createHueLighnessDither: colorOrderedDitherBuilder('create', hueLightnessPostscriptFuncBuilder),
+    /**
+    * Automagically generated exports based on patterns in BayerMatrix module
+    */
+    const exports = {
+        createHueLightnessDither: colorOrderedDitherBuilder('bayer', hueLightnessPostscriptFuncBuilder),
     };
+
+    DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{
+        exports[bwDitherKey] = orderedDitherBuilder(orderedDitherKey);
+        exports[colorDitherKey] = colorOrderedDitherBuilder(orderedDitherKey);
+    });
+
+    return exports;
     
-})(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath);
+})(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath, App.DitherUtil);

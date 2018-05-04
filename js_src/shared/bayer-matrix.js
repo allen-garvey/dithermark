@@ -1,10 +1,10 @@
 
 App.BayerMatrix = (function(){
     /** iterative bayer matrix creation function based on recursive definition from
-     * https://github.com/tromero/BayerMatrix/blob/master/MakeBayer.py
+     * https://en.wikipedia.org/wiki/Ordered_dithering of bayer matrix
      * @param dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
     */
-    function createBayer(dimensions){
+    function bayer(dimensions){
         const bayerBase = new Uint8Array([0, 2, 3, 1]);
         
         //guard against infinite loop
@@ -59,7 +59,7 @@ App.BayerMatrix = (function(){
     //     7, 7, 7, 3,
     //     3, 3, 3, 3,
     // ]);
-    function createCluster(dimensions){
+    function square(dimensions){
         const length = dimensions * dimensions;
         let ret = new Uint8Array(length);
         ret[0] = length - 1;
@@ -80,7 +80,7 @@ App.BayerMatrix = (function(){
     }
 
     //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2004/lectures/cs559-5.ppt
-    function createDotCluster(){
+    function cluster(dimensions){
         return new Uint8Array([
             11, 5, 9, 3,
             0, 15, 13, 6,
@@ -90,7 +90,8 @@ App.BayerMatrix = (function(){
     }
 
     //diagonal hatch pattern
-    function createHatch(){
+    //to upper right
+    function hatchRight(dimensions){
         return new Uint8Array([
             15, 7, 0, 7,
             7, 0, 7, 15,
@@ -100,7 +101,7 @@ App.BayerMatrix = (function(){
     }
 
     //fishnet pattern
-    function createPattern(dimensions){
+    function fishnet(dimensions){
         return new Uint8Array([
             47, 15, 15, 15, 15, 15, 15, 47, 
             15, 31, 15, 15, 15, 15, 31, 15,
@@ -113,7 +114,7 @@ App.BayerMatrix = (function(){
         ]);
     }
 
-    function createHalftoneDot(dimensions){
+    function dot(dimensions){
         if(dimensions === 4){
             return new Uint8Array([
                 0, 2, 3, 0,
@@ -134,12 +135,14 @@ App.BayerMatrix = (function(){
         ]);
     }
     
+    //dithers are created autmagically from these export names
+    //only name you can't use is hueLightness, since it will conflict with that dither
     return {
-        create: createBayer,
-        createCluster,
-        createDotCluster,
-        createPattern,
-        createHalftoneDot,
-        createHatch,
+        bayer,
+        square,
+        cluster,
+        hatchRight,
+        fishnet,
+        dot,
     };
 })();
