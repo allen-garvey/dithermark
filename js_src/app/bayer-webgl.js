@@ -1,5 +1,5 @@
 
-App.BayerWebgl = (function(Bayer){
+App.BayerWebgl = (function(){
     
     //bayer array should be Uint8Array
     //based on: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL
@@ -73,4 +73,4 @@ App.BayerWebgl = (function(Bayer){
     return {
         createAndLoadTexture: createAndLoadBayerTexture,
     };
-})(App.BayerMatrix);
+})();
