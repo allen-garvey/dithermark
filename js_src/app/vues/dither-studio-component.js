@@ -406,6 +406,13 @@
                     callback(transformCanvas, transformCanvasWebGl, sourceWebglTexture);
                 }
             },
+            //used to build callback functions for onRequestDisplayTransformedImage and onCanvasesRequested
+            //so that requester is not aware of, and thus cannot change their componentId
+            requestPermissionCallbackBuilder: function(componentId, callback){
+                return (...args)=>{
+                    callback(componentId, ...args);
+                };
+            },
             onWorkerRequested: function(callback){
                 let worker = ditherWorkers.getNextWorker();
                 callback(worker);

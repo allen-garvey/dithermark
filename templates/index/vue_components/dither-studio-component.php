@@ -35,10 +35,10 @@
                     <div class="tab" :class="{active: activeDitherComponentId === colorDitherComponentId}" @click="loadDitherTab(colorDitherComponentId)">Color Dither</div>
                 </div>
                 <div v-show="activeDitherComponentId === bwDitherComponentId">
-                    <bw-dither-section ref="bwDitherSection" :component-id="bwDitherComponentId" @request-worker="onWorkerRequested" :request-canvases="onCanvasesRequested" :request-display-transformed-image="onRequestDisplayTransformedImage" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" />  
+                    <bw-dither-section ref="bwDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(bwDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(bwDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" />  
                 </div>
                 <div v-show="activeDitherComponentId === colorDitherComponentId">
-                    <color-dither-section ref="colorDitherSection" :component-id="colorDitherComponentId" @request-worker="onWorkerRequested" :request-canvases="onCanvasesRequested" :request-display-transformed-image="onRequestDisplayTransformedImage" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" @request-modal-prompt="showModalPrompt" />
+                    <color-dither-section ref="colorDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(colorDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(colorDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" @request-modal-prompt="showModalPrompt" />
                 </div>
             </div>
         </div>

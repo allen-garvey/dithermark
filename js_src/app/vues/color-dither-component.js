@@ -9,7 +9,7 @@
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
-        props: ['componentId', 'isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
+        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
         created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
@@ -159,7 +159,7 @@
                 }
                 else{
                     //if live preview is not enabled, transform canvas will be blank unless we do this
-                    this.requestDisplayTransformedImage(this.componentId);
+                    this.requestDisplayTransformedImage();
                 }
             },
             ditherImageWithSelectedAlgorithm: function(){
@@ -167,14 +167,14 @@
                     return;
                 }
                 if(this.isSelectedAlgorithmWebGl){
-                    this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl, sourceWebglTexture)=>{
+                    this.requestCanvases((transformCanvas, transformCanvasWebGl, sourceWebglTexture)=>{
                         Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                             this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.selectedColorDitherModeId, this.selectedColorsVec, this.numColors); 
                         });
                         //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                         //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
                         transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                        this.requestDisplayTransformedImage(this.componentId);
+                        this.requestDisplayTransformedImage();
                     });
                     return;
                 }
@@ -222,9 +222,9 @@
                 Histogram.drawColorHistogram(histogramCanvas, huePercentages);
             },
             ditherWorkerMessageReceived: function(pixels){
-                this.requestCanvases(this.componentId, (transformCanvas)=>{
+                this.requestCanvases((transformCanvas)=>{
                     Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
-                    this.requestDisplayTransformedImage(this.componentId);
+                    this.requestDisplayTransformedImage();
                 });
             },
             optimizePaletteMemorizationKey: function(numColors, modeId){

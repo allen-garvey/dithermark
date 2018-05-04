@@ -10,7 +10,7 @@
     
     var component = Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
-        props: ['componentId', 'isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
+        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
             histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
@@ -122,12 +122,12 @@
                     this.ditherImageWithSelectedAlgorithm();
                     return;
                 }
-                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
                     Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                         WebGlBwDither.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
                     });
                     transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                    this.requestDisplayTransformedImage(this.componentId);
+                    this.requestDisplayTransformedImage();
                 });
             },
             resetColorReplace: function(){
@@ -149,7 +149,7 @@
                 }
                 else{
                     //if live preview is not enabled, transform canvas will be blank unless we do this
-                    this.requestDisplayTransformedImage(this.componentId);
+                    this.requestDisplayTransformedImage();
                 }
                 //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
                 //it's not really worth it to check
@@ -160,7 +160,7 @@
                     return;
                 }
                 if(this.isSelectedAlgorithmWebGl){
-                    this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl, sourceWebglTexture)=>{
+                    this.requestCanvases((transformCanvas, transformCanvasWebGl, sourceWebglTexture)=>{
                         this.hasImageBeenTransformed = true;
                         Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
                             this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
@@ -168,7 +168,7 @@
                         //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                         //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
                         transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                        this.requestDisplayTransformedImage(this.componentId);
+                        this.requestDisplayTransformedImage();
                     });
                     return;
                 }
@@ -194,7 +194,7 @@
                 Histogram.drawBwHistogram(histogramCanvas, heightPercentages);
             },
             ditherWorkerMessageReceived: function(pixels){
-                this.requestCanvases(this.componentId, (transformCanvas)=>{
+                this.requestCanvases((transformCanvas)=>{
                     this.hasImageBeenTransformed = true;
                     Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                     this.requestDisplayTransformedImage(this.componentId);
@@ -202,7 +202,7 @@
             },
             ditherWorkerBwMessageReceived: function(pixels){
                 this.freeTransformedImageBwTexture();
-                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
                     transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(transformCanvasWebGl.gl, pixels, this.loadedImage.width, this.loadedImage.height);
                 });
             },
@@ -210,7 +210,7 @@
                 if(!transformedImageBwTexture){
                     return;
                 }
-                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
                     transformCanvasWebGl.gl.deleteTexture(transformedImageBwTexture);
                 });
                 //to avoid weird errors, we will do this reset the variables here, even if requestCanvases fails
@@ -218,7 +218,7 @@
                 isDitherWorkerBwWorking = false;
             },
             saveTexture: function(){
-                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
                     let sourceCanvas = transformCanvas;
                     let gl = transformCanvasWebGl.gl;
                     let texture = WebGl.createAndLoadTexture(gl, sourceCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
@@ -226,11 +226,11 @@
                 });
             },
             combineDitherTextures: function(){
-                this.requestCanvases(this.componentId, (transformCanvas, transformCanvasWebGl)=>{
+                this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
                     let textures = this.savedTextures.splice(0,3);
                     WebGlBwDither.textureCombine(transformCanvasWebGl.gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
                     transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                    this.requestDisplayTransformedImage(this.componentId);
+                    this.requestDisplayTransformedImage();
                 });
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
