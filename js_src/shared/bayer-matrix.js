@@ -57,7 +57,7 @@ App.BayerMatrix = (function(){
     //     15, 11, 7, 3,
     //     11, 11, 7, 3,
     //     7, 7, 7, 3,
-    //     3, 3, 3, 3,
+    //     3, 3, 3, 0,
     // ]);
     function square(dimensions){
         const length = dimensions * dimensions;
@@ -75,6 +75,7 @@ App.BayerMatrix = (function(){
                 ret[offset+j] = value;
             }
         }
+        ret[length-1] = 0;
 
         return ret;
     }
