@@ -3,6 +3,9 @@
         <canvas ref="histogramCanvasIndicator" class="histogram-canvas-indicator" width="<?= HISTOGRAM_BW_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Lightness histogram"></canvas>
         <canvas ref="histogramCanvas" class="histogram-canvas" width="<?= HISTOGRAM_BW_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Lightness histogram"></canvas>
     </div>
+    <div class="transform-button-container">
+        <button class="btn btn-success btn-sm" v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
+    </div>
     <div class="spread-content">
         <label>Algorithm
             <select v-model="selectedDitherAlgorithmIndex">
@@ -19,9 +22,6 @@
             <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
             <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
         </label>
-    </div>
-    <div>
-        <button class="btn btn-success btn-sm" v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
     </div>
     <fieldset>
         <legend>Color substitution</legend>

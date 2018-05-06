@@ -2,6 +2,9 @@
     <div class="histogram-container" style="width: <?= HISTOGRAM_COLOR_WIDTH.'px'; ?>; height: <?= HISTOGRAM_HEIGHT.'px'; ?>;">
         <canvas ref="histogramCanvas" width="<?= HISTOGRAM_COLOR_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Hue histogram"></canvas>
     </div>
+    <div class="transform-button-container">
+        <button class="btn btn-success btn-sm"  v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
+    </div>
     <div class="spread-content">
         <label>Algorithm
             <select v-model="selectedDitherAlgorithmIndex">
@@ -11,9 +14,6 @@
             </select>
         </label>
         <?php IndexView::cyclePropertyList('selectedDitherAlgorithmIndex', 'ditherAlgorithms', 'algorithm'); ?>
-    </div>
-    <div>
-        <button class="btn btn-success btn-sm"  v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
     </div>
     <div class="spread-content">
         <label>Color comparison
