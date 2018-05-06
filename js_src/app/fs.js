@@ -1,5 +1,7 @@
 App.Fs = (function(Constants){
     const imageElement = new Image();
+    //need to store reference so we can free it when a new one is created
+    let currentImageObjectUrl = null;
 
     class HttpRequestError extends Error{
         constructor(message, statusCode, statusMessage, url) {
@@ -30,7 +32,11 @@ App.Fs = (function(Constants){
         imageElement.onload = ()=> {
             imageLoadFunc(imageElement, file);
         };
-        imageElement.src = URL.createObjectURL(file);
+        if(currentImageObjectUrl){
+            URL.revokeObjectURL(currentImageObjectUrl);
+        }
+        currentImageObjectUrl = URL.createObjectURL(file);
+        imageElement.src = currentImageObjectUrl;
     }
     
     function openImageUrl(imageUrl, imageLoadFunc, imageName=null){
@@ -56,7 +62,11 @@ App.Fs = (function(Constants){
                     type: blob.type,
                 });
             };
-            imageElement.src = URL.createObjectURL(blob);
+            if(currentImageObjectUrl){
+                URL.revokeObjectURL(currentImageObjectUrl);
+            }
+            currentImageObjectUrl = URL.createObjectURL(blob);
+            imageElement.src = currentImageObjectUrl;
         });
     }
     //so that urls are escaped properly, message is divided into beforeUrl, url and afterUrl parts
@@ -102,7 +112,9 @@ App.Fs = (function(Constants){
         }
         else{
             canvas.toBlob((blob)=>{
-                callback(URL.createObjectURL(blob));
+                let objectUrl = URL.createObjectURL(blob); 
+                callback(objectUrl);
+                URL.revokeObjectURL(objectUrl);
             }, fileType);
         }
     }
