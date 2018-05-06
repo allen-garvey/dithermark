@@ -1,3 +1,7 @@
+
+/**
+* Colors
+*/
 $highlight_color: magenta;
 
 //alert colors based on bootstrap
@@ -10,7 +14,15 @@ $warning_text_color: #856404;
 $warning_border_color: #ffeeba;
 $warning_background_color: #fff3cd;
 
-//controls panel layout variables
+/**
+* Layout
+*/
+
+$global_horizontal_padding: 12px;
+
+/**
+* controls panel layout variables
+*/
 $global_controls_height: 180px;
 $pinned_dither_controls_width: 454px;
 $pinned_dither_controls_min_height: 400px;

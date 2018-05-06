@@ -11,6 +11,10 @@ html, body, h1, h2, h3, h4, h5, h6{
     display: none;
 }
 
+main{
+    padding: 0 $global_horizontal_padding;
+}
+
 canvas{
     image-rendering: -moz-crisp-edges;
     image-rendering: -webkit-crisp-edges;
