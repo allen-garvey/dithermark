@@ -18,28 +18,18 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
         const index = matrixIndexFor(matrix, x, y);
         return matrix.data[index];
     }
-    
-    function normalizeOrderedMatrixValues(matrix, fullValue){
-        const length = matrix.data.length;
-        const fraction = Math.floor(fullValue / length);
-        
-        for(let i=0;i<length;i++){
-            matrix.data[i] = (matrix.data[i] + 1) * fraction;
-        }
-    }
 
     function createOrderedDitherBase(dimensions, matrixCreationFunc){
-        let matrix = createMaxtrix(dimensions, matrixCreationFunc(dimensions));
-        normalizeOrderedMatrixValues(matrix, 256);
+        const matrix = createMaxtrix(dimensions, convertBayerToFloat(matrixCreationFunc(dimensions), 256));
+        //for some reason we need to use same coefficient as webgl for bw dithers
+        const rCoefficient = DitherUtil.ditherRCoefficient(2, true);
         
         return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-            const thresholdFraction = 255 / threshold;
-            
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 const lightness = PixelMath.lightness(pixel);
                 const matrixThreshold = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 
-                if(lightness > (matrixThreshold * thresholdFraction)){
+                if(lightness + rCoefficient * matrixThreshold >= threshold){
                     whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
                     return whitePixel;
                 }
@@ -62,13 +52,13 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
     /**
      * Color dither stuff
      */
-    function convertBayerToFloat(bayerMatrix){
+    function convertBayerToFloat(bayerMatrix, fullValue=1){
         const length = bayerMatrix.length;
-        const highestValue = length;
+        const fraction = 1 / length;
         let floatData = new Float32Array(length);
         
         bayerMatrix.forEach((value, i)=>{
-            floatData[i] = ((value + 1) / highestValue) - 0.5;
+            floatData[i] = ((fraction * value) - 0.5) * fullValue;
         });
         return floatData;
     }
