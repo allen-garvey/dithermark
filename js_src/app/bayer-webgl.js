@@ -57,7 +57,8 @@ App.BayerWebgl = (function(){
     /*
     * Webgl Ordered dither matrix stuff
     */
-    
+    //this doesn't exactly normalize the buffer, but the problem
+    //is that webgl1 textures can't be floats
     function createBayerBuffer(dimensions, bayerArray){
         const arrayLength = bayerArray.length;
         const fraction = 256 / arrayLength;
