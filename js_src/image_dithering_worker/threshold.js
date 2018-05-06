@@ -1,14 +1,16 @@
-App.Threshold = (function(Image, Pixel, PixelMath){
+App.Threshold = (function(Image, Pixel, PixelMath, DitherUtil){
     
     /**
     * BW Dither stuff
     */
     function thresholdGenerator(thresholdFunc){
+        //for some reason we need to use same coefficient as webgl for bw dithers
+        const rCoefficient = DitherUtil.ditherRCoefficient(2, true);
         return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-                var lightness = PixelMath.lightness(pixel);
+                const lightness = PixelMath.lightness(pixel);
                 
-                if(lightness > thresholdFunc(threshold, x, y, pixel)){
+                if(lightness + rCoefficient * thresholdFunc(x, y, pixel) >= threshold){
                     whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
                     return whitePixel;
                 }
@@ -35,38 +37,36 @@ App.Threshold = (function(Image, Pixel, PixelMath){
             return (((x + (c * 67)) + (y * 236)) * 119 & 255) / 255.0;
         }
     
-    function aDitherXorFunc1(threshold, x, y){
-        return threshold * aDitherMask1(x, y);
+    function aDitherXorFunc1(x, y){
+        return aDitherMask1(x, y);
     }
     
-    function aDitherXorFunc2(threshold, x, y){
-        let mask = (aDitherMask2(x, y, 0) + aDitherMask2(x, y, 1) + aDitherMask2(x, y, 2)) / 3;
-        return threshold * mask;
+    function aDitherXorFunc2(x, y){
+        return (aDitherMask2(x, y, 0) + aDitherMask2(x, y, 1) + aDitherMask2(x, y, 2)) / 3;
     }
     
-    function aDitherXorFunc3(threshold, x, y, pixel){
+    function aDitherXorFunc3(x, y, pixel){
         const coeficient = 3 / 255;
-        let mask = (aDitherMask2(x, y, Math.floor(pixel[0] * coeficient)) + aDitherMask2(x, y, Math.floor(pixel[1] * coeficient)) + aDitherMask2(x, y, Math.floor(pixel[2] * coeficient))) / 3;
-        return threshold * mask;
+        return (aDitherMask2(x, y, Math.floor(pixel[0] * coeficient)) + aDitherMask2(x, y, Math.floor(pixel[1] * coeficient)) + aDitherMask2(x, y, Math.floor(pixel[2] * coeficient))) / 3;
     }
     
-    function aDitherAddFunc1(threshold, x, y){
-        return threshold * aDitherMask3(x, y);
+    function aDitherAddFunc1(x, y){
+        return aDitherMask3(x, y);
     }
     
     function aDitherAddFunc2(threshold, x, y){
-        let mask = (aDitherMask4(x, y, 0) + aDitherMask4(x, y, 1) + aDitherMask4(x, y, 2)) / 3;
-        return threshold * mask;
+        return (aDitherMask4(x, y, 0) + aDitherMask4(x, y, 1) + aDitherMask4(x, y, 2)) / 3;
     }
     
-    function aDitherAddFunc3(threshold, x, y, pixel){
+    function aDitherAddFunc3(x, y, pixel){
         const coeficient = 3 / 255;
-        let mask = (aDitherMask4(x, y, Math.floor(pixel[0] * coeficient)) + aDitherMask4(x, y, Math.floor(pixel[1] * coeficient)) + aDitherMask4(x, y, Math.floor(pixel[2] * coeficient))) / 3;
-        return threshold * mask;
+        return (aDitherMask4(x, y, Math.floor(pixel[0] * coeficient)) + aDitherMask4(x, y, Math.floor(pixel[1] * coeficient)) + aDitherMask4(x, y, Math.floor(pixel[2] * coeficient))) / 3;
     }
-    
-    function randomThresholdFunc(threshold){ 
-        return Math.ceil(Math.random() * threshold); 
+
+    function aDitherThresholdFuncBuilder(aDitherFunc){
+        return (x, y, pixel)=>{
+            return (aDitherFunc(x, y, pixel) * 255) - 127.5;
+        };
     }
 
 
@@ -86,14 +86,14 @@ App.Threshold = (function(Image, Pixel, PixelMath){
     }
     
     return {
-       image: thresholdGenerator((threshold)=>{ return threshold; }),
-       aditherXor1: thresholdGenerator(aDitherXorFunc1),
-       aditherXor2: thresholdGenerator(aDitherXorFunc2),
-       aditherXor3: thresholdGenerator(aDitherXorFunc3),
-       aditherAdd1: thresholdGenerator(aDitherAddFunc1),
-       aditherAdd2: thresholdGenerator(aDitherAddFunc2),
-       aditherAdd3: thresholdGenerator(aDitherAddFunc3),
-       randomDither: thresholdGenerator(randomThresholdFunc),
+       image: thresholdGenerator(()=>{ return 0; }),
+       aditherXor1: thresholdGenerator(aDitherThresholdFuncBuilder(aDitherXorFunc1)),
+       aditherXor2: thresholdGenerator(aDitherThresholdFuncBuilder(aDitherXorFunc2)),
+       aditherXor3: thresholdGenerator(aDitherThresholdFuncBuilder(aDitherXorFunc3)),
+       aditherAdd1: thresholdGenerator(aDitherThresholdFuncBuilder(aDitherAddFunc1)),
+       aditherAdd2: thresholdGenerator(aDitherThresholdFuncBuilder(aDitherAddFunc2)),
+       aditherAdd3: thresholdGenerator(aDitherThresholdFuncBuilder(aDitherAddFunc3)),
+       randomDither: thresholdGenerator(()=>{ return (Math.random() * 255) - 127.5; }),
        //color dither functions
        closestColor: colorDitherBuilder(()=>{return 0;}),
        randomClosestColor: colorDitherBuilder(()=>{return (Math.random() - 0.5);}),
@@ -104,4 +104,4 @@ App.Threshold = (function(Image, Pixel, PixelMath){
        aditherAdd2Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherAddFunc2)),
        aditherAdd3Color: colorDitherBuilder(colorADitherFuncGenerator(aDitherAddFunc3)),
     };
-})(App.Image, App.Pixel, App.PixelMath);
+})(App.Image, App.Pixel, App.PixelMath, App.DitherUtil);
