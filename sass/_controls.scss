@@ -37,6 +37,13 @@ input[type="checkbox"]{
 }
 
 /*
+* BW dither component controls
+*/
+.threshold-container input[type="range"]{
+    width: 200px;
+}
+
+/*
 * Color replace stuff
 */
 input[type="color"]{
@@ -60,10 +67,6 @@ input[type="color"]{
     & > *{
         margin-right: 1em;
         align-self: center;
-    }
-    input[type="range"]{
-        width: 178px;
-        max-width: 100%;
     }
 }
 

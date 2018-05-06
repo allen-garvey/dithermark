@@ -13,7 +13,7 @@
         </label>
         <?php IndexView::cyclePropertyList('selectedDitherAlgorithmIndex', 'ditherAlgorithms', 'algorithm'); ?>
     </div>
-    <div>
+    <div class="spread-content threshold-container">
         <label>
             Threshold
             <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
