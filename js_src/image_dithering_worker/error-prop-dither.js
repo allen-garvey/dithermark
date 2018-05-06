@@ -62,8 +62,9 @@ App.ErrorPropDither = (function(Image, Pixel, PixelMath, ErrorPropModel){
                 ret = blackPixel;
                 currentError = adjustedLightness;
             }
-            
-            propagateError(errorPropagationModel, errorPropMatrix, x, y, currentError);
+            if(currentError !== 0){
+                propagateError(errorPropagationModel, errorPropMatrix, x, y, currentError);
+            }
             
             return ret;
             
