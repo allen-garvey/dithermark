@@ -56,6 +56,10 @@ input:not([type]), input[type="text"], input[type="url"]{
 input[type="color"]{
     padding: 6px;
     cursor: pointer;
+    //so are roughly the same size on Chrome and Firefox 
+    box-sizing: border-box;
+    width: 60px;
+    height: 40px;
 }
 
 .super-label{
