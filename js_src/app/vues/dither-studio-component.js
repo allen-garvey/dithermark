@@ -278,7 +278,7 @@
                     Canvas.scale(transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
                     sourceCanvas = saveImageCanvas;
                 }
-                Fs.saveImage(sourceCanvas.canvas, this.loadedImage.fileType, (objectUrl)=>{
+                Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl)=>{
                     saveImageLink.href = objectUrl;
                     saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                     saveImageLink.click();
