@@ -41,7 +41,9 @@
     define('CSS_APP_URL', CSS_URL_BASE.'style.css');
 
     define('API_URL', BASE_URL.'api/');
-    define('UNSPLASH_API_URL', API_URL.'unsplash.json');
+    define('UNSPLASH_RANDOM_IMAGES_JSON', 'unsplash.json');
+    define('UNSPLASH_API_URL', API_URL.UNSPLASH_RANDOM_IMAGES_JSON);
+    define('UNSPLASH_DOWNLOAD_URL', API_URL.'unsplash-download.php');
 
     if(BUILD_MODE_RELEASE){
         define('JS_APP_URL', JS_URL_BASE.'app.min.js');

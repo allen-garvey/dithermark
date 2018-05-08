@@ -1,3 +1,5 @@
+import { constants } from "perf_hooks";
+
 (function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage){
     //webworker stuff
     var ditherWorkers;
@@ -283,6 +285,11 @@
                     saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                     saveImageLink.click();
                 });
+                //follow Unsplash API guidelines for triggering download
+                //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
+                if(this.loadedImage.unsplash){
+                    fetch(`${Constants.unsplashDownloadUrl}?photo_id=${this.loadedImage.unsplash.id}`, {method: 'POST'});
+                }
             },
             loadImageFromUrlFailed: function(error, imageUrl){
                 this.openImageErrorMessage = Fs.messageForOpenImageUrlError(error, imageUrl);
