@@ -209,7 +209,11 @@
             optimizePaletteMessageReceived: function(colors, colorQuantizationModeId){
                 const colorCount = colors.length / 3;
                 const key = this.optimizePaletteMemorizationKey(colorCount, colorQuantizationModeId);
-                optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax); 
+                optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax);
+                //avoids race condition where image is changed before color quantization returns
+                if(!this.pendingColorQuantizations[key]){
+                    return;
+                }
                 //have to use Vue.set for object keys
                 Vue.set(this.pendingColorQuantizations, key, false);
                 //avoids race conditions when color quantization mode or number of colors is changed before results return
