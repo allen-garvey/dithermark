@@ -1,5 +1,3 @@
-import { constants } from "perf_hooks";
-
 (function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage){
     //webworker stuff
     var ditherWorkers;
