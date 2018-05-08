@@ -37,18 +37,13 @@ if(!isPhotoIdValid($photoId, $unsplashImageData)){
 }
 
 //format is: https://api.unsplash.com/photos/:image_id/download
-$unsplashDownloadUrl = "https://api.unsplash.com/photos/$photoId/download";
+$unsplashDownloadUrl = "https://api.unsplash.com/photos/$photoId/download?client_id=$unsplashAccessKey";
 
-$request = new HttpRequest($unsplashDownloadUrl, HttpRequest::METH_GET);
-$request->setOptions(['Authorization' => "Client-ID $unsplashAccessKey"]);
-try {
-    $request->send();
-    if($request->getResponseCode() !== 200){
-        echo 'Problem sending request to Unsplash';
-    }
+try{
+    file_get_contents($unsplashDownloadUrl);
 }
-catch(HttpException $ex){
-    echo 'Problem sending request to Unsplash';
+catch(Exception $ex){
+    echo 'Problem contacting unsplash download url';
 }
 
 
