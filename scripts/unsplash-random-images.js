@@ -35,7 +35,7 @@ function randomImageCallback(error, response, body) {
         console.log(JSON.stringify(json.map(formatRandomImageItem)));
     }
     else{
-        console.log(error);
+        console.error(error);
     }
 }
 
