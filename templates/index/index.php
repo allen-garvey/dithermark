@@ -41,6 +41,9 @@
                 <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'texture-combine-component.php'); ?>
             </script>
         <?php endif; ?>
+        <script type="vue/template" id="unsplash-attribution-component">
+                <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'unsplash-attribution-component.php'); ?>
+            </script>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'vertex-shaders.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>

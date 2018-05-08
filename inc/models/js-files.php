@@ -26,6 +26,7 @@
         if(ENABLE_TEXTURE_COMBINE){
             $ret[] = JS_VUES_PATH.'texture-combine-component.js';
         }
+        $ret[] = JS_VUES_PATH.'unsplash-attribution-component.js';
         $ret[] = JS_VUES_PATH.'modal-prompt-component.js';
         $ret[] = JS_VUES_PATH.'bw-dither-component.js';
         $ret[] = JS_VUES_PATH.'color-dither-component.js';
