@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage){
     //webworker stuff
     var ditherWorkers;
     
@@ -305,12 +305,8 @@
             },
             loadRandomImage: function(){
                 this.isCurrentlyLoadingImageUrl = true;
-                const imageWidth = Math.min(window.innerWidth, Constants.randomImageMaxWidth);
-                const imageHeight = Math.min(window.innerHeight, Constants.randomImageMaxHeight);
-                const randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
                 
-                Fs.openImageUrl(randomImageUrl).then(({image, file})=>{
-                    file.name = 'unsplash-random-image';
+                RandomImage.get(window.innerWidth, window.innerHeight).then(({image, file})=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingImageUrl = false;
                 }).catch(this.loadImageFromUrlFailed);
@@ -323,6 +319,7 @@
                     fileName: file.name,
                     fileSize: file.size,
                     fileType: file.type,
+                    unsplash: file.unsplash,
                 };
                 //show webgl warning if any, until user closes it
                 this.showWebglWarningMessage = true;
@@ -423,4 +420,4 @@
             },
         }
     });
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage);

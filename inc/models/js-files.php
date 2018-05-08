@@ -42,6 +42,7 @@
             JS_APP_PATH.'user-settings.js',
             JS_APP_PATH.'editor-themes.js',
             JS_APP_PATH.'fs.js',
+            JS_APP_PATH.'random-image.js',
             JS_APP_PATH.'color-picker.js',
             JS_APP_PATH.'color-palettes.js',
             JS_APP_PATH.'worker-util.js',

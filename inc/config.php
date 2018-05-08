@@ -40,6 +40,9 @@
 
     define('CSS_APP_URL', CSS_URL_BASE.'style.css');
 
+    define('API_URL', BASE_URL.'api/');
+    define('UNSPLASH_API_URL', API_URL.'unsplash.json');
+
     if(BUILD_MODE_RELEASE){
         define('JS_APP_URL', JS_URL_BASE.'app.min.js');
         define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.min.js');
@@ -55,8 +58,6 @@
     */
     define('APP_NAME', 'Dithermark');
     define('MAX_WEBWORKERS', 8);
-    define('RANDOM_IMAGE_MAX_WIDTH', 800);
-    define('RANDOM_IMAGE_MAX_HEIGHT', 600);
     
     define('HISTOGRAM_HEIGHT', 96);
     //has to be multiple of 256, since there are 256 lightness values
