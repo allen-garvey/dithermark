@@ -296,7 +296,7 @@
                     return;
                 }
                 this.isCurrentlyLoadingImageUrl = true;
-                Fs.openImageUrl(imageUrl, (image, file)=>{
+                Fs.openImageUrl(imageUrl).then(({image, file})=>{
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingImageUrl = false;
                 }).catch((error)=>{
@@ -309,10 +309,11 @@
                 const imageHeight = Math.min(window.innerHeight, Constants.randomImageMaxHeight);
                 const randomImageUrl = `https://source.unsplash.com/random/${imageWidth}x${imageHeight}`;
                 
-                Fs.openImageUrl(randomImageUrl, (image, file)=>{
+                Fs.openImageUrl(randomImageUrl).then(({image, file})=>{
+                    file.name = 'unsplash-random-image';
                     this.loadImage(image, file);
                     this.isCurrentlyLoadingImageUrl = false;
-                }, 'unsplash-random-image').catch(this.loadImageFromUrlFailed);
+                }).catch(this.loadImageFromUrlFailed);
             },
             loadImage: function(image, file){
                 this.openImageErrorMessage = null;

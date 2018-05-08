@@ -39,12 +39,10 @@ App.Fs = (function(Constants){
         imageElement.src = currentImageObjectUrl;
     }
     
-    function openImageUrl(imageUrl, imageLoadFunc, imageName=null){
-        //get image name from url if not specified
-        if(!imageName){
-            const urlSplit = imageUrl.split('/');
-            imageName = urlSplit[urlSplit.length - 1];
-        }
+    function openImageUrl(imageUrl){
+        const urlSplit = imageUrl.split('/');
+        const imageName = urlSplit[urlSplit.length - 1];
+        
         //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
         return fetch(imageUrl).then((res)=>{ 
             //error in response code will not throw error
@@ -56,17 +54,24 @@ App.Fs = (function(Constants){
             if(!blob.type.startsWith('image')){
                 throw new UnsupportedFileTypeError('File does not appear to be an image', imageUrl, blob.type);
             }
-            imageElement.onload = ()=> {
-                imageLoadFunc(imageElement, {
-                    name: imageName,
-                    type: blob.type,
-                });
-            };
+            const promise = new Promise((resolve, reject)=>{
+                imageElement.onload = ()=>{
+                    resolve({
+                        image: imageElement,
+                        file: {
+                            name: imageName,
+                            type: blob.type,
+                        },
+                    });
+                };
+            });
             if(currentImageObjectUrl){
                 URL.revokeObjectURL(currentImageObjectUrl);
             }
             currentImageObjectUrl = URL.createObjectURL(blob);
             imageElement.src = currentImageObjectUrl;
+            
+            return promise;
         });
     }
     //so that urls are escaped properly, message is divided into beforeUrl, url and afterUrl parts
