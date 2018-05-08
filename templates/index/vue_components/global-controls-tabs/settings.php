@@ -14,7 +14,7 @@
 <fieldset>
     <legend>Performance</legend>
     <div class="spread-content">
-        <label>Live preview
+        <label>Live update
             <input type="checkbox" v-model="isLivePreviewEnabled" title="Immediately transform image when controls change"/>
         </label>
         <label v-if="isWebglSupported">Use WebGL
@@ -22,3 +22,6 @@
         </label>
     </div>
 </fieldset>
+<div v-show="!isLivePreviewEnabled" class="hint">
+    To update the image, press the transform button
+</div>
