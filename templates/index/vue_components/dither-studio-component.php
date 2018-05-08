@@ -51,7 +51,10 @@
             </label>
         </div>
     </div>
-    <unsplash-attribution v-if="loadedImage &amp;&amp; loadedImage.unsplash" :unsplash-info="loadedImage.unsplash" />
+    <?php //if unsplash-attribution component is not in extra div, it breaks dithering for some reason ?>
+    <div>
+        <unsplash-attribution v-if="loadedImage &amp;&amp; loadedImage.unsplash" :unsplash-info="loadedImage.unsplash" />
+    </div>
     <div class="image-canvas-supercontainer" v-show="isImageLoaded">
         <div class="image-canvas-container" :class="{'show-original': showOriginalImage}">
             <canvas ref="saveImageCanvas" class="hidden"></canvas><?php //used when saving image, so pixelated images are scaled correctly ?>

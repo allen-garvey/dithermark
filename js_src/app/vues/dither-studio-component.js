@@ -79,7 +79,7 @@
                 colorDitherComponentId: 1,
                 activeDitherComponentId: 1,
                 activeControlsTab: 0,
-                //loadedImage has properties: width, height, fileName, fileType, fileSize
+                //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
                 loadedImage: null,
                 saveImageFileName: '',
                 saveImageFileType: 'image/png',
