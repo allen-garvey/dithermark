@@ -286,7 +286,8 @@
                 //follow Unsplash API guidelines for triggering download
                 //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
                 if(this.loadedImage.unsplash){
-                    fetch(`${Constants.unsplashDownloadUrl}?photo_id=${this.loadedImage.unsplash.id}`, {method: 'POST'});
+                    //arguably should be POST request here, but much easier to just use GET
+                    fetch(`${Constants.unsplashDownloadUrl}?photo_id=${this.loadedImage.unsplash.id}`);
                 }
             },
             loadImageFromUrlFailed: function(error, imageUrl){

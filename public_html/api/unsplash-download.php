@@ -5,7 +5,7 @@
  */
 
 
-if(empty($_POST['photo_id'])){
+if(empty($_REQUEST['photo_id'])){
     echo 'No photo_id given';
     die();
 }
@@ -27,7 +27,7 @@ function isPhotoIdValid(string $photoId, array $imageData): bool{
 require_once('../../inc/config.php');
 $unsplashApiKeys = openJson(INC_PATH.'unsplash-api-secret.json');
 $unsplashAccessKey = $unsplashApiKeys['accessKey'];
-$photoId = $_POST['photo_id'];
+$photoId = $_REQUEST['photo_id'];
 //to check to make sure $photoId is valid
 $unsplashImageData = openJson(UNSPLASH_RANDOM_IMAGES_JSON);
 
