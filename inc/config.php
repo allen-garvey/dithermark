@@ -1,6 +1,6 @@
 <?php
     //get build mode from command-line arguments
-    if(count($argv) > 1 && $argv[1] === 'release'){
+    if(!empty($argv) && count($argv) > 1 && $argv[1] === 'release'){
         define('BUILD_MODE_RELEASE', true);
     }
     else{
