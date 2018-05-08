@@ -1,3 +1,7 @@
+//note that link colors for unsplash-attribution are not
+//using css variables, since that messes up default link colors
+//when variables are unset
+
 :root{
     --main-bg-color: white;
     --pinned-controls-bg-color: white;

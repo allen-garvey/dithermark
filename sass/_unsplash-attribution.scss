@@ -5,3 +5,18 @@
     //so position sticky works
     display: inline-block;
 }
+
+//can't use css variables here, since it messes up link colors
+//when variable is unset
+.editor-black, .editor-dark{
+    .unsplash-attribution-container{
+        a{
+            &:link{
+                color: white;
+            }
+            &:visited{
+                color: #999;
+            }
+        }
+    }
+}
