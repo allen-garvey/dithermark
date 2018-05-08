@@ -15,6 +15,11 @@
 * git
 * dmd >= v2.073.2
 
+## Optional dependencies for Unsplash random images
+
+* [Unsplash API Key](https://unsplash.com/developers)
+* PHP >= 7.0 running on your server
+
 ## Dependencies for running
 
 * Recent version of either Google Chrome, Mozilla Firefox, Apple Safari or Microsoft Edge
@@ -27,6 +32,11 @@
 * Type `make` to compile the project
 * (If you run into any errors at this point, first check that you have all the needed dependencies for the project. Then type `make clean`, `make install`, and `make` again, and see if that fixes your problem).
 * Type `npm start` to start a local development server, after which you should be able to view the site at [localhost:3000](http://localhost:3000)
+
+## Setting up Unsplash random images
+
+* Copy `inc/unsplash-api-secret-example.json` by running `cp inc/unsplash-api-secret-example.json inc/unsplash-api-secret.json` and replace `YOUR_ACCESS_KEY_HERE` with your Unsplash API access key
+* Run `make unsplash_api` to generate a json file with random images from Unsplash
 
 ## Creating release build
 
