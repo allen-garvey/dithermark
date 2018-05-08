@@ -319,7 +319,7 @@
                     fileName: file.name,
                     fileSize: file.size,
                     fileType: file.type,
-                    unsplash: file.unsplash,
+                    unsplash: file.unsplash || null,
                 };
                 //show webgl warning if any, until user closes it
                 this.showWebglWarningMessage = true;
