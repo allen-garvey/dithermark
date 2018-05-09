@@ -5,7 +5,7 @@
  */
 
 
-if(isset($_REQUEST['photo_id'])){
+if(!isset($_REQUEST['photo_id'])){
     echo 'No photo_id given';
     die();
 }
