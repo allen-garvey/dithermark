@@ -18,6 +18,11 @@
     
     void main(){
         vec4 pixel = texture2D(u_texture, v_texcoord);
+        <?php //have to do this, or transparent images will look weird, though exporting them will still be correct  ?>
+        if(pixel.a < 0.00001){
+            gl_FragColor = pixel;
+            return;
+        }
         vec3 adjustedPixel = pixel.rgb;
 
         #{{customBody}}
