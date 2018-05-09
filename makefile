@@ -49,9 +49,11 @@ reset:
 	rm -f $(JS_WORKER_OUTPUT)
 	rm -f $(HTML_INDEX)
 
-#don't use PUBLIC_HTML_DIR variable, to guard against it becoming unset
+#don't use variable, to guard against it becoming unset
 clean: reset
-	rm -rf ./public_html
+	rm -rf ./public_html/js
+	rm -rf ./public_html/styles
+	rm ./public_html/index.html
 	rm -rf ./dminjs
 
 #target specific variable
