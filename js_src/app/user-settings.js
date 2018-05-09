@@ -15,11 +15,12 @@ App.UserSettings = (function(){
         return JSON.parse(setting);
     }
 
-    function saveGlobalSettings(editorThemeKey, isWebglEnabled, isLivePreviewEnabled, showOriginalImage){
+    function saveGlobalSettings(editorThemeKey, isWebglEnabled, isLivePreviewEnabled, automaticallyResizeLargeImages, showOriginalImage){
         const settings = {
             editorThemeKey,
             isWebglEnabled,
             isLivePreviewEnabled,
+            automaticallyResizeLargeImages,
             showOriginalImage,
         };
         localStorage.setItem(USER_GLOBAL_SETTINGS_KEY, JSON.stringify(settings));
@@ -29,6 +30,7 @@ App.UserSettings = (function(){
         return {
             isWebglEnabled: true,
             isLivePreviewEnabled: true,
+            automaticallyResizeLargeImages: true,
             showOriginalImage: false,
         };
     }

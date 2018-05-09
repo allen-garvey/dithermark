@@ -69,6 +69,7 @@
             this.currentEditorThemeIndex = EditorThemes.indexForKey(this.editorThemes, globalSettings.editorThemeKey);
             this.showOriginalImage = globalSettings.showOriginalImage;
             this.isLivePreviewEnabled = globalSettings.isLivePreviewEnabled;
+            this.automaticallyResizeLargeImages = globalSettings.automaticallyResizeLargeImages;
             //check for webgl support
             this.isWebglSupported = !!transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
@@ -193,6 +194,9 @@
                 let newThemeClass = this.editorThemes[newThemeIndex].className;
                 classList.add(newThemeClass);
             },
+            automaticallyResizeLargeImages: function(){
+                this.saveGlobalSettings();
+            },
             showOriginalImage: function(){
                 this.saveGlobalSettings();
             },
@@ -241,7 +245,7 @@
              * Settings
              */
             saveGlobalSettings: function(){
-                UserSettings.saveGlobalSettings(this.editorThemes[this.currentEditorThemeIndex].key, this.isWebglEnabled, this.isLivePreviewEnabled, this.showOriginalImage);
+                UserSettings.saveGlobalSettings(this.editorThemes[this.currentEditorThemeIndex].key, this.isWebglEnabled, this.isLivePreviewEnabled, this.automaticallyResizeLargeImages, this.showOriginalImage);
             },
             /*
             * Tabs
