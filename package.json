@@ -1,5 +1,5 @@
 {
-  "name": "jsdither",
+  "name": "dithermark",
   "version": "1.0.0",
   "description": "Web application to interactively demonstrate image dithering algorithms",
   "main": "public_html/index.html",
@@ -11,14 +11,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/allen-garvey/jsdither.git"
+    "url": "git+https://github.com/allen-garvey/dithermark.git"
   },
   "author": "Allen Garvey",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/allen-garvey/jsdither/issues"
+    "url": "https://github.com/allen-garvey/dithermark/issues"
   },
-  "homepage": "https://github.com/allen-garvey/jsdither#readme",
+  "homepage": "https://github.com/allen-garvey/dithermark#readme",
   "dependencies": {
     "vue": "^2.5.9"
   },
