@@ -15,11 +15,11 @@ const options = {
 
 function formatRandomImageItem(imageItem){
     return {
-        id: imageItem.id,
         urls: {
             regular: imageItem.urls.regular,
             small: imageItem.urls.small,
         },
+        download: imageItem.links.download_location,
         link: imageItem.links.html,
         author: {
             name: imageItem.user.name,

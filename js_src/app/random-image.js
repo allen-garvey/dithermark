@@ -28,8 +28,11 @@
     function loadRandomImageData(){
         return fetch(Constants.unsplashApiUrl).then((res)=>{ 
             return res.json();
-        }).then((json)=>{
-            randomImageQueue = shuffle(json);
+        }).then((imageArray)=>{
+            randomImageQueue = shuffle(imageArray.map((image, i)=>{
+                image.id = i;
+                return image;
+            }));
         });
     }
 
