@@ -17,6 +17,9 @@
         <label>Live update
             <input type="checkbox" v-model="isLivePreviewEnabled" title="Immediately transform image when controls change"/>
         </label>
+        <label>Shrink large images
+            <input type="checkbox" v-model="automaticallyResizeLargeImages" title="Automatically shrink large images when opening them"/>
+        </label>
         <label v-if="isWebglSupported">Use WebGL
             <input type="checkbox" v-model="isWebglEnabled" title="Use WebGL to speed up performance when possible"/>
         </label>
@@ -24,4 +27,7 @@
 </fieldset>
 <div v-show="!isLivePreviewEnabled" class="hint">
     To update the image, press the transform button
+</div>
+<div v-show="!automaticallyResizeLargeImages" class="hint">
+    Opening very large images can result in poor performance or browser crashes
 </div>

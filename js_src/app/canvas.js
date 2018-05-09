@@ -13,6 +13,14 @@ App.Canvas = (function(Polyfills){
         canvasObject.canvas.height = image.height;
         canvasObject.context.drawImage(image, 0, 0);
     }
+
+    function canvasObjectLoadImageScaled(canvasObject, image, scale){
+        const scaledWidth = Math.round(image.width * scale);
+        const scaledHeight = Math.round(image.height * scale);
+        canvasObject.canvas.width = scaledWidth;
+        canvasObject.canvas.height = scaledHeight;
+        canvasObject.context.drawImage(image, 0, 0, scaledWidth, scaledHeight);
+    }
     
     //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
     function createCanvasObject(canvas){
@@ -119,6 +127,7 @@ App.Canvas = (function(Polyfills){
     //   copy: copyCanvasImage,
        createWebgl: createWebglCanvas,
        loadImage: canvasObjectLoadImage,
+       loadImageScaled: canvasObjectLoadImageScaled,
        scale: scaleCanvasImage,
        createSharedImageBuffer: createSharedImageBuffer,
        replaceImageWithBuffer: replaceImageWithBuffer,

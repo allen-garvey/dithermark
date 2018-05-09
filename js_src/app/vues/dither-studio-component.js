@@ -84,6 +84,7 @@
                 saveImageFileName: '',
                 saveImageFileType: 'image/png',
                 isLivePreviewEnabled: true,
+                automaticallyResizeLargeImages: true,
                 isCurrentlyLoadingImageUrl: false,
                 isWebglSupported: false,
                 isWebglEnabled: false,
@@ -319,7 +320,7 @@
             },
             loadImage: function(image, file){
                 this.openImageErrorMessage = null;
-                this.loadedImage = {
+                const loadedImage = {
                     width: image.width,
                     height: image.height,
                     fileName: file.name,
@@ -331,8 +332,21 @@
                 this.showWebglWarningMessage = true;
                 this.saveImageFileName = file.name.replace(/\.(png|bmp|jpg|jpeg)$/i, '');
                 this.saveImageFileType = file.type;
-                Canvas.loadImage(originalImageCanvas, image);
                 
+                //resize large images if necessary
+                const largeImageDimensionThreshold = 1200;
+                const largestImageDimension = Math.max(loadedImage.width, loadedImage.height);
+                if(this.automaticallyResizeLargeImages && largestImageDimension > largeImageDimensionThreshold){
+                    const resizePercentage = largeImageDimensionThreshold / largestImageDimension;
+                    Canvas.loadImageScaled(originalImageCanvas, image, resizePercentage);
+                    loadedImage.width = originalImageCanvas.canvas.width;
+                    loadedImage.height = originalImageCanvas.canvas.height;
+                }
+                else{
+                    Canvas.loadImage(originalImageCanvas, image);
+                }
+                //finish loading image
+                this.loadedImage = loadedImage;
                 this.imagePixelationChanged(originalImageCanvas, this.imageHeader);
             },
             imagePixelationChanged: function(canvas, imageHeader){
