@@ -335,7 +335,6 @@
                 //show webgl warning if any, until user closes it
                 this.showWebglWarningMessage = true;
                 this.saveImageFileName = file.name.replace(/\.(png|bmp|jpg|jpeg)$/i, '');
-                this.saveImageFileType = file.type;
                 
                 //resize large images if necessary
                 const largeImageDimensionThreshold = 1200;
