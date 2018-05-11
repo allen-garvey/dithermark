@@ -2,6 +2,7 @@ App.OptimizePalette = (function(Popularity, MedianCut, ArrayUtil, RgbQuant, Perc
     return {
        perceptualMedianCut: Perceptual.medianCut,
        uniform: Perceptual.uniform,
+       monochrome: Perceptual.monochrome,
        medianCut: MedianCut.medianCut,
        popularity: Popularity.popularity,
        lightnessPopularity: Popularity.lightnessPopularity,

@@ -33,6 +33,11 @@ class ColorQuantizationMode {
 
 function colorQuantizationModesBase(): array{
     return [
+        'Monochrome',
+        new ColorQuantizationMode('MONOCHROME', 'Monochrome', 'monochrome'),
+        new ColorQuantizationMode('DUOTONE', 'Duotone', 'monochrome', ['hueCount' => 2]),
+        new ColorQuantizationMode('TRITONE', 'Tritone', 'monochrome', ['hueCount' => 3]),
+        new ColorQuantizationMode('QUADTONE', 'Quadtone', 'monochrome', ['hueCount' => 4]),
         'Perceptual Median Cut',
         new ColorQuantizationMode('PMC_BALANCED', 'Perceptual Median Cut (Balanced)', 'perceptualMedianCut', ['hueMix' => 1.6]),
         new ColorQuantizationMode('PMC_MEDIAN', 'Perceptual Median Cut (Monotone)', 'perceptualMedianCut', ['hueMix' => 2]),

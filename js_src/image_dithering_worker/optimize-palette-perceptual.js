@@ -548,10 +548,77 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         let ret = PixelMath.hslArrayToRgb(hsl);
         return ret;
     }
+
+    function monochromeQuantization(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
+        let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
+        let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
+
+        let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
+        let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
+
+        let defaultHueFunc = (pixel)=>{
+            let lightness = PixelMath.lightness(pixel);
+            //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
+            const lightnessFloor = lightnesses[1];
+            const lightnessCeil = lightnesses[lightnesses.length - 2];
+            if(lightness <= lightnessFloor || lightness >= lightnessCeil){
+                return null;
+            }
+            //also ignore hue if saturation is too low to distinguish hue
+            const satuarationFloor = 5;
+            if(PixelMath.saturation(pixel) <= satuarationFloor){
+                return null;
+            }
+            return PixelMath.hue(pixel);
+        };
+        
+        let hueFunc = defaultHueFunc;
+        let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let mostPopularHue = 0;
+        let mostPopularHueCount = 0;
+        huePopularityMapObject.map.forEach((hueCount, hue)=>{
+            if(hueCount > mostPopularHueCount){
+                mostPopularHueCount = hueCount;
+                mostPopularHue = hue;
+            }
+        });
+        const hues = new Uint16Array(numColors);
+        hues.fill(mostPopularHue);
+        
+        if(colorQuantization.hueCount){
+            const tones = [mostPopularHue];
+            if(colorQuantization.hueCount === 3){
+                tones.push((mostPopularHue + 120) % 360);
+                tones.push((mostPopularHue + 240) % 360);
+            }
+            else if(colorQuantization.hueCount === 4){
+                tones.push((mostPopularHue + 90) % 360);
+                tones.push((mostPopularHue + 180) % 360);
+                tones.push((mostPopularHue + 270) % 360);
+            }
+            //2
+            else{
+                const complementaryHue = (mostPopularHue + 180) % 360;
+                tones.push((mostPopularHue + 180) % 360);
+            }
+            const tonesBuffer = new Uint16Array(tones);
+            for(let i=0, tonesIndex=0;i<hues.length;i++,tonesIndex++){
+                tonesIndex = tonesIndex % tonesBuffer.length;
+                hues[i] = tonesBuffer[tonesIndex];
+            }
+
+        }
+
+        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        let ret = PixelMath.hslArrayToRgb(hsl);
+        return ret;
+        
+    }
     
     
     return {
        medianCut: perceptualMedianCut,
        uniform: uniformQuantization,
+       monochrome: monochromeQuantization,
     };
 })(App.Pixel, App.PixelMath, App.ArrayUtil);
