@@ -54,7 +54,7 @@ App.Threshold = (function(Image, Pixel, PixelMath, DitherUtil){
         return aDitherMask3(x, y);
     }
     
-    function aDitherAddFunc2(threshold, x, y){
+    function aDitherAddFunc2(x, y){
         return (aDitherMask4(x, y, 0) + aDitherMask4(x, y, 1) + aDitherMask4(x, y, 2)) / 3;
     }
     
@@ -65,7 +65,7 @@ App.Threshold = (function(Image, Pixel, PixelMath, DitherUtil){
 
     function aDitherThresholdFuncBuilder(aDitherFunc){
         return (x, y, pixel)=>{
-            return (aDitherFunc(x, y, pixel) * 255) - 127.5;
+            return aDitherFunc(x, y, pixel) * 255 - 127.5;
         };
     }
 
@@ -81,7 +81,7 @@ App.Threshold = (function(Image, Pixel, PixelMath, DitherUtil){
 
     function colorADitherFuncGenerator(aDitherFunc){
         return (x, y, pixel)=>{
-            return aDitherFunc(1, x, y, pixel) - 0.5;
+            return aDitherFunc(x, y, pixel) - 0.5;
         };
     }
     
