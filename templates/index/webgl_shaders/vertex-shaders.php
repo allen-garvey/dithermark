@@ -1,4 +1,5 @@
 <script type="webgl/vertex-shader" id="webgl-vertex-shader">
+    precision mediump float;
     <?php //from: https://webglfundamentals.org/webgl/lessons/webgl-2d-drawimage.html ?>
     attribute vec4 a_position;
     attribute vec2 a_texcoord;
