@@ -15,7 +15,7 @@ App.WebGlShader = (function(){
             return functionTemplate.replace('#{{functionName}}', functionName).replace('#{{operation}}', operation);
         }
         let functionTemplate = shaderText('webgl-bitwise-function-template');
-        return generateOperator('AND', 'mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0') + generateOperator('XOR', '(mod(v1, 2.0) > 0.0 || mod(v2, 2.0) > 0.0) && !(mod(v1, 2.0) > 0.0 && mod(v2, 2.0) > 0.0)');
+        return generateOperator('AND', 'bit1IsOdd && bit2IsOdd') + generateOperator('XOR', '(bit1IsOdd || bit2IsOdd) && !(bit1IsOdd && bit2IsOdd)');
     }
     
     
