@@ -49,8 +49,8 @@
     }
     
     float arithmeticDither(vec2 pos, vec3 pixel){
-        int x = int(pos.x * u_image_width);
-        int y = int(pos.y * u_image_height);
+        int x = int(pos.x);
+        int y = int(pos.y);
         return #{{arithmeticDitherReturn}};
         <?php //(e.g.) aDitherMask3(x, y); ?>
     }

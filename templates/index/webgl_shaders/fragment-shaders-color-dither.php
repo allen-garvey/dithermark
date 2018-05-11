@@ -104,6 +104,6 @@
     adjustedPixel = clamp(adjustedPixel + vec3(randomValue), 0.0, 1.0);
 </script>
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-color-body">
-    float aDitherValue = u_dither_r_coefficient * (arithmeticDither(v_texcoord, pixel.rgb) - 0.5);
+    float aDitherValue = u_dither_r_coefficient * (arithmeticDither(gl_FragCoord.xy, pixel.rgb) - 0.5);
     adjustedPixel = clamp(adjustedPixel + vec3(aDitherValue), 0.0, 1.0);
 </script>

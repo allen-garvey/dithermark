@@ -56,7 +56,7 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-body">
-    bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (arithmeticDither(v_texcoord, pixel.rgb) - 0.5) < u_threshold;
+    bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (arithmeticDither(gl_FragCoord.xy, pixel.rgb) - 0.5) < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-declaration">
