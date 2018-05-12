@@ -22,8 +22,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     /*
     * Actual webgl function creation
     */
-    function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames){
-        customUniformNames = customUniformNames || [];
+    function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames=[]){
         customUniformNames = customUniformNames.concat(['u_colors_array', 'u_colors_array_length', 'u_dither_r_coefficient']);
         
         var drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
@@ -192,15 +191,12 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
             let drawImageFunc = drawImageFuncs[key][colorDitherModeId];
             if(!drawImageFunc){
-                drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[key][colorDitherModeId], ['u_image_width', 'u_image_height']);
+                drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[key][colorDitherModeId]);
                 drawImageFuncs[key][colorDitherModeId] = drawImageFunc;
             }
             // Tell WebGL how to convert from clip space to pixels
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-            drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength, (gl, customUniformLocations)=>{
-                gl.uniform1f(customUniformLocations['u_image_width'], imageWidth);
-                gl.uniform1f(customUniformLocations['u_image_height'], imageHeight);
-            });
+            drawImageFunc(gl, texture, imageWidth, imageHeight, colorsArray, colorsArrayLength);
         };
     }
 

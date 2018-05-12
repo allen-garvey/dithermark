@@ -108,13 +108,10 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
         let customDeclarationReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}, {find: '#{{bitwiseFunctions}}', replace: bitwiseFunctionsText}];
         
         return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
-            let drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customDeclarationReplacements], ['u_image_height', 'u_image_width']);
+            let drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customDeclarationReplacements]);
             // Tell WebGL how to convert from clip space to pixels
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-            drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
-                gl.uniform1f(customUniformLocations['u_image_width'], imageWidth);
-                gl.uniform1f(customUniformLocations['u_image_height'], imageHeight);
-            });
+            drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
         };   
     }
     

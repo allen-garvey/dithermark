@@ -27,8 +27,6 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-declaration">
-    uniform float u_image_height;
-    uniform float u_image_width;
     
     #{{bitwiseFunctions}}
     
