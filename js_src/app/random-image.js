@@ -60,7 +60,7 @@
     function openRandomImage(randomImageData, imageWidthHint, imageHeightHint){
         //small image url width is generally <= 400px
         //regular image url width is generally > 900px
-        const imageUrl = imageWidthHint > 1000 ? randomImageData.urls.regular : randomImageData.urls.small;
+        const imageUrl = imageWidthHint > 800 ? randomImageData.urls.regular : randomImageData.urls.small;
         return Fs.openImageUrl(imageUrl).then(({image, file})=>{
             file.name = 'unsplash-random-image';
             file.unsplash = randomImageData;
