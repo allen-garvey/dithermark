@@ -27,6 +27,8 @@
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-declaration">
+    <?php //high int precision required for bitwise functions to work on mobile devices ?>
+    precision highp int;
     
     #{{bitwiseFunctions}}
     
