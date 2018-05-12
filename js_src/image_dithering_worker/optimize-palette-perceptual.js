@@ -586,25 +586,16 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         hues.fill(mostPopularHue);
         
         if(colorQuantization.hueCount){
-            const tones = [mostPopularHue];
-            if(colorQuantization.hueCount === 3){
-                tones.push((mostPopularHue + 120) % 360);
-                tones.push((mostPopularHue + 240) % 360);
+            const tonesCount = colorQuantization.hueCount;
+            const tones = new Uint16Array(tonesCount);
+            const hueFraction = 360 / tonesCount;
+            tones[0] = mostPopularHue;
+            for(let i=1;i<tonesCount;i++){
+                tones[i] = (hueFraction * i + tones[0]) % 360;
             }
-            else if(colorQuantization.hueCount === 4){
-                tones.push((mostPopularHue + 90) % 360);
-                tones.push((mostPopularHue + 180) % 360);
-                tones.push((mostPopularHue + 270) % 360);
-            }
-            //2
-            else{
-                const complementaryHue = (mostPopularHue + 180) % 360;
-                tones.push((mostPopularHue + 180) % 360);
-            }
-            const tonesBuffer = new Uint16Array(tones);
             for(let i=0, tonesIndex=0;i<hues.length;i++,tonesIndex++){
-                tonesIndex = tonesIndex % tonesBuffer.length;
-                hues[i] = tonesBuffer[tonesIndex];
+                tonesIndex = tonesIndex % tonesCount;
+                hues[i] = tones[tonesIndex];
             }
 
         }
