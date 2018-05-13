@@ -249,13 +249,16 @@
             },
             pixelateImageZoom: function(newValue, oldValue){
                 if(newValue !== oldValue){
-                    this.imagePixelationChanged(originalImageCanvas, this.imageHeader, false);
+                    this.imagePixelationChanged();
                     this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
+                    this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
             selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
                 if(newValue !== oldValue){
+                    this.imagePixelationChanged();
                     this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
+                    this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
         },
@@ -369,10 +372,13 @@
                 }
                 //finish loading image
                 this.loadedImage = loadedImage;
-                this.imagePixelationChanged(originalImageCanvas, this.imageHeader, false);
+                this.imagePixelationChanged();
                 this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
+                this.activeDitherSection.imageLoaded(this.imageHeader);
             },
-            imagePixelationChanged: function(canvas, imageHeader, reloadDitherSection=true){
+            imagePixelationChanged: function(){
+                const imageHeader = this.imageHeader;
+                const canvas = originalImageCanvas;
                 const scaleAmount = this.pixelateImageZoom / 100;
                 Canvas.scale(canvas, sourceCanvas, scaleAmount);
                 Canvas.scale(canvas, transformCanvas, scaleAmount);
@@ -404,13 +410,11 @@
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
-
-                if(reloadDitherSection){
-                    //call selected tab image loaded hook here
-                    this.activeDitherSection.imageLoaded(imageHeader);
-                }
             },
-            imageSmoothingChanged: function(smoothingRadius, reloadDitherSection=true){
+            imageSmoothingChanged: function(smoothingRadius){
+                if(smoothingRadius <= 0){
+                    return;
+                }
                 const imageHeader = this.imageHeader;
                 //smoothing
                 WebGlSmoothing.smooth(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, smoothingRadius);
@@ -426,11 +430,6 @@
                     ditherWorker.postMessage(ditherWorkerHeader);
                     ditherWorker.postMessage(buffer);
                 });
-
-                if(reloadDitherSection){
-                    //call selected tab image loaded hook here
-                    this.activeDitherSection.imageLoaded(imageHeader);
-                }
             },
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
