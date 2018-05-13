@@ -50,19 +50,16 @@
                     ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 
                  });
             });
+            originalImageCanvas = Canvas.create();
+            sourceCanvas = Canvas.create();
+            transformCanvas = Canvas.create();
+            transformCanvasWebGl = Canvas.createWebgl();
+            saveImageCanvas = Canvas.create();
         },
         mounted: function(){
             const refs = this.$refs;
-            originalImageCanvas = Canvas.create(refs.originalImageCanvas);
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
-            
-            sourceCanvas = Canvas.create(refs.sourceCanvas);
-            transformCanvas = Canvas.create(refs.transformCanvas);
-            transformCanvasWebGl = Canvas.createWebgl(refs.transformCanvasWebgl);
-            sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
-            transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
-            saveImageCanvas = Canvas.create(refs.saveImageCanvas);
             
             //load global settings
             const globalSettings = UserSettings.getGlobalSettings();

@@ -24,6 +24,7 @@ App.Canvas = (function(Polyfills){
     
     //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
     function createCanvasObject(canvas){
+        canvas = canvas || document.createElement('canvas');
         return {
             canvas,
             context: canvas.getContext('2d'),
@@ -31,10 +32,8 @@ App.Canvas = (function(Polyfills){
     }
     
     function createWebglCanvas(canvas){
-        let gl = canvas.getContext('webgl');
-        if (!gl) {
-            gl = canvas.getContext('experimental-webgl');
-        }
+        canvas = canvas || document.createElement('canvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         let maxTextureSize = 0;
         if(gl){
             maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
