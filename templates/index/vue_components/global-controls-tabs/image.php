@@ -11,3 +11,11 @@
     </label>
     <?php IndexView::cyclePropertyList('selectedPixelateImageZoom', 'pixelateImageZooms', 'pixelation value'); ?>
 </div>
+<div class="spread-content">
+    <label>Smoothing (Before)
+        <select v-model.number="selectedImageSmoothingRadiusBefore">
+            <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
+        </select>
+    </label>
+    <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
+</div>

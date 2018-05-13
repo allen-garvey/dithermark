@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage, AlgorithmModel){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage, AlgorithmModel, WebGlSmoothing){
     //webworker stuff
     var ditherWorkers;
     
@@ -103,6 +103,8 @@
                 zoom: 100,
                 zoomDisplay: 100, //this is so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed
                 selectedPixelateImageZoom: 0,
+                imageSmoothingValues: [0, 1, 2, 3, 4, 8],
+                selectedImageSmoothingRadiusBefore: 0,
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
@@ -247,7 +249,13 @@
             },
             pixelateImageZoom: function(newValue, oldValue){
                 if(newValue !== oldValue){
-                    this.imagePixelationChanged(originalImageCanvas, this.imageHeader);   
+                    this.imagePixelationChanged(originalImageCanvas, this.imageHeader, false);
+                    this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
+                }
+            },
+            selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
+                if(newValue !== oldValue){
+                    this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
                 }
             },
         },
@@ -361,10 +369,11 @@
                 }
                 //finish loading image
                 this.loadedImage = loadedImage;
-                this.imagePixelationChanged(originalImageCanvas, this.imageHeader);
+                this.imagePixelationChanged(originalImageCanvas, this.imageHeader, false);
+                this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
             },
-            imagePixelationChanged: function(canvas, imageHeader){
-                let scaleAmount = this.pixelateImageZoom / 100;
+            imagePixelationChanged: function(canvas, imageHeader, reloadDitherSection=true){
+                const scaleAmount = this.pixelateImageZoom / 100;
                 Canvas.scale(canvas, sourceCanvas, scaleAmount);
                 Canvas.scale(canvas, transformCanvas, scaleAmount);
                 
@@ -380,9 +389,9 @@
                 else if(this.zoom < this.zoomMin){
                     this.zoom = this.zoomMin;
                 }
-                
+
                 //load image into the webworkers
-                var buffer = Canvas.createSharedImageBuffer(sourceCanvas);
+                const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
                 let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
@@ -395,9 +404,33 @@
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
+
+                if(reloadDitherSection){
+                    //call selected tab image loaded hook here
+                    this.activeDitherSection.imageLoaded(imageHeader);
+                }
+            },
+            imageSmoothingChanged: function(smoothingRadius, reloadDitherSection=true){
+                const imageHeader = this.imageHeader;
+                //smoothing
+                WebGlSmoothing.smooth(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, smoothingRadius);
+                sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+                sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 
-                //call selected tab image loaded hook here
-                this.activeDitherSection.imageLoaded(imageHeader);
+                //load image into the webworkers
+                const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
+                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
+                ditherWorkers.forEach((ditherWorker)=>{
+                    //copy image to web workers
+                    ditherWorker.postMessage(ditherWorkerHeader);
+                    ditherWorker.postMessage(buffer);
+                });
+
+                if(reloadDitherSection){
+                    //call selected tab image loaded hook here
+                    this.activeDitherSection.imageLoaded(imageHeader);
+                }
             },
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
@@ -454,4 +487,4 @@
             },
         }
     });
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage, App.AlgorithmModel);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage, App.AlgorithmModel, App.WebGlSmoothing);

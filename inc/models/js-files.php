@@ -55,6 +55,7 @@
             JS_APP_PATH.'webgl-shader.js',
             JS_APP_PATH.'webgl-bw-dither.js',
             JS_APP_PATH.'webgl-color-dither.js',
+            JS_APP_PATH.'webgl-smoothing.js',
             JS_APP_PATH.'histogram.js',
             JS_APP_PATH.'algorithm-model.js',
         ], appVueComponents());
