@@ -169,6 +169,9 @@
             pixelateImageZoom: function(){
                 return this.pixelateImageZooms[this.selectedPixelateImageZoom].value;
             },
+            smoothingRadiusBefore: function(){
+                return this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
+            },
             webglWarningMessage: function(){
                 //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
                 //for integers only
@@ -250,14 +253,14 @@
             pixelateImageZoom: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imagePixelationChanged();
-                    this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
+                    this.imageSmoothingChanged(this.smoothingRadiusBefore);
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
             selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imagePixelationChanged();
-                    this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
+                    this.imageSmoothingChanged(this.smoothingRadiusBefore);
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
@@ -373,7 +376,7 @@
                 //finish loading image
                 this.loadedImage = loadedImage;
                 this.imagePixelationChanged();
-                this.imageSmoothingChanged(this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore]);
+                this.imageSmoothingChanged(this.smoothingRadiusBefore);
                 this.activeDitherSection.imageLoaded(this.imageHeader);
             },
             imagePixelationChanged: function(){
