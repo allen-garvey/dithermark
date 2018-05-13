@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage, AlgorithmModel){
     //webworker stuff
     var ditherWorkers;
     
@@ -55,6 +55,18 @@
             transformCanvas = Canvas.create();
             transformCanvasWebGl = Canvas.createWebgl();
             saveImageCanvas = Canvas.create();
+
+            //remove webgl algorithms requiring high precision ints (if necessary)
+            if(!transformCanvasWebGl.supportsHighIntPrecision){
+                const removeUnsupportedWebGl = (algorithm)=>{
+                    if(algorithm.requiresHighPrecisionInt){
+                        algorithm.webGlFunc = null;
+                    }
+                    return algorithm;
+                };
+                this.bwDitherAlgorithms = this.bwDitherAlgorithms.map(removeUnsupportedWebGl);
+                this.colorDitherAlgorithms = this.colorDitherAlgorithms.map(removeUnsupportedWebGl);
+            }
         },
         mounted: function(){
             const refs = this.$refs;
@@ -73,6 +85,8 @@
         },
         data: function(){
             return {
+                bwDitherAlgorithms: AlgorithmModel.bwDitherAlgorithms,
+                colorDitherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 bwDitherComponentId: 0,
                 colorDitherComponentId: 1,
                 activeDitherComponentId: 1,
@@ -440,4 +454,4 @@
             },
         }
     });
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage, App.AlgorithmModel);

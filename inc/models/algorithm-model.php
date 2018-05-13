@@ -5,12 +5,16 @@ class DitherAlgorithm {
     protected $name;
     protected $workerFunc;
     protected $webglFunc;
+    protected $appOptions;
 
 
-    function __construct(string $name, string $workerFunc, string $webglFunc) {
+    //appOptions is addition key-values to add to App algorithm model
+    //currently only works with boolean and number values
+    function __construct(string $name, string $workerFunc, string $webglFunc, array $appOptions=[]) {
         $this->name = $name;
         $this->workerFunc = $workerFunc;
         $this->webglFunc = $webglFunc;
+        $this->appOptions = $appOptions;
     }
 
     public function name(): string{
@@ -27,6 +31,10 @@ class DitherAlgorithm {
 
     public function id(): int{
         return $this->id;
+    }
+
+    public function appOptions(): array{
+        return $this->appOptions;
     }
 
     public function setId(int $id){
@@ -85,12 +93,12 @@ function bwAlgorithmModelBase(): array{
         'Random',
         new DitherAlgorithm('Random', 'Threshold.randomDither', 'BwDither.randomThreshold'),
         'Arithmetic',
-        new DitherAlgorithm('Adither XOR (High)', 'Threshold.aditherXor1', 'BwDither.aDitherXor1'),
-        new DitherAlgorithm('Adither XOR (Medium)', 'Threshold.aditherXor3', 'BwDither.aDitherXor3'),
-        new DitherAlgorithm('Adither XOR (Low)', 'Threshold.aditherXor2', 'BwDither.aDitherXor2'),
-        new DitherAlgorithm('Adither ADD (High)', 'Threshold.aditherAdd1', 'BwDither.aDitherAdd1'),
-        new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3', 'BwDither.aDitherAdd3'),
-        new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2', 'BwDither.aDitherAdd2'),
+        new DitherAlgorithm('Adither XOR (High)', 'Threshold.aditherXor1', 'BwDither.aDitherXor1', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither XOR (Medium)', 'Threshold.aditherXor3', 'BwDither.aDitherXor3', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither XOR (Low)', 'Threshold.aditherXor2', 'BwDither.aDitherXor2', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither ADD (High)', 'Threshold.aditherAdd1', 'BwDither.aDitherAdd1', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3', 'BwDither.aDitherAdd3', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2', 'BwDither.aDitherAdd2', ['requiresHighPrecisionInt' => 'true']),
         'Diffusion',
         new DitherAlgorithm('Floyd-Steinberg', 'ErrorPropDither.floydSteinberg', ''),
         new DitherAlgorithm('Javis-Judice-Ninke', 'ErrorPropDither.javisJudiceNinke', ''),
@@ -132,12 +140,12 @@ function colorAlgorithmModelBase(): array{
         'Random',
         new DitherAlgorithm('Random', 'Threshold.randomClosestColor', 'ColorDither.randomClosestColor'),
         'Arithmetic',
-        new DitherAlgorithm('Adither XOR (High)', 'Threshold.aditherXor1Color', 'ColorDither.aDitherXor1'),
-        new DitherAlgorithm('Adither XOR (Medium)', 'Threshold.aditherXor3Color', 'ColorDither.aDitherXor3'),
-        new DitherAlgorithm('Adither XOR (Low)', 'Threshold.aditherXor2Color', 'ColorDither.aDitherXor2'),
-        new DitherAlgorithm('Adither ADD (High)', 'Threshold.aditherAdd1Color', 'ColorDither.aDitherAdd1'),
-        new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3Color', 'ColorDither.aDitherAdd3'),
-        new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2Color', 'ColorDither.aDitherAdd2'),
+        new DitherAlgorithm('Adither XOR (High)', 'Threshold.aditherXor1Color', 'ColorDither.aDitherXor1', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither XOR (Medium)', 'Threshold.aditherXor3Color', 'ColorDither.aDitherXor3', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither XOR (Low)', 'Threshold.aditherXor2Color', 'ColorDither.aDitherXor2', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither ADD (High)', 'Threshold.aditherAdd1Color', 'ColorDither.aDitherAdd1', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3Color', 'ColorDither.aDitherAdd3', ['requiresHighPrecisionInt' => 'true']),
+        new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2Color', 'ColorDither.aDitherAdd2', ['requiresHighPrecisionInt' => 'true']),
         'Diffusion',
         new DitherAlgorithm('Floyd-Steinberg', 'ErrorPropColorDither.floydSteinberg', ''),
         new DitherAlgorithm('Javis-Judice-Ninke', 'ErrorPropColorDither.javisJudiceNinke', ''),
@@ -211,6 +219,11 @@ function printAppAlgoModel(array $algoModel){
 				<?php if($algorithm->webGlFunc() !== ''): ?>
 					webGlFunc: <?= $algorithm->webGlFunc(); ?>,
 				<?php endif; ?>
+                <?php if(!empty($algorithm->appOptions())): 
+                    foreach($algorithm->appOptions() as $key => $value):
+                        echo "${key}: $value";
+                    endforeach; 
+                endif; ?>
 			},
 		<?php endforeach;
 }

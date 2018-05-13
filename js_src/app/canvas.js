@@ -35,13 +35,18 @@ App.Canvas = (function(Polyfills){
         canvas = canvas || document.createElement('canvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         let maxTextureSize = 0;
+        let supportsHighIntPrecision = false;
         if(gl){
             maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+            //high int precision required for arithmetic dithers
+            const shaderIntPrecision = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_INT);
+            supportsHighIntPrecision = shaderIntPrecision && shaderIntPrecision.rangeMax >= 30;
         }
         return {
-            canvas: canvas,
-            gl: gl,
-            maxTextureSize: maxTextureSize,
+            canvas,
+            gl,
+            maxTextureSize,
+            supportsHighIntPrecision,
         };
     }
     

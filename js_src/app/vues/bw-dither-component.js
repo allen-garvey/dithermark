@@ -10,7 +10,7 @@
     
     var component = Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
-        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
+        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
         created: function(){
             this.resetColorReplace();
         },
@@ -28,7 +28,6 @@
                 hasImageBeenTransformed: false,
                 colorReplaceColors: [],
                 ditherGroups: AlgorithmModel.bwDitherGroups,
-                ditherAlgorithms: AlgorithmModel.bwDitherAlgorithms,
                 loadedImage: null,
             };
         },

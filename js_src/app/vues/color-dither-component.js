@@ -9,7 +9,7 @@
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
-        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage'],
+        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
         created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
@@ -25,7 +25,6 @@
             return{
                 selectedDitherAlgorithmIndex: 20,
                 ditherGroups: AlgorithmModel.colorDitherGroups,
-                ditherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
                 loadedImage: null,
                 colors: [],
                 //colors shadow and draggedIndex are for dragging colors in palette
