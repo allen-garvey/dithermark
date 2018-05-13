@@ -12,6 +12,7 @@
     var saveImageCanvas;
     
     var sourceWebglTexture;
+    var ditherOutputWebglTexture;
 
     //saving and loading image elements
     var saveImageLink;
@@ -105,6 +106,7 @@
                 selectedPixelateImageZoom: 0,
                 imageSmoothingValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16],
                 selectedImageSmoothingRadiusBefore: 0,
+                selectedImageSmoothingRadiusAfter: 0,
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
@@ -171,6 +173,9 @@
             },
             smoothingRadiusBefore: function(){
                 return this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
+            },
+            smoothingRadiusAfter: function(){
+                return this.imageSmoothingValues[this.selectedImageSmoothingRadiusAfter];
             },
             webglWarningMessage: function(){
                 //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
@@ -253,15 +258,21 @@
             pixelateImageZoom: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imagePixelationChanged();
-                    this.imageSmoothingChanged(this.smoothingRadiusBefore);
+                    this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
             selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imagePixelationChanged();
-                    this.imageSmoothingChanged(this.smoothingRadiusBefore);
+                    this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
                     this.activeDitherSection.imageLoaded(this.imageHeader);
+                }
+            },
+            selectedImageSmoothingRadiusAfter: function(newValue, oldValue){
+                if(newValue !== oldValue){
+                    this.imageSmoothingAfterChanged(this.smoothingRadiusAfter);
+                    this.zoomImage();
                 }
             },
         },
@@ -376,7 +387,7 @@
                 //finish loading image
                 this.loadedImage = loadedImage;
                 this.imagePixelationChanged();
-                this.imageSmoothingChanged(this.smoothingRadiusBefore);
+                this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
                 this.activeDitherSection.imageLoaded(this.imageHeader);
             },
             imagePixelationChanged: function(){
@@ -408,13 +419,14 @@
                     ditherWorker.postMessage(buffer);
                 });
                 
-                //todo could potentially wait to create texture until first time webgl algorithm is called
+                //could potentially wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
             },
-            imageSmoothingChanged: function(smoothingRadius){
+            //image smoothing after pixelation, before dither
+            imageSmoothingBeforeChanged: function(smoothingRadius){
                 if(smoothingRadius <= 0){
                     return;
                 }
@@ -433,6 +445,13 @@
                     ditherWorker.postMessage(ditherWorkerHeader);
                     ditherWorker.postMessage(buffer);
                 });
+            },
+            //image smoothing after dither
+            imageSmoothingAfterChanged: function(smoothingRadius){
+                const imageHeader = this.imageHeader;
+                //smoothing
+                WebGlSmoothing.smooth(transformCanvasWebGl.gl, ditherOutputWebglTexture, imageHeader.width, imageHeader.height, smoothingRadius);
+                transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
             },
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
@@ -465,6 +484,9 @@
             },
             onRequestDisplayTransformedImage: function(componentId){
                 if(componentId === this.activeDitherComponentId){
+                    transformCanvasWebGl.gl.deleteTexture(ditherOutputWebglTexture);
+                    ditherOutputWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, transformCanvas.context.getImageData(0, 0, this.imageHeader.width, this.imageHeader.height));
+                    this.imageSmoothingAfterChanged(this.smoothingRadiusAfter);
                     this.zoomImage();
                 }
             },
