@@ -103,7 +103,7 @@
                 zoom: 100,
                 zoomDisplay: 100, //this is so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed
                 selectedPixelateImageZoom: 0,
-                imageSmoothingValues: [0, 1, 2, 3, 4, 8],
+                imageSmoothingValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16],
                 selectedImageSmoothingRadiusBefore: 0,
                 zoomMin: 10,
                 zoomMax: 400,
