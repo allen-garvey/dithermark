@@ -48,7 +48,7 @@
                 return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
             },
             isSelectedAlgorithmWebGl: function(){
-                return this.isWebglEnabled && !!this.selectedDitherAlgorithm.webGlFunc;
+                return this.isWebglEnabled && this.selectedDitherAlgorithm.webGlFunc;
             },
             isImageLoaded: function(){
               return this.loadedImage != null;  

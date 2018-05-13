@@ -36,7 +36,7 @@
                 return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
             },
             isSelectedAlgorithmWebGl: function(){
-                return this.isWebglEnabled && !!this.selectedDitherAlgorithm.webGlFunc;
+                return this.isWebglEnabled && this.selectedDitherAlgorithm.webGlFunc;
             },
             colorReplaceBlackPixel: function(){
                 return ColorPicker.pixelFromHex(this.colorReplaceColors[0]);
