@@ -1,5 +1,5 @@
 App.Canvas = (function(Polyfills){
-    var devicePixelRatio = window.devicePixelRatio || 1;
+    const devicePixelRatio = window.devicePixelRatio || 1;
     
     //make sure to call context.beginPath() after clearing if using paths or rect()
     //or canvas will not clear
@@ -25,7 +25,7 @@ App.Canvas = (function(Polyfills){
     //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
     function createCanvasObject(canvas){
         return {
-            canvas: canvas,
+            canvas,
             context: canvas.getContext('2d'),
         };
     }
@@ -60,8 +60,8 @@ App.Canvas = (function(Polyfills){
     // }
     
     function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount){
-        let sourceWidth = sourceCanvasObject.canvas.width;
-        let sourceHeight = sourceCanvasObject.canvas.height;
+        const sourceWidth = sourceCanvasObject.canvas.width;
+        const sourceHeight = sourceCanvasObject.canvas.height;
         
         let scaledWidth = sourceWidth;
         let scaledHeight = sourceHeight;
@@ -82,11 +82,11 @@ App.Canvas = (function(Polyfills){
     
     //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
     function createSharedImageBuffer(sourceCanvasObject){
-        var sourceWidth = sourceCanvasObject.canvas.width;
-        var sourceHeight = sourceCanvasObject.canvas.height;
-        var pixels = sourceCanvasObject.context.getImageData(0, 0, sourceWidth, sourceHeight).data;
+        const sourceWidth = sourceCanvasObject.canvas.width;
+        const sourceHeight = sourceCanvasObject.canvas.height;
+        const pixels = sourceCanvasObject.context.getImageData(0, 0, sourceWidth, sourceHeight).data;
         
-        var buffer = new Polyfills.SharedArrayBuffer(pixels.length);
+        const buffer = new Polyfills.SharedArrayBuffer(pixels.length);
         //faster than for loop
         new Uint8ClampedArray(buffer).set(new Uint8ClampedArray(pixels.buffer));
         return buffer;
@@ -94,12 +94,12 @@ App.Canvas = (function(Polyfills){
     
     //buffer should be ArrayBuffer or SharedArrayBuffer
     function replaceImageWithBuffer(targetCanvasObject, imageWidth, imageHeight, buffer){
-        var pixels = new Uint8ClampedArray(buffer);
+        const pixels = new Uint8ClampedArray(buffer);
         replaceImageWithArray(targetCanvasObject, imageWidth, imageHeight, pixels);
     }
     
     function replaceImageWithArray(targetCanvasObject, imageWidth, imageHeight, pixels){
-        var imageData = targetCanvasObject.context.createImageData(imageWidth, imageHeight);
+        const imageData = targetCanvasObject.context.createImageData(imageWidth, imageHeight);
         imageData.data.set(pixels);
         targetCanvasObject.context.putImageData(imageData, 0, 0);
     }
@@ -122,18 +122,18 @@ App.Canvas = (function(Polyfills){
 
     
     return {
-       create: createCanvasObject,
-       clear: clearCanvas,
-    //   copy: copyCanvasImage,
-       createWebgl: createWebglCanvas,
-       loadImage: canvasObjectLoadImage,
-       loadImageScaled: canvasObjectLoadImageScaled,
-       scale: scaleCanvasImage,
-       createSharedImageBuffer: createSharedImageBuffer,
-       replaceImageWithBuffer: replaceImageWithBuffer,
-       replaceImageWithArray: replaceImageWithArray,
-       maxScalePercentageForImage: maxScalePercentageForImage,
-       minScalePercentageForImage: minScalePercentageForImage,
-       devicePixelRatio: devicePixelRatio,
+        create: createCanvasObject,
+        clear: clearCanvas,
+        //   copy: copyCanvasImage,
+        createWebgl: createWebglCanvas,
+        loadImage: canvasObjectLoadImage,
+        loadImageScaled: canvasObjectLoadImageScaled,
+        scale: scaleCanvasImage,
+        createSharedImageBuffer,
+        replaceImageWithBuffer,
+        replaceImageWithArray,
+        maxScalePercentageForImage,
+        minScalePercentageForImage,
+        devicePixelRatio,
     };
 })(App.Polyfills);
