@@ -216,6 +216,9 @@
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
             },
+            onColorReplaceValuesChanged: function(colorValue, colorIndex){
+                Vue.set(this.colorReplaceColors, colorIndex, colorValue);
+            },
             cyclePropertyList: VueMixins.cyclePropertyList,
         }
     });

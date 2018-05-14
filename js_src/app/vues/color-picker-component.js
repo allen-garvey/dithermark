@@ -9,10 +9,20 @@
 
     Vue.component('color-picker', {
         template: document.getElementById('color-picker-component'),
-        props: ['colorIndex', 'colorValue', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'onColorValueChanged', 'draggedIndex'],
+        props: ['colorIndex', 'colorValue', 'idPrefix', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'onColorValueChanged', 'draggedIndex', 'label'],
+        created: function(){
+            if(!this.handleColorDragstart){
+                this.draggableAttributeValue = 'false';
+            }
+        },
+        data: function(){
+            return {
+                draggableAttributeValue: 'true',
+            };
+        },
         computed: {
             colorPickerId: function(){
-                return `color_dither_colorpicker_${this.colorIndex}`;
+                return `${this.idPrefix}_colorpicker_${this.colorIndex}`;
             },
             //so text is visible on light color backgrounds
             textColor: function(){
@@ -25,6 +35,9 @@
             isBeingDragged: function(){
                 return this.colorIndex === this.draggedIndex;
             },
+            labelText: function(){
+                return this.label || this.colorIndex + 1;
+            },
         },
         watch: {
             colorValue: function(newValue, oldValue){
@@ -32,8 +45,13 @@
             },
         },
         methods: {
-            handleColorDrop: function(e, colorIndex){
+            handleColorDrop: function(e){
                 e.preventDefault();
+            },
+            optionalHandler: function(e, handler){
+                if(handler){
+                    handler(e, this.colorIndex);
+                }
             },
         },
     });

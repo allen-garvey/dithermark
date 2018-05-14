@@ -47,6 +47,15 @@ input[type="checkbox"]{
     width: 200px;
 }
 
+.bw-color-replace-container{
+    display: flex;
+    flex-wrap: wrap;
+    .btn{
+        flex-basis: 25%;
+        margin-bottom: $colors_container_margin_bottom;
+    }
+}
+
 /*
 * Color replace stuff
 */
@@ -77,29 +86,35 @@ input[type="color"]{
 .colors-list-container{
     display: flex;
     flex-wrap: wrap;
+}
+
+.color-container{
+    flex-basis: 110px;
+    margin: 0 13px $colors_container_margin_bottom 0;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 4px;
     
+    &.dragged, &.color-disabled{
+        opacity: 0.4;
+    }
+
     input[type="color"]{
         margin: 0;
     }
     label{
-        cursor: move;
         display: inline-block;
         min-width: 1.7em;
     }
-    
-    .color-container{
-        flex-basis: 110px;
-        margin: 0 13px 20px 0;
-        border: 1px solid var(--border-color);
-        border-radius: 5px;
-        padding: 4px;
+}
+
+.color-container[draggable="true"]{
+    cursor: move;
+    label{
         cursor: move;
-        
-        &.dragged, &.color-disabled{
-            opacity: 0.4;
-        }
     }
 }
+
 .palette-buttons-container{
     //reduce upper margin from color inputs
     margin: -8px 0 8px;

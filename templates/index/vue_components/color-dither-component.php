@@ -47,7 +47,7 @@
         <legend>Color palette</legend>
         <div class="colors-list-container" @dragover="handleColorDragover">
             <template v-for="(color, i) in colors">
-                <color-picker :color-index="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" :on-color-value-changed="colorPickerValueChanged" />
+                <color-picker id-prefix="color" :color-index="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" :on-color-value-changed="colorPickerValueChanged" />
             </template>
         </div>
         <div class="spread-content palette-buttons-container">
