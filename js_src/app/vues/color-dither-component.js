@@ -302,9 +302,6 @@
                 }
                 
             },
-            handleColorDrop: function(e, colorIndex){
-                e.preventDefault();
-            },
             //according to spec, must happen after drop
             handleColorDragend: function(e){
                 this.draggedIndex = null;
@@ -313,14 +310,8 @@
                 //need to do this to trigger refresh
                 this.colorsShadow = this.colorsShadow.slice();
             },
-            isBeingDragged: function(colorIndex){
-                return colorIndex === this.draggedIndex;
-            },
-            shouldShowDragoverStyle: function(colorIndex){
-                return colorIndex === this.dragoverIndex && this.draggedIndex != colorIndex;
-            },
-            idForColorPicker: function(i){
-                return `color_dither_colorpicker_${i}`;
+            colorPickerValueChanged: function(colorValue, colorIndex){
+                Vue.set(this.colorsShadow, colorIndex, colorValue);
             },
         }
     });

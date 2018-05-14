@@ -4,6 +4,8 @@ App.PixelMath = (function(Pixel){
     const B_INDEX = Pixel.B_INDEX;
     const A_INDEX = Pixel.A_INDEX;
     
+    //copied into color-picker-component for now, so if you change it here,
+    //change it there
     function pixelLightness(pixel){
         const max = Math.max(pixel[0], pixel[1], pixel[2]);
         const min = Math.min(pixel[0], pixel[1], pixel[2]);
