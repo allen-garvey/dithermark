@@ -11,6 +11,13 @@ html, body, h1, h2, h3, h4, h5, h6{
     display: none;
 }
 
+a{
+    text-decoration: none;
+    &:hover{
+        text-decoration: underline;
+    }
+}
+
 main{
     padding: 0 $global_horizontal_padding;
 }
