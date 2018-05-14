@@ -5,17 +5,17 @@ App.PixelMath = (function(Pixel){
     const A_INDEX = Pixel.A_INDEX;
     
     function pixelLightness(pixel){
-        var max = Math.max(pixel[0], pixel[1], pixel[2]);
-        var min = Math.min(pixel[0], pixel[1], pixel[2]);
+        const max = Math.max(pixel[0], pixel[1], pixel[2]);
+        const min = Math.min(pixel[0], pixel[1], pixel[2]);
         return Math.floor((max + min) / 2.0);
     }
     
     //based on wikipedia formulas: https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
     //returns hue in range 0 - 359
     function pixelHue(pixel){
-        let max = Math.max(pixel[0], pixel[1], pixel[2]);
-        let min = Math.min(pixel[0], pixel[1], pixel[2]);
-        let diff = max - min;
+        const max = Math.max(pixel[0], pixel[1], pixel[2]);
+        const min = Math.min(pixel[0], pixel[1], pixel[2]);
+        const diff = max - min;
         //white, black or gray
         if(diff === 0){
             return 0;
@@ -41,13 +41,13 @@ App.PixelMath = (function(Pixel){
     //based on: https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
     //returns saturation is range 0-100
     function pixelSaturation(pixel){
-        let max = Math.max(pixel[0], pixel[1], pixel[2]) / 255;
-        let min = Math.min(pixel[0], pixel[1], pixel[2]) / 255;
+        const max = Math.max(pixel[0], pixel[1], pixel[2]) / 255;
+        const min = Math.min(pixel[0], pixel[1], pixel[2]) / 255;
         if(max === min){
             return 0;
         }
-        let c = (max + min) / 2;
-        let diff = max - min;
+        const c = (max + min) / 2;
+        const diff = max - min;
         let saturation;
         if(c > 0.5){
             saturation = diff / (2 - diff);
@@ -61,7 +61,7 @@ App.PixelMath = (function(Pixel){
     
     function hslArrayToRgb(hslArray){
         let pixel = Pixel.create(0, 0, 0);
-        let rgbArray = new Uint8Array(hslArray.length);
+        const rgbArray = new Uint8Array(hslArray.length);
         
         for(let i=0;i<hslArray.length;i+=3){
             let hsl = hslArray.subarray(i, i+3);
@@ -85,8 +85,8 @@ App.PixelMath = (function(Pixel){
             pixel = Pixel.create(0, 0, 0);
         }
         let hue = hsl[0];
-        let saturation = hsl[1];
-        let lightness = hsl[2];
+        const saturation = hsl[1];
+        const lightness = hsl[2];
         
         if(saturation === 0){
             pixel[0] = lightness;
@@ -118,11 +118,11 @@ App.PixelMath = (function(Pixel){
             return p;
         };
     
-        let q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        let p = 2 * l - q;
-        let r = hue2rgb(p, q, hue + 1/3);
-        let g = hue2rgb(p, q, hue);
-        let b = hue2rgb(p, q, hue - 1/3);
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        const r = hue2rgb(p, q, hue + 1/3);
+        const g = hue2rgb(p, q, hue);
+        const b = hue2rgb(p, q, hue - 1/3);
         
         pixel[Pixel.R_INDEX] = Math.round(r * 255);
         pixel[Pixel.G_INDEX] = Math.round(g * 255);
