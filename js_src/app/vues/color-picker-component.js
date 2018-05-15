@@ -10,16 +10,6 @@
     Vue.component('color-picker', {
         template: document.getElementById('color-picker-component'),
         props: ['colorIndex', 'colorValue', 'idPrefix', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'onColorValueChanged', 'draggedIndex', 'label'],
-        created: function(){
-            if(!this.handleColorDragstart){
-                this.draggableAttributeValue = 'false';
-            }
-        },
-        data: function(){
-            return {
-                draggableAttributeValue: 'true',
-            };
-        },
         computed: {
             colorPickerId: function(){
                 return `${this.idPrefix}_colorpicker_${this.colorIndex}`;
@@ -31,6 +21,9 @@
                     return '#000';
                 }
                 return '#fff';
+            },
+            draggableAttributeValue: function(){
+                return this.handleColorDragstart ? 'true' : 'false';
             },
             isBeingDragged: function(){
                 return this.colorIndex === this.draggedIndex;
