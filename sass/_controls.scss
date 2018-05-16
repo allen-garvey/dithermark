@@ -32,8 +32,18 @@ input[type="checkbox"]{
     margin-bottom: 8px;
 }
 
-.controls-tab-container > div{
-    margin-top: 16px;
+.controls-tab-container{
+    padding: 0 8px;
+    & > *{
+        margin-top: 16px;
+    }
+    fieldset{
+        padding-left: 0;
+        padding-right: 0;
+        & > div{
+            margin-bottom: 8px;
+        }
+    }
 }
 
 .transform-button-container{
