@@ -107,6 +107,8 @@
                 imageSmoothingValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16],
                 selectedImageSmoothingRadiusBefore: 0,
                 selectedImageSmoothingRadiusAfter: 0,
+                increaseImageSaturation: false,
+                increaseImageContrast: true, //generally makes all images look better with this on
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
@@ -191,6 +193,16 @@
                 }
                 return '';
             },
+            imageFilters: function(){
+                const filters = [];
+                if(this.increaseImageContrast){
+                    filters.push('contrast(115%)');
+                }
+                if(this.increaseImageSaturation){
+                    filters.push('saturate(115%)');
+                }
+                return filters.join(' ');
+            },
         },
         watch: {
             saveImageFileName: function(newValue, oldValue){
@@ -261,6 +273,11 @@
                     this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
+            },
+            imageFilters: function(){
+                this.imagePixelationChanged();
+                this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
+                this.activeDitherSection.imageLoaded(this.imageHeader);
             },
             selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
                 if(newValue !== oldValue){
@@ -384,6 +401,7 @@
                 else{
                     Canvas.loadImage(originalImageCanvas, image);
                 }
+                originalImageCanvas.context.drawImage(originalImageCanvas.canvas, 0, 0);
                 //finish loading image
                 this.loadedImage = loadedImage;
                 this.imagePixelationChanged();
@@ -392,10 +410,10 @@
             },
             imagePixelationChanged: function(){
                 const imageHeader = this.imageHeader;
-                const canvas = originalImageCanvas;
                 const scaleAmount = this.pixelateImageZoom / 100;
-                Canvas.scale(canvas, sourceCanvas, scaleAmount);
-                Canvas.scale(canvas, transformCanvas, scaleAmount);
+                const filters = this.imageFilters;
+                Canvas.scale(originalImageCanvas, sourceCanvas, scaleAmount, filters);
+                Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
                 
                 transformCanvasWebGl.canvas.width = imageHeader.width;
                 transformCanvasWebGl.canvas.height = imageHeader.height;
@@ -412,7 +430,7 @@
 
                 //load image into the webworkers
                 const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
+                const ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
                     ditherWorker.postMessage(ditherWorkerHeader);

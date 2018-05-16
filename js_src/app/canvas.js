@@ -63,7 +63,7 @@ App.Canvas = (function(Polyfills){
     //     targetCanvasObject.context.drawImage(sourceCanvas, 0, 0, sourceCanvas.width, sourceCanvas.height);
     // }
     
-    function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount){
+    function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount, filters=''){
         const sourceWidth = sourceCanvasObject.canvas.width;
         const sourceHeight = sourceCanvasObject.canvas.height;
         
@@ -80,6 +80,10 @@ App.Canvas = (function(Polyfills){
         //has to be done each time we scale the image, or it will be smoothed
         targetCanvasObject.context.webkitImageSmoothingEnabled = false;
         targetCanvasObject.context.imageSmoothingEnabled = false;
+
+        if(filters){
+            targetCanvasObject.context.filter = filters;
+        }
         
         targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0, sourceWidth, sourceHeight, 0, 0, scaledWidth, scaledHeight);
     }
