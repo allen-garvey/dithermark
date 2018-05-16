@@ -13,13 +13,11 @@ node_modules/*
 bin/*
 *.o
 *.pyc
-*.png
 *.gif
 *.bmp
 *.jpg
 *.jpeg
 *.svg
-*.ico
 Thumbs.db
 *.ttf
 *.otf
