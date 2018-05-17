@@ -80,9 +80,14 @@
             this.showOriginalImage = globalSettings.showOriginalImage;
             this.isLivePreviewEnabled = globalSettings.isLivePreviewEnabled;
             this.automaticallyResizeLargeImages = globalSettings.automaticallyResizeLargeImages;
+            this.increaseImageContrast = globalSettings.increaseImageContrast;
+            this.increaseImageSaturation = globalSettings.increaseImageSaturation;
             //check for webgl support
             this.isWebglSupported = !!transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
+
+            //should be last statement of mounted function
+            this.finishedInitialization = true;
         },
         data: function(){
             return {
@@ -116,6 +121,10 @@
                 currentEditorThemeIndex: null,
                 openImageErrorMessage: null,
                 showWebglWarningMessage: false,
+                //used so we know when component is done initializing,
+                //so we don't do any spurious saving of global setting changes
+                //done by initialization rather than user
+                finishedInitialization: false,
             };
         },
         computed: {
@@ -203,6 +212,19 @@
                 }
                 return filters.join(' ');
             },
+            serializedGlobalSettings: function(){
+                const editorThemeKey = this.currentEditorThemeIndex === null ? '' : this.editorThemes[this.currentEditorThemeIndex].key;
+
+                return {
+                    editorThemeKey: editorThemeKey,
+                    isWebglEnabled: this.isWebglEnabled,
+                    isLivePreviewEnabled: this.isLivePreviewEnabled,
+                    automaticallyResizeLargeImages: this.automaticallyResizeLargeImages,
+                    showOriginalImage: this.showOriginalImage,
+                    increaseImageSaturation: this.increaseImageSaturation,
+                    increaseImageContrast: this.increaseImageContrast,
+                };
+            },
         },
         watch: {
             saveImageFileName: function(newValue, oldValue){
@@ -221,23 +243,14 @@
                 if(oldThemeIndex !== null){
                     let oldThemeClass = this.editorThemes[oldThemeIndex].className;
                     classList.remove(oldThemeClass);
-                    //no need to save settings on page load, when we are loading the setting
-                    this.saveGlobalSettings();
                 }
                 let newThemeClass = this.editorThemes[newThemeIndex].className;
                 classList.add(newThemeClass);
             },
-            automaticallyResizeLargeImages: function(){
-                this.saveGlobalSettings();
-            },
-            showOriginalImage: function(){
-                this.saveGlobalSettings();
-            },
-            isWebglEnabled: function(){
-                this.saveGlobalSettings();
-            },
-            isLivePreviewEnabled: function(){
-                this.saveGlobalSettings();
+            serializedGlobalSettings: function(newValue){
+                if(this.finishedInitialization){
+                    UserSettings.saveGlobalSettings(newValue);
+                }
             },
             zoomDisplay: function(newValue){
                 //have to check if not equal to this.zoom, or will start infinite loop
@@ -275,6 +288,9 @@
                 }
             },
             imageFilters: function(){
+                if(!this.imageLoaded){
+                    return;
+                }
                 this.imagePixelationChanged();
                 this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
                 this.activeDitherSection.imageLoaded(this.imageHeader);
@@ -294,12 +310,6 @@
             },
         },
         methods: {
-            /**
-             * Settings
-             */
-            saveGlobalSettings: function(){
-                UserSettings.saveGlobalSettings(this.editorThemes[this.currentEditorThemeIndex].key, this.isWebglEnabled, this.isLivePreviewEnabled, this.automaticallyResizeLargeImages, this.showOriginalImage);
-            },
             /*
             * Tabs
             */
