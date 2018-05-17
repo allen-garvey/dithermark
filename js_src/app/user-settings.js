@@ -25,8 +25,6 @@ App.UserSettings = (function(){
             isLivePreviewEnabled: true,
             automaticallyResizeLargeImages: true,
             showOriginalImage: false,
-            increaseImageContrast: true,
-            increaseImageSaturation: false,
         };
     }
 

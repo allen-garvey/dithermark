@@ -81,8 +81,6 @@
             this.showOriginalImage = globalSettings.showOriginalImage;
             this.isLivePreviewEnabled = globalSettings.isLivePreviewEnabled;
             this.automaticallyResizeLargeImages = globalSettings.automaticallyResizeLargeImages;
-            this.increaseImageContrast = globalSettings.increaseImageContrast;
-            this.increaseImageSaturation = globalSettings.increaseImageSaturation;
             //check for webgl support
             this.isWebglSupported = !!transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
@@ -113,8 +111,10 @@
                 imageSmoothingValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16],
                 selectedImageSmoothingRadiusBefore: 0,
                 selectedImageSmoothingRadiusAfter: 0,
-                increaseImageSaturation: false,
-                increaseImageContrast: true, //generally makes all images look better with this on
+                //selectedImageSaturationIndex and selectedImageContrastIndex use this array
+                imageFilterValues: [100, 105, 115, 125, 130, 135, 140, 150, 160, 180, 200],
+                selectedImageSaturationIndex: 0,
+                selectedImageContrastIndex: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
                 zoomMin: 10,
                 zoomMax: 400,
@@ -209,11 +209,14 @@
                     return '';
                 }
                 const filters = [];
-                if(this.increaseImageContrast){
-                    filters.push('contrast(115%)');
+                const contrast = this.imageFilterValues[this.selectedImageContrastIndex];
+                const saturation = this.imageFilterValues[this.selectedImageSaturationIndex];
+                //100% is unchanged
+                if(contrast !== 100){
+                    filters.push(`contrast(${contrast}%)`);
                 }
-                if(this.increaseImageSaturation){
-                    filters.push('saturate(115%)');
+                if(saturation !== 100){
+                    filters.push(`saturate(${saturation}%)`);
                 }
                 return filters.join(' ');
             },
@@ -226,8 +229,6 @@
                     isLivePreviewEnabled: this.isLivePreviewEnabled,
                     automaticallyResizeLargeImages: this.automaticallyResizeLargeImages,
                     showOriginalImage: this.showOriginalImage,
-                    increaseImageSaturation: this.increaseImageSaturation,
-                    increaseImageContrast: this.increaseImageContrast,
                 };
             },
         },

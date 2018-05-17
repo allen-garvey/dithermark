@@ -15,11 +15,19 @@
     </div>
     <div class="spread-content" v-if="areCanvasFiltersSupported">
         <label>Increase contrast
-            <input type="checkbox" v-model="increaseImageContrast"/>
+            <select v-model.number="selectedImageContrastIndex">
+                <option v-for="(filter, index) in imageFilterValues" v-bind:value="index">{{index === 0 ? 'None': index}}</option>
+            </select>
         </label>
+        <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'imageFilterValues', 'contrast value'); ?>
+    </div>
+    <div class="spread-content" v-if="areCanvasFiltersSupported">
         <label>Increase saturation
-            <input type="checkbox" v-model="increaseImageSaturation"/>
+            <select v-model.number="selectedImageSaturationIndex">
+                <option v-for="(filter, index) in imageFilterValues" v-bind:value="index">{{index === 0 ? 'None': index}}</option>
+            </select>
         </label>
+        <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation value'); ?>
     </div>
     <?php if(ENABLE_IMAGE_SMOOTHING): ?>
         <div class="spread-content">
