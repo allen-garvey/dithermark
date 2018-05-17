@@ -28,11 +28,30 @@ App.UserSettings = (function(){
         };
     }
 
+    function mergeObjectWithDefault(object, defaultValues){
+        Object.keys(defaultValues).forEach((key)=>{
+            if(!(key in object)){
+                object[key] = defaultValues[key];
+            }
+        });
+
+        return object;
+    }
+
+    function getGlobalSettings(){
+        const globalSettings = localStorage.getItem(USER_GLOBAL_SETTINGS_KEY);
+        const defaultSettings = defaultGlobalSettings();
+        if(!globalSettings){
+            return defaultSettings;
+        }
+        return mergeObjectWithDefault(JSON.parse(globalSettings), defaultSettings);
+    }
+
 
     return {
         getPalettes: ()=>{ return getSettingOrDefault(USER_SAVED_PALETTES_KEY, []); },
         savePalettes,
-        getGlobalSettings: ()=>{ return getSettingOrDefault(USER_GLOBAL_SETTINGS_KEY, defaultGlobalSettings()); },
+        getGlobalSettings,
         saveGlobalSettings,
     };
 })();
