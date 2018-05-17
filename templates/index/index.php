@@ -20,6 +20,7 @@
             </div>
         </header>
         <main>
+            <noscript><?= APP_NAME; ?> requires JavaScript to run. Please enable JavaScript in your browser settings and reload this page.</noscript>
             <div id="app">
                 <dither-studio/>
             </div>
