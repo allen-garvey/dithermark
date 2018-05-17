@@ -56,6 +56,7 @@
             transformCanvas = Canvas.create();
             transformCanvasWebGl = Canvas.createWebgl();
             saveImageCanvas = Canvas.create();
+            this.areCanvasFiltersSupported = Canvas.areCanvasFiltersSupported(originalImageCanvas);
 
             //remove webgl algorithms requiring high precision ints (if necessary)
             if(!transformCanvasWebGl.supportsHighIntPrecision){
@@ -114,6 +115,7 @@
                 selectedImageSmoothingRadiusAfter: 0,
                 increaseImageSaturation: false,
                 increaseImageContrast: true, //generally makes all images look better with this on
+                areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
                 zoomMin: 10,
                 zoomMax: 400,
                 showOriginalImage: true,
@@ -203,6 +205,9 @@
                 return '';
             },
             imageFilters: function(){
+                if(!this.areCanvasFiltersSupported){
+                    return '';
+                }
                 const filters = [];
                 if(this.increaseImageContrast){
                     filters.push('contrast(115%)');

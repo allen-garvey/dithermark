@@ -13,7 +13,7 @@
         </label>
         <?php IndexView::cyclePropertyList('selectedPixelateImageZoom', 'pixelateImageZooms', 'pixelation value'); ?>
     </div>
-    <div class="spread-content">
+    <div class="spread-content" v-if="areCanvasFiltersSupported">
         <label>Increase contrast
             <input type="checkbox" v-model="increaseImageContrast"/>
         </label>

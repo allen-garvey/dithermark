@@ -1,6 +1,10 @@
 App.Canvas = (function(Polyfills){
     const devicePixelRatio = window.devicePixelRatio || 1;
     
+    function areCanvasFiltersSupported(canvasObject){
+        return 'filter' in canvasObject.context;
+    }
+
     //make sure to call context.beginPath() after clearing if using paths or rect()
     //or canvas will not clear
     //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
@@ -143,5 +147,6 @@ App.Canvas = (function(Polyfills){
         maxScalePercentageForImage,
         minScalePercentageForImage,
         devicePixelRatio,
+        areCanvasFiltersSupported,
     };
 })(App.Polyfills);
