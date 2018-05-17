@@ -59,9 +59,9 @@
         postMessage(pixelBufferCopy.buffer);
     }
     
-    function createOptimizePaletteProgressCallback(colorQuantizationModeId, numColors){
+    function createOptimizePaletteProgressCallback(colorQuantizationModeId, numColors, messageHeader){
         return (percentage)=>{
-            postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(colorQuantizationModeId, numColors, percentage));
+            postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(colorQuantizationModeId, numColors, percentage, messageHeader.pixelation, messageHeader.contrast, messageHeader.saturation, messageHeader.smoothing));
         };
     }
 
@@ -74,14 +74,14 @@
         const colorQuantization = ColorQuantizationModes[colorQuantizationId];
         const messageTypeId = messageHeader.messageTypeId;
         const numColors = messageHeader.numColors;
-        const progressCallback = createOptimizePaletteProgressCallback(colorQuantizationId, numColors);
+        const progressCallback = createOptimizePaletteProgressCallback(colorQuantizationId, numColors, messageHeader);
 
         Timer.megapixelsPerSecond(`Optimize palette ${colorQuantization.title}`, pixels.length / 4, ()=>{
             let algoName = colorQuantization.algo;
             paletteBuffer = OptimizePalette[algoName](pixelsInput, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
         });
         
-        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageTypeId, colorQuantizationId));
+        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageTypeId, colorQuantizationId, messageHeader.pixelation, messageHeader.contrast, messageHeader.saturation, messageHeader.smoothing));
     }
     
     

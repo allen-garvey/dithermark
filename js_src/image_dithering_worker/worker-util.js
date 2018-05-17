@@ -25,27 +25,35 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
         return {buffer: copiedBuffer, pixels: copiedPixelsSubarray};
     }
 
-    function createOptimizePaletteBuffer(colors, messageTypeId, colorQuantizationModeId){
+    function createOptimizePaletteBuffer(colors, messageTypeId, colorQuantizationModeId, pixelation, contrast, saturation, smoothing){
         //faster than using for loop
-        let buffer = new Polyfills.SharedArrayBuffer(colors.length + 2);
+        let buffer = new Polyfills.SharedArrayBuffer(colors.length + 6);
         let array = new Uint8Array(buffer);
         
         array[0] = messageTypeId;
         array[1] = colorQuantizationModeId;
-        let copiedPixelsSubarray = array.subarray(2, array.length);
+        array[2] = pixelation;
+        array[3] = contrast;
+        array[4] = saturation;
+        array[5] = smoothing;
+        let copiedPixelsSubarray = array.subarray(6, array.length);
         copiedPixelsSubarray.set(new Uint8Array(colors));
         
         return buffer;
     }
 
     //percent done is integer 1-100
-    function createOptimizePaletteProgressBuffer(colorQuantizationModeId, colorCount, percentage){
-        let buffer = new Polyfills.SharedArrayBuffer(4);
+    function createOptimizePaletteProgressBuffer(colorQuantizationModeId, colorCount, percentage, pixelation, contrast, saturation, smoothing){
+        let buffer = new Polyfills.SharedArrayBuffer(8);
         let array = new Uint8Array(buffer);
         array[0] = WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS;
         array[1] = colorQuantizationModeId;
         array[2] = colorCount;
         array[3] = percentage;
+        array[4] = pixelation;
+        array[5] = contrast;
+        array[6] = saturation;
+        array[7] = smoothing;
         
         return buffer;
     }
@@ -127,7 +135,16 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
             case WorkerHeaders.HUE_HISTOGRAM:
                 return {messageTypeId: messageTypeId};
             case WorkerHeaders.OPTIMIZE_PALETTE:
-                return {messageTypeId: messageTypeId, numColors: messageData[1], colorQuantizationModeId: messageData[2]};
+                return {
+                            messageTypeId: messageTypeId, 
+                            numColors: messageData[1], 
+                            colorQuantizationModeId: messageData[2],
+                            //the following is just for caching in app, not used for optimizing palette
+                            pixelation: messageData[3],
+                            contrast: messageData[4],
+                            saturation: messageData[5],
+                            smoothing: messageData[6]
+                        };
             default:
                 return null;
         }

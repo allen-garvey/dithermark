@@ -142,6 +142,12 @@
                 return {
                     width: width,
                     height: height,
+                    //filter values are used for color dither for optimize palette results caching
+                    //doesn't need the value of image smoothing after, since this happens after the dither completes
+                    pixelation: this.selectedPixelateImageZoom,
+                    contrast: this.selectedImageContrastIndex,
+                    saturation: this.selectedImageSaturationIndex,
+                    smoothing: this.selectedImageSmoothingRadiusBefore,
                 };
             },
             activeDitherSection: function(){
@@ -422,7 +428,7 @@
                 this.loadedImage = loadedImage;
                 this.imagePixelationChanged();
                 this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
-                this.activeDitherSection.imageLoaded(this.imageHeader);
+                this.activeDitherSection.imageLoaded(this.imageHeader, true);
             },
             imagePixelationChanged: function(){
                 const imageHeader = this.imageHeader;

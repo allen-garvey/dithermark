@@ -132,7 +132,9 @@
             resetColorReplace: function(){
                 this.colorReplaceColors = [ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE, ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE];
             },
-            imageLoaded: function(loadedImage){
+            //isNewImage is used to determine if the image is actually different,
+            //or it is the same image with filters changed
+            imageLoaded: function(loadedImage, isNewImage=false){
                 this.loadedImage = loadedImage;
                 this.hasImageBeenTransformed = false;
                 

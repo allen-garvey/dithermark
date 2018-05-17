@@ -6,6 +6,10 @@
     var optimizedPalettes;
 
     var numPalettesSaved = 0;
+
+    function optimizePaletteMemorizationKey(numColors, modeId, pixelation, contrast, saturation, smoothing){
+        return `${numColors}-${modeId}-${pixelation}-${contrast}-${saturation}-${smoothing}`;
+    }
     
     var component = Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
@@ -63,11 +67,17 @@
                 return this.colorDitherModes[this.selectedColorDitherModeIndex].id;
             },
             isSelectedColorQuantizationPending: function(){
-                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
+                if(!this.isImageLoaded){
+                    return false;
+                }
+                const key = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing);
                 return this.pendingColorQuantizations[key] > 0;
             },
             selectedColorQuantizationPendingMessage: function(){
-                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
+                if(!this.isImageLoaded){
+                    return '';
+                }
+                const key = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing);
                 const percentage = this.pendingColorQuantizations[key];
                 const messageBase = 'Working…';
                 if(percentage === 1){
@@ -143,10 +153,14 @@
             },
         },
         methods: {
-            imageLoaded: function(loadedImage){
+            //isNewImage is used to determine if the image is actually different,
+            //or it is the same image with filters changed
+            imageLoaded: function(loadedImage, isNewImage=false){
                 this.loadedImage = loadedImage;
-                optimizedPalettes = {};
-                this.pendingColorQuantizations = {};
+                if(isNewImage){
+                    optimizedPalettes = {};
+                    this.pendingColorQuantizations = {};
+                }
                 
                 //draw histogram
                 this.$emit('request-worker', (worker)=>{
@@ -187,12 +201,12 @@
                         this.ditherWorkerMessageReceived(messageBody);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE:
-                        const colorQuantizationModeId = messageBody[0];
-                        const colors = messageBody.subarray(1, messageBody.length);
-                        this.optimizePaletteMessageReceived(colors, colorQuantizationModeId);
+                        const colors = messageBody.subarray(5, messageBody.length);
+                        const optimizePaletteKey = optimizePaletteMemorizationKey(colors.length / 3, messageBody[0], messageBody[1], messageBody[2], messageBody[3], messageBody[4]);
+                        this.optimizePaletteMessageReceived(colors, optimizePaletteKey);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS:
-                        const key = this.optimizePaletteMemorizationKey(messageBody[1], messageBody[0]);
+                        const key = optimizePaletteMemorizationKey(messageBody[1], messageBody[0], messageBody[3], messageBody[4], messageBody[5], messageBody[6]);
                         //check to make sure still pending and not done first, to avoid race condition
                         if(this.pendingColorQuantizations[key]){
                             //have to use Vue.set for object keys
@@ -205,18 +219,16 @@
                         break;
                 }
             },
-            optimizePaletteMessageReceived: function(colors, colorQuantizationModeId){
-                const colorCount = colors.length / 3;
-                const key = this.optimizePaletteMemorizationKey(colorCount, colorQuantizationModeId);
-                optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax);
+            optimizePaletteMessageReceived: function(colors, key){
                 //avoids race condition where image is changed before color quantization returns
                 if(!this.pendingColorQuantizations[key]){
                     return;
                 }
+                optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax);
                 //have to use Vue.set for object keys
                 Vue.set(this.pendingColorQuantizations, key, false);
                 //avoids race conditions when color quantization mode or number of colors is changed before results return
-                const currentKey = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
+                const currentKey = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing);
                 if(key === currentKey){
                     this.colorsShadow = optimizedPalettes[key].slice();
                 }
@@ -230,11 +242,8 @@
                     this.requestDisplayTransformedImage();
                 });
             },
-            optimizePaletteMemorizationKey: function(numColors, modeId){
-                return `${numColors}-${modeId}`;
-            },
             optimizePalette: function(){
-                const key = this.optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
+                const key = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing);
                 if(this.pendingColorQuantizations[key]){
                     return;
                 }
@@ -245,7 +254,7 @@
                 //have to use Vue.set for object keys
                 Vue.set(this.pendingColorQuantizations, key, 1);
                 this.$emit('request-worker', (worker)=>{
-                    worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex));
+                    worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing));
                 });
             },
             randomizePalette: function(){
