@@ -75,6 +75,7 @@
         define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', false);
         define('ENABLE_TIMER_LOGGING', false);
         define('ENABLE_TEXTURE_COMBINE', false);
+        define('ENABLE_IMAGE_SMOOTHING', false);
     }
     else{
         //whether or not print color palette button is shown
@@ -86,4 +87,8 @@
         //while interesting, not as cool as hoped, and adds user complexity, so it is not included
         //in the release
         define('ENABLE_TEXTURE_COMBINE', true);
+        //enables options to smooth image before and after dithering
+        //smoothing before doesn't make too much difference, and smoothing afterwards
+        //distracts from the dithering
+        define('ENABLE_IMAGE_SMOOTHING', true);
     }

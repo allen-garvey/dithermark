@@ -21,20 +21,22 @@
             <input type="checkbox" v-model="increaseImageSaturation"/>
         </label>
     </div>
-    <div class="spread-content">
-        <label>Smoothing (before dithering)
-            <select v-model.number="selectedImageSmoothingRadiusBefore">
-                <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
-            </select>
-        </label>
-        <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
-    </div>
-    <div class="spread-content">
-        <label>Smoothing (after dithering)
-            <select v-model.number="selectedImageSmoothingRadiusAfter">
-                <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
-            </select>
-        </label>
-        <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusAfter', 'imageSmoothingValues', 'smoothing value'); ?>
-    </div>
+    <?php if(ENABLE_IMAGE_SMOOTHING): ?>
+        <div class="spread-content">
+            <label>Smoothing (before dithering)
+                <select v-model.number="selectedImageSmoothingRadiusBefore">
+                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
+                </select>
+            </label>
+            <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
+        </div>
+        <div class="spread-content">
+            <label>Smoothing (after dithering)
+                <select v-model.number="selectedImageSmoothingRadiusAfter">
+                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
+                </select>
+            </label>
+            <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusAfter', 'imageSmoothingValues', 'smoothing value'); ?>
+        </div>
+    <?php endif; ?>
 </fieldset>
