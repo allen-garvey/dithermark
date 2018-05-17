@@ -288,7 +288,7 @@
                 }
             },
             imageFilters: function(){
-                if(!this.imageLoaded){
+                if(!this.isImageLoaded){
                     return;
                 }
                 this.imagePixelationChanged();
