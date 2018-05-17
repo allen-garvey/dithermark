@@ -7,12 +7,12 @@
                 savedTextures: [],
             };
         },
-        watch: {
-            loadedImage: function(){
+        methods: {
+            resetTextures: function(){
+                //technically we should probably actually delete the textures from the GPU here,
+                //rather than merely losing references to them
                 this.savedTextures = [];
             },
-        },
-        methods: {
             saveTexture: function(){
                 this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
                     let gl = transformCanvasWebGl.gl;

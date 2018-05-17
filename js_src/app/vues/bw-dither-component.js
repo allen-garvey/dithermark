@@ -138,6 +138,11 @@
                 this.loadedImage = loadedImage;
                 this.hasImageBeenTransformed = false;
                 
+                //reset combine textures component if new image
+                if(isNewImage && this.$refs.textureCombineComponent){
+                    this.$refs.textureCombineComponent.resetTextures();
+                }
+
                 //draw histogram
                 this.$emit('request-worker', (worker)=>{
                     worker.postMessage(WorkerUtil.histogramWorkerHeader());

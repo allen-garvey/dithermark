@@ -32,6 +32,6 @@
         </div>
     </fieldset>
     <?php if(ENABLE_TEXTURE_COMBINE): ?>
-        <texture-combine :loaded-image="loadedImage" :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"/>
+        <texture-combine ref="textureCombineComponent" :loaded-image="loadedImage" :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"/>
     <?php endif; ?>
 </div>
