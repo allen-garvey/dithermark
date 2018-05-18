@@ -75,7 +75,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
             
             let modeDistances = [
                 {key: 'RGB', distanceFunc: 'webgl-rgb-distance'},
-                {key: 'RGB_WEIGHTED', distanceFunc: 'webgl-rgb-weighted-distance'},
+                {key: 'LUMA', distanceFunc: 'webgl-luma-distance'},
                 {key: 'HUE_LIGHTNESS', distanceFunc: 'webgl-hue-lightness-distance'},
                 {key: 'HSL_WEIGHTED', distanceFunc: 'webgl-hue-saturation-lightness-distance'},
                 {key: 'LIGHTNESS', distanceFunc: 'webgl-lightness-distance'},

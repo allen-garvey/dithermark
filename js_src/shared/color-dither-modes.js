@@ -5,6 +5,6 @@ App.ColorDitherModes = (function(){
     ret.set('HUE_LIGHTNESS', {id: 2, title: 'Hue & Lightness'});
     ret.set('HSL_WEIGHTED', {id: 1, title: 'Weighted HSL'});
     ret.set('RGB', {id: 0, title: 'RGB'});
-    ret.set('RGB_WEIGHTED', {id: 5, title: 'Weighted RGB'});
+    ret.set('LUMA', {id: 5, title: 'Luma'});
     return ret;
 })();
