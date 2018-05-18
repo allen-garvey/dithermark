@@ -71,7 +71,7 @@ App.BayerMatrix = (function(){
     // ]);
     function square(dimensions){
         const length = dimensions * dimensions;
-        let ret = new Uint8Array(length);
+        const ret = new Uint8Array(length);
         ret[0] = length - 1;
 
         for(let i=1;i<dimensions;i++){
@@ -115,12 +115,7 @@ App.BayerMatrix = (function(){
     //to upper left
     //(reflection of hatchRight)
     function hatchLeft(dimensions){
-        return new Uint8Array([
-            7, 0, 7, 15,
-            15, 7, 0, 7,
-            7, 15, 7, 0,
-            0, 7, 15, 7,
-        ]);
+        return rotate90Degrees(hatchRight(dimensions), dimensions);
     }
 
     function hatchVertical(dimensions){
@@ -133,6 +128,9 @@ App.BayerMatrix = (function(){
     }
 
     function hatchHorizontal(dimensions){
+        return rotate90Degrees(hatchVertical(dimensions), dimensions);
+    }
+
     function zigZag(dimensions){
         return new Uint8Array([
             63, 31,  0, 31, 31,  0, 31, 63, 
