@@ -495,7 +495,7 @@
             },
             //image smoothing after dither
             imageSmoothingAfterChanged: function(smoothingRadius){
-                if(!Constants.isSmoothingEnabled){
+                if(!Constants.isSmoothingEnabled || !this.isWebglSupported){
                     return;
                 }
                 const imageHeader = this.imageHeader;

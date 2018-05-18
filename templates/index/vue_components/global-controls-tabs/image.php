@@ -30,7 +30,7 @@
         <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation value'); ?>
     </div>
     <?php if(ENABLE_IMAGE_SMOOTHING): ?>
-        <div class="spread-content">
+        <div class="spread-content" v-if="isWebglSupported">
             <label>Smoothing (before dithering)
                 <select v-model.number="selectedImageSmoothingRadiusBefore">
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
@@ -38,7 +38,7 @@
             </label>
             <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
         </div>
-        <div class="spread-content">
+        <div class="spread-content" v-if="isWebglSupported">
             <label>Smoothing (after dithering)
                 <select v-model.number="selectedImageSmoothingRadiusAfter">
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
