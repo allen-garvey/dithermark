@@ -47,7 +47,6 @@
 
     define('APP_SUPPORT_SITE_URL_BASE', '//dithermark.com/');
     define('APP_SUPPORT_SITE_FAQ_PAGE_URL', APP_SUPPORT_SITE_URL_BASE.'faq');
-    define('APP_SUPPORT_SITE_APPENDIX_PAGE_URL', APP_SUPPORT_SITE_URL_BASE.'appendix');
 
     if(BUILD_MODE_RELEASE){
         define('JS_APP_URL', JS_URL_BASE.'app.min.js');
