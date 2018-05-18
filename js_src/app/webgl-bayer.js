@@ -1,5 +1,5 @@
 
-App.BayerWebgl = (function(){
+App.WebglBayer = (function(){
     
     //bayer array should be Uint8Array
     //based on: https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Tutorial/Using_textures_in_WebGL

@@ -188,4 +188,4 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
 
     return exports;
     
-})(App.BayerWebgl, App.WebGl, App.WebGlShader, App.BayerMatrix, App.WebGlUtil, App.DitherUtil);
+})(App.WebglBayer, App.WebGl, App.WebGlShader, App.BayerMatrix, App.WebGlUtil, App.DitherUtil);

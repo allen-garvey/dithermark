@@ -51,7 +51,7 @@
             JS_APP_PATH.'color-palettes.js',
             JS_APP_PATH.'worker-util.js',
             JS_APP_PATH.'canvas.js',
-            JS_APP_PATH.'bayer-webgl.js',
+            JS_APP_PATH.'webgl-bayer.js',
             JS_APP_PATH.'webgl-util.js',
             JS_APP_PATH.'webgl-m4.js',
             JS_APP_PATH.'webgl.js',

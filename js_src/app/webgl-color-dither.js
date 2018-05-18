@@ -218,4 +218,4 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
 
     return exports;
         
-})(App.WebGl, App.ColorDitherModes, App.BayerWebgl, App.WebGlShader, App.BayerMatrix, App.WebGlUtil, App.ArrayUtil, App.DitherUtil);
+})(App.WebGl, App.ColorDitherModes, App.WebglBayer, App.WebGlShader, App.BayerMatrix, App.WebGlUtil, App.ArrayUtil, App.DitherUtil);
