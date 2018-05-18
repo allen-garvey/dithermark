@@ -50,6 +50,16 @@ App.BayerMatrix = (function(){
         }
         return bayerArray;
     }
+    function rotate90Degrees(source, dimensions){
+        const ret = new Uint8Array(source.length);
+        for(let x=dimensions-1,retIndex=0;x>=0;x--){
+            for(let y=0;y<dimensions;y++,retIndex++){
+                ret[retIndex] = source[x+y*dimensions];
+            }
+        }
+        return ret;
+    }
+
     //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2002/lectures/cs559-5.ppt
     //dimensions should be power of 2
     //example for 4x4
@@ -123,12 +133,21 @@ App.BayerMatrix = (function(){
     }
 
     function hatchHorizontal(dimensions){
+    function zigZag(dimensions){
         return new Uint8Array([
-            7, 7, 7, 7,
-            0, 0, 0, 0,
-            7, 7, 7, 7,
-            15, 15, 15, 15,
+            63, 31,  0, 31, 31,  0, 31, 63, 
+            31,  0, 31, 63, 63, 31,  0, 31,
+             0, 31, 63, 31, 31, 63, 31,  0,
+            31, 63, 31,  0,  0, 31, 63, 31,
+            63, 31,  0, 31, 31,  0, 31, 63,
+            31,  0, 31, 63, 63, 31,  0, 31,
+             0, 31, 63, 31, 31, 63, 31,  0,
+            31, 63, 31,  0,  0, 31, 63, 31, 
         ]);
+    }
+
+    function zigZagVertical(dimensions){
+        return rotate90Degrees(zigZag(dimensions), dimensions);
     }
 
     //fishnet pattern
@@ -178,5 +197,7 @@ App.BayerMatrix = (function(){
         hatchHorizontal,
         fishnet,
         dot,
+        zigZag,
+        zigZagVertical,
     };
 })();
