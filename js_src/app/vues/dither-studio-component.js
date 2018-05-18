@@ -1,26 +1,26 @@
 (function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage, AlgorithmModel, WebGlSmoothing){
     //webworker stuff
-    var ditherWorkers;
+    let ditherWorkers;
     
     //canvases
-    var sourceCanvas;
-    var originalImageCanvas;
-    var transformCanvas;
-    var transformCanvasWebGl;
-    var sourceCanvasOutput;
-    var transformCanvasOutput;
-    var saveImageCanvas;
+    let sourceCanvas;
+    let originalImageCanvas;
+    let transformCanvas;
+    let transformCanvasWebGl;
+    let sourceCanvasOutput;
+    let transformCanvasOutput;
+    let saveImageCanvas;
     
-    var sourceWebglTexture;
-    var ditherOutputWebglTexture;
+    let sourceWebglTexture;
+    let ditherOutputWebglTexture;
 
     //saving and loading image elements
-    var saveImageLink;
-    var fileInput;
+    let saveImageLink;
+    let fileInput;
 
     //used to keep track of which tabs have loaded a new image to them, after an image is loaded
     //this is because originally, only the active tab when an image is loaded will register it as new
-    var tabsThatHaveSeenImageSet = new Set();
+    const tabsThatHaveSeenImageSet = new Set();
 
     //imageDimensions = height * width
     //percentage is 0-100
@@ -34,7 +34,7 @@
         return Math.ceil(baseDimensions / imageDimensions);
     }
     
-    var app = Vue.component('dither-studio', {
+    Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         created: function(){
             //initialize saving and loading image elements

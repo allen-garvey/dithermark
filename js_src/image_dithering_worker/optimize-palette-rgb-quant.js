@@ -7,7 +7,7 @@
 
 //based on https://github.com/leeoniya/RgbQuant.js
 //reduced options are:
-// var opts = {
+// const opts = {
 //     colors: 256,             // desired palette size
 //     method: 2,               // histogram method, 2: min-population threshold within subregions; 1: global top-population
 //     boxSize: [64,64],        // subregion dims (if method = 2)

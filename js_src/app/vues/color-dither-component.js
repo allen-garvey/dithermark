@@ -1,17 +1,17 @@
 (function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins, ColorQuantizationModes, Palettes, UserSettings){
     //canvas stuff
-    var histogramCanvas;
+    let histogramCanvas;
 
     //caching for optimize palette
-    var optimizedPalettes;
+    let optimizedPalettes;
 
-    var numPalettesSaved = 0;
+    let numPalettesSaved = 0;
 
     function optimizePaletteMemorizationKey(numColors, modeId, pixelation, contrast, saturation, smoothing){
         return `${numColors}-${modeId}-${pixelation}-${contrast}-${saturation}-${smoothing}`;
     }
     
-    var component = Vue.component('color-dither-section', {
+    Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
         props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
         created: function(){

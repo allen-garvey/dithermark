@@ -24,8 +24,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     */
     function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames=[]){
         customUniformNames = customUniformNames.concat(['u_colors_array', 'u_colors_array_length', 'u_dither_r_coefficient']);
-        
-        var drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
+        const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
         
         return function(gl, tex, texWidth, texHeight, colorsArray, colorsArrayLength, setCustomUniformsFunc){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
@@ -116,13 +115,13 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     }
     
     //map containing fragment shader source code
-    var fragmentShaderTexts = createFragmentShaderTexts();
+    const fragmentShaderTexts = createFragmentShaderTexts();
     
     //draw image compiled functions
-    var drawImageFuncs = createLookupContainer();
+    const drawImageFuncs = createLookupContainer();
     
     //saved bayer textures
-    var bayerTextures = {};
+    const bayerTextures = {};
     
     
     function closestColor(gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength){

@@ -1,14 +1,14 @@
 (function(Vue, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, WebGlBwDither, VueMixins){
     
     //used for creating BW texture for webgl color replace
-    var isDitherWorkerBwWorking = false;
-    var transformedImageBwTexture = null;
+    let isDitherWorkerBwWorking = false;
+    let transformedImageBwTexture = null;
     
     //canvas stuff
-    var histogramCanvas;
-    var histogramCanvasIndicator;
+    let histogramCanvas;
+    let histogramCanvasIndicator;
     
-    var component = Vue.component('bw-dither-section', {
+    Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
         props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
         created: function(){

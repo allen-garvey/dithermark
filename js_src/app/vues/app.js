@@ -1,7 +1,5 @@
 (function(Vue){
-    
-    var app = new Vue({
+    new Vue({
         el: '#app',
     });
-    
 })(window.Vue);

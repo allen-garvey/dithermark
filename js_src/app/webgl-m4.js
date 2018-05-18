@@ -85,22 +85,22 @@ App.M4 = (function(){
             // return multiply(m, translation(tx, ty, tz), dst);
             dst = dst || new Float32Array(16);
         
-            var m00 = m[0];
-            var m01 = m[1];
-            var m02 = m[2];
-            var m03 = m[3];
-            var m10 = m[1 * 4 + 0];
-            var m11 = m[1 * 4 + 1];
-            var m12 = m[1 * 4 + 2];
-            var m13 = m[1 * 4 + 3];
-            var m20 = m[2 * 4 + 0];
-            var m21 = m[2 * 4 + 1];
-            var m22 = m[2 * 4 + 2];
-            var m23 = m[2 * 4 + 3];
-            var m30 = m[3 * 4 + 0];
-            var m31 = m[3 * 4 + 1];
-            var m32 = m[3 * 4 + 2];
-            var m33 = m[3 * 4 + 3];
+            const m00 = m[0];
+            const m01 = m[1];
+            const m02 = m[2];
+            const m03 = m[3];
+            const m10 = m[1 * 4 + 0];
+            const m11 = m[1 * 4 + 1];
+            const m12 = m[1 * 4 + 2];
+            const m13 = m[1 * 4 + 3];
+            const m20 = m[2 * 4 + 0];
+            const m21 = m[2 * 4 + 1];
+            const m22 = m[2 * 4 + 2];
+            const m23 = m[2 * 4 + 3];
+            const m30 = m[3 * 4 + 0];
+            const m31 = m[3 * 4 + 1];
+            const m32 = m[3 * 4 + 2];
+            const m33 = m[3 * 4 + 3];
         
             if (m !== dst) {
               dst[ 0] = m00;

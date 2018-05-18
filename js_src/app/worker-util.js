@@ -2,8 +2,8 @@
 App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
         //(5 + (3 * 2)) * 2
-        var buffer = new Polyfills.SharedArrayBuffer(22);
-        var bufferView = new Uint16Array(buffer);
+        const buffer = new Polyfills.SharedArrayBuffer(22);
+        const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.DITHER;
         bufferView[1] = imageWidth;
@@ -25,8 +25,8 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     
     function createDitherWorkerBwHeader(imageWidth, imageHeight, threshold, algorithmId){
         //5 * 2
-        var buffer = new Polyfills.SharedArrayBuffer(10);
-        var bufferView = new Uint16Array(buffer);
+        const buffer = new Polyfills.SharedArrayBuffer(10);
+        const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.DITHER_BW;
         bufferView[1] = imageWidth;
@@ -40,8 +40,8 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     
     function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, colorDitherMode, colorsHex){
         //(5 * 2) + 2 *(colorsHex * 3)
-        let buffer = new Polyfills.SharedArrayBuffer(10 + (colorsHex.length * 6));
-        let bufferView = new Uint16Array(buffer);
+        const buffer = new Polyfills.SharedArrayBuffer(10 + (colorsHex.length * 6));
+        const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.DITHER_COLOR;
         bufferView[1] = imageWidth;
@@ -56,8 +56,8 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     }
     
     function createDitherWorkerLoadImageHeader(imageWidth, imageHeight){
-        var buffer = new Polyfills.SharedArrayBuffer(6);
-        var bufferView = new Uint16Array(buffer);
+        const buffer = new Polyfills.SharedArrayBuffer(6);
+        const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.LOAD_IMAGE;
         bufferView[1] = imageWidth;
@@ -66,8 +66,8 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         return buffer;
     }
     function createEmptyHeader(messageType){
-        let buffer = new Polyfills.SharedArrayBuffer(2);
-        let bufferView = new Uint16Array(buffer);
+        const buffer = new Polyfills.SharedArrayBuffer(2);
+        const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = messageType;
         
@@ -79,8 +79,8 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     }
     //filterId for memorization purpores
     function createOptimizePaletteHeader(numColors, colorQuantizationModeId, pixelation, contrast, saturation, smoothing){
-        let buffer = new Polyfills.SharedArrayBuffer(14);
-        let bufferView = new Uint16Array(buffer);
+        const buffer = new Polyfills.SharedArrayBuffer(14);
+        const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.OPTIMIZE_PALETTE;
         bufferView[1] = numColors;
@@ -94,8 +94,8 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     }
     
     function createColorHistogramWorkerHeader(){
-        var buffer = new Polyfills.SharedArrayBuffer(2);
-        var bufferView = new Uint16Array(buffer);
+        const buffer = new Polyfills.SharedArrayBuffer(2);
+        const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.HUE_HISTOGRAM;
         
@@ -113,17 +113,17 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     
     //creates queue of webworkers
     function createWorkers(workerSrc){
-        var numWorkers = 1;
-        var navigator = window.navigator;
-        if(navigator.hardwareConcurrency){
-            numWorkers = Math.min(navigator.hardwareConcurrency * 2, Constants.maxWebworkers);
+        let numWorkers = 1;
+        const hardwareConcurrency = window.navigator.hardwareConcurrency;
+        if(hardwareConcurrency){
+            numWorkers = Math.min(hardwareConcurrency * 2, Constants.maxWebworkers);
         }
-        var workers = new Array(numWorkers);
+        const workers = new Array(numWorkers);
         for(let i=0;i<numWorkers;i++){
             workers[i] = new Worker(workerSrc);
         }
         
-        var workerCurrentIndex = 0;
+        let workerCurrentIndex = 0;
     
         function getNextWorker(){
             let worker = workers[workerCurrentIndex];

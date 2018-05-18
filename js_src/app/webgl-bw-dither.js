@@ -18,8 +18,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     */
     function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames = []){
         customUniformNames = customUniformNames.concat(['u_threshold', 'u_black_pixel', 'u_white_pixel', 'u_dither_r_coefficient']);
-        
-        var drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
+        const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniformNames);
         
         return function(gl, tex, texWidth, texHeight, threshold, blackPixel, whitePixel, setCustomUniformsFunc){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
@@ -52,8 +51,8 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     * Pixel utility stuff
     */
     function pixelToVec(pixel, rgbOnly=true){
-        let length = rgbOnly ? 3 : pixel.length;
-        let vec = new Float32Array(length);
+        const length = rgbOnly ? 3 : pixel.length;
+        const vec = new Float32Array(length);
         
         for(let i=0;i<length;i++){
             vec[i] = pixel[i] / 255.0;
@@ -68,7 +67,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     
     function generateFragmentShader(fragmentShaderTemplate, customDeclarationId, customBodyId, customDeclarationReplacements = []){
         let customDeclaration = customDeclarationId ? Shader.shaderText(customDeclarationId) : '';
-        let customBody = customBodyId ? Shader.shaderText(customBodyId) : '';
+        const customBody = customBodyId ? Shader.shaderText(customBodyId) : '';
         
         customDeclarationReplacements.forEach((replacement)=>{
             customDeclaration = customDeclaration.replace(replacement.find, replacement.replace);
@@ -78,25 +77,25 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     }
     
     //fragment shaders
-    var fragmentLightnessFunctionText = Shader.shaderText('webgl-fragment-shader-lightness-function');
-    var fragmentShaderTemplate = Shader.shaderText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
-    var bitwiseFunctionsText = Shader.generateBitwiseFunctionsText(); 
+    const fragmentLightnessFunctionText = Shader.shaderText('webgl-fragment-shader-lightness-function');
+    const fragmentShaderTemplate = Shader.shaderText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    const bitwiseFunctionsText = Shader.generateBitwiseFunctionsText(); 
     
     //draw image created functions
-    var drawImageFuncs = {};
+    const drawImageFuncs = {};
     
     //saved bayer textures
-    var bayerTextures = {};
+    const bayerTextures = {};
     
     function webGLThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        let drawFunc = getDrawFunc(THRESHOLD, gl, [null, 'webgl-threshold-fshader-body']);
+        const drawFunc = getDrawFunc(THRESHOLD, gl, [null, 'webgl-threshold-fshader-body']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
     }
     
     function webGLRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        let drawFunc = getDrawFunc(RANDOM_THRESHOLD, gl, ['webgl-random-threshold-fshader-declaration', 'webgl-random-threshold-fshader-body'], ['u_random_seed']);
+        const drawFunc = getDrawFunc(RANDOM_THRESHOLD, gl, ['webgl-random-threshold-fshader-declaration', 'webgl-random-threshold-fshader-body'], ['u_random_seed']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
@@ -105,10 +104,10 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     }
     
     function createArithmeticDither(ditherKey, customDeclarationReplace){
-        let customDeclarationReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}, {find: '#{{bitwiseFunctions}}', replace: bitwiseFunctionsText}];
+        const customDeclarationReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}, {find: '#{{bitwiseFunctions}}', replace: bitwiseFunctionsText}];
         
         return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
-            let drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customDeclarationReplacements]);
+            const drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customDeclarationReplacements]);
             // Tell WebGL how to convert from clip space to pixels
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
             drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
@@ -116,7 +115,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     }
     
     function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions){
-        let drawFunc = getDrawFunc(ORDERED_DITHER, gl, ['webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body'], ['u_bayer_texture_dimensions', 'u_bayer_texture']);
+        const drawFunc = getDrawFunc(ORDERED_DITHER, gl, ['webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body'], ['u_bayer_texture_dimensions', 'u_bayer_texture']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
@@ -146,18 +145,18 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     };
 
     function webGLColorReplace(gl, texture, imageWidth, imageHeight, blackPixel, whitePixel){
-        let drawFunc = getDrawFunc(COLOR_REPLACE, gl, [null, 'webgl-color-replace-fshader-body']);
+        const drawFunc = getDrawFunc(COLOR_REPLACE, gl, [null, 'webgl-color-replace-fshader-body']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, 0, blackPixel, whitePixel);
     }
     
     function webGL3TextureCombine(gl, imageWidth, imageHeight, blackPixel, whitePixel, textures){
-        let drawFunc = getDrawFunc(TEXTURE_COMBINE, gl, ['webgl-combine-dither-fshader-declaration', 'webgl-combine-dither-fshader-body'], ['u_texture_2', 'u_texture_3']);
+        const drawFunc = getDrawFunc(TEXTURE_COMBINE, gl, ['webgl-combine-dither-fshader-declaration', 'webgl-combine-dither-fshader-body'], ['u_texture_2', 'u_texture_3']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         
-        let threshold = 0.0;
+        const threshold = 0.0;
         drawFunc(gl, textures[0], imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
             //bind textures
             gl.activeTexture(gl.TEXTURE1);
