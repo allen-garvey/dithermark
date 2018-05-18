@@ -243,6 +243,15 @@
             },
         },
         watch: {
+            loadedImage: function(newValue, oldValue){
+                //only do this for the first image loaded
+                if(oldValue === null){
+                    //make links open in new tab now, so user won't lose saved work
+                    document.querySelectorAll('.nav a').forEach((link)=>{
+                        link.target = '_blank';
+                    });
+                }
+            },
             saveImageFileName: function(newValue, oldValue){
                 if(newValue === oldValue){
                     return;
