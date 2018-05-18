@@ -18,6 +18,10 @@
     var saveImageLink;
     var fileInput;
 
+    //used to keep track of which tabs have loaded a new image to them, after an image is loaded
+    //this is because originally, only the active tab when an image is loaded will register it as new
+    var tabsThatHaveSeenImageSet = new Set();
+
     //imageDimensions = height * width
     //percentage is 0-100
     //returns percentage 0-100
@@ -336,9 +340,10 @@
                     return;
                 }
                 this.activeDitherComponentId = componentId;
-                //TODO don't reload image if tab has already loaded it- instead create active tab hook
                 if(this.isImageLoaded){
-                    this.activeDitherSection.imageLoaded(this.imageHeader);   
+                    const hasSeenImage = tabsThatHaveSeenImageSet.has(this.activeDitherComponentId);
+                    tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
+                    this.activeDitherSection.imageLoaded(this.imageHeader, !hasSeenImage);   
                 }
             },
             /*
@@ -428,6 +433,8 @@
                 this.loadedImage = loadedImage;
                 this.imagePixelationChanged();
                 this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
+                tabsThatHaveSeenImageSet.clear();
+                tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
                 this.activeDitherSection.imageLoaded(this.imageHeader, true);
             },
             imagePixelationChanged: function(){
