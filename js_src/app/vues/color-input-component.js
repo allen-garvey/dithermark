@@ -1,5 +1,5 @@
 //color picker component for color dither color list
-(function(Vue, ColorPicker){
+(function(Vue, VueColor, ColorPicker){
     //copied from PixelMath module, since nothing else in app files uses pixelmath
     function pixelLightness(pixel){
         const max = Math.max(pixel[0], pixel[1], pixel[2]);
@@ -7,9 +7,9 @@
         return Math.floor((max + min) / 2.0);
     }
 
-    Vue.component('color-picker', {
-        template: document.getElementById('color-picker-component'),
-        props: ['colorIndex', 'colorValue', 'idPrefix', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'onColorValueChanged', 'draggedIndex', 'label'],
+    Vue.component('color-input', {
+        template: document.getElementById('color-input-component'),
+        props: ['colorIndex', 'colorValue', 'idPrefix', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'draggedIndex', 'label', 'onClick'],
         computed: {
             colorPickerId: function(){
                 return `${this.idPrefix}_colorpicker_${this.colorIndex}`;
@@ -32,11 +32,6 @@
                 return this.label || this.colorIndex + 1;
             },
         },
-        watch: {
-            colorValue: function(newValue, oldValue){
-                this.onColorValueChanged(newValue, this.colorIndex);
-            },
-        },
         methods: {
             handleColorDrop: function(e){
                 e.preventDefault();
@@ -46,8 +41,14 @@
                     handler(e, this.colorIndex);
                 }
             },
+            inputClicked: function(){
+                if(this.isDisabled){
+                    return;
+                }
+                this.onClick();
+            },
         },
     });
     
     
-})(window.Vue, App.ColorPicker);
+})(window.Vue, window.VueColor, App.ColorPicker);

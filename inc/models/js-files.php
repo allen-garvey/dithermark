@@ -28,7 +28,7 @@
         }
         $ret[] = JS_VUES_PATH.'unsplash-attribution-component.js';
         $ret[] = JS_VUES_PATH.'modal-prompt-component.js';
-        $ret[] = JS_VUES_PATH.'color-picker-component.js';
+        $ret[] = JS_VUES_PATH.'color-input-component.js';
         $ret[] = JS_VUES_PATH.'bw-dither-component.js';
         $ret[] = JS_VUES_PATH.'color-dither-component.js';
         $ret[] = JS_VUES_PATH.'dither-studio-component.js';

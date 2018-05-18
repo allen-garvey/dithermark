@@ -25,10 +25,13 @@
     </div>
     <fieldset>
         <legend>Color substitution</legend>
+        <div v-if="shouldShowColorPicker">
+            <photoshop-picker ref="colorPicker" v-model="colorPickerSelectedColor" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
+        </div>
         <div class="bw-color-replace-container">
-            <color-picker label="Black" id-prefix="bw" :is-disabled="false" :color-value="colorReplaceColors[0]" color-index="0" dragged-index="-1" :on-color-value-changed="onColorReplaceValuesChanged" />
-            <color-picker label="White" id-prefix="bw" :is-disabled="false" :color-value="colorReplaceColors[1]" color-index="1" dragged-index="-1" :on-color-value-changed="onColorReplaceValuesChanged" />
-            <button class="btn btn-default btn-sm" v-on:click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
+            <color-input label="Black" id-prefix="bw" :on-click="createColorInputClicked(0)" :is-disabled="false" :color-value="colorReplaceColors[0]" color-index="0" dragged-index="-1" />
+            <color-input label="White" id-prefix="bw" :on-click="createColorInputClicked(1)" :is-disabled="false" :color-value="colorReplaceColors[1]" color-index="1" dragged-index="-1" />
+            <button class="btn btn-default btn-sm" @click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
         </div>
     </fieldset>
     <?php if(ENABLE_TEXTURE_COMBINE): ?>

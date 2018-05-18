@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins, ColorQuantizationModes, Palettes, UserSettings){
+(function(Vue, VueColor, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, VueMixins, ColorQuantizationModes, Palettes, UserSettings){
     //canvas stuff
     let histogramCanvas;
 
@@ -14,6 +14,9 @@
     Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
         props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
+        components: {
+            'photoshop-picker': VueColor.Photoshop,
+        },
         created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
@@ -45,6 +48,10 @@
                 colorQuantizationGroups: ColorQuantizationModes.groups,
                 selectedColorQuantizationModeIndex: 0,
                 pendingColorQuantizations: {},
+                //for color picker
+                shouldShowColorPicker: false,
+                colorPickerColorIndex: 0,
+                colorPickerSelectedColor: '',
             };
         },
         computed: {
@@ -93,6 +100,11 @@
             },
         },
         watch: {
+            colorPickerSelectedColor: function(){
+                if(this.shouldShowColorPicker && typeof this.colorPickerSelectedColor === 'object'){
+                    Vue.set(this.colorsShadow, this.colorPickerColorIndex, this.colorPickerSelectedColor.hex);
+                }
+            },
             isLivePreviewEnabled: function(newValue){
                 if(newValue){
                     this.ditherImageWithSelectedAlgorithm();
@@ -319,11 +331,23 @@
                 //need to do this to trigger refresh
                 this.colorsShadow = this.colorsShadow.slice();
             },
-            colorPickerValueChanged: function(colorValue, colorIndex){
-                Vue.set(this.colorsShadow, colorIndex, colorValue);
+            createColorInputClicked: function(colorIndex){
+                return ()=>{
+                    if(this.shouldShowColorPicker){
+                        return;
+                    }
+                    this.colorPickerColorIndex = colorIndex;
+                    this.colorPickerSelectedColor = this.colorsShadow[colorIndex];
+                    this.shouldShowColorPicker = true;
+                }
+            },
+            colorPickerCanceled: function(){
+                this.shouldShowColorPicker = false;
+                //reset to previous color
+                Vue.set(this.colorsShadow, this.colorPickerColorIndex, this.$refs.colorPicker.currentColor);
             },
         }
     });
     
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.VueMixins, App.ColorQuantizationModes, App.ColorPalettes, App.UserSettings);
+})(window.Vue, window.VueColor, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.VueMixins, App.ColorQuantizationModes, App.ColorPalettes, App.UserSettings);

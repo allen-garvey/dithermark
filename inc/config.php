@@ -57,6 +57,7 @@
         define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.js');
     }
     define('JS_VUE_URL', JS_URL_BASE.'vue.min.js');
+    define('JS_VUE_COLOR_PICKER_URL', JS_URL_BASE.'vue-color.min.js');
     
     /*
     * JS application constants

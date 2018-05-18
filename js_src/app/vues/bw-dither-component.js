@@ -11,6 +11,9 @@
     Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
         props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
+        components: {
+            'photoshop-picker': VueColor.Photoshop,
+        },
         created: function(){
             this.resetColorReplace();
         },
@@ -26,9 +29,13 @@
                 thresholdMax: 255,
                 selectedDitherAlgorithmIndex: 0,
                 hasImageBeenTransformed: false,
-                colorReplaceColors: [],
                 ditherGroups: AlgorithmModel.bwDitherGroups,
                 loadedImage: null,
+                colorReplaceColors: [],
+                //for color picker
+                shouldShowColorPicker: false,
+                colorPickerColorIndex: 0,
+                colorPickerSelectedColor: '',
             };
         },
         computed: {
@@ -52,6 +59,11 @@
             },
         },
         watch: {
+            colorPickerSelectedColor: function(){
+                if(this.shouldShowColorPicker && typeof this.colorPickerSelectedColor === 'object'){
+                    Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, this.colorPickerSelectedColor.hex);
+                }
+            },
             isLivePreviewEnabled: function(newValue){
                 if(newValue){
                     this.ditherImageWithSelectedAlgorithm();
@@ -225,8 +237,26 @@
                 transformedImageBwTexture = null;
                 isDitherWorkerBwWorking = false;
             },
-            onColorReplaceValuesChanged: function(colorValue, colorIndex){
-                Vue.set(this.colorReplaceColors, colorIndex, colorValue);
+            /**
+             * Color replace color input/color picker stuff
+             */
+            createColorInputClicked: function(colorReplaceIndex){
+                return ()=>{
+                    if(this.shouldShowColorPicker){
+                        return;
+                    }
+                    this.colorPickerColorIndex = colorReplaceIndex;
+                    this.colorPickerSelectedColor = this.colorReplaceColors[colorReplaceIndex];
+                    this.shouldShowColorPicker = true;
+                }
+            },
+            colorPickerOk: function(){
+                this.shouldShowColorPicker = false;
+            },
+            colorPickerCanceled: function(){
+                this.shouldShowColorPicker = false;
+                //reset to previous color
+                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, this.$refs.colorPicker.currentColor);
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
         }

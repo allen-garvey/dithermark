@@ -45,9 +45,12 @@
     </div>
     <fieldset>
         <legend>Color palette</legend>
+        <div v-if="shouldShowColorPicker">
+            <photoshop-picker ref="colorPicker" v-model="colorPickerSelectedColor" @ok="shouldShowColorPicker = false" @cancel="colorPickerCanceled" />
+        </div>
         <div class="colors-list-container" @dragover="handleColorDragover">
             <template v-for="(color, i) in colors">
-                <color-picker id-prefix="color" :color-index="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" :on-color-value-changed="colorPickerValueChanged" />
+                <color-input id-prefix="color" :on-click="createColorInputClicked(i)" :color-index="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" />
             </template>
         </div>
         <div class="spread-content palette-buttons-container">

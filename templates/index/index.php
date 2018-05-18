@@ -48,8 +48,8 @@
         <script type="vue/template" id="unsplash-attribution-component">
             <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'unsplash-attribution-component.php'); ?>
         </script>
-        <script type="vue/template" id="color-picker-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-picker-component.php'); ?>
+        <script type="vue/template" id="color-input-component">
+            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-input-component.php'); ?>
         </script>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'vertex-shaders.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
@@ -63,6 +63,7 @@
             }
         ?>
         <script type="text/javascript" src="<?= JS_VUE_URL; ?>"></script>
+        <script type="text/javascript" src="<?= JS_VUE_COLOR_PICKER_URL; ?>"></script>
         <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>
 </html>
