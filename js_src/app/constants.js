@@ -8,4 +8,5 @@ App.Constants = {
     ditherWorkerUrl: '<?= JS_DITHER_WORKER_URL; ?>',
     unsplashApiUrl: '<?= UNSPLASH_API_URL; ?>',
     unsplashDownloadUrl: '<?= UNSPLASH_DOWNLOAD_URL; ?>',
+    isSmoothingEnabled: <?= ENABLE_IMAGE_SMOOTHING ? 1 : 0; ?>,
 };
