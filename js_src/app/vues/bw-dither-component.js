@@ -135,6 +135,7 @@
             //isNewImage is used to determine if the image is actually different,
             //or it is the same image with filters changed
             imageLoaded: function(loadedImage, isNewImage=false){
+                const isFirstImageLoaded = this.loadedImage === null;
                 this.loadedImage = loadedImage;
                 this.hasImageBeenTransformed = false;
                 
@@ -157,9 +158,10 @@
                     //if live preview is not enabled, transform canvas will be blank unless we do this
                     this.requestDisplayTransformedImage();
                 }
-                //not really necessary to draw indicator unless this is the first image loaded, but this function happens so quickly
-                //it's not really worth it to check
-                Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
+                //only need to do this for first image loaded, since indicator won't be drawn yet
+                if(isFirstImageLoaded){
+                    Histogram.drawIndicator(histogramCanvasIndicator, this.threshold);
+                }
             },
             ditherImageWithSelectedAlgorithm: function(){
                 if(!this.isImageLoaded){
