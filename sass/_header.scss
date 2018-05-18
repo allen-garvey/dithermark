@@ -3,11 +3,16 @@
     position: -webkit-sticky;
     position: sticky;
     left: 0;
-    //so position sticky works
+}
+@include pinned_controls_mq{
+    .header{
+        //so position sticky works
     display: inline-block;
+    }
 }
 .nav{
     display: flex;
+    justify-content: space-between;
     ul{
         list-style-type: none;
         display: flex;
@@ -15,9 +20,6 @@
         margin: 0 0 0 1em;
         padding: 0;
         align-self: center;
-        li{
-            margin-right: 0.5em;
-        }
         a{
             color: var(--hint-text-color);
         }
