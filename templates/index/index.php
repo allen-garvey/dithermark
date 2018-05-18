@@ -15,9 +15,13 @@
     </head>
     <body>
         <header class="header">
-            <div>
+            <nav class="nav">
                 <h1 class="brand"><?= APP_NAME; ?></h1>
-            </div>
+                <ul>
+                    <li><a href="<?= APP_SUPPORT_SITE_FAQ_PAGE_URL; ?>">FAQ</a></li>
+                    <li><a href="<?= APP_SUPPORT_SITE_APPENDIX_PAGE_URL; ?>">Appendix</a></li>
+                </ul>
+            </nav>
         </header>
         <main>
             <noscript><?= APP_NAME; ?> requires JavaScript to run. Please enable JavaScript in your browser settings and reload this page.</noscript>

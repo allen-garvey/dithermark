@@ -6,6 +6,23 @@
     //so position sticky works
     display: inline-block;
 }
+.nav{
+    display: flex;
+    ul{
+        list-style-type: none;
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 0 0 1em;
+        padding: 0;
+        align-self: center;
+        li{
+            margin-right: 0.5em;
+        }
+        a{
+            color: var(--hint-text-color);
+        }
+    }
+}
 
 .brand{
     font-size: 20px;
