@@ -67,14 +67,6 @@ input[type="checkbox"]{
 }
 
 /*
-* Color replace stuff
-*/
-input[type="color"]{
-    margin-left: 14px;
-    margin-right: 24px;
-}
-
-/*
 * Color dither component controls
 */
 
@@ -109,10 +101,6 @@ input[type="color"]{
     
     &.dragged, &.color-disabled{
         opacity: 0.4;
-    }
-
-    input[type="color"]{
-        margin: 0;
     }
     label{
         display: inline-block;

@@ -64,14 +64,6 @@ input:not([type]), input[type="text"], input[type="url"]{
     max-width: 100%;
     color: #333;
 }
-input[type="color"]{
-    padding: 6px;
-    cursor: pointer;
-    //so are roughly the same size on Chrome and Firefox 
-    box-sizing: border-box;
-    width: 60px;
-    height: 40px;
-}
 input[type="range"]{
     flex-basis: 50%;
     max-width: 100%;
