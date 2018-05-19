@@ -51,10 +51,12 @@
                 //for color picker
                 shouldShowColorPicker: false,
                 colorPickerColorIndex: 0,
-                colorPickerSelectedColor: '',
             };
         },
         computed: {
+            colorPickerSelectedColor: function(){
+                return this.colorsShadow[this.colorPickerColorIndex];
+            },
             selectedDitherAlgorithm: function(){
                 return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
             },
@@ -100,11 +102,6 @@
             },
         },
         watch: {
-            colorPickerSelectedColor: function(){
-                if(this.shouldShowColorPicker && typeof this.colorPickerSelectedColor === 'object'){
-                    Vue.set(this.colorsShadow, this.colorPickerColorIndex, this.colorPickerSelectedColor.hex);
-                }
-            },
             isLivePreviewEnabled: function(newValue){
                 if(newValue){
                     this.ditherImageWithSelectedAlgorithm();
@@ -331,20 +328,27 @@
                 //need to do this to trigger refresh
                 this.colorsShadow = this.colorsShadow.slice();
             },
+            /**
+             * Color picker functions
+             */
             createColorInputClicked: function(colorIndex){
                 return ()=>{
                     if(this.shouldShowColorPicker){
                         return;
                     }
                     this.colorPickerColorIndex = colorIndex;
-                    this.colorPickerSelectedColor = this.colorsShadow[colorIndex];
                     this.shouldShowColorPicker = true;
                 }
             },
-            colorPickerCanceled: function(){
+            colorPickerValueChanged: function(color){
+                Vue.set(this.colorsShadow, this.colorPickerColorIndex, color.hex);
+            },
+            colorPickerOk: function(color){
                 this.shouldShowColorPicker = false;
-                //reset to previous color
-                Vue.set(this.colorsShadow, this.colorPickerColorIndex, this.$refs.colorPicker.currentColor);
+            },
+            colorPickerCanceled: function(previousColor){
+                this.shouldShowColorPicker = false;
+                Vue.set(this.colorsShadow, this.colorPickerColorIndex, previousColor);
             },
         }
     });

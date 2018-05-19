@@ -35,10 +35,12 @@
                 //for color picker
                 shouldShowColorPicker: false,
                 colorPickerColorIndex: 0,
-                colorPickerSelectedColor: '',
             };
         },
         computed: {
+            colorPickerSelectedColor: function(){
+                return this.colorReplaceColors[this.colorPickerColorIndex];
+            },
             selectedDitherAlgorithm: function(){
                 return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
             },
@@ -59,11 +61,6 @@
             },
         },
         watch: {
-            colorPickerSelectedColor: function(){
-                if(this.shouldShowColorPicker && typeof this.colorPickerSelectedColor === 'object'){
-                    Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, this.colorPickerSelectedColor.hex);
-                }
-            },
             isLivePreviewEnabled: function(newValue){
                 if(newValue){
                     this.ditherImageWithSelectedAlgorithm();
@@ -246,17 +243,18 @@
                         return;
                     }
                     this.colorPickerColorIndex = colorReplaceIndex;
-                    this.colorPickerSelectedColor = this.colorReplaceColors[colorReplaceIndex];
                     this.shouldShowColorPicker = true;
                 }
+            },
+            colorPickerValueChanged: function(color){
+                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, color.hex);
             },
             colorPickerOk: function(){
                 this.shouldShowColorPicker = false;
             },
-            colorPickerCanceled: function(){
+            colorPickerCanceled: function(previousColor){
                 this.shouldShowColorPicker = false;
-                //reset to previous color
-                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, this.$refs.colorPicker.currentColor);
+                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, previousColor);
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
         }

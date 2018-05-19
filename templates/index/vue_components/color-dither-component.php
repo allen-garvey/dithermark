@@ -46,7 +46,7 @@
     <fieldset>
         <legend>Color palette</legend>
         <div v-if="shouldShowColorPicker">
-            <photoshop-picker ref="colorPicker" v-model="colorPickerSelectedColor" @ok="shouldShowColorPicker = false" @cancel="colorPickerCanceled" />
+            <photoshop-picker :value="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="shouldShowColorPicker = false" @cancel="colorPickerCanceled" />
         </div>
         <div class="colors-list-container" @dragover="handleColorDragover">
             <template v-for="(color, i) in colors">
