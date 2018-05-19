@@ -29,8 +29,13 @@ JS_WORKER_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/dither-worker.min.js
 VUE_SRC=node_modules/vue/dist/vue.min.js
 VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
 
+#lib directory for git cloned libraries
+LIB_DIR=lib
+
 #vue color picker
-VUE_COLOR_PICKER_SRC=node_modules/vue-color/dist/vue-color.min.js
+VUE_COLOR_PICKER_DIR=$(LIB_DIR)/dithermark-vue-color
+# VUE_COLOR_PICKER_SRC=$(shell find lib/dithermark-vue-color/build lib/dithermark-vue-color/config lib/dithermark-vue-color/src -type f)
+VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/dist/vue-color.min.js
 VUE_COLOR_PICKER_OUTPUT=$(JS_OUTPUT_DIR)/vue-color.min.js
 
 #css
@@ -78,8 +83,17 @@ $(JS_OUTPUT_DIR):
 $(VUE_OUTPUT): $(VUE_SRC)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
 
-$(VUE_COLOR_PICKER_OUTPUT): $(VUE_COLOR_PICKER_SRC)
-	cat $(VUE_COLOR_PICKER_SRC) > $(VUE_COLOR_PICKER_OUTPUT)
+# $(VUE_COLOR_PICKER_DIR):
+# 	git clone https://github.com/allen-garvey/dithermark-vue-color.git $(VUE_COLOR_PICKER_DIR)
+
+# $(VUE_COLOR_PICKER_SRC): $(VUE_COLOR_PICKER_DIR)
+
+#$(VUE_COLOR_PICKER_COMPILED): $(VUE_COLOR_PICKER_SRC)
+# 	cd $(VUE_COLOR_PICKER_DIR)
+# 	npm run release
+
+$(VUE_COLOR_PICKER_OUTPUT): $(VUE_COLOR_PICKER_COMPILED)
+	cat $(VUE_COLOR_PICKER_COMPILED) > $(VUE_COLOR_PICKER_OUTPUT)
 
 $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_APP_TEMPLATE)
 	php $(JS_APP_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_APP_OUTPUT)

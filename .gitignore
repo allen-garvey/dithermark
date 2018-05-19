@@ -33,3 +33,4 @@ dminjs
 inc/unsplash-api-secret.json
 scripts/*.json
 public_html/api/unsplash.json
+lib/*
