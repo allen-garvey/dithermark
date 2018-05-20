@@ -29,6 +29,10 @@
                 this.showModal = false;
             },
             okAction: function(){
+                //ok disabled if there is no value
+                if(!this.inputValue){
+                    return;
+                }
                 if(this.okCallback){
                     this.okCallback(this.inputValue);
                 }

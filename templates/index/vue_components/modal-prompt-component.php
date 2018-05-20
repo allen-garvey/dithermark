@@ -7,7 +7,7 @@
         </label>
         <div class="modal-buttons-container">
             <button class="btn btn-default" tabindex="2" @click="cancelAction">Cancel</button>
-            <button class="btn btn-primary" tabindex="3" @click="okAction">{{okButtonValue}}</button>
+            <button class="btn btn-primary" tabindex="3" @click="okAction" :disabled="!inputValue">{{okButtonValue}}</button>
         </div>
     </div>
 </div>
