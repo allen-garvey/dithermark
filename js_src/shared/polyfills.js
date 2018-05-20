@@ -1,9 +1,5 @@
-App.Polyfills = (function(){
-    //have to do it exactly like this, with same variable name and 'var'
-    //or we will throw exception
-    var SharedArrayBuffer = SharedArrayBuffer || ArrayBuffer;
-    
+App.Polyfills = (function(){    
     return {
-        SharedArrayBuffer: SharedArrayBuffer,
+        SharedArrayBuffer: typeof SharedArrayBuffer === 'undefined' ? ArrayBuffer : SharedArrayBuffer,
     };
 })();
