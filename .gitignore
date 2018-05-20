@@ -9,6 +9,8 @@
 .sass-cache/*
 node_modules/*
 .npm-debug.log
+npm-debug.log
+npm-debug.log*
 .npm-debug*
 bin/*
 *.o
