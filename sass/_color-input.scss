@@ -1,9 +1,35 @@
-//div that's meant to look and act like color input
+.color-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-basis: 110px;
+    margin: 0 13px $colors_container_margin_bottom 0;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 4px;
+    
+    &.dragged, &.color-disabled{
+        opacity: 0.4;
+    }
+    label{
+        padding: 0;
+    }
+
+    &[draggable="true"]{
+        cursor: move;
+        .faux-color-input-container{
+            margin-right: 18px;
+        }
+    }
+}
+
+//input[type="button"] that's meant to look and act like color input
 .faux-color-input-container{
     border: 5px solid white;
     border-radius: 6px;
     display: inline-block;
 }
+
 .faux-color-input{
     position: relative;
     width: 46px;

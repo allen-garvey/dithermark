@@ -13,9 +13,6 @@ input[type="checkbox"]{
     width: $controlsWidth;
     max-width: 100%;
 }
-.global-controls-panel{
-    margin: 0 $controls_gutter 16px 0;
-}
 
 .controls{
     display: flex;
@@ -29,7 +26,7 @@ input[type="checkbox"]{
 
 
 .controls-panel > *{
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .controls-tab-container{
@@ -48,6 +45,11 @@ input[type="checkbox"]{
 
 .transform-button-container{
     text-align: right;
+}
+
+.cycle-property-list-button{
+    min-width: 60px;
+    height: 28px;
 }
 
 /*
@@ -70,11 +72,6 @@ input[type="checkbox"]{
 * Color dither component controls
 */
 
-.cycle-property-list-button{
-    min-width: 60px;
-    height: 28px;
-}
-
 .color-dither-number-of-colors-container{
     margin-top: 16px;
     display: flex;
@@ -88,33 +85,6 @@ input[type="checkbox"]{
 .colors-list-container{
     display: flex;
     flex-wrap: wrap;
-}
-
-.color-container{
-    display: flex;
-    align-items: center;
-    flex-basis: 110px;
-    margin: 0 13px $colors_container_margin_bottom 0;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    padding: 4px;
-    
-    &.dragged, &.color-disabled{
-        opacity: 0.4;
-    }
-    label{
-        display: inline-block;
-        min-width: 1.7em;
-        padding-right: 5px;
-    }
-}
-
-.color-container[draggable="true"]{
-    cursor: move;
-    label{
-        cursor: move;
-        padding-right: 0;
-    }
 }
 
 .palette-buttons-container{
