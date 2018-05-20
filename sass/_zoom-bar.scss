@@ -1,0 +1,11 @@
+/*
+* zoom container
+*/
+.zoom-bar-container{
+    width: $controlsWidth;
+    max-width: 100%;
+    input[type="range"]{
+        width: calc(100% - 188px);
+        vertical-align: bottom;
+    }
+}
