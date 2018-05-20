@@ -2,7 +2,8 @@
     <div class="modal-overlay" @click="cancelAction"></div>
     <div class="modal-container">
         <label>{{labelValue}}
-            <input ref="input" class="modal-input" tabindex="1" :type="inputType" :placeholder="placeholder" v-model="inputValue" @keyup.enter="okAction" />
+            <?php //trigger needs to be keydown and not keyup, since otherwise it will be triggered if modal is opened via enter key on button ?>
+            <input ref="input" v-focus class="modal-input" tabindex="1" :type="inputType" :placeholder="placeholder" v-model="inputValue" @keydown.enter="okAction" />
         </label>
         <div class="modal-buttons-container">
             <button class="btn btn-default" tabindex="2" @click="cancelAction">Cancel</button>

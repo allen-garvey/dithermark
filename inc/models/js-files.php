@@ -20,6 +20,7 @@
     function appVueComponents(): array{
         $ret = [];
         $ret[] = JS_VUES_PATH.'vue-mixins.js';
+        $ret[] = JS_VUES_PATH.'focus-directive.js';
         if(ENABLE_PRINT_COLOR_PALETTE_BUTTON){
             $ret[] = JS_VUES_PATH.'print-palette-component.js';
         }
