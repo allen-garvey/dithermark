@@ -21,6 +21,10 @@
             margin-right: 18px;
         }
     }
+    &:focus-within{
+        outline: 5px auto -webkit-focus-ring-color;
+        outline-offset: -2px;
+    }
 }
 
 //input[type="button"] that's meant to look and act like color input
@@ -28,6 +32,11 @@
     border: 5px solid white;
     border-radius: 6px;
     display: inline-block;
+    &:focus-within{
+        outline: 5px auto -webkit-focus-ring-color;
+        border-color: $highlight_color;
+        outline-offset: -2px;
+    }
 }
 
 .faux-color-input{
