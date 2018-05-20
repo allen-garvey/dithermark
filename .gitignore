@@ -34,5 +34,6 @@ sass/lib/*
 dminjs
 inc/unsplash-api-secret.json
 scripts/*.json
+scripts/optimize-palette-notes.js
 public_html/api/unsplash.json
 lib/*
