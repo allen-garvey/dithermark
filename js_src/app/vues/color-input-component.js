@@ -11,8 +11,8 @@
         template: document.getElementById('color-input-component'),
         props: ['colorIndex', 'colorValue', 'idPrefix', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'draggedIndex', 'label', 'onClick'],
         computed: {
-            colorPickerId: function(){
-                return `${this.idPrefix}_colorpicker_${this.colorIndex}`;
+            colorInputId: function(){
+                return `${this.idPrefix}__color-input__${this.colorIndex}`;
             },
             //so text is visible on light color backgrounds
             textColor: function(){
