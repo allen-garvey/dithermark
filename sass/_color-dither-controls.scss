@@ -1,0 +1,31 @@
+/*
+* Color dither component controls
+*/
+
+.color-dither-number-of-colors-container{
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    & > *{
+        margin-right: 1em;
+        align-self: center;
+    }
+}
+
+.colors-list-container{
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.palette-buttons-container{
+    //reduce upper margin from color inputs
+    margin: -8px 0 8px;
+}
+
+//optimize palette
+.optimize-palette-pending{
+    color: var(--hint-text-color);
+    font-size: 14px;
+    min-width: 8em;
+    max-width: 100%;
+}

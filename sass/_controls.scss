@@ -1,3 +1,7 @@
+/*
+* Controls styles shared between global controls panel, bw dither controls and color dither controls
+*/
+
 input[type="radio"]{
     margin-right: 14px;
     margin-left: 2px;
@@ -50,52 +54,4 @@ input[type="checkbox"]{
 .cycle-property-list-button{
     min-width: 60px;
     height: 28px;
-}
-
-/*
-* BW dither component controls
-*/
-.threshold-container input[type="range"]{
-    width: 200px;
-}
-
-.bw-color-replace-container{
-    display: flex;
-    flex-wrap: wrap;
-    .btn{
-        flex-basis: 25%;
-        margin-bottom: $colors_container_margin_bottom;
-    }
-}
-
-/*
-* Color dither component controls
-*/
-
-.color-dither-number-of-colors-container{
-    margin-top: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    & > *{
-        margin-right: 1em;
-        align-self: center;
-    }
-}
-
-.colors-list-container{
-    display: flex;
-    flex-wrap: wrap;
-}
-
-.palette-buttons-container{
-    //reduce upper margin from color inputs
-    margin: -8px 0 8px;
-}
-
-//optimize palette
-.optimize-palette-pending{
-    color: var(--hint-text-color);
-    font-size: 14px;
-    min-width: 8em;
-    max-width: 100%;
 }
