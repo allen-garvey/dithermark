@@ -21,6 +21,24 @@
         </label>
         <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'contrastFilterValues', 'contrast amount'); ?>
     </div>
+    <div class="spread-content">
+        <label for="hue-rotation-range">Hue rotation</label><input id="hue-rotation-range" type="range" list="hue-rotation-tickmarks" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
+        <input type="number" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
+        <datalist id="hue-rotation-tickmarks">
+            <option value="0">
+            <option value="30">
+            <option value="60">
+            <option value="90">
+            <option value="120">
+            <option value="150">
+            <option value="180">
+            <option value="210">
+            <option value="240">
+            <option value="270">
+            <option value="300">
+            <option value="330">
+        </datalist>
+    </div>
     <div class="spread-content" v-if="areCanvasFiltersSupported">
         <label>Saturation
             <select v-model.number="selectedImageSaturationIndex">

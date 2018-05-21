@@ -132,6 +132,7 @@
                 contrastFilterValues: contrastFilterValues,
                 selectedImageSaturationIndex: imageFilterValues.indexOf(100),
                 selectedImageContrastIndex: 0,
+                hueRotationValue: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
                 zoomMin: 10,
                 zoomMax: 400,
@@ -228,12 +229,16 @@
                 const filters = [];
                 const contrast = this.contrastFilterValues[this.selectedImageContrastIndex];
                 const saturation = this.imageFilterValues[this.selectedImageSaturationIndex];
+                const hue = Math.floor(this.hueRotationValue);
                 //100% is unchanged
                 if(contrast !== 100){
                     filters.push(`contrast(${contrast}%)`);
                 }
                 if(saturation !== 100){
                     filters.push(`saturate(${saturation}%)`);
+                }
+                if(hue > 0 && hue < 360){
+                    filters.push(`hue-rotate(${hue}deg)`);
                 }
                 return filters.join(' ');
             },
