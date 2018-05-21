@@ -481,6 +481,10 @@
                 const filters = this.imageFilters;
                 Canvas.scale(originalImageCanvas, sourceCanvas, scaleAmount, filters);
                 Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
+                //we have to unset hue-rotate here, otherwise it will remain set for some reason
+                if(this.areCanvasFiltersSupported && transformCanvas.context.filter){
+                    transformCanvas.context.filter = 'hue-rotate(0deg)';
+                }
                 
                 //adjust zoom
                 this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
