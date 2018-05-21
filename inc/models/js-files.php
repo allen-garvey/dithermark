@@ -39,8 +39,6 @@
     }
 
     function appJsFiles(): array{
-        $smoothingModule = ENABLE_IMAGE_SMOOTHING ? [JS_APP_PATH.'webgl-smoothing.js'] : [];
-
         return array_merge(sharedJsFiles(), [
             JS_APP_PATH.'constants.js',
             JS_APP_PATH.'color-quantization-modes.js',
@@ -59,10 +57,11 @@
             JS_APP_PATH.'webgl-shader.js',
             JS_APP_PATH.'webgl-bw-dither.js',
             JS_APP_PATH.'webgl-color-dither.js',
+            JS_APP_PATH.'webgl-smoothing.js',
+            JS_APP_PATH.'webgl-bilateral-filter.js',
             JS_APP_PATH.'histogram.js',
             JS_APP_PATH.'algorithm-model.js',
-            JS_APP_PATH.'webgl-bilateral-filter.js',
-        ], $smoothingModule, appVueComponents());
+        ], appVueComponents());
     }
     
     

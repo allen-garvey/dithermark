@@ -523,12 +523,12 @@
             },
             //image smoothing after dither
             imageSmoothingAfterChanged: function(){
-                const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusAfter];
                 //we still have to do perform this function if smoothingRadius is 0,
                 //because otherwise smoothing cannot be reset to 'none' once an image has been smoothed
-                if(!Constants.isSmoothingEnabled || !this.isWebglSupported){
+                if(!this.isWebglSupported){
                     return;
                 }
+                const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusAfter];
                 const imageHeader = this.imageHeader;
                 //smoothing
                 WebGlSmoothing.smooth(transformCanvasWebGl.gl, ditherOutputWebglTexture, imageHeader.width, imageHeader.height, smoothingRadius);
