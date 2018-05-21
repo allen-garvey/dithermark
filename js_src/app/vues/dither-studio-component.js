@@ -453,8 +453,10 @@
             imageFiltersBeforeDitherChanged: function(notifyDitherSection=true){
                 //apply filters
                 this.imagePixelationChanged();
-                this.bilateralFilterValueChanged();
-                this.imageSmoothingBeforeChanged();
+                if(this.isWebglEnabled){
+                    this.bilateralFilterValueChanged();
+                    this.imageSmoothingBeforeChanged();
+                }
                 
                 //load image into the webworkers
                 const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
@@ -495,7 +497,7 @@
             },
             bilateralFilterValueChanged: function(){
                 const filterExponent = this.bilateralFilterValues[this.selectedBilateralFilterValue];
-                if(!this.isWebglSupported || filterExponent < 0){
+                if(filterExponent < 0){
                     return;
                 }
 
@@ -511,7 +513,7 @@
             //image smoothing after pixelation, before dither
             imageSmoothingBeforeChanged: function(){
                 const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
-                if(!this.isWebglSupported || smoothingRadius <= 0){
+                if(smoothingRadius <= 0){
                     return;
                 }
                 const imageHeader = this.imageHeader;
