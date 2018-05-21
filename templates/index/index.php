@@ -19,6 +19,7 @@
                 <h1 class="brand"><?= APP_NAME; ?></h1>
                 <ul>
                     <li><a href="<?= APP_SUPPORT_SITE_FAQ_PAGE_URL; ?>">FAQ</a></li>
+                    <li><a href="<?= GITHUB_SOURCE_URL; ?>">Source</a></li>
                 </ul>
             </nav>
         </header>

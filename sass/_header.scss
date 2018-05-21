@@ -4,12 +4,6 @@
     position: sticky;
     left: 0;
 }
-@include pinned_controls_mq{
-    .header{
-        //so position sticky works
-    display: inline-block;
-    }
-}
 .nav{
     display: flex;
     justify-content: space-between;
@@ -24,8 +18,23 @@
             color: var(--hint-text-color);
         }
     }
+    li:first-of-type{
+        margin-right: 1.5em;
+    }
 }
 
 .brand{
     font-size: 20px;
+}
+
+@include pinned_controls_mq{
+    .header{
+        //so position sticky works
+        display: inline-block;
+    }
+    .nav{
+        li:first-of-type{
+            margin-right: 0.5em;
+        }
+    }
 }
