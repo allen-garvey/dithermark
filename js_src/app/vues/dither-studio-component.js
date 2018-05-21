@@ -451,9 +451,19 @@
                 this.activeDitherSection.imageLoaded(this.imageHeader, true);
             },
             imageFiltersBeforeDitherChanged: function(notifyDitherSection=true){
+                //apply filters
                 this.imagePixelationChanged();
                 this.bilateralFilterValueChanged();
                 this.imageSmoothingBeforeChanged();
+                
+                //load image into the webworkers
+                const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
+                const ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.imageHeader.width, this.imageHeader.height);
+                ditherWorkers.forEach((ditherWorker)=>{
+                    //copy image to web workers
+                    ditherWorker.postMessage(ditherWorkerHeader);
+                    ditherWorker.postMessage(buffer);
+                });
                 if(notifyDitherSection){
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
@@ -477,17 +487,7 @@
                 else if(this.zoom < this.zoomMin){
                     this.zoom = this.zoomMin;
                 }
-
-                //load image into the webworkers
-                const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                const ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
-                ditherWorkers.forEach((ditherWorker)=>{
-                    //copy image to web workers
-                    ditherWorker.postMessage(ditherWorkerHeader);
-                    ditherWorker.postMessage(buffer);
-                });
                 
-                //could potentially wait to create texture until first time webgl algorithm is called
                 if(this.isWebglSupported){
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
@@ -507,16 +507,6 @@
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
-                
-                //load image into the webworkers
-                //TODO: only do this once after all before dither filters are completed
-                const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
-                ditherWorkers.forEach((ditherWorker)=>{
-                    //copy image to web workers
-                    ditherWorker.postMessage(ditherWorkerHeader);
-                    ditherWorker.postMessage(buffer);
-                });
             },
             //image smoothing after pixelation, before dither
             imageSmoothingBeforeChanged: function(){
@@ -530,15 +520,6 @@
                 sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                 sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
-                
-                //load image into the webworkers
-                const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
-                ditherWorkers.forEach((ditherWorker)=>{
-                    //copy image to web workers
-                    ditherWorker.postMessage(ditherWorkerHeader);
-                    ditherWorker.postMessage(buffer);
-                });
             },
             //image smoothing after dither
             imageSmoothingAfterChanged: function(){
