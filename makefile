@@ -29,14 +29,9 @@ JS_WORKER_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/worker.min.js
 VUE_SRC=node_modules/vue/dist/vue.min.js
 VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
 
-#lib directory for git cloned libraries
-LIB_DIR=lib
-
 #vue color picker
-VUE_COLOR_PICKER_DIR=$(LIB_DIR)/dithermark-vue-color
-# VUE_COLOR_PICKER_SRC=$(shell find lib/dithermark-vue-color/build lib/dithermark-vue-color/config lib/dithermark-vue-color/src -type f)
+VUE_COLOR_PICKER_DIR=./lib/dithermark-vue-color
 VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/dist/vue-color.min.js
-VUE_COLOR_PICKER_OUTPUT=$(JS_OUTPUT_DIR)/vue-color.min.js
 
 #css
 SASS_SRC=$(shell find ./sass -type f -name '*.scss')
@@ -44,7 +39,7 @@ CSS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/styles
 CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
 
-all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(VUE_COLOR_PICKER_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
+all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
 
 install: $(PUBLIC_HTML_DIR) $(JS_OUTPUT_DIR)
 	npm install
@@ -63,7 +58,7 @@ clean: reset
 
 #target specific variable
 release: PHP_BUILD_MODE=release
-release: $(HTML_INDEX) $(VUE_OUTPUT) $(VUE_COLOR_PICKER_OUTPUT) gulp_release
+release: $(HTML_INDEX) $(VUE_OUTPUT) gulp_release
 	rm -f $(JS_APP_OUTPUT)
 	rm -f $(JS_WORKER_OUTPUT)
 
@@ -79,11 +74,8 @@ $(PUBLIC_HTML_DIR):
 $(JS_OUTPUT_DIR):
 	mkdir -p $(JS_OUTPUT_DIR)
 
-$(VUE_OUTPUT): $(VUE_SRC)
-	cat $(VUE_SRC) > $(VUE_OUTPUT) 
-
-$(VUE_COLOR_PICKER_OUTPUT): $(VUE_COLOR_PICKER_COMPILED)
-	cat $(VUE_COLOR_PICKER_COMPILED) > $(VUE_COLOR_PICKER_OUTPUT)
+$(VUE_OUTPUT): $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED)
+	cat $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED) > $(VUE_OUTPUT) 
 
 $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_APP_TEMPLATE)
 	php $(JS_APP_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_APP_OUTPUT)

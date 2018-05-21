@@ -64,7 +64,6 @@
             }
         ?>
         <script type="text/javascript" src="<?= JS_VUE_URL; ?>"></script>
-        <script type="text/javascript" src="<?= JS_VUE_COLOR_PICKER_URL; ?>"></script>
         <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>
 </html>
