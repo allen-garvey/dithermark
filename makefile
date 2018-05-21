@@ -59,7 +59,6 @@ clean: reset
 	rm -rf ./public_html/js
 	rm -rf ./public_html/styles
 	rm ./public_html/index.html
-	rm -rf ./dminjs
 
 #target specific variable
 release: PHP_BUILD_MODE=release
