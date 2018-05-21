@@ -57,12 +57,22 @@
         }
     }
 
+    function randomImageName(randomImage){
+        if(randomImage.description){
+            return randomImage.description;
+        }
+        if(randomImage.author.name){
+            return `${randomImage.author.name.toLowerCase().split(/\s+/).join('-')}-unsplash`;
+        }
+        return 'unsplash-random-image';
+    }
+
     function openRandomImage(randomImageData, imageWidthHint, imageHeightHint){
         //small image url width is generally <= 400px
         //regular image url width is generally > 900px
         const imageUrl = imageWidthHint > 800 ? randomImageData.urls.regular : randomImageData.urls.small;
         return Fs.openImageUrl(imageUrl).then(({image, file})=>{
-            file.name = randomImageData.description || 'unsplash-random-image';
+            file.name = randomImageName(randomImageData);
             file.unsplash = randomImageData;
             return {
                 image,
