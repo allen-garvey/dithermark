@@ -572,9 +572,11 @@
             },
             onRequestDisplayTransformedImage: function(componentId){
                 if(componentId === this.activeDitherComponentId){
-                    transformCanvasWebGl.gl.deleteTexture(ditherOutputWebglTexture);
-                    ditherOutputWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, transformCanvas.context.getImageData(0, 0, this.imageHeader.width, this.imageHeader.height));
-                    this.imageSmoothingAfterChanged();
+                    if(this.isWebglEnabled){
+                        transformCanvasWebGl.gl.deleteTexture(ditherOutputWebglTexture);
+                        ditherOutputWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, transformCanvas.context.getImageData(0, 0, this.imageHeader.width, this.imageHeader.height));
+                        this.imageSmoothingAfterChanged();
+                    }
                     this.zoomImage();
                 }
             },
