@@ -504,6 +504,8 @@
             },
             //image smoothing after dither
             imageSmoothingAfterChanged: function(smoothingRadius){
+                //we still have to do perform this function if smoothingRadius is 0,
+                //because otherwise smoothing cannot be reset to 'none' once an image has been smoothed
                 if(!Constants.isSmoothingEnabled || !this.isWebglSupported){
                     return;
                 }
