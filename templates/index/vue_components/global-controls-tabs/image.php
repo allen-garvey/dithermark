@@ -14,20 +14,20 @@
         <?php IndexView::cyclePropertyList('selectedPixelateImageZoom', 'pixelateImageZooms', 'pixelation value'); ?>
     </div>
     <div class="spread-content" v-if="areCanvasFiltersSupported">
-        <label>Increase contrast
+        <label>Contrast
             <select v-model.number="selectedImageContrastIndex">
-                <option v-for="(filter, index) in imageFilterValues" v-bind:value="index">{{index === 0 ? 'None': index}}</option>
+                <option v-for="(percentage, index) in contrastFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
             </select>
         </label>
-        <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'imageFilterValues', 'contrast value'); ?>
+        <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'contrastFilterValues', 'contrast amount'); ?>
     </div>
     <div class="spread-content" v-if="areCanvasFiltersSupported">
-        <label>Increase saturation
+        <label>Saturation
             <select v-model.number="selectedImageSaturationIndex">
-                <option v-for="(filter, index) in imageFilterValues" v-bind:value="index">{{index === 0 ? 'None': index}}</option>
+            <option v-for="(percentage, index) in imageFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
             </select>
         </label>
-        <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation value'); ?>
+        <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation amount'); ?>
     </div>
     <?php if(ENABLE_IMAGE_SMOOTHING): ?>
         <div class="spread-content" v-if="isWebglSupported">

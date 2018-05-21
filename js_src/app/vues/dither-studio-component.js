@@ -34,6 +34,10 @@
         return Math.ceil(baseDimensions / imageDimensions);
     }
     
+    //canvas css filters
+    const imageFilterValues = [0, 30, 40, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 150, 160, 180, 200];
+    const contrastFilterValues = imageFilterValues.filter((value)=>{ return value >= 100; });
+
     Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         created: function(){
@@ -116,7 +120,8 @@
                 selectedImageSmoothingRadiusBefore: 0,
                 selectedImageSmoothingRadiusAfter: 0,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
-                imageFilterValues: [100, 105, 115, 125, 130, 135, 140, 150, 160, 180, 200],
+                imageFilterValues: imageFilterValues,
+                contrastFilterValues: contrastFilterValues,
                 selectedImageSaturationIndex: 0,
                 selectedImageContrastIndex: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
@@ -219,7 +224,7 @@
                     return '';
                 }
                 const filters = [];
-                const contrast = this.imageFilterValues[this.selectedImageContrastIndex];
+                const contrast = this.contrastFilterValues[this.selectedImageContrastIndex];
                 const saturation = this.imageFilterValues[this.selectedImageSaturationIndex];
                 //100% is unchanged
                 if(contrast !== 100){
