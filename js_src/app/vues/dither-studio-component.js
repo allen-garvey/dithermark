@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage, AlgorithmModel, WebGlSmoothing){
+(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter){
     //webworker stuff
     let ditherWorkers;
     
@@ -115,10 +115,18 @@
                 isWebglEnabled: false,
                 zoom: 100,
                 zoomDisplay: 100, //this is so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed
+                /**
+                 * Filters
+                 */
+                //pixelation
                 selectedPixelateImageZoom: 0,
+                //smoothing
                 imageSmoothingValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16],
                 selectedImageSmoothingRadiusBefore: 0,
                 selectedImageSmoothingRadiusAfter: 0,
+                //bilateral filter
+                bilateralFilterValues: [-1, 0, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25],
+                selectedBilateralFilterValue: 0,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 imageFilterValues: imageFilterValues,
                 contrastFilterValues: contrastFilterValues,
@@ -306,24 +314,22 @@
             },
             pixelateImageZoom: function(newValue, oldValue){
                 if(newValue !== oldValue){
-                    this.imagePixelationChanged();
-                    this.imageSmoothingBeforeChanged();
-                    this.activeDitherSection.imageLoaded(this.imageHeader);
+                    this.imageFiltersBeforeDitherChanged();
                 }
             },
             imageFilters: function(){
-                if(!this.isImageLoaded){
-                    return;
+                if(this.isImageLoaded){
+                    this.imageFiltersBeforeDitherChanged();
                 }
-                this.imagePixelationChanged();
-                this.imageSmoothingBeforeChanged();
-                this.activeDitherSection.imageLoaded(this.imageHeader);
+            },
+            selectedBilateralFilterValue: function(newValue, oldValue){
+                if(this.isImageLoaded && newValue !== oldValue){
+                    this.imageFiltersBeforeDitherChanged();
+                }
             },
             selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
                 if(this.isImageLoaded && newValue !== oldValue){
-                    this.imagePixelationChanged();
-                    this.imageSmoothingBeforeChanged();
-                    this.activeDitherSection.imageLoaded(this.imageHeader);
+                    this.imageFiltersBeforeDitherChanged();
                 }
             },
             selectedImageSmoothingRadiusAfter: function(newValue, oldValue){
@@ -439,11 +445,18 @@
                 originalImageCanvas.context.drawImage(originalImageCanvas.canvas, 0, 0);
                 //finish loading image
                 this.loadedImage = loadedImage;
-                this.imagePixelationChanged();
-                this.imageSmoothingBeforeChanged();
+                this.imageFiltersBeforeDitherChanged(false);
                 tabsThatHaveSeenImageSet.clear();
                 tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
                 this.activeDitherSection.imageLoaded(this.imageHeader, true);
+            },
+            imageFiltersBeforeDitherChanged: function(notifyDitherSection=true){
+                this.imagePixelationChanged();
+                this.bilateralFilterValueChanged();
+                this.imageSmoothingBeforeChanged();
+                if(notifyDitherSection){
+                    this.activeDitherSection.imageLoaded(this.imageHeader);
+                }
             },
             imagePixelationChanged: function(){
                 const imageHeader = this.imageHeader;
@@ -480,10 +493,35 @@
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
             },
+            bilateralFilterValueChanged: function(){
+                const filterExponent = this.bilateralFilterValues[this.selectedBilateralFilterValue];
+                if(!this.isWebglSupported || filterExponent < 0){
+                    return;
+                }
+
+                const imageHeader = this.imageHeader;
+                //do the filter twice for better results
+                for(let i=0;i<2;i++){
+                    WebGlBilateralFilter.filter(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, filterExponent);
+                    sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                    transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                }
+                
+                //load image into the webworkers
+                //TODO: only do this once after all before dither filters are completed
+                const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
+                let ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(imageHeader.width, imageHeader.height);
+                ditherWorkers.forEach((ditherWorker)=>{
+                    //copy image to web workers
+                    ditherWorker.postMessage(ditherWorkerHeader);
+                    ditherWorker.postMessage(buffer);
+                });
+            },
             //image smoothing after pixelation, before dither
             imageSmoothingBeforeChanged: function(){
                 const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
-                if(smoothingRadius <= 0){
+                if(!this.isWebglSupported || smoothingRadius <= 0){
                     return;
                 }
                 const imageHeader = this.imageHeader;
@@ -573,4 +611,4 @@
             },
         }
     });
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage, App.AlgorithmModel, App.WebGlSmoothing);
+})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter);

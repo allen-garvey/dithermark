@@ -58,6 +58,7 @@
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'pixel-distance-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bw-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-color-dither.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bilateral-filter.php'); ?>
         <?php 
             if(ENABLE_IMAGE_SMOOTHING){
                 require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-smoothing.php'); 

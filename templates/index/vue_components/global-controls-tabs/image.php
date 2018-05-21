@@ -29,6 +29,14 @@
         </label>
         <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation amount'); ?>
     </div>
+    <div class="spread-content" v-if="isWebglSupported">
+        <label>Bilateral filter
+            <select v-model.number="selectedBilateralFilterValue">
+            <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : value}}</option>
+            </select>
+        </label>
+        <?php IndexView::cyclePropertyList('selectedBilateralFilterValue', 'bilateralFilterValues', 'bilateral filter amount'); ?>
+    </div>
     <?php if(ENABLE_IMAGE_SMOOTHING): ?>
         <div class="spread-content" v-if="isWebglSupported">
             <label>Smoothing (before dithering)
