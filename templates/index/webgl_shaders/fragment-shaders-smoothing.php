@@ -96,7 +96,7 @@ void main(){
         float sigma2 = s[k].r + s[k].g + s[k].b;
         if(sigma2 < min_sigma2){
             min_sigma2 = sigma2;
-            gl_FragColor = vec4(m[k], 1.0);
+            gl_FragColor = vec4(m[k], pixel.a);
         }
     }
 }
