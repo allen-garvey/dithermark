@@ -326,14 +326,14 @@
                 this.activeDitherSection.imageLoaded(this.imageHeader);
             },
             selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
-                if(newValue !== oldValue){
+                if(this.isImageLoaded && newValue !== oldValue){
                     this.imagePixelationChanged();
                     this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
             selectedImageSmoothingRadiusAfter: function(newValue, oldValue){
-                if(newValue !== oldValue){
+                if(this.isImageLoaded && newValue !== oldValue){
                     this.imageSmoothingAfterChanged(this.smoothingRadiusAfter);
                     this.zoomImage();
                 }
