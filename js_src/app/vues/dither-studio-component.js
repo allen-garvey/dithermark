@@ -122,7 +122,7 @@
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 imageFilterValues: imageFilterValues,
                 contrastFilterValues: contrastFilterValues,
-                selectedImageSaturationIndex: 0,
+                selectedImageSaturationIndex: imageFilterValues.indexOf(100),
                 selectedImageContrastIndex: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
                 zoomMin: 10,
