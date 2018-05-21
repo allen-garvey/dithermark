@@ -40,7 +40,7 @@ To create a release build (JavaScript is minified and logging and debugging feat
 * Type `make release`
 * To reset everything, so you can create a debug build again, type `make reset` and `make`
 
-## Know Issues
+## Known Issues
 
 * If the image size is greater than browser WebGL context paramater `MAX_TEXTURE_SIZE`, only the lower left corner of the image will be dithered
 * A `UInt16Array` is used to transmit image width and height information to webworkers, meaning that images with a width or height greater than 65535 pixels in either dimension will not be processed correctly
