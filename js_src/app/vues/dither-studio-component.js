@@ -125,7 +125,7 @@
                 selectedImageSmoothingRadiusBefore: 0,
                 selectedImageSmoothingRadiusAfter: 0,
                 //bilateral filter
-                bilateralFilterValues: [-1, 0, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25],
+                bilateralFilterValues: [-1, 0, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35, 40],
                 selectedBilateralFilterValue: 0,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 imageFilterValues: imageFilterValues,
