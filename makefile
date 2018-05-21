@@ -20,10 +20,10 @@ JS_WORKER_TEMPLATE=templates/worker.js.php
 #JS output files
 JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
 JS_APP_OUTPUT=$(JS_OUTPUT_DIR)/app.js
-JS_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/dither-worker.js
+JS_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/worker.js
 #JS release output files
 JS_APP_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/app.min.js
-JS_WORKER_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/dither-worker.min.js
+JS_WORKER_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/worker.min.js
 
 #VUE js files
 VUE_SRC=node_modules/vue/dist/vue.min.js

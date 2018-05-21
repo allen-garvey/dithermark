@@ -51,11 +51,11 @@
 
     if(BUILD_MODE_RELEASE){
         define('JS_APP_URL', JS_URL_BASE.'app.min.js');
-        define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.min.js');
+        define('JS_DITHER_WORKER_URL', JS_URL_BASE.'worker.min.js');
     }
     else{
         define('JS_APP_URL', JS_URL_BASE.'app.js');
-        define('JS_DITHER_WORKER_URL', JS_URL_BASE.'dither-worker.js');
+        define('JS_DITHER_WORKER_URL', JS_URL_BASE.'worker.js');
     }
     define('JS_VUE_URL', JS_URL_BASE.'vue.min.js');
     define('JS_VUE_COLOR_PICKER_URL', JS_URL_BASE.'vue-color.min.js');
