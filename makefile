@@ -39,6 +39,7 @@ VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/dist/vue-color.min.js
 VUE_COLOR_PICKER_OUTPUT=$(JS_OUTPUT_DIR)/vue-color.min.js
 
 #css
+SASS_SRC=$(shell find ./sass -type f -name '*.scss')
 CSS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/styles
 CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
@@ -52,19 +53,22 @@ install: $(PUBLIC_HTML_DIR) $(JS_OUTPUT_DIR)
 reset:
 	rm -f $(JS_APP_OUTPUT)
 	rm -f $(JS_WORKER_OUTPUT)
-	rm -f $(HTML_INDEX)
+	rm $(HTML_INDEX)
 
 #don't use variable, to guard against it becoming unset
 clean: reset
 	rm -rf ./public_html/js
 	rm -rf ./public_html/styles
-	rm ./public_html/index.html
+	rm $(HTML_INDEX)
 
 #target specific variable
 release: PHP_BUILD_MODE=release
-release: all $(JS_APP_OUTPUT_RELEASE) $(JS_WORKER_OUTPUT_RELEASE)
+release: $(HTML_INDEX) $(VUE_OUTPUT) $(VUE_COLOR_PICKER_OUTPUT) gulp_release
 	rm -f $(JS_APP_OUTPUT)
 	rm -f $(JS_WORKER_OUTPUT)
+
+gulp_release: $(JS_APP_OUTPUT) $(JS_WORKER_OUTPUT) $(SASS_SRC)
+	npm run gulp:release
 
 unsplash_api:
 	node scripts/unsplash-random-images.js > $(PUBLIC_HTML_DIR)/api/unsplash.json
@@ -78,15 +82,6 @@ $(JS_OUTPUT_DIR):
 $(VUE_OUTPUT): $(VUE_SRC)
 	cat $(VUE_SRC) > $(VUE_OUTPUT) 
 
-# $(VUE_COLOR_PICKER_DIR):
-# 	git clone https://github.com/allen-garvey/dithermark-vue-color.git $(VUE_COLOR_PICKER_DIR)
-
-# $(VUE_COLOR_PICKER_SRC): $(VUE_COLOR_PICKER_DIR)
-
-#$(VUE_COLOR_PICKER_COMPILED): $(VUE_COLOR_PICKER_SRC)
-# 	cd $(VUE_COLOR_PICKER_DIR)
-# 	npm run release
-
 $(VUE_COLOR_PICKER_OUTPUT): $(VUE_COLOR_PICKER_COMPILED)
 	cat $(VUE_COLOR_PICKER_COMPILED) > $(VUE_COLOR_PICKER_OUTPUT)
 
@@ -95,13 +90,8 @@ $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(J
 
 $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_WORKER_TEMPLATE)
 	php $(JS_WORKER_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_WORKER_OUTPUT)
-
-$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT) $(JS_WORKER_OUTPUT)
-	npm run gulp:minifyJs
-
-$(JS_WORKER_OUTPUT_RELEASE): $(JS_APP_OUTPUT_RELEASE)
 	
-$(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
+$(CSS_OUTPUT): $(SASS_SRC)
 	npm run gulp
 
 $(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') $(PHP_CONFIG) $(PHP_VIEWS)

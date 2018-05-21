@@ -48,4 +48,5 @@ gulp.task('watchSass', ['sass'], function() {
 gulp.task('watch', ['watchSass']);
 gulp.task('minifyJs', ['minifyApp', 'minifyWorker']);
 gulp.task('build', ['sass']);
+gulp.task('release', ['sass', 'minifyJs']);
 gulp.task('default', ['build']);
