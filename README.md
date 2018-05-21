@@ -10,11 +10,6 @@
 * Node >= 6.11
 * npm
 
-## Optional dependencies required for release build
-
-* git
-* dmd >= v2.073.2
-
 ## Optional dependencies for Unsplash random images
 
 * [Unsplash API Key](https://unsplash.com/developers)
@@ -22,7 +17,7 @@
 
 ## Dependencies for running
 
-* Recent version of either Google Chrome, Mozilla Firefox, Apple Safari or Microsoft Edge
+* Recent version (circa 2017 or later) of either Google Chrome, Mozilla Firefox, Apple Safari or Microsoft Edge
 
 ## Getting Started
 
@@ -42,7 +37,7 @@
 
 To create a release build (JavaScript is minified and logging and debugging features are turned off or removed)
 
-* Type `make release` (requires optional release dependencies)
+* Type `make release`
 * To reset everything, so you can create a debug build again, type `make reset` and `make`
 
 ## Know Issues

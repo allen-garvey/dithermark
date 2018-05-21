@@ -42,10 +42,6 @@ VUE_COLOR_PICKER_OUTPUT=$(JS_OUTPUT_DIR)/vue-color.min.js
 CSS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/styles
 CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
-#optional dminjs js minifier
-DMINJS_DIR=dminjs
-DMINJS_BIN=$(DMINJS_DIR)/bin/dminjs
-
 
 all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(VUE_COLOR_PICKER_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
 
@@ -101,27 +97,13 @@ $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(J
 $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_WORKER_TEMPLATE)
 	php $(JS_WORKER_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_WORKER_OUTPUT)
 
-$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT) $(DMINJS_BIN)
-	$(DMINJS_BIN) $(JS_APP_OUTPUT) > $(JS_APP_OUTPUT_RELEASE)
+$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT)
+	npm run gulp:minifyJs
 
-$(JS_WORKER_OUTPUT_RELEASE): $(JS_WORKER_OUTPUT) $(DMINJS_BIN)
-	$(DMINJS_BIN) $(JS_WORKER_OUTPUT) > $(JS_WORKER_OUTPUT_RELEASE)
+$(JS_WORKER_OUTPUT_RELEASE): $(JS_WORKER_OUTPUT) $(JS_APP_OUTPUT_RELEASE)
 	
 $(CSS_OUTPUT): $(shell find ./sass -type f -name '*.scss')
 	npm run gulp
 
 $(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') $(PHP_CONFIG) $(PHP_VIEWS)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
-
-$(DMINJS_DIR):
-	git clone https://github.com/allen-garvey/dminjs.git
-
-$(DMINJS_BIN): $(DMINJS_DIR)
-	make -C $(DMINJS_DIR)
-	
-watch_js:
-	while true; do \
-        make $(JS_OUTPUT); \
-        make $(DITHER_WORKER_OUTPUT); \
-        inotifywait --quiet --recursive --event create --event modify --event move ./js_src/; \
-    done
