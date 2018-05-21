@@ -26,6 +26,6 @@
     "gulp": "^3.9.1",
     "gulp-sass": "^3.2.1",
     "http-server": "^0.11.1",
-    "request": "^2.85.0"
+    "request": "^2.87.0"
   }
 }
