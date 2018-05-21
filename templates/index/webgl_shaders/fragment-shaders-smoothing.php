@@ -13,7 +13,13 @@ uniform int u_radius;
 const int maxRadius = 16;
 uniform vec2 u_image_dimensions;
 
-void main (){
+void main(){
+    <?php //have to do this, or transparent pixels will be black  ?>
+    vec4 pixel = texture2D(u_texture, v_texcoord);
+    if(pixel.a < 0.00001){
+        gl_FragColor = pixel;
+        return;
+    }
     vec2 uv = v_texcoord;
     int radiusDiff = maxRadius - u_radius;
     float n = float((u_radius + 1) * (u_radius + 1));
