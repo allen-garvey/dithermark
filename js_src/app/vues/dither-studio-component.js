@@ -482,9 +482,6 @@
                 Canvas.scale(originalImageCanvas, sourceCanvas, scaleAmount, filters);
                 Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
                 
-                transformCanvasWebGl.canvas.width = imageHeader.width;
-                transformCanvasWebGl.canvas.height = imageHeader.height;
-                
                 //adjust zoom
                 this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
                 this.zoomMin = Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, 200);
@@ -496,6 +493,8 @@
                 }
                 
                 if(this.isWebglSupported){
+                    transformCanvasWebGl.canvas.width = imageHeader.width;
+                    transformCanvasWebGl.canvas.height = imageHeader.height;
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
                 }
