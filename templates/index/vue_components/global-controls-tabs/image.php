@@ -4,7 +4,7 @@
     </label>
 </div>
 <fieldset>
-    <legend>Filters</legend>
+    <legend>Filters <small>(pre dither)</small></legend>
     <div class="spread-content">
         <label>Pixelate
             <select v-model.number="selectedPixelateImageZoom">
@@ -38,15 +38,18 @@
         <?php IndexView::cyclePropertyList('selectedBilateralFilterValue', 'bilateralFilterValues', 'bilateral filter amount'); ?>
     </div>
     <div class="spread-content" v-if="isWebglSupported">
-        <label>Smoothing (before dithering)
+        <label>Smoothing
             <select v-model.number="selectedImageSmoothingRadiusBefore">
                 <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
             </select>
         </label>
         <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
     </div>
+</fieldset>
+<fieldset>
+    <legend>Filters <small>(post dither)</small></legend>
     <div class="spread-content" v-if="isWebglSupported">
-        <label>Smoothing (after dithering)
+        <label>Smoothing
             <select v-model.number="selectedImageSmoothingRadiusAfter">
                 <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
             </select>
