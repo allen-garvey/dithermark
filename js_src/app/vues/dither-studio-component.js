@@ -199,12 +199,6 @@
             pixelateImageZoom: function(){
                 return this.pixelateImageZooms[this.selectedPixelateImageZoom].value;
             },
-            smoothingRadiusBefore: function(){
-                return this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
-            },
-            smoothingRadiusAfter: function(){
-                return this.imageSmoothingValues[this.selectedImageSmoothingRadiusAfter];
-            },
             webglWarningMessage: function(){
                 //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
                 //for integers only
@@ -313,7 +307,7 @@
             pixelateImageZoom: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imagePixelationChanged();
-                    this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
+                    this.imageSmoothingBeforeChanged();
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
@@ -322,19 +316,19 @@
                     return;
                 }
                 this.imagePixelationChanged();
-                this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
+                this.imageSmoothingBeforeChanged();
                 this.activeDitherSection.imageLoaded(this.imageHeader);
             },
             selectedImageSmoothingRadiusBefore: function(newValue, oldValue){
                 if(this.isImageLoaded && newValue !== oldValue){
                     this.imagePixelationChanged();
-                    this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
+                    this.imageSmoothingBeforeChanged();
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
             selectedImageSmoothingRadiusAfter: function(newValue, oldValue){
                 if(this.isImageLoaded && newValue !== oldValue){
-                    this.imageSmoothingAfterChanged(this.smoothingRadiusAfter);
+                    this.imageSmoothingAfterChanged();
                     this.zoomImage();
                 }
             },
@@ -446,7 +440,7 @@
                 //finish loading image
                 this.loadedImage = loadedImage;
                 this.imagePixelationChanged();
-                this.imageSmoothingBeforeChanged(this.smoothingRadiusBefore);
+                this.imageSmoothingBeforeChanged();
                 tabsThatHaveSeenImageSet.clear();
                 tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
                 this.activeDitherSection.imageLoaded(this.imageHeader, true);
@@ -487,7 +481,8 @@
                 }
             },
             //image smoothing after pixelation, before dither
-            imageSmoothingBeforeChanged: function(smoothingRadius){
+            imageSmoothingBeforeChanged: function(){
+                const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
                 if(smoothingRadius <= 0){
                     return;
                 }
@@ -508,7 +503,8 @@
                 });
             },
             //image smoothing after dither
-            imageSmoothingAfterChanged: function(smoothingRadius){
+            imageSmoothingAfterChanged: function(){
+                const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusAfter];
                 //we still have to do perform this function if smoothingRadius is 0,
                 //because otherwise smoothing cannot be reset to 'none' once an image has been smoothed
                 if(!Constants.isSmoothingEnabled || !this.isWebglSupported){
@@ -552,7 +548,7 @@
                 if(componentId === this.activeDitherComponentId){
                     transformCanvasWebGl.gl.deleteTexture(ditherOutputWebglTexture);
                     ditherOutputWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, transformCanvas.context.getImageData(0, 0, this.imageHeader.width, this.imageHeader.height));
-                    this.imageSmoothingAfterChanged(this.smoothingRadiusAfter);
+                    this.imageSmoothingAfterChanged();
                     this.zoomImage();
                 }
             },
