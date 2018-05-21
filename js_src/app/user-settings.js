@@ -1,5 +1,5 @@
 //module for saving and retrieving user settings in localStorage
-App.UserSettings = (function(){
+App.UserSettings = (function(localStorage){
     const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
     const USER_GLOBAL_SETTINGS_KEY = 'user-global-settings';
 
@@ -54,4 +54,4 @@ App.UserSettings = (function(){
         getGlobalSettings,
         saveGlobalSettings,
     };
-})();
+})(window.localStorage);
