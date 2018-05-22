@@ -35,7 +35,7 @@
     }
     
     //canvas css filters
-    const imageFilterValues = [0, 30, 40, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 150, 160, 180, 200];
+    const imageFilterValues = [0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 150, 160, 180, 200];
     const contrastFilterValues = imageFilterValues.filter((value)=>{ return value >= 100; });
 
     Vue.component('dither-studio', {
