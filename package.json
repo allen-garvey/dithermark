@@ -27,7 +27,6 @@
     "google-closure-compiler-js": "^20180506.0.0",
     "gulp": "^3.9.1",
     "gulp-sass": "^3.2.1",
-    "http-server": "^0.11.1",
-    "request": "^2.87.0"
+    "http-server": "^0.11.1"
   }
 }
