@@ -44,13 +44,15 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     * Shader caching
     */
     function createFragmentShaderTexts(){
-        let shaderText = Shader.shaderText;
+        const shaderText = Shader.shaderText;
         
         //reused webgl fragment shader texts
-        let fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
-        let aDitherDeclaration = shaderText('webgl-arithmetic-dither-fshader-declaration');
-        let aDitherBody = shaderText('webgl-arithmetic-dither-color-body');
-        let bitwiseFunctionsText = Shader.generateBitwiseFunctionsText();
+        const fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
+        const aDitherDeclaration = shaderText('webgl-arithmetic-dither-fshader-declaration');
+        const aDitherBody = shaderText('webgl-arithmetic-dither-color-body');
+        const bitwiseFunctionsText = Shader.generateBitwiseFunctionsText();
+        const fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
+        const fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
         
         function generateFragmentShader(baseText, customDeclarationId, customBodyId){
             return generateFragmentShaderBase(baseText, shaderText(customDeclarationId), shaderText(customBodyId), '');
@@ -61,14 +63,11 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         }
         
         function generateADitherShader(aDitherReturnValue){
-            let declaration = aDitherDeclaration.replace('#{{arithmeticDitherReturn}}', aDitherReturnValue).replace('#{{bitwiseFunctions}}', bitwiseFunctionsText);
+            const declaration = aDitherDeclaration.replace('#{{arithmeticDitherReturn}}', aDitherReturnValue).replace('#{{bitwiseFunctions}}', bitwiseFunctionsText);
             return generateFragmentShaderBase(fragmentShaderBaseText, declaration, aDitherBody);
         }
         
         function shaderTextContainer(baseText){
-            let fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
-            let fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
-            
             function fragmentShaderText(shaderBase, distanceFuncId){
                 return shaderBase.replace('#{{lightnessFunction}}', fragmentShaderLightnessFuncText).replace('#{{hslFunctions}}', fragmentShaderHslFuncsText).replace('#{{distanceFunction}}', shaderText(distanceFuncId));
             }
@@ -91,15 +90,15 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
             return ret; 
         }
         
-        let closestColorShaderBase = generateFragmentShader(fragmentShaderBaseText);
+        const closestColorShaderBase = generateFragmentShader(fragmentShaderBaseText);
         const orderedDitherDeclarationText = shaderText('webgl-ordered-dither-color-declaration-fshader');
         const orderedDitherBodyText = shaderText('webgl-ordered-dither-color-body-fshader');
-        let orderedDitherSharedBase = generateFragmentShaderBase(fragmentShaderBaseText, orderedDitherDeclarationText, orderedDitherBodyText);
-        let hueLightnessOrderedDitherSharedBase = generateFragmentShaderBase(fragmentShaderBaseText , orderedDitherDeclarationText + shaderText('webgl-hue-lightness-ordered-dither-color-declaration-fshader'), orderedDitherBodyText, shaderText('webgl-hue-lightness-ordered-dither-color-postscript-fshader'));
-        let randomDitherShaderBase = generateFragmentShader(fragmentShaderBaseText, 'webgl-random-dither-color-declaration-fshader', 'webgl-random-dither-color-body-fshader');
+        const orderedDitherSharedBase = generateFragmentShaderBase(fragmentShaderBaseText, orderedDitherDeclarationText, orderedDitherBodyText.replace('#{{bayerValueAdjustment}}', ''));
+        const hueLightnessOrderedDitherSharedBase = generateFragmentShaderBase(fragmentShaderBaseText , orderedDitherDeclarationText + shaderText('webgl-hue-lightness-ordered-dither-color-declaration-fshader'), orderedDitherBodyText, shaderText('webgl-hue-lightness-ordered-dither-color-postscript-fshader'));
+        const randomDitherShaderBase = generateFragmentShader(fragmentShaderBaseText, 'webgl-random-dither-declaration-fshader', 'webgl-random-dither-color-body-fshader');
         
         //map containing program source code
-        let fragmentShaderTexts = createLookupContainer();
+        const fragmentShaderTexts = createLookupContainer();
         fragmentShaderTexts[CLOSEST_COLOR] = shaderTextContainer(closestColorShaderBase);
         fragmentShaderTexts[RANDOM_CLOSEST_COLOR] = shaderTextContainer(randomDitherShaderBase);
         fragmentShaderTexts[ORDERED_DITHER] = shaderTextContainer(orderedDitherSharedBase);
