@@ -66,7 +66,7 @@ gulp_release: $(JS_APP_OUTPUT) $(JS_WORKER_OUTPUT) $(SASS_SRC)
 	npm run gulp:release
 
 unsplash_api:
-	node scripts/unsplash-random-images.js > $(PUBLIC_HTML_DIR)/api/unsplash.json
+	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
 
 $(JS_OUTPUT_DIR):
 	mkdir -p $(JS_OUTPUT_DIR)

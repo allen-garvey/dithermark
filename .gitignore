@@ -31,7 +31,7 @@ public_html/styles/*
 public_html/index.html
 *.rb
 sass/lib/*
-inc/unsplash-api-secret.json
+inc/unsplash-api-secret.php
 scripts/*.json
 scripts/optimize-palette-notes.js
 public_html/api/unsplash.json

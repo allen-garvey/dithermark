@@ -30,7 +30,7 @@
 
 ## Setting up Unsplash random images
 
-* Copy `inc/unsplash-api-secret-example.json` by running `cp inc/unsplash-api-secret-example.json inc/unsplash-api-secret.json` and replace `YOUR_ACCESS_KEY_HERE` with your Unsplash API access key
+* Copy `inc/unsplash-api-secret-example.php` by running `cp inc/unsplash-api-secret-example.php inc/unsplash-api-secret.php` and replace `YOUR_ACCESS_KEY_HERE` with your Unsplash API access key
 * Run `make unsplash_api` to generate a json file with random images from Unsplash
 
 ## Creating release build
