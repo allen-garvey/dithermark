@@ -19,15 +19,16 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
         return matrix.data[index];
     }
 
-    function createOrderedDitherBase(dimensions, matrixCreationFunc){
+    function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom){
         const matrix = createMaxtrix(dimensions, convertBayerToFloat(matrixCreationFunc(dimensions), 256));
         //for some reason we need to use same coefficient as webgl for bw dithers
         const rCoefficient = DitherUtil.ditherRCoefficient(2, true);
+        const matrixValueAdjustmentFunc = isRandom ? Math.random : ()=>{ return 1;} ;
         
         return function(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 const lightness = PixelMath.lightness(pixel);
-                const matrixThreshold = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+                const matrixThreshold = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions) * matrixValueAdjustmentFunc();
                 
                 if(lightness + rCoefficient * matrixThreshold >= threshold){
                     whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
@@ -43,8 +44,8 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
     }
 
     function orderedDitherBuilder(bayerFuncName){
-        return function(dimensions){
-            return createOrderedDitherBase(dimensions, Bayer[bayerFuncName]);
+        return function(dimensions, isRandom=false){
+            return createOrderedDitherBase(dimensions, Bayer[bayerFuncName], isRandom);
         };
     }
 
@@ -55,7 +56,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
     function convertBayerToFloat(bayerMatrix, fullValue=1){
         const length = bayerMatrix.length;
         const fraction = 1 / length;
-        let floatData = new Float32Array(length);
+        const floatData = new Float32Array(length);
         
         bayerMatrix.forEach((value, i)=>{
             floatData[i] = ((fraction * value) - 0.5) * fullValue;
@@ -63,23 +64,21 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
         return floatData;
     }
 
-    function createColorOrderedDither(dimensions, bayerCreationFunc, postscriptFuncBuilder=null){
-        let matrix = createMaxtrix(dimensions, convertBayerToFloat(bayerCreationFunc(dimensions)));
-        let postscriptFunc = null;
-        if(postscriptFuncBuilder){
-            postscriptFunc = postscriptFuncBuilder(matrix);
-        }
+    function createColorOrderedDither(dimensions, bayerCreationFunc, isRandom, postscriptFuncBuilder=null){
+        const matrix = createMaxtrix(dimensions, convertBayerToFloat(bayerCreationFunc(dimensions)));
+        const postscriptFunc = postscriptFuncBuilder ? postscriptFuncBuilder(matrix) : null;
+        const matrixValueAdjustmentFunc = isRandom ? Math.random : ()=>{ return 1;} ;
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
             return Image.colorDither(pixels, imageWidth, imageHeight, colorDitherModeId, colors, (x, y)=>{
-                return matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+                return matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions) * matrixValueAdjustmentFunc();
             }, postscriptFunc);
         };
     }
 
     function colorOrderedDitherBuilder(bayerFuncName, postscriptFuncBuilder=null){
-        return function(dimensions){
-            return createColorOrderedDither(dimensions, Bayer[bayerFuncName], postscriptFuncBuilder);
+        return function(dimensions, isRandom=false){
+            return createColorOrderedDither(dimensions, Bayer[bayerFuncName], isRandom, postscriptFuncBuilder);
         };
     }
 
