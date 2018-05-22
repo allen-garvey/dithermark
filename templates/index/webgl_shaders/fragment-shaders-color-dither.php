@@ -56,9 +56,9 @@
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-color-body-fshader">
     vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
     vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
-    float bayerValue = bayerPixel.r;
-    <?php //need to subtract 0.5 here, and not when bayerValue is declared, since it is also used for hue-lightness dither?>
-    adjustedPixel = clamp(adjustedPixel + vec3(u_dither_r_coefficient * (bayerValue - 0.5)), 0.0, 1.0);
+    float bayerValue = bayerPixel.r - 0.5;
+    #{{bayerValueAdjustment}}
+    adjustedPixel = clamp(adjustedPixel + vec3(u_dither_r_coefficient * bayerValue), 0.0, 1.0);
 </script>
 <script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-declaration-fshader">
     <?php //ordered dither declaration gets concatenated here ?>
@@ -84,20 +84,8 @@
     }
 </script>
 <script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-postscript-fshader">
-    outputPixel = hue_lightness_dither(outputPixel, bayerValue);
-</script>
-<script type="webgl/fragment-shader" id="webgl-random-dither-color-declaration-fshader">
-    uniform vec2 u_random_seed;
-    
-    <?php //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/ ?>
-    highp float rand(vec2 co){
-        highp float a = 12.9898;
-        highp float b = 78.233;
-        highp float c = 43758.5453;
-        highp float dt = dot(co.xy, vec2(a,b));
-        highp float sn = mod(dt, 3.14);
-        return fract(sin(sn) * c);
-    }
+    <?php //don't use bayerValue variable, since we need it before 0.5 is subtracted, and without the possible randomization ?>
+    outputPixel = hue_lightness_dither(outputPixel, bayerPixel.r);
 </script>
 <script type="webgl/fragment-shader" id="webgl-random-dither-color-body-fshader">
     float randomValue = u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5);

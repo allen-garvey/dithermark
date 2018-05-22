@@ -3,14 +3,15 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     const THRESHOLD = 1;
     const RANDOM_THRESHOLD = 2;
     const ORDERED_DITHER = 3;
-    const COLOR_REPLACE = 4;
-    const TEXTURE_COMBINE = 5;
-    const ADITHER_ADD1 = 6;
-    const ADITHER_ADD2 = 7;
-    const ADITHER_ADD3 = 8;
-    const ADITHER_XOR1 = 9;
-    const ADITHER_XOR2 = 10;
-    const ADITHER_XOR3 = 11;
+    const ORDERED_RANDOM_DITHER = 4
+    const COLOR_REPLACE = 5;
+    const TEXTURE_COMBINE = 6;
+    const ADITHER_ADD1 = 7;
+    const ADITHER_ADD2 = 8;
+    const ADITHER_ADD3 = 9;
+    const ADITHER_XOR1 = 10;
+    const ADITHER_XOR2 = 11;
+    const ADITHER_XOR3 = 12;
     
     
     /*
@@ -39,8 +40,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     function getDrawFunc(typeEnum, gl, fragmentShaderArgs, customUniformNames = []){
         let drawFunc = drawImageFuncs[typeEnum];
         if(!drawFunc){
-            fragmentShaderArgs.unshift(fragmentShaderTemplate);
-            let fragmentShaderText = generateFragmentShader(...fragmentShaderArgs);
+            const fragmentShaderText = generateFragmentShader(...fragmentShaderArgs);
             drawFunc = createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames);
             drawImageFuncs[typeEnum] = drawFunc;
         }
@@ -65,15 +65,20 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     * Shader caching
     */
     
-    function generateFragmentShader(fragmentShaderTemplate, customDeclarationId, customBodyId, customDeclarationReplacements = []){
+    function generateFragmentShader(customDeclarationId, customBodyId, customReplacements = [], secondCustomDeclarationId=null){
         let customDeclaration = customDeclarationId ? Shader.shaderText(customDeclarationId) : '';
+        if(secondCustomDeclarationId){
+            customDeclaration = customDeclaration + Shader.shaderText(secondCustomDeclarationId);
+        }
         const customBody = customBodyId ? Shader.shaderText(customBodyId) : '';
         
-        customDeclarationReplacements.forEach((replacement)=>{
-            customDeclaration = customDeclaration.replace(replacement.find, replacement.replace);
-        });
+        let fragmentShader = fragmentShaderTemplate.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
         
-        return fragmentShaderTemplate.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody);
+        customReplacements.forEach((replacement)=>{
+            fragmentShader = fragmentShader.replace(replacement.find, replacement.replace);
+        });
+
+        return fragmentShader;
     }
     
     //fragment shaders
@@ -95,7 +100,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     }
     
     function webGLRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-        const drawFunc = getDrawFunc(RANDOM_THRESHOLD, gl, ['webgl-random-threshold-fshader-declaration', 'webgl-random-threshold-fshader-body'], ['u_random_seed']);
+        const drawFunc = getDrawFunc(RANDOM_THRESHOLD, gl, ['webgl-random-dither-declaration-fshader', 'webgl-random-threshold-fshader-body'], ['u_random_seed']);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
@@ -104,18 +109,27 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     }
     
     function createArithmeticDither(ditherKey, customDeclarationReplace){
-        const customDeclarationReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}, {find: '#{{bitwiseFunctions}}', replace: bitwiseFunctionsText}];
+        const customReplacements = [{find: '#{{arithmeticDitherReturn}}', replace: customDeclarationReplace}, {find: '#{{bitwiseFunctions}}', replace: bitwiseFunctionsText}];
         
         return (gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel)=>{
-            const drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customDeclarationReplacements]);
+            const drawFunc = getDrawFunc(ditherKey, gl, ['webgl-arithmetic-dither-fshader-declaration', 'webgl-arithmetic-dither-fshader-body', customReplacements]);
             // Tell WebGL how to convert from clip space to pixels
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
             drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
         };   
     }
     
-    function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions){
-        const drawFunc = getDrawFunc(ORDERED_DITHER, gl, ['webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body'], ['u_bayer_texture_dimensions', 'u_bayer_texture']);
+    function webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, bayerArrayDimensions, isRandom, bayerAdjustmentText){
+        let algoKey = ORDERED_DITHER;
+        let secondCustomDeclarationId = null;
+        const customReplacements = [{find: '#{{bayerValueAdjustment}}', replace: bayerAdjustmentText}];
+        const customUniformLocations = ['u_bayer_texture_dimensions', 'u_bayer_texture'];
+        if(isRandom){
+            algoKey = ORDERED_RANDOM_DITHER;
+            customUniformLocations.push('u_random_seed');
+            secondCustomDeclarationId = 'webgl-random-dither-declaration-fshader';
+        }
+        const drawFunc = getDrawFunc(algoKey, gl, ['webgl-ordered-dither-fshader-declaration', 'webgl-ordered-dither-fshader-body', customReplacements, secondCustomDeclarationId], customUniformLocations);
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations)=>{
@@ -127,19 +141,24 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
             
             //set bayer texture dimensions
             gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerArrayDimensions);
+
+            if(isRandom){
+                gl.uniform2f(customUniformLocations['u_random_seed'], Util.generateRandomSeed(), Util.generateRandomSeed());
+            }
         });
     }
 
-    function createOrderedDitherBase(keyPrefix, bayerFuncName){
-        return function(dimensions){
+    function createOrderedDitherBase(matrixKeyPrefix, bayerFuncName){
+        return function(dimensions, isRandom=false){
+            const bayerAdjustmentText = isRandom ? Shader.shaderText('webgl-random-ordered-dither-adjustment-fshader') : '';
             return function(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
-                const key = `${keyPrefix}-${dimensions}`;
-                let bayerTexture = bayerTextures[key];
+                const matrixKey = `${matrixKeyPrefix}-${dimensions}`;
+                let bayerTexture = bayerTextures[matrixKey];
                 if(!bayerTexture){
                     bayerTexture = BayerWebgl.createAndLoadTexture(gl, Bayer[bayerFuncName](dimensions), dimensions);
-                    bayerTextures[key] = bayerTexture;
+                    bayerTextures[matrixKey] = bayerTexture;
                 }
-                webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions);
+                webGLOrderedDither(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, bayerTexture, dimensions, isRandom, bayerAdjustmentText);
             };
         };
     };

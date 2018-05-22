@@ -3,18 +3,20 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     const CLOSEST_COLOR = 0;
     const RANDOM_CLOSEST_COLOR = 1;
     const ORDERED_DITHER = 2;
-    const HUE_LIGHTNESS_ORDERED_DITHER = 3;
-    const ADITHER_ADD1 = 4;
-    const ADITHER_ADD2 = 5;
-    const ADITHER_ADD3 = 6;
-    const ADITHER_XOR1 = 7;
-    const ADITHER_XOR2 = 8;
-    const ADITHER_XOR3 = 9;
+    const ORDERED_DITHER_RANDOM = 3;
+    const HUE_LIGHTNESS_ORDERED_DITHER = 4;
+    const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 5;
+    const ADITHER_ADD1 = 6;
+    const ADITHER_ADD2 = 7;
+    const ADITHER_ADD3 = 8;
+    const ADITHER_XOR1 = 9;
+    const ADITHER_XOR2 = 10;
+    const ADITHER_XOR3 = 11;
+    //should be length of algorithm keys above
+    const numAlgoKeys = 12;
     
     //creates container to lookup something by algorithm and color mode
     function createLookupContainer(){
-        //should be length of algorithm keys
-        const numAlgoKeys = 10;
         return ArrayUtil.create(numAlgoKeys, ()=>{return {};});
     }
     
@@ -54,17 +56,13 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         const fragmentShaderLightnessFuncText = shaderText('webgl-fragment-shader-lightness-function');
         const fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
         
-        function generateFragmentShader(baseText, customDeclarationId, customBodyId){
-            return generateFragmentShaderBase(baseText, shaderText(customDeclarationId), shaderText(customBodyId), '');
-        }
-        
-        function generateFragmentShaderBase(baseText, customDeclaration, customBody, optionalPostscript=''){
-            return baseText.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody).replace('#{{optionalPostscript}}', optionalPostscript);
+        function generateFragmentShader(customDeclaration, customBody, optionalPostscript=''){
+            return fragmentShaderBaseText.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customBody}}', customBody).replace('#{{optionalPostscript}}', optionalPostscript);
         }
         
         function generateADitherShader(aDitherReturnValue){
             const declaration = aDitherDeclaration.replace('#{{arithmeticDitherReturn}}', aDitherReturnValue).replace('#{{bitwiseFunctions}}', bitwiseFunctionsText);
-            return generateFragmentShaderBase(fragmentShaderBaseText, declaration, aDitherBody);
+            return generateFragmentShader(declaration, aDitherBody);
         }
         
         function shaderTextContainer(baseText){
@@ -90,19 +88,31 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
             return ret; 
         }
         
-        const closestColorShaderBase = generateFragmentShader(fragmentShaderBaseText);
+        //shader declarations and bodies
         const orderedDitherDeclarationText = shaderText('webgl-ordered-dither-color-declaration-fshader');
         const orderedDitherBodyText = shaderText('webgl-ordered-dither-color-body-fshader');
-        const orderedDitherSharedBase = generateFragmentShaderBase(fragmentShaderBaseText, orderedDitherDeclarationText, orderedDitherBodyText.replace('#{{bayerValueAdjustment}}', ''));
-        const hueLightnessOrderedDitherSharedBase = generateFragmentShaderBase(fragmentShaderBaseText , orderedDitherDeclarationText + shaderText('webgl-hue-lightness-ordered-dither-color-declaration-fshader'), orderedDitherBodyText, shaderText('webgl-hue-lightness-ordered-dither-color-postscript-fshader'));
-        const randomDitherShaderBase = generateFragmentShader(fragmentShaderBaseText, 'webgl-random-dither-declaration-fshader', 'webgl-random-dither-color-body-fshader');
+        const orderedDitherVanillaBodyText = orderedDitherBodyText.replace('#{{bayerValueAdjustment}}', '');
+        const orderedDitherRandomBodyText = orderedDitherBodyText.replace('#{{bayerValueAdjustment}}', shaderText('webgl-random-ordered-dither-adjustment-fshader'));
+        const randomDitherDeclarationText = shaderText('webgl-random-dither-declaration-fshader');
+        const randomDitherBodyText = shaderText('webgl-random-dither-color-body-fshader');
+        const hueLightnessPostscriptText = shaderText('webgl-hue-lightness-ordered-dither-color-postscript-fshader');
+        const hueLightnessDeclarationText = orderedDitherDeclarationText + shaderText('webgl-hue-lightness-ordered-dither-color-declaration-fshader');
+        //shader source code
+        const closestColorShaderBase = generateFragmentShader('', '');
+        const orderedDitherBase = generateFragmentShader(orderedDitherDeclarationText, orderedDitherVanillaBodyText);
+        const orderedDitherRandomBase = generateFragmentShader(orderedDitherDeclarationText + randomDitherDeclarationText, orderedDitherRandomBodyText);
+        const hueLightnessOrderedDitherBase = generateFragmentShader(hueLightnessDeclarationText, orderedDitherVanillaBodyText, hueLightnessPostscriptText);
+        const hueLightnessRandomOrderedDitherBase = generateFragmentShader(hueLightnessDeclarationText + randomDitherDeclarationText, orderedDitherRandomBodyText, hueLightnessPostscriptText);
+        const randomDitherShaderBase = generateFragmentShader(randomDitherDeclarationText, randomDitherBodyText);
         
         //map containing program source code
         const fragmentShaderTexts = createLookupContainer();
         fragmentShaderTexts[CLOSEST_COLOR] = shaderTextContainer(closestColorShaderBase);
         fragmentShaderTexts[RANDOM_CLOSEST_COLOR] = shaderTextContainer(randomDitherShaderBase);
-        fragmentShaderTexts[ORDERED_DITHER] = shaderTextContainer(orderedDitherSharedBase);
-        fragmentShaderTexts[HUE_LIGHTNESS_ORDERED_DITHER] = shaderTextContainer(hueLightnessOrderedDitherSharedBase);
+        fragmentShaderTexts[ORDERED_DITHER] = shaderTextContainer(orderedDitherBase);
+        fragmentShaderTexts[ORDERED_DITHER_RANDOM] = shaderTextContainer(orderedDitherRandomBase);
+        fragmentShaderTexts[HUE_LIGHTNESS_ORDERED_DITHER] = shaderTextContainer(hueLightnessOrderedDitherBase);
+        fragmentShaderTexts[HUE_LIGHTNESS_RANDOM_ORDERED_DITHER] = shaderTextContainer(hueLightnessRandomOrderedDitherBase);
         fragmentShaderTexts[ADITHER_ADD1] = shaderTextContainer(generateADitherShader(Shader.aDitherAdd1Return));
         fragmentShaderTexts[ADITHER_ADD2] = shaderTextContainer(generateADitherShader(Shader.aDitherAdd2Return));
         fragmentShaderTexts[ADITHER_ADD3] = shaderTextContainer(generateADitherShader(Shader.aDitherAdd3Return));
@@ -147,10 +157,14 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         });
     }
     
-    function orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, bayerDimensions){
+    function orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, bayerDimensions, isRandom){
         let drawImageFunc = drawImageFuncs[algoKey][colorDitherModeId];
         if(!drawImageFunc){
-            drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[algoKey][colorDitherModeId], ['u_bayer_texture_dimensions', 'u_bayer_texture']);
+            let customUniforms = ['u_bayer_texture_dimensions', 'u_bayer_texture'];
+            if(isRandom){
+                customUniforms = customUniforms.concat(['u_random_seed']);
+            }
+            drawImageFunc = createWebGLDrawImageFunc(gl, fragmentShaderTexts[algoKey][colorDitherModeId], customUniforms);
             drawImageFuncs[algoKey][colorDitherModeId] = drawImageFunc;
         }
         // Tell WebGL how to convert from clip space to pixels
@@ -164,10 +178,14 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
             
             //set bayer texture dimensions
             gl.uniform1f(customUniformLocations['u_bayer_texture_dimensions'], bayerDimensions);
+
+            if(isRandom){
+                gl.uniform2f(customUniformLocations['u_random_seed'], Util.generateRandomSeed(), Util.generateRandomSeed());
+            }
         });
     }
 
-    function createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, bayerFuncName){
+    function createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, bayerFuncName, isRandom){
         let bayerKey = `${textureKeyPrefix}-${dimensions}`;
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
             let bayerTexture = bayerTextures[bayerKey];
@@ -175,13 +193,17 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
                 bayerTexture = BayerWebgl.createAndLoadTexture(gl, Bayer[bayerFuncName](dimensions), dimensions);
                 bayerTextures[bayerKey] = bayerTexture;
             }
-            orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions);
+            orderedDither(algoKey, gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength, bayerTexture, dimensions, isRandom);
         };
     }
 
     function orderedDitherBuilder(textureKeyPrefix, bayerFuncName, algoKey=ORDERED_DITHER){
-        return function(dimensions){
-            return createOrderedDitherBase(dimensions, algoKey, textureKeyPrefix, bayerFuncName);
+        return function(dimensions, isRandom=false){
+            let adjustedAlgoKey = algoKey;
+            if(isRandom){
+                adjustedAlgoKey = algoKey === ORDERED_DITHER ? ORDERED_DITHER_RANDOM : HUE_LIGHTNESS_RANDOM_ORDERED_DITHER; 
+            }
+            return createOrderedDitherBase(dimensions, adjustedAlgoKey, textureKeyPrefix, bayerFuncName, isRandom);
         };
     }
     

@@ -56,6 +56,7 @@
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'pixel-distance-functions.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-shared-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bw-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-color-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bilateral-filter.php'); ?>

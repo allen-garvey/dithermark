@@ -38,19 +38,6 @@
     bool shouldUseBlackPixel = pixelLightness < u_threshold;
 </script>
 
-<script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-declaration">
-    uniform vec2 u_random_seed;
-    <?php //based on: http://byteblacksmith.com/improvements-to-the-canonical-one-liner-glsl-rand-for-opengl-es-2-0/ ?>
-    highp float rand(vec2 co){
-        highp float a = 12.9898;
-        highp float b = 78.233;
-        highp float c = 43758.5453;
-        highp float dt = dot(co.xy, vec2(a,b));
-        highp float sn = mod(dt, 3.14);
-        return fract(sin(sn) * c);
-    }
-</script>
-
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
     bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5) < u_threshold;
 </script>
@@ -67,8 +54,9 @@
 <script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-body">
    vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
-   float bayerValue = bayerPixel.r;
-   bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (bayerValue - 0.5) < u_threshold;
+   float bayerValue = bayerPixel.r - 0.5;
+   #{{bayerValueAdjustment}}
+   bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * bayerValue < u_threshold;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
