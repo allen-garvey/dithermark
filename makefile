@@ -41,7 +41,7 @@ CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
 all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
 
-install: $(PUBLIC_HTML_DIR) $(JS_OUTPUT_DIR)
+install: $(JS_OUTPUT_DIR)
 	npm install
 
 #used when changing between PHP_BUILD_MODES
@@ -67,9 +67,6 @@ gulp_release: $(JS_APP_OUTPUT) $(JS_WORKER_OUTPUT) $(SASS_SRC)
 
 unsplash_api:
 	node scripts/unsplash-random-images.js > $(PUBLIC_HTML_DIR)/api/unsplash.json
-
-$(PUBLIC_HTML_DIR):
-	mkdir -p $(PUBLIC_HTML_DIR)
 
 $(JS_OUTPUT_DIR):
 	mkdir -p $(JS_OUTPUT_DIR)
