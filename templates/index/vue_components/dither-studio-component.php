@@ -62,6 +62,7 @@
         <?php //    <canvas ref="sourceCanvas" class="hidden"></canvas>< //pixelated-image used as source to dithers ?>
         <?php //    <canvas ref="transformCanvas" class="hidden"></canvas> //output from dither ?>
         <?php //    <canvas ref="transformCanvasWebgl" class="hidden"></canvas> //output from webgl, copied to above because otherwise chrome will freak out when we change tabs ?>
+        <?php //ditherOutputCanvas saves output from dither, before post dither filters ?>   
             <canvas ref="sourceCanvasOutput" class="output-canvas" v-show="showOriginalImage"></canvas><?php //original image as displayed to the user, after zoomed and pixelated ?>
             <canvas ref="transformCanvasOutput" class="output-canvas"></canvas><?php //output from dither as shown to user, after zoom ?>
         </div>

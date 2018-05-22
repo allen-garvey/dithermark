@@ -56,6 +56,14 @@
 <fieldset>
     <legend>Filters <small>(post dither)</small></legend>
     <div class="spread-content" v-if="isWebglSupported">
+        <label>Bilateral filter
+            <select v-model.number="selectedBilateralFilterValueAfter">
+            <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : value}}</option>
+            </select>
+        </label>
+        <?php IndexView::cyclePropertyList('selectedBilateralFilterValueAfter', 'bilateralFilterValues', 'bilateral filter amount'); ?>
+    </div>
+    <div class="spread-content" v-if="isWebglSupported">
         <label>Smoothing
             <select v-model.number="selectedImageSmoothingRadiusAfter">
                 <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
