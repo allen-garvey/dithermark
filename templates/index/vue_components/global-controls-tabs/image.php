@@ -21,6 +21,14 @@
         </label>
         <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'contrastFilterValues', 'contrast amount'); ?>
     </div>
+    <div class="spread-content" v-if="areCanvasFiltersSupported">
+        <label>Saturation
+            <select v-model.number="selectedImageSaturationIndex">
+            <option v-for="(percentage, index) in imageFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
+            </select>
+        </label>
+        <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation amount'); ?>
+    </div>
     <div class="spread-content">
         <label for="hue-rotation-range">Hue rotation</label><input id="hue-rotation-range" type="range" list="hue-rotation-tickmarks" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
         <input type="number" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
@@ -38,14 +46,6 @@
             <option value="300">
             <option value="330">
         </datalist>
-    </div>
-    <div class="spread-content" v-if="areCanvasFiltersSupported">
-        <label>Saturation
-            <select v-model.number="selectedImageSaturationIndex">
-            <option v-for="(percentage, index) in imageFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
-            </select>
-        </label>
-        <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation amount'); ?>
     </div>
     <div class="spread-content" v-if="isWebglSupported">
         <label>Bilateral filter
