@@ -481,10 +481,6 @@
                 const filters = this.imageFilters;
                 Canvas.scale(originalImageCanvas, sourceCanvas, scaleAmount, filters);
                 Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
-                //we have to unset hue-rotate here, otherwise it will remain set for some reason
-                if(this.areCanvasFiltersSupported && transformCanvas.context.filter){
-                    transformCanvas.context.filter = 'hue-rotate(0deg)';
-                }
                 
                 //adjust zoom
                 this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
@@ -501,6 +497,12 @@
                     transformCanvasWebGl.canvas.height = imageHeader.height;
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                     sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                }
+                //we have to unset hue-rotate here, otherwise it will remain set for some reason even though other filters reset
+                //sourceCanvas filter needs to be reset after webgl texture is created, otherwise results of the filter won't be saved in the texture
+                if(this.areCanvasFiltersSupported && transformCanvas.context.filter){
+                    transformCanvas.context.filter = 'hue-rotate(0deg)';
+                    sourceCanvas.context.filter = 'hue-rotate(0deg)';
                 }
             },
             bilateralFilterValueChanged: function(){
