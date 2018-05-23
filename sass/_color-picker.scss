@@ -1,3 +1,9 @@
+@keyframes scaleAnimation {
+    0%   {transform: scale(1, 1);}
+    50%  {transform: scale(1.1, 1.1);}
+    100% {transform: scale(1, 1);}
+}
+
 .color-picker-container{
     display: inline-block;
     position: relative;
@@ -6,6 +12,10 @@
     margin: 8px 0 16px;
     border-radius: 2px;
     border: 1px solid var(--border-color);
+    &.attention-animation{
+        animation-name: scaleAnimation;
+        animation-duration: 0.7s;
+    }
 }
 //this is so none of the other controls except the color picker are selectable
 .color-picker-overlay{
