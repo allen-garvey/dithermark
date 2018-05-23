@@ -2,10 +2,23 @@
 * zoom container
 */
 .zoom-bar-container{
-    width: $controlsWidth;
-    max-width: 100%;
+    padding: 4px $global_horizontal_padding;
     input[type="range"]{
         width: calc(100% - 188px);
         vertical-align: bottom;
     }
+}
+
+@include pinned_controls_mq{
+    .zoom-bar-container{
+		font-size: 12px;
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		background-color: var(--pinned-controls-bg-color);
+		box-sizing: border-box;
+		border-top: $controls_border;
+		//-1 pixel so it hides border
+		width: calc(100% - #{$pinned_dither_controls_width});
+	}
 }

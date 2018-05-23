@@ -16,6 +16,7 @@ input[type="checkbox"]{
     justify-content: space-between;
     width: $controlsWidth;
     max-width: 100%;
+    padding: 0 $global_horizontal_padding;
 }
 
 .controls{
