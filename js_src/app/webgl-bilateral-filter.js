@@ -6,7 +6,7 @@ App.WebGlBilateralFilter = (function(WebGl, Shader){
     * Actual webgl function creation
     */
     function createFilterFunc(gl){
-        const fragmentShaderText = document.getElementById('webgl-fragment-shader-bilateral-filter').textContent;
+        const fragmentShaderText = Shader.shaderText('webgl-fragment-shader-bilateral-filter');
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, ['u_exponent', 'u_image_dimensions']);
         
         return function(gl, tex, texWidth, texHeight, filterExponent){
