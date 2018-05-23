@@ -15,8 +15,11 @@
                 container.classList.remove('attention-animation');
                 //from https://css-tricks.com/restart-css-animation/
                 //we need to do this to retrigger the animation
-                void container.offsetWidth;
+                //we are saving offsetWidth and returning it so 
+                //google closure compiler doesn't optimize it out
+                const ret = container.offsetWidth;
                 container.classList.add('attention-animation');
+                return ret;
             },
 
         },
