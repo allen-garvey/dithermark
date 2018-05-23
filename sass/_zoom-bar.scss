@@ -19,6 +19,9 @@
 		box-sizing: border-box;
 		border-top: $controls_border;
 		//-1 pixel so it hides border
-		width: calc(100% - #{$pinned_dither_controls_width});
+        width: calc(100% - #{$pinned_dither_controls_width});
+        input[type="range"]{
+            width: calc(100% - 228px);
+        }
 	}
 }

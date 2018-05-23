@@ -588,6 +588,13 @@
             resetZoom: function(){
                 this.zoom = 100;
             },
+            //fit image onto screen
+            zoomFit: function(){
+                const multiplier = this.showOriginalImage ? 50 : 100;
+                const widthFitPercentage = Math.floor(window.innerWidth / this.loadedImage.width * multiplier);
+                const heightFitPercentage = Math.floor(window.innerHeight / this.loadedImage.height * multiplier);
+                this.zoom = Math.min(widthFitPercentage, heightFitPercentage);
+            },
             cyclePropertyList: VueMixins.cyclePropertyList,
             
             //webworker stuff
