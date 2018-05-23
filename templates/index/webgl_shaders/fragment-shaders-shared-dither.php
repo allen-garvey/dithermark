@@ -16,3 +16,11 @@
 <script type="webgl/fragment-shader" id="webgl-random-ordered-dither-adjustment-fshader">
     bayerValue = bayerValue * rand(v_texcoord.xy*u_random_seed.xy);
 </script>
+<?php //so that webgl dithers don't mess up transparent pixels  ?>
+<script type="webgl/fragment-shader" id="webgl-transparency-check-fshader">
+    vec4 pixel = texture2D(u_texture, v_texcoord);
+    if(pixel.a < 0.00001){
+        gl_FragColor = pixel;
+        return;
+    }
+</script>

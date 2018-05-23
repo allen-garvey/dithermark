@@ -82,8 +82,7 @@ App.WebGlBwDither = (function(BayerWebgl, WebGl, Shader, Bayer, Util, DitherUtil
     }
     
     //fragment shaders
-    const fragmentLightnessFunctionText = Shader.shaderText('webgl-fragment-shader-lightness-function');
-    const fragmentShaderTemplate = Shader.shaderText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', fragmentLightnessFunctionText);
+    const fragmentShaderTemplate = Shader.shaderText('webgl-fragment-shader-template').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader'));
     const bitwiseFunctionsText = Shader.generateBitwiseFunctionsText(); 
     
     //draw image created functions

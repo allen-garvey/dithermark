@@ -49,7 +49,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         const shaderText = Shader.shaderText;
         
         //reused webgl fragment shader texts
-        const fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader');
+        const fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader'));
         const aDitherDeclaration = shaderText('webgl-arithmetic-dither-fshader-declaration');
         const aDitherBody = shaderText('webgl-arithmetic-dither-color-body');
         const bitwiseFunctionsText = Shader.generateBitwiseFunctionsText();
