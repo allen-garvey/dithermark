@@ -14,20 +14,17 @@
     
     void main(){
         #{{transparencyCheck}}
+        float pixelLightness = lightness(pixel.rgb);
+        #{{customBody}}
+        
+        vec3 outputPixel;
+        if(shouldUseBlackPixel){
+            outputPixel = u_black_pixel;
         }
-       float pixelLightness = lightness(pixel.rgb);
-       
-       #{{customBody}}
-       
-       vec4 outputPixel;
-       
-       if(shouldUseBlackPixel){
-           outputPixel = vec4(u_black_pixel.rgb, pixel.a);
-       }
-       else{
-           outputPixel = vec4(u_white_pixel.rgb, pixel.a);
-       }
-       gl_FragColor = outputPixel;
+        else{
+            outputPixel = u_white_pixel;
+        }
+        gl_FragColor = vec4(outputPixel, pixel.a);
     }
 </script>
 <script type="webgl/fragment-shader" id="webgl-threshold-fshader-body">
