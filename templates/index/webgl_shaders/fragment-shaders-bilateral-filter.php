@@ -30,28 +30,30 @@ THE SOFTWARE.
  * @param u_exponent The exponent of the color intensity difference, should be greater
  *                 than zero. A value of zero just gives an 9x9 box blur and high values
  *                 give the original image, but ideal values are usually around 10-20.
+ * 
+ *                  Also note that it doesn't need a transparency check, since it handles transparency fine
  */
 ?>
 <script type="webgl/fragment-shader" id="webgl-fragment-shader-bilateral-filter">
-    precision mediump float;
+precision mediump float;
 
-    varying vec2 v_texcoord;
-    uniform sampler2D u_texture;
-    uniform float u_exponent;
-    uniform vec2 u_image_dimensions;
-    void main(){
-        vec4 center = texture2D(u_texture, v_texcoord);
-        vec4 color = vec4(0.0);
-        float total = 0.0;
-        for (float x = -4.0; x <= 4.0; x += 1.0) {
-            for (float y = -4.0; y <= 4.0; y += 1.0) {
-                vec4 sample = texture2D(u_texture, v_texcoord + vec2(x, y) / u_image_dimensions);
-                float weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
-                weight = pow(weight, u_exponent);
-                color += sample * weight;
-                total += weight;
-            }
+varying vec2 v_texcoord;
+uniform sampler2D u_texture;
+uniform float u_exponent;
+uniform vec2 u_image_dimensions;
+void main(){
+    vec4 center = texture2D(u_texture, v_texcoord);
+    vec4 color = vec4(0.0);
+    float total = 0.0;
+    for (float x = -4.0; x <= 4.0; x += 1.0) {
+        for (float y = -4.0; y <= 4.0; y += 1.0) {
+            vec4 sample = texture2D(u_texture, v_texcoord + vec2(x, y) / u_image_dimensions);
+            float weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+            weight = pow(weight, u_exponent);
+            color += sample * weight;
+            total += weight;
         }
-        gl_FragColor = color / total;
     }
+    gl_FragColor = color / total;
+}
 </script>
