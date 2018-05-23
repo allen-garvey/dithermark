@@ -1,5 +1,5 @@
 //color picker component for color dither color list
-(function(Vue, VueColor, ColorPicker){
+(function(Vue, ColorPicker){
     //copied from PixelMath module, since nothing else in app files uses pixelmath
     function pixelLightness(pixel){
         const max = Math.max(pixel[0], pixel[1], pixel[2]);
@@ -51,4 +51,4 @@
     });
     
     
-})(window.Vue, window.VueColor, App.ColorPicker);
+})(window.Vue, App.ColorPicker);
