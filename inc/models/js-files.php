@@ -17,22 +17,35 @@
         ];
     }
     
-    function appVueComponents(): array{
+    function vueComponentsWithTemplates(): array{
         $ret = [];
-        $ret[] = JS_VUES_PATH.'vue-mixins.js';
-        $ret[] = JS_VUES_PATH.'focus-directive.js';
         if(ENABLE_PRINT_COLOR_PALETTE_BUTTON){
-            $ret[] = JS_VUES_PATH.'print-palette-component.js';
+            $ret[] = 'print-palette-button-component';
         }
         if(ENABLE_TEXTURE_COMBINE){
-            $ret[] = JS_VUES_PATH.'texture-combine-component.js';
+            $ret[] = 'texture-combine-component';
         }
-        $ret[] = JS_VUES_PATH.'unsplash-attribution-component.js';
-        $ret[] = JS_VUES_PATH.'modal-prompt-component.js';
-        $ret[] = JS_VUES_PATH.'color-input-component.js';
-        $ret[] = JS_VUES_PATH.'bw-dither-component.js';
-        $ret[] = JS_VUES_PATH.'color-dither-component.js';
-        $ret[] = JS_VUES_PATH.'dither-studio-component.js';
+        $ret[] = 'unsplash-attribution-component';
+        $ret[] = 'modal-prompt-component';
+        $ret[] = 'color-input-component';
+        $ret[] = 'color-picker-component';
+        $ret[] = 'bw-dither-component';
+        $ret[] = 'color-dither-component';
+        $ret[] = 'dither-studio-component';
+        return $ret;
+    }
+
+    function appVueComponents(): array{
+        $ret = [
+            JS_VUES_PATH.'vue-mixins.js',
+            JS_VUES_PATH.'focus-directive.js',  
+        ];
+        
+        $ret =array_merge($ret,  array_map(function($componentName){
+            return JS_VUES_PATH.$componentName.'.js';
+        }, vueComponentsWithTemplates()));
+        
+        
         $ret[] = JS_VUES_PATH.'app.js';
 
         return $ret;

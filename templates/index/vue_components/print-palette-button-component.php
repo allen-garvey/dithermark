@@ -1,0 +1,1 @@
+<button class="btn btn-default btn-sm" @click="printPalette" title="Print current color palette to console">Print</button>

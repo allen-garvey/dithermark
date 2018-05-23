@@ -1,5 +1,6 @@
 <?php
     require_once('inc'.DIRECTORY_SEPARATOR.'config.php');
+    require_once(MODELS_PATH.'js-files.php');
     require_once(VIEWS_PATH.'index-view.php');
 ?>
 
@@ -29,29 +30,11 @@
                 <dither-studio/>
             </div>
         </main>
-        <script type="vue/template" id="dither-studio-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'dither-studio-component.php'); ?>
-        </script>
-        <script type="vue/template" id="bw-dither-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'bw-dither-component.php'); ?>
-        </script>
-        <script type="vue/template" id="color-dither-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-dither-component.php'); ?>
-        </script>
-        <script type="vue/template" id="modal-prompt-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'modal-prompt-component.php'); ?>
-        </script>
-        <?php if(ENABLE_TEXTURE_COMBINE): ?>
-            <script type="vue/template" id="texture-combine-component">
-                <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'texture-combine-component.php'); ?>
+        <?php foreach(vueComponentsWithTemplates() as $componentName): ?>
+            <script type="vue/template" id="<?= $componentName; ?>">
+                <?php require(TEMPLATES_VUE_COMPONENTS_PATH."${componentName}.php"); ?>
             </script>
-        <?php endif; ?>
-        <script type="vue/template" id="unsplash-attribution-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'unsplash-attribution-component.php'); ?>
-        </script>
-        <script type="vue/template" id="color-input-component">
-            <?php require(TEMPLATES_VUE_COMPONENTS_PATH.'color-input-component.php'); ?>
-        </script>
+        <?php endforeach; ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'vertex-shaders.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>
