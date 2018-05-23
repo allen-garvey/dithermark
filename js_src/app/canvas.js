@@ -116,6 +116,7 @@ App.Canvas = (function(Polyfills){
         targetCanvasObject.context.putImageData(imageData, 0, 0);
     }
     
+    //maximum allowed size is largest size in pixels image is allowed to be
     function maxScalePercentageForImage(imageWidth, imageHeight, maximumAllowedSize){
         const largestDimension = Math.max(imageWidth, imageHeight);
         const largestPercentage = Math.ceil(maximumAllowedSize * 100 / largestDimension);
@@ -124,6 +125,7 @@ App.Canvas = (function(Polyfills){
         return Math.max(largestPercentage, 200);
     }
     
+    //minimum allowed size is smallest size in pixels image is allowed to be
     function minScalePercentageForImage(imageWidth, imageHeight, minimumAllowedSize){
         const smallestDimension = Math.min(imageWidth, imageHeight);
         const smallestPercentage = Math.ceil(minimumAllowedSize * 100 / smallestDimension);
