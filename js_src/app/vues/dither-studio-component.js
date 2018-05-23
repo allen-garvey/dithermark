@@ -137,8 +137,6 @@
                 selectedImageContrastIndex: 0,
                 hueRotationValue: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
-                zoomMin: 10,
-                zoomMax: 400,
                 showOriginalImage: true,
                 editorThemes: EditorThemes.get(),
                 currentEditorThemeIndex: null,
@@ -151,6 +149,18 @@
             };
         },
         computed: {
+            zoomMin: function(){
+                if(!this.isImageLoaded){
+                    return 0;
+                }
+                return Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, 200);
+            },
+            zoomMax: function(){
+                if(!this.isImageLoaded){
+                    return 0;
+                }
+                return Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
+            },
             isImageLoaded: function(){
               return this.loadedImage != null;  
             },
@@ -490,8 +500,6 @@
                 Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
                 
                 //adjust zoom
-                this.zoomMax = Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
-                this.zoomMin = Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, 200);
                 if(this.zoom > this.zoomMax){
                     this.zoom = this.zoomMax;
                 }
