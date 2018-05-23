@@ -1,4 +1,6 @@
 .color-container{
+    //so currently selected color is not hidden by .color-picker-overlay
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -7,6 +9,11 @@
     border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 4px;
+
+    //z-index should be higher than .color-picker-overlay
+    &.selected{
+        z-index: 3;
+    }
     
     &.dragged, &.color-disabled{
         opacity: 0.4;
@@ -41,6 +48,7 @@
 
 .faux-color-input{
     position: relative;
+    z-index: 1;
     width: 46px;
     height: 24px;
     border: 1px solid black;

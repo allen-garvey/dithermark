@@ -9,7 +9,7 @@
 
     Vue.component('color-input', {
         template: document.getElementById('color-input-component'),
-        props: ['colorIndex', 'colorValue', 'idPrefix', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'draggedIndex', 'label', 'onClick'],
+        props: ['colorIndex', 'colorValue', 'idPrefix', 'isSelected', 'handleColorDragstart', 'handleColorDragover', 'handleColorDragend', 'isDisabled', 'draggedIndex', 'label', 'onClick'],
         computed: {
             colorInputId: function(){
                 return `${this.idPrefix}__color-input__${this.colorIndex}`;

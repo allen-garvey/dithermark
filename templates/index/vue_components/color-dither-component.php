@@ -46,11 +46,14 @@
     <fieldset>
         <legend>Color palette</legend>
         <div v-if="shouldShowColorPicker">
-            <photoshop-picker :value="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="shouldShowColorPicker = false" @cancel="colorPickerCanceled" />
+            <div class="color-picker-container">
+                <photoshop-picker :value="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="shouldShowColorPicker = false" @cancel="colorPickerCanceled" />
+            </div>
+            <div class="color-picker-overlay"></div>
         </div>
         <div class="colors-list-container" @dragover="handleColorDragover">
             <template v-for="(color, i) in colors">
-                <color-input id-prefix="color" :on-click="createColorInputClicked(i)" :color-index="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" />
+                <color-input id-prefix="color" :on-click="createColorInputClicked(i)" :is-selected="shouldShowColorPicker &amp;&amp; colorPickerColorIndex===i" :color-index="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" />
             </template>
         </div>
         <div class="spread-content palette-buttons-container">
