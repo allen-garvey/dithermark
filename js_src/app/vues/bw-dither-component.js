@@ -1,4 +1,4 @@
-(function(Vue, VueColor, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, WebGlBwDither, VueMixins){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, WebGl, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, WebGlBwDither, VueMixins){
     
     //used for creating BW texture for webgl color replace
     let isDitherWorkerBwWorking = false;
@@ -11,9 +11,6 @@
     Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
         props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
-        components: {
-            'photoshop-picker': VueColor.Photoshop,
-        },
         created: function(){
             this.resetColorReplace();
         },
@@ -260,4 +257,4 @@
         }
     });
     
-})(window.Vue, window.VueColor.VueColor, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.WebGlBwDither, App.VueMixins);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.WebGl, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.WebGlBwDither, App.VueMixins);

@@ -25,9 +25,7 @@
     </div>
     <fieldset>
         <legend>Color substitution</legend>
-        <div v-if="shouldShowColorPicker">
-            <photoshop-picker :value="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
-        </div>
+        <color-picker v-if="shouldShowColorPicker" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
         <div class="bw-color-replace-container">
             <color-input label="Black" id-prefix="bw" :on-click="createColorInputClicked(0)" :is-disabled="false" :color-value="colorReplaceColors[0]" color-index="0" dragged-index="-1" />
             <color-input label="White" id-prefix="bw" :on-click="createColorInputClicked(1)" :is-disabled="false" :color-value="colorReplaceColors[1]" color-index="1" dragged-index="-1" />

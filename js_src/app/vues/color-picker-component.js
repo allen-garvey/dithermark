@@ -6,11 +6,11 @@
             'photoshop-picker': VueColor.Photoshop,
         },
         methods: {
-            bubbleEvent: function(e){
-                console.log(e);
+            bubbleEvent: function(name, args){
+                this.$emit(name, args);
             },
         },
     });
     
     
-})(window.Vue, window.VueColor);
+})(window.Vue, window.VueColor.VueColor);
