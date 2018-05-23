@@ -159,7 +159,8 @@
                 if(!this.isImageLoaded){
                     return 0;
                 }
-                return Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.ceil(window.innerWidth * 2 * Canvas.devicePixelRatio));
+                const greatestDimension = Math.max(window.innerHeight, window.innerWidth) * 2 * Canvas.devicePixelRatio;
+                return Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, greatestDimension);
             },
             isImageLoaded: function(){
               return this.loadedImage != null;  
