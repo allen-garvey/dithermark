@@ -2,11 +2,23 @@
 * zoom container
 */
 .zoom-bar-container{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
     padding: 4px $global_horizontal_padding;
+    label{
+        flex-basis: 100%;
+        margin-bottom: 12px;
+    }
     input[type="range"]{
-        width: calc(100% - 188px);
+        width: calc(100% - 140px);
         vertical-align: bottom;
     }
+}
+
+.zoom-bar-fit-button{
+    margin-right: 16px;
 }
 
 @include pinned_controls_mq{
@@ -20,8 +32,15 @@
 		border-top: $controls_border;
 		//-1 pixel so it hides border
         width: calc(100% - #{$pinned_dither_controls_width});
-        input[type="range"]{
-            width: calc(100% - 228px);
+        label{
+            flex-basis: calc(100% - 98px);
+            margin-bottom: 0;
         }
-	}
+        input[type="range"]{
+            width: calc(100% - 138px);
+        }
+    }
+    .zoom-bar-fit-button{
+        margin-right: 0;
+    }
 }
