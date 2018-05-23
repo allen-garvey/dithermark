@@ -2,8 +2,8 @@
 //usage: <input v-focus>
 (function(Vue){
     Vue.directive('focus', {
-        inserted: function (el) {
-            el.focus()
+        inserted: function (el){
+            el.focus();
         }
     });
 })(window.Vue);
