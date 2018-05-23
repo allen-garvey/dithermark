@@ -153,7 +153,8 @@
                 if(!this.isImageLoaded){
                     return 0;
                 }
-                return Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, 200);
+                const smallestDimension = Math.floor(Math.min(window.innerHeight, window.innerWidth) / 2 / Canvas.devicePixelRatio);
+                return Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.min(200, smallestDimension));
             },
             zoomMax: function(){
                 if(!this.isImageLoaded){
