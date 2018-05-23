@@ -38,7 +38,8 @@
     function appVueComponents(): array{
         $ret = [
             JS_VUES_PATH.'vue-mixins.js',
-            JS_VUES_PATH.'focus-directive.js',  
+            JS_VUES_PATH.'focus-directive.js',
+            JS_VUES_PATH.'scroll-into-view-directive.js',
         ];
         
         $ret =array_merge($ret,  array_map(function($componentName){
