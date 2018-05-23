@@ -517,15 +517,8 @@
                 if(filterExponent < 0){
                     return;
                 }
-
                 const imageHeader = this.imageHeader;
-                //do the filter twice for better results
-                for(let i=0;i<2;i++){
-                    WebGlBilateralFilter.filter(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, filterExponent);
-                    sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                    transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
-                }
+                sourceWebglTexture = WebGlBilateralFilter.filterImage(transformCanvasWebGl, sourceWebglTexture, imageHeader.width, imageHeader.height, filterExponent, sourceCanvas);
             },
             //image smoothing after pixelation, before dither
             imageSmoothingBeforeChanged: function(){
@@ -557,15 +550,9 @@
                 if(filterExponent < 0){
                     return false;
                 }
-
                 const imageHeader = this.imageHeader;
-                //do the filter twice for better results
-                for(let i=0;i<2;i++){
-                    WebGlBilateralFilter.filter(transformCanvasWebGl.gl, ditherOutputWebglTexture, imageHeader.width, imageHeader.height, filterExponent);
-                    transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                    transformCanvasWebGl.gl.deleteTexture(ditherOutputWebglTexture);
-                    ditherOutputWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, transformCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
-                }
+                ditherOutputWebglTexture = WebGlBilateralFilter.filterImage(transformCanvasWebGl, ditherOutputWebglTexture, imageHeader.width, imageHeader.height, filterExponent, transformCanvas);
+
                 return true;
             },
             imageFiltersAfterDitherChanged: function(){

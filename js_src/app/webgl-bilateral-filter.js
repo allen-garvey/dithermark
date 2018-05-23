@@ -27,11 +27,21 @@ App.WebGlBilateralFilter = (function(WebGl, Shader){
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         filterFunc(gl, texture, imageWidth, imageHeight, filterExponent);
     }
-    
-    
 
+    function filterImage(webGlCanvas, texture, imageWidth, imageHeight, filterExponent, outputCanvas){
+        //do the filter twice for better results
+        for(let i=0;i<2;i++){
+            filter(webGlCanvas.gl, texture, imageWidth, imageHeight, filterExponent);
+            outputCanvas.context.drawImage(webGlCanvas.canvas, 0, 0);
+            webGlCanvas.gl.deleteTexture(texture);
+            texture = WebGl.createAndLoadTexture(webGlCanvas.gl, outputCanvas.context.getImageData(0, 0, imageWidth, imageHeight));
+        }
+
+        return texture;
+    }
+    
     return {
-        filter,
+        filterImage,
     };
     
 })(App.WebGl, App.WebGlShader);
