@@ -4,7 +4,7 @@
 //u_contrast - 0 to 1 (0 is no change, and 1 is maximum contrast)
 //technically saturation and hue_rotation produce slightly different results than native canvas filters, but we are not
 //going to worry about that right now, especially because the saturation change arguably looks better than native canvas
-//saturation filter
+//saturation filter and eventually, all browser will probably support native filters anyway
 ?>
 <script type="webgl/fragment-shader" id="webgl-fragment-canvas-filters">
 precision mediump float;
