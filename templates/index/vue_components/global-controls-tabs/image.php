@@ -45,7 +45,7 @@
             </label>
             <?php IndexView::cyclePropertyList('selectedBilateralFilterValue', 'bilateralFilterValues', 'bilateral filter amount'); ?>
         </div>
-        <div class="spread-content" v-if="isWebglSupported">
+        <div class="spread-content" v-if="isSmoothingEnabled">
             <label>Smoothing
                 <select v-model.number="selectedImageSmoothingRadiusBefore">
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
@@ -64,7 +64,7 @@
             </label>
             <?php IndexView::cyclePropertyList('selectedBilateralFilterValueAfter', 'bilateralFilterValues', 'bilateral filter amount'); ?>
         </div>
-        <div class="spread-content" v-if="isWebglSupported">
+        <div class="spread-content" v-if="isSmoothingEnabled">
             <label>Smoothing
                 <select v-model.number="selectedImageSmoothingRadiusAfter">
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>

@@ -49,6 +49,11 @@
             transformCanvasWebGl = Canvas.createWebgl();
             ditherOutputCanvas = Canvas.create();
             this.areCanvasFiltersSupported = Canvas.areCanvasFiltersSupported(originalImageCanvas);
+            //check for webgl support
+            if(transformCanvasWebGl.gl){
+                this.isWebglSupported = true;
+                this.isWebglHighpFloatSupported = transformCanvasWebGl.supportsHighFloatPrecision;
+            }
 
             //remove webgl algorithms requiring high precision ints (if necessary)
             if(!transformCanvasWebGl.supportsHighIntPrecision){
@@ -73,8 +78,6 @@
             this.showOriginalImage = globalSettings.showOriginalImage;
             this.isLivePreviewEnabled = globalSettings.isLivePreviewEnabled;
             this.automaticallyResizeLargeImages = globalSettings.automaticallyResizeLargeImages;
-            //check for webgl support
-            this.isWebglSupported = !!transformCanvasWebGl.gl;
             this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
 
             //should be last statement of mounted function
@@ -94,6 +97,7 @@
                 automaticallyResizeLargeImages: true,
                 isWebglSupported: false,
                 isWebglEnabled: false,
+                isWebglHighpFloatSupported: false,
                 zoom: 100,
                 zoomDisplay: 100, //this is so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed
                 /**
@@ -229,6 +233,9 @@
                     filters.push(`hue-rotate(${hue}deg)`);
                 }
                 return filters.join(' ');
+            },
+            isSmoothingEnabled: function(){
+                return this.isWebglEnabled && this.isWebglHighpFloatSupported;
             },
             serializedGlobalSettings: function(){
                 const editorThemeKey = this.currentEditorThemeIndex === null ? '' : this.editorThemes[this.currentEditorThemeIndex].key;
@@ -439,7 +446,7 @@
             //image smoothing after pixelation, before dither
             imageSmoothingBeforeChanged: function(){
                 const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
-                if(smoothingRadius <= 0){
+                if(!this.isSmoothingEnabled || smoothingRadius <= 0){
                     return;
                 }
                 const imageHeader = this.imageHeader;
@@ -452,7 +459,7 @@
             //image smoothing after dither
             imageSmoothingAfterChanged: function(){
                 const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusAfter];
-                if(smoothingRadius <= 0){
+                if(!this.isSmoothingEnabled || smoothingRadius <= 0){
                     return false;
                 }
                 const imageHeader = this.imageHeader;

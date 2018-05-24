@@ -3,8 +3,10 @@
 //https://stackoverflow.com/questions/5830139/how-can-i-do-these-image-processing-tasks-using-opengl-es-2-0-shaders?noredirect=1&lq=1
 ?>
 <script type="webgl/fragment-shader" id="webgl-fragment-shader-smoothing">
-<?php //precision highp float; ?>
-precision mediump float;
+<?php //requires highp to work correctly with transparency
+    //will work with mediump with no transparency check and hardcoding 1.0 for alpha value in gl_FragColor
+ ?>
+precision highp float;
 
 varying vec2 v_texcoord;
 uniform sampler2D u_texture;

@@ -40,17 +40,23 @@ App.Canvas = (function(Polyfills){
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         let maxTextureSize = 0;
         let supportsHighIntPrecision = false;
+        let supportsHighFloatPrecision = false;
         if(gl){
             maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
             //high int precision required for arithmetic dithers
             const shaderIntPrecision = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_INT);
             supportsHighIntPrecision = shaderIntPrecision && shaderIntPrecision.rangeMax >= 30;
+
+            //high float precision required for smoothing
+            const shaderFloatPrecision = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+            supportsHighFloatPrecision = shaderFloatPrecision && shaderFloatPrecision.precision >= 16;
         }
         return {
             canvas,
             gl,
             maxTextureSize,
             supportsHighIntPrecision,
+            supportsHighFloatPrecision,
         };
     }
     
