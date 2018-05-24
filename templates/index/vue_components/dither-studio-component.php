@@ -16,7 +16,7 @@
     </div>
     <div class="hint-container" v-if="!isImageLoaded">Open an image to begin</div>
     <div class="controls">
-        <div class="controls-container">
+        <div ref="controlsContainer" class="controls-container">
             <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
                 <div class="tabs-container">
                     <template v-for="(tab, index) in globalControlsTabs">
@@ -42,7 +42,7 @@
                 </div>
             </div>
         </div>
-        <div class="zoom-bar-container" v-if="isImageLoaded">
+        <div ref="zoomBarContainer" class="zoom-bar-container" v-show="isImageLoaded">
             <label>
                 Zoom
                 <input type="range" :min="zoomMin" :max="zoomMax" v-model.number="zoom"/>

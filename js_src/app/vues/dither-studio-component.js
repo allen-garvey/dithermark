@@ -137,7 +137,7 @@
                     return 0;
                 }
                 const smallestDimension = Math.floor(Math.min(window.innerHeight, window.innerWidth) / 2 / Canvas.devicePixelRatio);
-                return Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.min(200, smallestDimension));
+                return Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.min(100, smallestDimension));
             },
             zoomMax: function(){
                 if(!this.isImageLoaded){
@@ -503,9 +503,23 @@
             },
             //fit image onto screen
             zoomFit: function(){
-                const multiplier = this.showOriginalImage ? 50 : 100;
-                const widthFitPercentage = Math.floor(window.innerWidth / this.loadedImage.width * multiplier);
-                const heightFitPercentage = Math.floor(window.innerHeight / this.loadedImage.height * multiplier);
+                const image = this.loadedImage;
+                //if original image is show, image is technically twice as wide
+                const widthMultiplier = this.showOriginalImage ? 50 : 100;
+                //if controls are pinned, we need to subtract the width of controls
+                let windowWidth = window.innerWidth;
+                const controlsContainer = this.$refs.controlsContainer; 
+                if(getComputedStyle(controlsContainer).getPropertyValue('position') === 'fixed'){
+                    windowWidth -= controlsContainer.offsetWidth;
+                }
+                //if zoom bar is pinned, we need to subtract height of zoom bar
+                let windowHeight = window.innerHeight;
+                const zoomBarContainer = this.$refs.zoomBarContainer;
+                if(getComputedStyle(zoomBarContainer).getPropertyValue('position') === 'fixed'){
+                    windowHeight -= zoomBarContainer.offsetHeight;
+                }
+                const widthFitPercentage = Math.floor(windowWidth / image.width * widthMultiplier);
+                const heightFitPercentage = Math.floor(windowHeight / image.height * 100);
                 this.zoom = Math.min(widthFitPercentage, heightFitPercentage);
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
