@@ -1,5 +1,5 @@
 
-(function(Vue, Constants, Canvas, Fs, RandomImage){
+(function(Vue, Fs, RandomImage){
 
     let fileInput;
 
@@ -54,4 +54,4 @@
         },
     });
     
-})(window.Vue, App.Constants, App.Canvas, App.Fs, App.RandomImage);
+})(window.Vue, App.Fs, App.RandomImage);
