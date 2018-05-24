@@ -1,10 +1,5 @@
 
 App.WebGlSmoothing = (function(WebGl, Shader){
-
-    
-    /*
-    * Actual webgl function creation
-    */
     function createSmoothingFunc(gl){
         const fragmentShaderText = Shader.shaderText('webgl-fragment-shader-smoothing').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader'));
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, ['u_radius', 'u_image_dimensions']);
