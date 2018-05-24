@@ -1,6 +1,6 @@
 @keyframes scaleAnimation {
     0%   {transform: scale(1, 1);}
-    50%  {transform: scale(1.05, 1.05);}
+    40%  {transform: scale(1.1, 1.1);}
     100% {transform: scale(1, 1);}
 }
 
@@ -8,6 +8,7 @@
     display: inline-block;
     position: relative;
     z-index: 100;
+    background-color: var(--pinned-controls-bg-color);
     box-shadow: -1px 2px 4px rgba(0,0,0,0.3);
     margin: 8px 0 16px;
     border-radius: 2px;
