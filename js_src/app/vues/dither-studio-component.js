@@ -469,6 +469,7 @@
                 originalImageCanvas.context.drawImage(originalImageCanvas.canvas, 0, 0);
                 //finish loading image
                 this.loadedImage = loadedImage;
+                this.zoomFit();
                 this.imageFiltersBeforeDitherChanged(false);
                 tabsThatHaveSeenImageSet.clear();
                 tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
@@ -500,14 +501,6 @@
                 const filters = this.imageFilters;
                 Canvas.scale(originalImageCanvas, sourceCanvas, scaleAmount, filters);
                 Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
-                
-                //adjust zoom
-                if(this.zoom > this.zoomMax){
-                    this.zoom = this.zoomMax;
-                }
-                else if(this.zoom < this.zoomMin){
-                    this.zoom = this.zoomMin;
-                }
                 
                 if(this.isWebglSupported){
                     transformCanvasWebGl.canvas.width = imageHeader.width;
