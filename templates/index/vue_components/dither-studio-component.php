@@ -24,7 +24,7 @@
                     </template>
                 </div>
                 <?php foreach(['open', 'image', 'settings', 'export'] as $index => $templateName): ?>
-                    <div class="controls-tab-container" v-show="activeControlsTab === <?= $index; ?>">
+                    <div v-show="activeControlsTab === <?= $index; ?>">
                         <?php require(TEMPLATES_GLOBAL_CONTROLS_TABS_PATH.$templateName.'.php'); ?>
                     </div>
                 <?php endforeach; ?>

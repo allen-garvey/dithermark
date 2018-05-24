@@ -1,4 +1,4 @@
-<div>
+<div class="controls-tab-container">
     <fieldset>
         <legend>Device</legend>
         <button class="btn btn-primary" v-on:click="loadImageTrigger" title="Open local image file">Image file</button>

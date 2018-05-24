@@ -10,13 +10,11 @@
     let transformCanvasWebGl;
     let sourceCanvasOutput;
     let transformCanvasOutput;
-    let saveImageCanvas;
     
     let sourceWebglTexture;
     let ditherOutputWebglTexture;
 
-    //saving and loading image elements
-    let saveImageLink;
+    //loading image elements
     let fileInput;
 
     //used to keep track of which tabs have loaded a new image to them, after an image is loaded
@@ -42,8 +40,7 @@
     Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         created: function(){
-            //initialize saving and loading image elements
-            saveImageLink = document.createElement('a');
+            //initialize loading image elements
             fileInput = document.createElement('input');
             fileInput.type = 'file';
             
@@ -64,7 +61,6 @@
             sourceCanvas = Canvas.create();
             transformCanvas = Canvas.create();
             transformCanvasWebGl = Canvas.createWebgl();
-            saveImageCanvas = Canvas.create();
             ditherOutputCanvas = Canvas.create();
             this.areCanvasFiltersSupported = Canvas.areCanvasFiltersSupported(originalImageCanvas);
 
@@ -108,8 +104,6 @@
                 activeControlsTab: 0,
                 //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
                 loadedImage: null,
-                saveImageFileName: '',
-                saveImageFileType: 'image/png',
                 isLivePreviewEnabled: true,
                 automaticallyResizeLargeImages: true,
                 isCurrentlyLoadingImageUrl: false,
@@ -188,12 +182,6 @@
                     return this.$refs.bwDitherSection;
                 }
                 return this.$refs.colorDitherSection;
-            },
-            saveImageFileExtension: function(){
-                if(this.saveImageFileType === 'image/jpeg'){
-                    return '.jpg';
-                }
-                return '.png';
             },
             globalControlsTabs: function(){
                 let tabs = [
@@ -278,16 +266,6 @@
                         link.target = '_blank';
                     });
                 }
-            },
-            saveImageFileName: function(newValue, oldValue){
-                if(newValue === oldValue){
-                    return;
-                }
-                let title = Constants.appName;
-                if(newValue){
-                    title = `${title} | ${newValue}`;
-                }
-                document.title = title;
             },
             currentEditorThemeIndex: function(newThemeIndex, oldThemeIndex){
                 let classList = document.documentElement.classList;
@@ -390,28 +368,8 @@
             loadImageTrigger: function(){
                 fileInput.click();
             },
-            //downloads image
-            //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
-            saveImage: function(){
-                //if the image is pixelated, that means the transformCanvas is scaled down,
-                //so we have to scale it back up to 100% first. Otherwise, we can just use the transformCanvas
-                //directly, for a performance gain
-                let sourceCanvas = transformCanvas;
-                if(this.pixelateImageZoom !== 100){
-                    Canvas.scale(transformCanvas, saveImageCanvas, 100 / this.pixelateImageZoom);
-                    sourceCanvas = saveImageCanvas;
-                }
-                Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl)=>{
-                    saveImageLink.href = objectUrl;
-                    saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
-                    saveImageLink.click();
-                });
-                //follow Unsplash API guidelines for triggering download
-                //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
-                if(this.loadedImage.unsplash){
-                    //arguably should be POST request here, but much easier to just use GET
-                    fetch(`${Constants.unsplashDownloadUrl}?photo_id=${this.loadedImage.unsplash.id}`);
-                }
+            onSaveRequested: function(callback){
+                callback(transformCanvas, this.pixelateImageZoom, this.loadedImage.unsplash);
             },
             loadImageFromUrlFailed: function(error, imageUrl){
                 this.openImageErrorMessage = Fs.messageForOpenImageUrlError(error, imageUrl);
@@ -452,7 +410,7 @@
                 };
                 //show webgl warning if any, until user closes it
                 this.showWebglWarningMessage = true;
-                this.saveImageFileName = file.name.replace(/\.(png|bmp|jpg|jpeg)$/i, '');
+                this.$refs.exportTab.fileChanged(file.name);
                 
                 //resize large images if necessary
                 const largeImageDimensionThreshold = 1200;
