@@ -30,6 +30,7 @@
         $ret[] = 'color-input-component';
         $ret[] = 'color-picker-component';
         $ret[] = 'export-tab-component';
+        $ret[] = 'open-tab-component';
         $ret[] = 'bw-dither-component';
         $ret[] = 'color-dither-component';
         $ret[] = 'dither-studio-component';

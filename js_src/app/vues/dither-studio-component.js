@@ -1,4 +1,4 @@
-(function(Vue, Fs, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, RandomImage, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter){
+(function(Vue, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter){
     //webworker stuff
     let ditherWorkers;
     
@@ -13,9 +13,6 @@
     
     let sourceWebglTexture;
     let ditherOutputWebglTexture;
-
-    //loading image elements
-    let fileInput;
 
     //used to keep track of which tabs have loaded a new image to them, after an image is loaded
     //this is because originally, only the active tab when an image is loaded will register it as new
@@ -40,17 +37,6 @@
     Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
         created: function(){
-            //initialize loading image elements
-            fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            
-            fileInput.addEventListener('change', (e)=>{
-                Fs.openImageFile(e, this.loadImage, (errorMessage)=>{
-                    this.openImageErrorMessage = errorMessage;
-                });
-                fileInput.value = null;
-            }, false);
-
             WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
                 ditherWorkers = workers;
                 ditherWorkers.forEach((ditherWorker)=>{
@@ -106,7 +92,6 @@
                 loadedImage: null,
                 isLivePreviewEnabled: true,
                 automaticallyResizeLargeImages: true,
-                isCurrentlyLoadingImageUrl: false,
                 isWebglSupported: false,
                 isWebglEnabled: false,
                 zoom: 100,
@@ -260,7 +245,7 @@
         watch: {
             loadedImage: function(newValue, oldValue){
                 //only do this for the first image loaded
-                if(oldValue === null){
+                if(!oldValue){
                     //make links open in new tab now, so user won't lose saved work
                     document.querySelectorAll('.nav a').forEach((link)=>{
                         link.target = '_blank';
@@ -365,38 +350,8 @@
             /*
             * Loading and saving image stuff
             */
-            loadImageTrigger: function(){
-                fileInput.click();
-            },
             onSaveRequested: function(callback){
                 callback(transformCanvas, this.pixelateImageZoom, this.loadedImage.unsplash);
-            },
-            loadImageFromUrlFailed: function(error, imageUrl){
-                this.openImageErrorMessage = Fs.messageForOpenImageUrlError(error, imageUrl);
-                this.isCurrentlyLoadingImageUrl = false;
-            },
-            showOpenImageUrlPrompt: function(){
-                this.showModalPrompt('Image Url', '', this.loadImageUrl, {okButtonValue: 'Open', inputType: 'url', placeholder: 'http://example.com/image.jpg'});
-            },
-            loadImageUrl: function(imageUrl){
-                if(!imageUrl){
-                    return;
-                }
-                this.isCurrentlyLoadingImageUrl = true;
-                Fs.openImageUrl(imageUrl).then(({image, file})=>{
-                    this.loadImage(image, file);
-                    this.isCurrentlyLoadingImageUrl = false;
-                }).catch((error)=>{
-                    this.loadImageFromUrlFailed(error, imageUrl);
-                });
-            },
-            loadRandomImage: function(){
-                this.isCurrentlyLoadingImageUrl = true;
-                
-                RandomImage.get(window.innerWidth, window.innerHeight).then(({image, file})=>{
-                    this.loadImage(image, file);
-                    this.isCurrentlyLoadingImageUrl = false;
-                }).catch(this.loadImageFromUrlFailed);
             },
             loadImage: function(image, file){
                 this.openImageErrorMessage = null;
@@ -598,4 +553,4 @@
             },
         }
     });
-})(window.Vue, App.Fs, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.RandomImage, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter);
+})(window.Vue, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter);
