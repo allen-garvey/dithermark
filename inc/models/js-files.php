@@ -75,6 +75,7 @@
             JS_APP_PATH.'webgl-color-dither.js',
             JS_APP_PATH.'webgl-smoothing.js',
             JS_APP_PATH.'webgl-bilateral-filter.js',
+            JS_APP_PATH.'webgl-canvas-filters.js',
             JS_APP_PATH.'histogram.js',
             JS_APP_PATH.'algorithm-model.js',
         ], appVueComponents());

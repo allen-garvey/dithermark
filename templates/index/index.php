@@ -44,6 +44,7 @@
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-color-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bilateral-filter.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-smoothing.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-canvas-filters.php'); ?>
         <script type="text/javascript" src="<?= JS_VUE_URL; ?>"></script>
         <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>

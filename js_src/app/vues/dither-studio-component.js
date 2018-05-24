@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter){
+(function(Vue, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters){
     //webworker stuff
     let ditherWorkers;
     
@@ -31,6 +31,7 @@
     }
     
     //canvas css filters
+    //contrast highest value is 300
     const imageFilterValues = [0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 150, 160, 180, 200];
     const contrastFilterValues = imageFilterValues.filter((value)=>{ return value >= 100; });
 
@@ -214,28 +215,43 @@
                 }
                 return '';
             },
-            imageFilters: function(){
-                if(!this.areCanvasFiltersSupported){
-                    return '';
-                }
-                const filters = [];
+            imageFiltersRaw: function(){
+                const filters = {};
                 const contrast = this.contrastFilterValues[this.selectedImageContrastIndex];
                 const saturation = this.imageFilterValues[this.selectedImageSaturationIndex];
                 const hue = Math.floor(this.hueRotationValue);
                 //100% is unchanged
-                if(contrast !== 100){
-                    filters.push(`contrast(${contrast}%)`);
+                //and reducing contrast is not supported
+                if(contrast > 100){
+                    filters['contrast'] = contrast;
                 }
-                if(saturation !== 100){
-                    filters.push(`saturate(${saturation}%)`);
+                if(saturation !== 100 && saturation >= 0){
+                    filters['saturation'] = saturation;
                 }
                 if(hue > 0 && hue < 360){
-                    filters.push(`hue-rotate(${hue}deg)`);
+                    filters['hue'] = hue;
+                }
+                return filters;
+            },
+            imageFilters: function(){
+                const filtersRaw = this.imageFiltersRaw;
+                const filters = [];
+                if('contrast' in filtersRaw){
+                    filters.push(`contrast(${filtersRaw.contrast}%)`);
+                }
+                if('saturation' in filtersRaw){
+                    filters.push(`saturate(${filtersRaw.saturation}%)`);
+                }
+                if('hue' in filtersRaw){
+                    filters.push(`hue-rotate(${filtersRaw.hue}deg)`);
                 }
                 return filters.join(' ');
             },
             isSmoothingEnabled: function(){
                 return this.isWebglEnabled && this.isWebglHighpFloatSupported;
+            },
+            areCanvasFiltersEnabled: function(){
+                return this.areCanvasFiltersSupported || this.isWebglEnabled; 
             },
             serializedGlobalSettings: function(){
                 const editorThemeKey = this.currentEditorThemeIndex === null ? '' : this.editorThemes[this.currentEditorThemeIndex].key;
@@ -399,6 +415,9 @@
                 //apply filters
                 this.imagePixelationChanged();
                 if(this.isWebglEnabled){
+                    if(!this.areCanvasFiltersSupported){
+                        this.applyWebGlCanvasFilters();
+                    }
                     this.bilateralFilterValueChanged();
                     this.imageSmoothingBeforeChanged();
                 }
@@ -415,10 +434,22 @@
                     this.activeDitherSection.imageLoaded(this.imageHeader);
                 }
             },
+            applyWebGlCanvasFilters: function(){
+                const filters = this.imageFiltersRaw;
+                //don't do anything if filters are all invalid or at defaults
+                if(Object.keys(filters).length < 1){
+                    return;
+                }
+                const imageHeader = this.imageHeader;
+                WebGlCanvasFilters.filter(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, filters.contrast, filters.saturation, filters.hue);
+                sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+                sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+            },
             imagePixelationChanged: function(){
                 const imageHeader = this.imageHeader;
                 const scaleAmount = this.pixelateImageZoom / 100;
-                const filters = this.imageFilters;
+                const filters = this.areCanvasFiltersSupported ? this.imageFilters : '';
                 Canvas.scale(originalImageCanvas, sourceCanvas, scaleAmount, filters);
                 Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
                 
@@ -574,4 +605,4 @@
             },
         }
     });
-})(window.Vue, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter);
+})(window.Vue, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters);
