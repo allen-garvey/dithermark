@@ -410,6 +410,13 @@
                 tabsThatHaveSeenImageSet.clear();
                 tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
                 this.activeDitherSection.imageLoaded(this.imageHeader, true);
+                //this is so mobile users will actually be able to see that an image has loaded
+                //have to use a timer since unsplashAttributionContainer won't be in proper place on initial page load
+                if(getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') != 'fixed'){
+                    setTimeout(()=>{
+                        this.$refs.unsplashAttributionContainer.scrollIntoView({behavior: 'smooth', block: 'start'});
+                    }, 1);
+                }
             },
             imageFiltersBeforeDitherChanged: function(notifyDitherSection=true){
                 //apply filters

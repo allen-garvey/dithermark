@@ -55,7 +55,7 @@
         </div>
     </div>
     <?php //if unsplash-attribution component is not in extra div, it breaks dithering for some reason ?>
-    <div>
+    <div ref="unsplashAttributionContainer">
         <unsplash-attribution v-if="loadedImage &amp;&amp; loadedImage.unsplash" :unsplash-info="loadedImage.unsplash" />
     </div>
     <div class="image-canvas-supercontainer" v-show="isImageLoaded">
