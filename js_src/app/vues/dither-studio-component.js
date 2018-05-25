@@ -450,8 +450,8 @@
                 const imageHeader = this.imageHeader;
                 const scaleAmount = this.pixelateImageZoom / 100;
                 const filters = this.areCanvasFiltersSupported ? this.imageFilters : '';
-                Canvas.scale(originalImageCanvas, sourceCanvas, scaleAmount, filters);
-                Canvas.scale(originalImageCanvas, transformCanvas, scaleAmount, filters);
+                Canvas.copy(originalImageCanvas, sourceCanvas, scaleAmount, filters);
+                Canvas.copy(originalImageCanvas, transformCanvas, scaleAmount, filters);
                 
                 if(this.isWebglSupported){
                     transformCanvasWebGl.canvas.width = imageHeader.width;
@@ -520,14 +520,14 @@
                 hasImageBeenTransformed = this.imageSmoothingAfterChanged() || hasImageBeenTransformed;
                 if(!hasImageBeenTransformed){
                     //otherwise image won't be reset if no filters are active
-                    Canvas.scale(ditherOutputCanvas, transformCanvas, 1);
+                    Canvas.copy(ditherOutputCanvas, transformCanvas);
                 }
                 this.zoomImage();
             },
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
-                Canvas.scale(sourceCanvas, sourceCanvasOutput, scaleAmount);
-                Canvas.scale(transformCanvas, transformCanvasOutput, scaleAmount);
+                Canvas.copy(sourceCanvas, sourceCanvasOutput, scaleAmount);
+                Canvas.copy(transformCanvas, transformCanvasOutput, scaleAmount);
             },
             resetZoom: function(){
                 this.zoom = 100;
@@ -578,7 +578,7 @@
                 if(componentId === this.activeDitherComponentId){
                     if(this.isWebglEnabled){
                         //copy output to ditherOutputCanvas so we don't lose it for post filter dithers
-                        Canvas.scale(transformCanvas, ditherOutputCanvas, 1);
+                        Canvas.copy(transformCanvas, ditherOutputCanvas);
                         this.imageFiltersAfterDitherChanged();
                     }
                     this.zoomImage();

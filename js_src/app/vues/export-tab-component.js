@@ -47,7 +47,7 @@
                     let sourceCanvas = transformCanvas;
                     if(pixelateImageZoom !== 100){
                         saveImageCanvas = saveImageCanvas || Canvas.create();
-                        Canvas.scale(sourceCanvas, saveImageCanvas, 100 / pixelateImageZoom);
+                        Canvas.copy(sourceCanvas, saveImageCanvas, 100 / pixelateImageZoom);
                         sourceCanvas = saveImageCanvas;
                     }
                     Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl)=>{

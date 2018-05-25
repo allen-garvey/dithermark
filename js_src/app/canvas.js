@@ -59,15 +59,20 @@ App.Canvas = (function(Polyfills){
         };
     }
     
-    function scaleCanvasImage(sourceCanvasObject, targetCanvasObject, scaleAmount, filters=''){
+    //copies an image from source canvas to target canvas
+    //scale is percentage to resize image - 1 is 100 percent (unchanged)
+    //filters are css canvas filters string
+    //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
+    //make sure canvas filters are supported before using them
+    function copyCanvas(sourceCanvasObject, targetCanvasObject, scale=1, filters=''){
         const sourceWidth = sourceCanvasObject.canvas.width;
         const sourceHeight = sourceCanvasObject.canvas.height;
         
         let scaledWidth = sourceWidth;
         let scaledHeight = sourceHeight;
-        if(scaleAmount !== 1){
-            scaledWidth = Math.ceil(scaledWidth * scaleAmount);
-            scaledHeight = Math.ceil(scaledHeight * scaleAmount);
+        if(scale !== 1){
+            scaledWidth = Math.ceil(scaledWidth * scale);
+            scaledHeight = Math.ceil(scaledHeight * scale);
         }
         
         targetCanvasObject.canvas.width = scaledWidth;
@@ -127,7 +132,7 @@ App.Canvas = (function(Polyfills){
         clear: clearCanvas,
         createWebgl: createWebglCanvas,
         loadImage: canvasObjectLoadImage,
-        scale: scaleCanvasImage,
+        copy: copyCanvas,
         createSharedImageBuffer,
         replaceImageWithArray,
         maxScalePercentageForImage,
