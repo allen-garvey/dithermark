@@ -34,20 +34,6 @@ input[type="checkbox"]{
     margin-bottom: 12px;
 }
 
-.controls-tab-container{
-    padding: 0 8px;
-    & > *{
-        margin-top: 16px;
-    }
-    fieldset{
-        padding-left: 0;
-        padding-right: 0;
-        & > div{
-            margin-bottom: 8px;
-        }
-    }
-}
-
 .transform-button-container{
     text-align: right;
 }

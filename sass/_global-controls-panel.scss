@@ -4,5 +4,16 @@
         padding: 2px 0 12px;
     }
 }
+
+.controls-tab-container{
+    & > *{
+        margin-top: 16px;
+    }
+    fieldset{
+        padding-left: 0;
+        padding-right: 0;
+        & > div{
+            margin-bottom: 8px;
+        }
     }
 }
