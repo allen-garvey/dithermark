@@ -102,7 +102,7 @@ App.Canvas = (function(Polyfills){
     }
     
     //pixels should be UInt8ClampedArray
-    function replaceImageWithArray(targetCanvasObject, imageWidth, imageHeight, pixels){
+    function loadPixels(targetCanvasObject, imageWidth, imageHeight, pixels){
         const imageData = targetCanvasObject.context.createImageData(imageWidth, imageHeight);
         imageData.data.set(pixels);
         targetCanvasObject.context.putImageData(imageData, 0, 0);
@@ -134,7 +134,7 @@ App.Canvas = (function(Polyfills){
         loadImage: canvasObjectLoadImage,
         copy: copyCanvas,
         createSharedImageBuffer,
-        replaceImageWithArray,
+        loadPixels,
         maxScalePercentageForImage,
         minScalePercentageForImage,
         devicePixelRatio,

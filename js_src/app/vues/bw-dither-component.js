@@ -210,7 +210,7 @@
             ditherWorkerMessageReceived: function(pixels){
                 this.requestCanvases((transformCanvas)=>{
                     this.hasImageBeenTransformed = true;
-                    Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
+                    Canvas.loadPixels(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                     this.requestDisplayTransformedImage(this.componentId);
                 });
             },

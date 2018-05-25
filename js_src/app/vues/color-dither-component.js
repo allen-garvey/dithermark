@@ -244,7 +244,7 @@
             },
             ditherWorkerMessageReceived: function(pixels){
                 this.requestCanvases((transformCanvas)=>{
-                    Canvas.replaceImageWithArray(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
+                    Canvas.loadPixels(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
                     this.requestDisplayTransformedImage();
                 });
             },
