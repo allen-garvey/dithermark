@@ -96,12 +96,7 @@ App.Canvas = (function(Polyfills){
         return buffer;
     }
     
-    //buffer should be ArrayBuffer or SharedArrayBuffer
-    function replaceImageWithBuffer(targetCanvasObject, imageWidth, imageHeight, buffer){
-        const pixels = new Uint8ClampedArray(buffer);
-        replaceImageWithArray(targetCanvasObject, imageWidth, imageHeight, pixels);
-    }
-    
+    //pixels should be UInt8ClampedArray
     function replaceImageWithArray(targetCanvasObject, imageWidth, imageHeight, pixels){
         const imageData = targetCanvasObject.context.createImageData(imageWidth, imageHeight);
         imageData.data.set(pixels);
@@ -134,7 +129,6 @@ App.Canvas = (function(Polyfills){
         loadImage: canvasObjectLoadImage,
         scale: scaleCanvasImage,
         createSharedImageBuffer,
-        replaceImageWithBuffer,
         replaceImageWithArray,
         maxScalePercentageForImage,
         minScalePercentageForImage,
