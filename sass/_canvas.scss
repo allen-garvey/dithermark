@@ -9,12 +9,14 @@
 }
 
 .image-canvas-container{
+    display: flex;
+    justify-content: center;
     margin-top: 12px;
-    //non-fixed styles only
-    display: grid;
     max-width: 100%;
-    grid-template-columns: auto auto;
-    grid-column-gap: $canvasMargin;
+}
+
+.output-canvas + .output-canvas{
+    margin-left: $canvasMargin;
 }
 
 @include pinned_controls_mq{
@@ -22,13 +24,8 @@
         justify-content: flex-start;
         overflow-x: initial;
     }
-    .output-canvas + .output-canvas{
-        margin-left: $canvasMargin;
-    }
     
     .image-canvas-container{
-        display: flex;
-        justify-content: center;
         max-width: none;
 
         &::before, &::after{
