@@ -395,7 +395,7 @@
                 const largestImageDimension = Math.max(loadedImage.width, loadedImage.height);
                 if(this.automaticallyResizeLargeImages && largestImageDimension > largeImageDimensionThreshold){
                     const resizePercentage = largeImageDimensionThreshold / largestImageDimension;
-                    Canvas.loadImageScaled(originalImageCanvas, image, resizePercentage);
+                    Canvas.loadImage(originalImageCanvas, image, resizePercentage);
                     loadedImage.width = originalImageCanvas.canvas.width;
                     loadedImage.height = originalImageCanvas.canvas.height;
                 }

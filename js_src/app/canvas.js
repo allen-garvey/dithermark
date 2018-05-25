@@ -11,16 +11,15 @@ App.Canvas = (function(Polyfills){
     function clearCanvas(canvasObject){
         canvasObject.context.clearRect(0, 0, canvasObject.canvas.width, canvasObject.canvas.height);
     }
-    
-    function canvasObjectLoadImage(canvasObject, image){
-        canvasObject.canvas.width = image.width;
-        canvasObject.canvas.height = image.height;
-        canvasObject.context.drawImage(image, 0, 0);
-    }
 
-    function canvasObjectLoadImageScaled(canvasObject, image, scale){
-        const scaledWidth = Math.round(image.width * scale);
-        const scaledHeight = Math.round(image.height * scale);
+    //scale is percentage to resize image - 1 is 100 percent (unchanged)
+    function canvasObjectLoadImage(canvasObject, image, scale=1){
+        let scaledWidth = image.width;
+        let scaledHeight = image.height;
+        if(scale !== 1){
+            scaledWidth =  Math.round(scaledWidth * scale);
+            scaledHeight = Math.round(scaledHeight * scale);
+        }
         canvasObject.canvas.width = scaledWidth;
         canvasObject.canvas.height = scaledHeight;
         canvasObject.context.drawImage(image, 0, 0, scaledWidth, scaledHeight);
@@ -133,7 +132,6 @@ App.Canvas = (function(Polyfills){
         clear: clearCanvas,
         createWebgl: createWebglCanvas,
         loadImage: canvasObjectLoadImage,
-        loadImageScaled: canvasObjectLoadImageScaled,
         scale: scaleCanvasImage,
         createSharedImageBuffer,
         replaceImageWithBuffer,
