@@ -48,7 +48,7 @@
 
 	.super-dither-controls-container, .global-controls-panel{
 		border-left: $controls_border;
-		padding: 8px;
+		padding: 8px $global_horizontal_padding;
 	}
 	.super-dither-controls-container{
 		border-bottom: $controls_border;
