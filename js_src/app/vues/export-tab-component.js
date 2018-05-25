@@ -56,6 +56,10 @@
                         saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                         saveImageLink.click();
                     });
+                    //clear the canvas to free up memory
+                    if(sourceCanvas === saveImageCanvas){
+                        Canvas.clear(saveImageCanvas);
+                    }
                     //follow Unsplash API guidelines for triggering download
                     //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
                     if(unsplash){
