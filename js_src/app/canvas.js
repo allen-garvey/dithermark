@@ -4,29 +4,9 @@ App.Canvas = (function(Polyfills){
     function areCanvasFiltersSupported(canvasObject){
         return 'filter' in canvasObject.context;
     }
-
-    //make sure to call context.beginPath() after clearing if using paths or rect()
-    //or canvas will not clear
-    //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
-    function clearCanvas(canvasObject){
-        canvasObject.context.clearRect(0, 0, canvasObject.canvas.width, canvasObject.canvas.height);
-    }
-
-    //scale is percentage to resize image - 1 is 100 percent (unchanged)
-    function canvasObjectLoadImage(canvasObject, image, scale=1){
-        let scaledWidth = image.width;
-        let scaledHeight = image.height;
-        if(scale !== 1){
-            scaledWidth =  Math.round(scaledWidth * scale);
-            scaledHeight = Math.round(scaledHeight * scale);
-        }
-        canvasObject.canvas.width = scaledWidth;
-        canvasObject.canvas.height = scaledHeight;
-        canvasObject.context.drawImage(image, 0, 0, scaledWidth, scaledHeight);
-    }
     
     //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-    function createCanvasObject(canvas){
+    function createCanvas(canvas){
         canvas = canvas || document.createElement('canvas');
         return {
             canvas,
@@ -57,6 +37,13 @@ App.Canvas = (function(Polyfills){
             supportsHighIntPrecision,
             supportsHighFloatPrecision,
         };
+    }
+
+    //make sure to call context.beginPath() after clearing if using paths or rect()
+    //or canvas will not clear
+    //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/clearRect
+    function clearCanvas(canvasObject){
+        canvasObject.context.clearRect(0, 0, canvasObject.canvas.width, canvasObject.canvas.height);
     }
     
     //copies an image from source canvas to target canvas
@@ -107,6 +94,19 @@ App.Canvas = (function(Polyfills){
         imageData.data.set(pixels);
         targetCanvasObject.context.putImageData(imageData, 0, 0);
     }
+
+    //scale is percentage to resize image - 1 is 100 percent (unchanged)
+    function loadImage(canvasObject, image, scale=1){
+        let scaledWidth = image.width;
+        let scaledHeight = image.height;
+        if(scale !== 1){
+            scaledWidth =  Math.round(scaledWidth * scale);
+            scaledHeight = Math.round(scaledHeight * scale);
+        }
+        canvasObject.canvas.width = scaledWidth;
+        canvasObject.canvas.height = scaledHeight;
+        canvasObject.context.drawImage(image, 0, 0, scaledWidth, scaledHeight);
+    }
     
     //maximum allowed size is largest size in pixels image is allowed to be
     function maxScalePercentageForImage(imageWidth, imageHeight, maximumAllowedSize){
@@ -128,12 +128,12 @@ App.Canvas = (function(Polyfills){
 
     
     return {
-        create: createCanvasObject,
+        create: createCanvas,
         clear: clearCanvas,
         createWebgl: createWebglCanvas,
-        loadImage: canvasObjectLoadImage,
         copy: copyCanvas,
         createSharedImageBuffer,
+        loadImage,
         loadPixels,
         maxScalePercentageForImage,
         minScalePercentageForImage,
