@@ -19,8 +19,15 @@
     <div class="spread-content threshold-container">
         <label>
             Threshold
-            <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
+            <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold" list="threshold-tickmarks"/>
             <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
+            <datalist id="threshold-tickmarks">
+                <option value="0"/>
+                <option value="63"/>
+                <option value="127"/>
+                <option value="191"/>
+                <option value="255"/>
+            </datalist>
         </label>
     </div>
     <fieldset>
