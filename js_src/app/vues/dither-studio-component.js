@@ -550,6 +550,9 @@
                 if(getComputedStyle(controlsContainer).getPropertyValue('position') === 'fixed'){
                     windowWidth -= controlsContainer.offsetWidth;
                 }
+                if(this.showOriginalImage){
+                    windowWidth -= parseInt(getComputedStyle(this.$refs.transformCanvasOutput).getPropertyValue('margin-left').replace(/[\D]/, ''));
+                }
                 //if zoom bar is pinned, we need to subtract height of zoom bar
                 let windowHeight = window.innerHeight;
                 const zoomBarContainer = this.$refs.zoomBarContainer;
