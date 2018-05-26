@@ -77,22 +77,22 @@
                     return false;
                 }
                 const key = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing);
-                return this.pendingColorQuantizations[key] > 0;
+                return this.isOptimizePaletteKeyPending(key);
             },
             selectedColorQuantizationPendingMessage: function(){
                 if(!this.isImageLoaded){
                     return '';
                 }
                 const key = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing);
+                if(!this.isOptimizePaletteKeyPending(key)){
+                    return '';
+                }
                 const percentage = this.pendingColorQuantizations[key];
                 const messageBase = 'Working…';
-                if(percentage === 1){
+                if(percentage <= 1){
                     return messageBase;
                 }
-                if(percentage > 0){
-                    return `${messageBase} ${percentage}%`;
-                }
-                return '';
+                return `${messageBase} ${percentage}%`;
             },
             currentPalette: function(){
                 return this.palettes[this.selectedPaletteIndex];
@@ -214,7 +214,7 @@
                     case WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS:
                         const key = optimizePaletteMemorizationKey(messageBody[1], messageBody[0], messageBody[3], messageBody[4], messageBody[5], messageBody[6]);
                         //check to make sure still pending and not done first, to avoid race condition
-                        if(this.pendingColorQuantizations[key]){
+                        if(this.isOptimizePaletteKeyPending(key)){
                             //have to use Vue.set for object keys
                             Vue.set(this.pendingColorQuantizations, key, messageBody[2]);
                         }
@@ -227,7 +227,7 @@
             },
             optimizePaletteMessageReceived: function(colors, key){
                 //avoids race condition where image is changed before color quantization returns
-                if(!this.pendingColorQuantizations[key]){
+                if(!this.isOptimizePaletteKeyPending(key)){
                     return;
                 }
                 optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax);
@@ -250,7 +250,7 @@
             },
             optimizePalette: function(){
                 const key = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing);
-                if(this.pendingColorQuantizations[key]){
+                if(this.isOptimizePaletteKeyPending(key)){
                     return;
                 }
                 if(optimizedPalettes[key]){
@@ -258,10 +258,13 @@
                     return;
                 }
                 //have to use Vue.set for object keys
-                Vue.set(this.pendingColorQuantizations, key, 1);
+                Vue.set(this.pendingColorQuantizations, key, 0);
                 this.$emit('request-worker', (worker)=>{
                     worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex, this.loadedImage.pixelation, this.loadedImage.contrast, this.loadedImage.saturation, this.loadedImage.smoothing));
                 });
+            },
+            isOptimizePaletteKeyPending: function(key){
+                return typeof this.pendingColorQuantizations[key] === 'number';
             },
             randomizePalette: function(){
                 this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
