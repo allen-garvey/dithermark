@@ -39,9 +39,25 @@ App.OptimizePaletteUtil = (function(PixelMath){
         return ret;
     }
 
+    //turns JavaScript array of pixels into a single Uint8Array
+    //need palette count for octree, since length of pixelArray
+    //might be less than number of colors returned
+    function pixelArrayToBuffer(pixelArray, paletteCount=0){
+        let ret = new Uint8Array(Math.max(pixelArray.length, paletteCount) * 3);
+        for(let i=0,offset=0;i<pixelArray.length;i++, offset+=3){
+            const pixel = pixelArray[i];
+            ret[offset] = pixel[0];
+            ret[offset+1] = pixel[1];
+            ret[offset+2] = pixel[2];
+        }
+
+        return ret;
+    }
+
 
     return {
         filterTransparentPixels,
         createPixelArray,
+        pixelArrayToBuffer
     };
 })(App.PixelMath);

@@ -59,18 +59,6 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         return pixelArray[Math.floor(pixelArray.length / 2)];
     }
 
-    function pixelArrayToBuffer(pixelArray){
-        let ret = new Uint8Array(pixelArray.length * 3);
-        for(let i=0,offset=0;i<pixelArray.length;i++, offset+=3){
-            const pixel = pixelArray[i];
-            ret[offset] = pixel[0];
-            ret[offset+1] = pixel[1];
-            ret[offset+2] = pixel[2];
-        }
-
-        return ret;
-    }
-
     function removeDuplicatePixelsWithinLimit(pixelArray, minSize){
         function pixelKey(pixel){
             return `${pixel[0]}-${pixel[1]}-${pixel[2]}`;
@@ -154,7 +142,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
             colors = mergeMedians(colors, numColors);
         }
 
-        return pixelArrayToBuffer(colors);
+        return Util.pixelArrayToBuffer(colors);
     }
 
     return {
