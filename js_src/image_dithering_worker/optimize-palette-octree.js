@@ -189,17 +189,21 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     function octree(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
         const octreeQuantizer = new OctreeQuantizer();
         const start = performance.now();
-        for(let i=0;i<pixels.length;i+=4){
-            const pixel = pixels.subarray(i, i+4);
-            //ignore transparent pixels
-            if(pixel[3] === 0){
-                continue;
+        const half = Math.floor(pixels.length / 8) * 4;
+        //split for loop in half for the sake of progress callback
+        for(let i=0;i<2;i++){
+            const length = i === 0 ? half : pixels.length;
+            for(let j=i*half;j<length;j+=4){
+                const pixel = pixels.subarray(j, j+4);
+                //ignore transparent pixels
+                if(pixel[3] === 0){
+                    continue;
+                }
+                octreeQuantizer.addColor(pixel);
             }
-            octreeQuantizer.addColor(pixel);
+            progressCallback((i+1)*40);
         }
-        console.log(`After octree pixels loaded ${performance.now() - start}`);
         const palette = octreeQuantizer.makePalette(numColors);
-        console.log(`After octree palette created ${performance.now() - start}`);
         return Util.pixelArrayToBuffer(palette, numColors);
     }
 
