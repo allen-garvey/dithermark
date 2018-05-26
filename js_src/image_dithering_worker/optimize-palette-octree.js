@@ -34,7 +34,6 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     function OctreeNode(level, parent){
         this.color = new Float32Array(3);
         this.pixelCount = 0;
-        // this.paletteIndex = 0;
         this.children = new Array(MAX_CHILDREN);
         if(level < MAX_DEPTH - 1){
             parent.addLevelNode(level, this);
@@ -102,22 +101,6 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
         
         return index;
     };
-
-    // OctreeNode.prototype.getPaletteIndex = function(color, level){
-    //     if(this.isLeaf){
-    //         return this.paletteIndex;
-    //     }
-    //     const index = this.getColorIndexForLevel(color, level);
-    //     if(this.children[index]){
-    //         return this.children[index].getPaletteIndex(color, level+1);
-    //     }
-    //     for(let i=0;i<MAX_CHILDREN;i++){
-    //         const node = this.children[i];
-    //         if(node){
-    //             return node.getPaletteIndex(color, level+1);
-    //         }
-    //     }
-    // };
     OctreeNode.prototype.removeLeaves = function(){
         let result = 0;
 
@@ -164,10 +147,6 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
         this.root.addColor(color, 0, this);
     };
 
-    // OctreeQuantizer.prototype.getPaletteIndex = function(color){
-    //    return this.root.getPaletteIndex(color);
-    // };
-
     //Make color palette with `colorCount` colors maximum
     OctreeQuantizer.prototype.makePalette = function(colorCount){
         let leafCount = this.getLeaves().length;
@@ -194,16 +173,12 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
         }
         //build palette
         const palette = [];
-        // let paletteIndex = 0;
         const leaves = this.getLeaves();
         for(let i=0;i<leaves.length;i++){
             const node = leaves[i];
             if(node.isLeaf()){
                 palette.push(node.getColor());
             }
-            // node.paletteIndex = paletteIndex;
-            // paletteIndex++;
-
             if(palette.length >= colorCount){
                 break;
             }
