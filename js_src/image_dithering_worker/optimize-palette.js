@@ -1,4 +1,4 @@
-App.OptimizePalette = (function(Popularity, MedianCut, ArrayUtil, RgbQuant, Perceptual){
+App.OptimizePalette = (function(Popularity, MedianCut, ArrayUtil, RgbQuant, Perceptual, Octree){
     return {
        perceptualMedianCut: Perceptual.medianCut,
        uniform: Perceptual.uniform,
@@ -8,5 +8,6 @@ App.OptimizePalette = (function(Popularity, MedianCut, ArrayUtil, RgbQuant, Perc
        lightnessPopularity: Popularity.lightnessPopularity,
        huePopularity: Popularity.huePopularity,
        rgbQuant: RgbQuant.rgbQuant,
+       octree: Octree.octree,
     };
-})(App.OptimizePalettePopularity, App.OptimizePaletteMedianCut, App.ArrayUtil, App.OptimizePaletteRgbQuant, App.OptimizePalettePerceptual);
+})(App.OptimizePalettePopularity, App.OptimizePaletteMedianCut, App.ArrayUtil, App.OptimizePaletteRgbQuant, App.OptimizePalettePerceptual, App.OptimizePaletteOctree);

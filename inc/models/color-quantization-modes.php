@@ -61,6 +61,8 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('PERCEPTUAL_LIGHTNESS_POPULARITY', 'Perceptual Lightness Popularity', 'lightnessPopularity', ['isPerceptual' => true]),
         new ColorQuantizationMode('HUE_POPULARITY', 'Hue Popularity', 'huePopularity'),
         new ColorQuantizationMode('PERCEPTUAL_HUE_POPULARITY', 'Perceptual Hue Popularity', 'huePopularity', ['isPerceptual' => true]),
+        'Octree',
+        new ColorQuantizationMode('OCTREE', 'Octree', 'octree'),
         'Median Cut',
         new ColorQuantizationMode('MEDIAN_CUT_AVERAGE', 'Median Cut (Average)', 'medianCut'),
         new ColorQuantizationMode('MEDIAN_CUT_MEDIAN', 'Median Cut (Median)', 'medianCut', ['isMedian' => true]),

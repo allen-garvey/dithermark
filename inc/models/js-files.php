@@ -101,6 +101,7 @@
             JS_WORKER_PATH.'optimize-palette-popularity.js',
             JS_WORKER_PATH.'optimize-palette-median-cut.js',
             JS_WORKER_PATH.'optimize-palette-rgb-quant.js',
+            JS_WORKER_PATH.'optimize-palette-octree.js',
             JS_WORKER_PATH.'optimize-palette.js',
             JS_WORKER_PATH.'main.js'
         ]);
