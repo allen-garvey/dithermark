@@ -158,7 +158,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
                 node.children.forEach((child)=>{
                     childCount++;
-                    pixelCount += node.pixelCount;
+                    pixelCount += child.pixelCount;
                 });
 
                 return {
