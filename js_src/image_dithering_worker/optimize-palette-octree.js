@@ -192,7 +192,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
     //prioritize colors that are frequent - many shades of frequent colors
     //non frequent colors will be culled
-    function sortPrioritizeMajority(a, b){
+    function sortPrioritizeMajority2(a, b){
         if(a.children != b.children){
             return a.children - b.children;
         }
@@ -201,7 +201,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
     //prioritize colors that are infrequent - fewer shades of frequent colors
     //non frequent colors will still exist
-    function sortPrioritizeMinority(a, b){
+    function sortPrioritizeMinority2(a, b){
         if(a.children != b.children){
             return b.children - a.children;
         }
@@ -210,7 +210,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
     //prioritize colors that are frequent - many shades of frequent colors
     //non frequent colors will be culled
-    function sortPrioritizeMajority2(a, b){
+    function sortPrioritizeMajority(a, b){
         if(a.pixels != b.pixels){
             return a.pixels - b.pixels;
         }
@@ -219,7 +219,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
     //prioritize colors that are infrequent - fewer shades of frequent colors
     //non frequent colors will still exist
-    function sortPrioritizeMinority2(a, b){
+    function sortPrioritizeMinority(a, b){
         if(a.pixels != b.pixels){
             return b.pixels - a.pixels;
         }
@@ -243,7 +243,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
             }
             progressCallback((i+1)*40);
         }
-        const sortFuncs = [sortPrioritizeMajority, sortPrioritizeMajority2, sortPrioritizeMinority, sortPrioritizeMinority2];
+        const sortFuncs = [sortPrioritizeMinority, sortPrioritizeMinority2, sortPrioritizeMajority, sortPrioritizeMajority2];
         const palette = octreeQuantizer.makePalette(numColors, sortFuncs[colorQuantization.sort]);
         return Util.pixelArrayToBuffer(palette, numColors);
     }
