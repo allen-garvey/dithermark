@@ -46,29 +46,21 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
     OctreeNode.prototype.getLeafNodes = function(){
         let ret = [];
-        for(let i=0;i<MAX_CHILDREN;i++){
-            const node = this.children[i];
-            if(node){
-                if(node.isLeaf()){
-                    ret.push(node);
-                }
-                else{
-                    //TODO make sure this is correct
-                    ret = ret.concat(node.getLeafNodes());
-                }
+        this.children.forEach((node)=>{
+            if(node.isLeaf()){
+                ret.push(node);
             }
-        }
+            else{
+                ret = ret.concat(node.getLeafNodes());
+            }
+        });
         return ret;
     };
 
     OctreeNode.prototype.getNodesPixelCount = function(){
-        let sumCount = this.pixelCount;
-        for(let i=0;i<MAX_CHILDREN;i++){
-            const node = this.children[i];
-            if(node){
-                sumCount += node.pixelCount;
-            }
-        }
+        return this.children.reduce((sum, node)=>{
+            return sum + node.pixelCount;
+        }, this.pixelCount);
     };
 
     OctreeNode.prototype.addColor = function(color, level, parent){
@@ -104,16 +96,13 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     OctreeNode.prototype.removeLeaves = function(){
         let result = 0;
 
-        for(let i=0;i<MAX_CHILDREN;i++){
-            const node = this.children[i];
-            if(node){
-                node.color.forEach((value, i)=>{
-                    this.color[i] += value;
-                });
-                this.pixelCount += node.pixelCount;
-                result++;
-            }
-        }
+        this.children.forEach((node)=>{
+            node.color.forEach((value, i)=>{
+                this.color[i] += value;
+            });
+            this.pixelCount += node.pixelCount;
+            result++;
+        });
 
         return result - 1;
     };
@@ -150,6 +139,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     //Make color palette with `colorCount` colors maximum
     OctreeQuantizer.prototype.makePalette = function(colorCount, prioritizeMinority=false){
         let leafCount = this.getLeaves().length;
+        const sortFunc = prioritizeMinority ? sortPrioritizeMinority : sortPrioritizeMajority;
 
         // reduce nodes
         // up to 8 leaves can be reduced here and the palette will have
@@ -162,17 +152,15 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
             if(!level){
                 continue;
             }
-            const sortFunc = prioritizeMinority ? sortPrioritizeMinority : sortPrioritizeMajority;
             const nodesOrder = level.map((node, i)=>{
                 let pixelCount = 0;
                 let childCount = 0;
-                for(let i=0;i<MAX_CHILDREN;i++){
-                    const child = node.children[i];
-                    if(child){
-                        childCount++
-                        pixelCount += node.pixelCount;
-                    }
-                }
+
+                node.children.forEach((child)=>{
+                    childCount++;
+                    pixelCount += node.pixelCount;
+                });
+
                 return {
                     index: i,
                     pixels: pixelCount,
