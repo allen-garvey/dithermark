@@ -82,6 +82,100 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
         };
     }
 
+    /**
+     * Yliluoma's ordered dithering
+     * from: https://bisqwit.iki.fi/story/howto/dither/jy/
+     */
+    //based on: Yliluoma's ordered dithering algorithm 2
+    function yliluoma2ColorCompare(r1, g1, b1,  r2, g2, b2){
+        const luma1 = (r1*299 + g1*587 + b1*114) / (255.0*1000);
+        const luma2 = (r2*299 + g2*587 + b2*114) / (255.0*1000);
+        const lumadiff = luma1-luma2;
+        const diffR = (r1-r2)/255.0, diffG = (g1-g2)/255.0, diffB = (b1-b2)/255.0;
+        return (diffR * diffR * 0.299 + diffG * diffG * 0.587 + diffB * diffB * 0.114) * 0.75 + lumadiff*lumadiff;
+    }
+    function yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma){
+        let ret = new Array(colors.length);
+        let proportionTotal = 0;
+        const soFar = new Uint32Array(3);
+        const colorsLength = colors.length;
+        while(proportionTotal < colorsLength){
+            let chosenAmount = 1;
+            let chosen = 0;
+            const maxTestCount = Math.max(1, proportionTotal);
+
+            let leastPenalty = -1;
+            for(let index=0; index<colorsLength; ++index){
+                const color = colors[index];
+                const sum = new Uint32Array(3);
+                sum.set(soFar);
+                const add = new Uint32Array(3);
+                add.set(color);
+                for(let p=1; p<=maxTestCount; p*=2){
+                    for(let c=0; c<3; ++c){
+                        sum[c] += add[c];
+                    }
+                    for(let c=0; c<3; ++c){
+                        add[c] += add[c]
+                    }
+                    const t = proportionTotal + p;
+                    const test = new Uint32Array([sum[0] / t, sum[1] / t, sum[2] / t]);
+                    const penalty = yliluoma2ColorCompare(pixel[0], pixel[1], pixel[2], test[0], test[1], test[2]);
+                    if(penalty < leastPenalty || leastPenalty < 0){
+                        leastPenalty = penalty;
+                        chosen = index;
+                        chosenAmount = p;
+                    }
+                }
+            }
+            for(let p=0; p<chosenAmount; ++p){
+                if(proportionTotal >= colorsLength){
+                    break;
+                }
+                ret[proportionTotal++] = chosen;
+            }
+
+            const color = colors[chosen];
+            for(let c=0; c<3; ++c){
+                soFar[c] += color[c] * chosenAmount;
+            }
+        }
+        ret.sort((a, b)=>{
+            return paletteLuma[a] - paletteLuma[b];
+        });
+
+        return ret;
+
+    }
+    function createYliluomaOrderedDither2(dimensions, bayerCreationFunc){
+        const matrix = createMaxtrix(dimensions, bayerCreationFunc(dimensions));
+        const matrixLength = dimensions * dimensions;
+
+        return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
+            const paletteLuma = new Uint32Array(colors.length);
+            colors.forEach((color, i)=>{
+                paletteLuma[i] = color[0] * 299 + color[1] * 587 + color[2] * 114;
+            });
+
+            return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
+                const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+                const planIndex = Math.floor(bayerValue * colors.length / matrixLength);
+                const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma);
+                const colorsIndex = plan[planIndex];
+                const bestPixelMatch = colors[colorsIndex];
+                //rgb only, preserve alpha
+                for(let i=0;i<3;i++){
+                    pixel[i] = bestPixelMatch[i];
+                }
+                return pixel;
+            });
+        };
+    }
+
+    function yliluomaOrderedDither2Builder(dimensions){
+        return createYliluomaOrderedDither2(dimensions, Bayer.bayer);
+    }
+
 
     /**
      * Hue lightness ordered dither stuff
@@ -120,6 +214,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
     */
     const exports = {
         createHueLightnessDither: colorOrderedDitherBuilder('bayer', hueLightnessPostscriptFuncBuilder),
+        createYliluomaColorDither2: yliluomaOrderedDither2Builder,
     };
 
     DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{

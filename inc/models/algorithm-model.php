@@ -210,6 +210,8 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Hue-Lightness 16×16', 'OrderedDither.createHueLightnessDither(16)', 'ColorDither.createHueLightnessOrderedDither(16)'),
         'Ordered (Hue-Lightness/Random)',
         new DitherAlgorithm('Hue-Lightness 16×16 (R)', 'OrderedDither.createHueLightnessDither(16, true)', 'ColorDither.createHueLightnessOrderedDither(16, true)'),
+        'Ordered Arbitrary-palette Positional',
+        new DitherAlgorithm('Yliluoma 2', 'OrderedDither.createYliluomaColorDither2(8)', ''),
         'Ordered (Hatch)',
         new DitherAlgorithm('Hatch Vertical', 'OrderedDither.createHatchVerticalColorDither(4)', 'ColorDither.createHatchVerticalColorDither(4)'),
         new DitherAlgorithm('Hatch Horizontal', 'OrderedDither.createHatchHorizontalColorDither(4)', 'ColorDither.createHatchHorizontalColorDither(4)'),
