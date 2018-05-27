@@ -106,7 +106,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
             let chosenAmount = 1;
             let chosen = 0;
             const maxTestCount = Math.max(1, proportionTotal);
-            let leastPenalty = -1;
+            let leastPenalty = Infinity;
             for(let index=0; index<colorsLength; ++index){
                 const color = colors[index];
                 sum.set(soFar);
@@ -114,14 +114,12 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
                 for(let p=1; p<=maxTestCount; p*=2){
                     for(let c=0; c<3; ++c){
                         sum[c] += add[c];
-                    }
-                    for(let c=0; c<3; ++c){
-                        add[c] += add[c]
+                        add[c] += add[c];
                     }
                     const t = proportionTotal + p;
                     test.set([sum[0] / t, sum[1] / t, sum[2] / t]);
                     const penalty = yliluoma2ColorCompare(pixel[0], pixel[1], pixel[2], test[0], test[1], test[2]);
-                    if(penalty < leastPenalty || leastPenalty < 0){
+                    if(penalty < leastPenalty){
                         leastPenalty = penalty;
                         chosen = index;
                         chosenAmount = p;
