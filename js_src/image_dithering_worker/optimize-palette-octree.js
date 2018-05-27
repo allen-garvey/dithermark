@@ -137,9 +137,8 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     };
 
     //Make color palette with `colorCount` colors maximum
-    OctreeQuantizer.prototype.makePalette = function(colorCount, prioritizeMinority=false){
+    OctreeQuantizer.prototype.makePalette = function(colorCount, sortFunc){
         let leafCount = this.getLeaves().length;
-        const sortFunc = prioritizeMinority ? sortPrioritizeMinority : sortPrioritizeMajority;
 
         // reduce nodes
         // up to 8 leaves can be reduced here and the palette will have
@@ -209,6 +208,24 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
         return b.pixels - a.pixels;
     }
 
+    //prioritize colors that are frequent - many shades of frequent colors
+    //non frequent colors will be culled
+    function sortPrioritizeMajority2(a, b){
+        if(a.pixels != b.pixels){
+            return a.pixels - b.pixels;
+        }
+        return a.children - b.children;
+    }
+
+    //prioritize colors that are infrequent - fewer shades of frequent colors
+    //non frequent colors will still exist
+    function sortPrioritizeMinority2(a, b){
+        if(a.pixels != b.pixels){
+            return b.pixels - a.pixels;
+        }
+        return b.children - a.children;
+    }
+
     function octree(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
         const octreeQuantizer = new OctreeQuantizer();
         const start = performance.now();
@@ -226,7 +243,8 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
             }
             progressCallback((i+1)*40);
         }
-        const palette = octreeQuantizer.makePalette(numColors, colorQuantization.minority);
+        const sortFuncs = [sortPrioritizeMajority, sortPrioritizeMajority2, sortPrioritizeMinority, sortPrioritizeMinority2];
+        const palette = octreeQuantizer.makePalette(numColors, sortFuncs[colorQuantization.sort]);
         return Util.pixelArrayToBuffer(palette, numColors);
     }
 
