@@ -193,7 +193,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     //prioritize colors that are frequent - many shades of frequent colors
     //non frequent colors will be culled
     function sortPrioritizeMajority2(a, b){
-        return a.children - b.children || a.pixels - b.pixels;
+        return a.children - b.children || b.pixels - a.pixels;
     }
 
     //prioritize colors that are infrequent - fewer shades of frequent colors
