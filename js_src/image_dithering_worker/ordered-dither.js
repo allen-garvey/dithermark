@@ -134,7 +134,6 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
         return planBuffer.sort((a, b)=>{
             return paletteValues[a] - paletteValues[b];
         });
-
     }
     function pixelLuma(pixel){
         return pixel[Pixel.R_INDEX] * 299 + pixel[Pixel.G_INDEX] * 587 + pixel[Pixel.B_INDEX] * 114;
