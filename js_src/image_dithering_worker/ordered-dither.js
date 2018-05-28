@@ -94,11 +94,10 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
         const diffR = (r1-r2)/255.0, diffG = (g1-g2)/255.0, diffB = (b1-b2)/255.0;
         return (diffR * diffR * 0.299 + diffG * diffG * 0.587 + diffB * diffB * 0.114) * 0.75 + lumadiff*lumadiff;
     }
-    function yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma){
-        let ret = new Array(colors.length);
+    function yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer){
+        const colorsLength = colors.length;
         let proportionTotal = 0;
         const soFar = new Uint32Array(3);
-        const colorsLength = colors.length;
         const sum = new Uint32Array(3);
         const add = new Uint32Array(3);
         const test = new Uint32Array(3);
@@ -130,7 +129,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
                 if(proportionTotal >= colorsLength){
                     break;
                 }
-                ret[proportionTotal++] = chosen;
+                planBuffer[proportionTotal++] = chosen;
             }
 
             const color = colors[chosen];
@@ -138,11 +137,9 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
                 soFar[c] += color[c] * chosenAmount;
             }
         }
-        ret.sort((a, b)=>{
+        return planBuffer.sort((a, b)=>{
             return paletteLuma[a] - paletteLuma[b];
         });
-
-        return ret;
 
     }
     function createYliluomaOrderedDither2(dimensions, bayerCreationFunc){
@@ -150,10 +147,12 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
         const matrixLength = dimensions * dimensions;
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
-            const paletteLuma = new Uint32Array(colors.length);
+            const colorsLength = colors.length;
+            const paletteLuma = new Uint32Array(colorsLength);
             colors.forEach((color, i)=>{
                 paletteLuma[i] = color[0] * 299 + color[1] * 587 + color[2] * 114;
             });
+            const planBuffer = colorsLength < 256 ? new Uint8Array(colorsLength) : new Uint16Array(colorsLength);
 
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 //ignore transparent pixels
@@ -161,10 +160,9 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
                     return pixel;
                 }
                 const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
-                const planIndex = Math.floor(bayerValue * colors.length / matrixLength);
-                const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma);
-                const colorsIndex = plan[planIndex];
-                const bestPixelMatch = colors[colorsIndex];
+                const planIndex = Math.floor(bayerValue * colorsLength / matrixLength);
+                const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer);
+                const bestPixelMatch = colors[plan[planIndex]];
                 //rgb only, preserve alpha
                 for(let i=0;i<3;i++){
                     pixel[i] = bestPixelMatch[i];
