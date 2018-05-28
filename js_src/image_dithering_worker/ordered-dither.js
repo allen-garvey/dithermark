@@ -156,6 +156,10 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
             });
 
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
+                //ignore transparent pixels
+                if(pixel[Pixel.A_INDEX] === 0){
+                    return pixel;
+                }
                 const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 const planIndex = Math.floor(bayerValue * colors.length / matrixLength);
                 const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma);
