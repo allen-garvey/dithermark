@@ -142,8 +142,8 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
         });
 
     }
-    function createYliluomaOrderedDither2(dimensions, bayerCreationFunc){
-        const matrix = createMaxtrix(dimensions, bayerCreationFunc(dimensions));
+    function createYliluoma2OrderedDither(dimensions, bayerFuncName){
+        const matrix = createMaxtrix(dimensions, Bayer[bayerFuncName](dimensions));
         const matrixLength = dimensions * dimensions;
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
@@ -170,10 +170,6 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
                 return pixel;
             });
         };
-    }
-
-    function yliluomaOrderedDither2Builder(dimensions){
-        return createYliluomaOrderedDither2(dimensions, Bayer.bayer);
     }
 
 
@@ -214,7 +210,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
     */
     const exports = {
         createHueLightnessDither: colorOrderedDitherBuilder('bayer', hueLightnessPostscriptFuncBuilder),
-        createYliluomaColorDither2: yliluomaOrderedDither2Builder,
+        createYliluoma2ColorDither: createYliluoma2OrderedDither,
     };
 
     DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{
