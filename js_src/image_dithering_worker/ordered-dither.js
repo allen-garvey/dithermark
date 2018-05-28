@@ -1,4 +1,4 @@
-App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
+App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorDitherModeFunctions){
     
     function createMaxtrix(dimensions, data){
         return {
@@ -87,14 +87,9 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
      * from: https://bisqwit.iki.fi/story/howto/dither/jy/
      */
     //based on: Yliluoma's ordered dithering algorithm 2
-    function yliluoma2ColorCompare(r1, g1, b1,  r2, g2, b2){
-        const diffR = r1 - r2;
-        const diffG = g1 - g2;
-        const diffB = b1 - b2;
-        return (diffR * diffR * 0.299 + diffG * diffG * 0.587 + diffB * diffB * 0.114);
-    }
-    function yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer){
+    function yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer, pixelValueFunc, pixelDistanceFunc){
         const colorsLength = colors.length;
+        const pixelValue = pixelValueFunc(pixel);
         let proportionTotal = 0;
         const soFar = new Uint32Array(3);
         const sum = new Uint32Array(3);
@@ -116,7 +111,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
                     }
                     const t = proportionTotal + p;
                     test.set([sum[0] / t, sum[1] / t, sum[2] / t]);
-                    const penalty = yliluoma2ColorCompare(pixel[0], pixel[1], pixel[2], test[0], test[1], test[2]);
+                    const penalty = pixelDistanceFunc(pixelValue, pixelValueFunc(test));
                     if(penalty < leastPenalty){
                         leastPenalty = penalty;
                         chosen = index;
@@ -147,6 +142,9 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
             const colorsLength = colors.length;
+            const colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
+            const pixelValueFunc = colorDitherModeFuncs.pixelValue;
+            const pixelDistanceFunc = colorDitherModeFuncs.distance;
             const paletteLuma = new Uint32Array(colorsLength);
             colors.forEach((color, i)=>{
                 paletteLuma[i] = color[0] * 299 + color[1] * 587 + color[2] * 114;
@@ -160,7 +158,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
                 }
                 const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 const planIndex = Math.floor(bayerValue * colorsLength / matrixLength);
-                const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer);
+                const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer, pixelValueFunc, pixelDistanceFunc);
                 const bestPixelMatch = colors[plan[planIndex]];
                 //rgb only, preserve alpha
                 for(let i=0;i<3;i++){
@@ -219,4 +217,4 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
 
     return exports;
     
-})(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath, App.DitherUtil);
+})(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath, App.DitherUtil, App.ColorDitherModeFunctions);
