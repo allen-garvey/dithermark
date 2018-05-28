@@ -87,7 +87,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
      * from: https://bisqwit.iki.fi/story/howto/dither/jy/
      */
     //based on: Yliluoma's ordered dithering algorithm 2
-    function yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer, pixelValueFunc, pixelDistanceFunc){
+    function yliluoma2DeviseMixingPlan(pixel, colors, paletteValues, planBuffer, pixelValueFunc, pixelDistanceFunc){
         const colorsLength = colors.length;
         const pixelValue = pixelValueFunc(pixel);
         let proportionTotal = 0;
@@ -132,9 +132,12 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
             }
         }
         return planBuffer.sort((a, b)=>{
-            return paletteLuma[a] - paletteLuma[b];
+            return paletteValues[a] - paletteValues[b];
         });
 
+    }
+    function pixelLuma(pixel){
+        return pixel[Pixel.R_INDEX] * 299 + pixel[Pixel.G_INDEX] * 587 + pixel[Pixel.B_INDEX] * 114;
     }
     function createYliluoma2OrderedDither(dimensions, bayerFuncName){
         const matrix = createMaxtrix(dimensions, Bayer[bayerFuncName](dimensions));
@@ -145,9 +148,9 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
             const colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
             const pixelValueFunc = colorDitherModeFuncs.pixelValue;
             const pixelDistanceFunc = colorDitherModeFuncs.distance;
-            const paletteLuma = new Uint32Array(colorsLength);
+            const paletteValues = new Uint32Array(colorsLength);
             colors.forEach((color, i)=>{
-                paletteLuma[i] = color[0] * 299 + color[1] * 587 + color[2] * 114;
+                paletteValues[i] = pixelLuma(color);
             });
             const planBuffer = colorsLength < 256 ? new Uint8Array(colorsLength) : new Uint16Array(colorsLength);
 
@@ -158,7 +161,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
                 }
                 const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 const planIndex = Math.floor(bayerValue * colorsLength / matrixLength);
-                const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer, pixelValueFunc, pixelDistanceFunc);
+                const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteValues, planBuffer, pixelValueFunc, pixelDistanceFunc);
                 const bestPixelMatch = colors[plan[planIndex]];
                 //rgb only, preserve alpha
                 for(let i=0;i<3;i++){
