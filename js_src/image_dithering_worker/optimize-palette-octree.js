@@ -193,37 +193,25 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     //prioritize colors that are frequent - many shades of frequent colors
     //non frequent colors will be culled
     function sortPrioritizeMajority2(a, b){
-        if(a.children != b.children){
-            return a.children - b.children;
-        }
-        return a.pixels - b.pixels;
+        return a.children - b.children || a.pixels - b.pixels;
     }
 
     //prioritize colors that are infrequent - fewer shades of frequent colors
     //non frequent colors will still exist
     function sortPrioritizeMinority2(a, b){
-        if(a.children != b.children){
-            return b.children - a.children;
-        }
-        return b.pixels - a.pixels;
+        return b.children - a.children || b.pixels - a.pixels;
     }
 
     //prioritize colors that are frequent - many shades of frequent colors
     //non frequent colors will be culled
     function sortPrioritizeMajority(a, b){
-        if(a.pixels != b.pixels){
-            return a.pixels - b.pixels;
-        }
-        return a.children - b.children;
+        return a.pixels - b.pixels || a.children - b.children;
     }
 
     //prioritize colors that are infrequent - fewer shades of frequent colors
     //non frequent colors will still exist
     function sortPrioritizeMinority(a, b){
-        if(a.pixels != b.pixels){
-            return b.pixels - a.pixels;
-        }
-        return b.children - a.children;
+        return b.pixels - a.pixels || b.children - a.children;
     }
 
     function octree(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
