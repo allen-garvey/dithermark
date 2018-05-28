@@ -131,14 +131,13 @@
     
     void main(){
         #{{transparencyCheck}}
-        vec3 adjustedPixel = pixel.rgb;
+        vec3 outputPixel = pixel.rgb;
         vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
         vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
         float bayerValue = bayerPixel.r * u_bayer_texture_dimensions;
         int planIndex = int(bayerValue * float(u_colors_array_length) / u_bayer_texture_dimensions);
-        int colorIndex = deviseMixingPlan(adjustedPixel, planIndex);
+        int colorIndex = deviseMixingPlan(outputPixel, planIndex);
         
-        vec3 outputPixel = adjustedPixel;
         for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
             if(i == colorIndex){
                 outputPixel = u_colors_array[i];
