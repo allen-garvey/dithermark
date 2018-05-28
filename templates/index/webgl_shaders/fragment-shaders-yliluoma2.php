@@ -28,13 +28,10 @@
     }
 
     int deviseMixingPlan(vec3 pixel, int planIndex){
-        int plan[<?= COLOR_DITHER_MAX_COLORS; ?>];
+        vec2 planValues[<?= COLOR_DITHER_MAX_COLORS; ?>];
         int proportionTotal = 0;
         vec3 soFar = vec3(0.0);
         for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-            if(proportionTotal >= u_colors_array_length){
-                break;
-            }
             int chosenAmount = 1;
             int chosen = 0;
             int maxTestCount = int(max(1.0, float(proportionTotal)));
@@ -70,8 +67,15 @@
                     break;
                 }
                 for(int q=0; q<<?= COLOR_DITHER_MAX_COLORS; ?>; q++){
-                    if(q==proportionTotal){
-                        plan[q] = chosen;
+                    if(q == proportionTotal){
+                        float luma = 0.0;
+                        for(int j=0;j<<?= COLOR_DITHER_MAX_COLORS; ?>;j++){
+                            if(j == chosen){
+                                luma = pixelLuma(u_colors_array[j]);
+                                break;
+                            }
+                        }
+                        planValues[q] = vec2(float(chosen), luma);
                         break;
                     }
                 }
@@ -84,26 +88,9 @@
                     break;
                }
             }
-        }
-
-        <?php
-            //get luma values for selected colors
-            //getting it here is more efficient than doing it in the sort loop
-         ?>
-        vec2 planValues[<?= COLOR_DITHER_MAX_COLORS; ?>];
-        for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-            if(i >= u_colors_array_length){
+            if(proportionTotal >= u_colors_array_length){
                 break;
             }
-            int index = plan[i];
-            float luma = 0.0;
-            for(int j=0;j<<?= COLOR_DITHER_MAX_COLORS; ?>;j++){
-                if(j == index){
-                    luma = pixelLuma(u_colors_array[j]);
-                    break;
-                }
-            }
-            planValues[i] = vec2(float(index), luma);
         }
 
         
