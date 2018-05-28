@@ -209,6 +209,16 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
             return createOrderedDitherBase(dimensions, adjustedAlgoKey, textureKeyPrefix, bayerFuncName, isRandom);
         };
     }
+
+    function orderedDitherBuilder2(algoKey=ORDERED_DITHER){
+        return function(dimensions, bayerFuncName, isRandom=false){
+            let adjustedAlgoKey = algoKey;
+            if(isRandom){
+                adjustedAlgoKey = algoKey === ORDERED_DITHER ? ORDERED_DITHER_RANDOM : HUE_LIGHTNESS_RANDOM_ORDERED_DITHER; 
+            }
+            return createOrderedDitherBase(dimensions, adjustedAlgoKey, bayerFuncName, bayerFuncName, isRandom);
+        };
+    }
     
     function createArithmeticDither(key){
         return (gl, texture, imageWidth, imageHeight, colorDitherModeId, colorsArray, colorsArrayLength)=>{
@@ -233,7 +243,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         aDitherXor2: createArithmeticDither(ADITHER_XOR2),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3),
         createHueLightnessOrderedDither: orderedDitherBuilder('bayer', 'bayer', HUE_LIGHTNESS_ORDERED_DITHER),
-        createYliluoma2OrderedDither: orderedDitherBuilder('bayer', 'bayer', YLILUOMA2),
+        createYliluoma2OrderedDither: orderedDitherBuilder2(YLILUOMA2),
     };
 
     DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{
