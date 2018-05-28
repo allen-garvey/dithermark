@@ -88,12 +88,12 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil){
      */
     //based on: Yliluoma's ordered dithering algorithm 2
     function yliluoma2ColorCompare(r1, g1, b1,  r2, g2, b2){
-        const luma1 = (r1*299 + g1*587 + b1*114) / (255.0*1000);
-        const luma2 = (r2*299 + g2*587 + b2*114) / (255.0*1000);
-        const lumadiff = luma1-luma2;
-        const diffR = (r1-r2)/255.0;
-        const diffG = (g1-g2)/255.0;
-        const diffB = (b1-b2)/255.0;
+        const luma1 = r1 * 299 + g1 * 587 + b1 * 114;
+        const luma2 = r2 * 299 + g2 * 587 + b2 * 114;
+        const lumadiff = (luma1 - luma2) / 1000;
+        const diffR = r1 - r2;
+        const diffG = g1 - g2;
+        const diffB = b1 - b2;
         return (diffR * diffR * 0.299 + diffG * diffG * 0.587 + diffB * diffB * 0.114) * 0.75 + lumadiff*lumadiff;
     }
     function yliluoma2DeviseMixingPlan(pixel, colors, paletteLuma, planBuffer){
