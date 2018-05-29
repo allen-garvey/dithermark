@@ -127,17 +127,6 @@
         <?php //should never reach this line, but to keep compiler happy ?>
         return 0;
     }
-    <?php //have to wait till webgl2 for round() function ?>
-    float round_number(float num){
-        float numFloor = floor(num);
-        float numCeil = ceil(num);
-        float floorDiff = num - numFloor;
-        float ceilDiff = ceil(num) - numCeil;
-        if(ceilDiff < floorDiff){
-            return numCeil;
-        }
-        return numFloor;
-    }
     
     void main(){
         #{{transparencyCheck}}
@@ -145,7 +134,8 @@
         vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
         vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
         float bayerLength = u_bayer_texture_dimensions * u_bayer_texture_dimensions;
-        float bayerValue = round_number(bayerPixel.r * (bayerLength - 1.0));
+        <?php //bayerValue could be rounded, but only webgl2 has round function, and difference is trivial ?>
+        float bayerValue = bayerPixel.r * (bayerLength - 1.0);
         int planIndex = int(bayerValue * float(u_colors_array_length) / bayerLength);
         int colorIndex = deviseMixingPlan(outputPixel, planIndex);
         
