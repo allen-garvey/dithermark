@@ -36,7 +36,7 @@
             int chosen = 0;
             int maxTestCount = int(max(1.0, float(proportionTotal)));
             <?php //big number ?>
-            float leastPenalty = 99999999999.0;
+            float leastPenalty = 9999.99;
 
             for(int index=0; index<<?= COLOR_DITHER_MAX_COLORS; ?>; index++){
                 if(index >= u_colors_array_length){
