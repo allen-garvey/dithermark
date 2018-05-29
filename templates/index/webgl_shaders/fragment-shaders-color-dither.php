@@ -22,7 +22,7 @@
 
         #{{customBody}}
         
-        float shortestDistance = 1000.0;
+        float shortestDistance = 9999.9;
         vec3 closestPixel = adjustedPixel;
         
         for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
