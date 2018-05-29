@@ -7,7 +7,7 @@ App.DitherUtil = (function(Bayer){
     //for webgl highestValue is 1.0, while for webworker it should be 255
     //for bw dither in worker, using 255 gives incorrect results for some reason
     function ditherRCoefficient(numColors, isWebgl=false){
-        const highestValue = isWebgl ? 1.0 : 255;
+        const highestValue = isWebgl ? 1.0 : 256;
         return highestValue / Math.cbrt(numColors);
     }
 
