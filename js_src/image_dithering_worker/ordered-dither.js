@@ -20,7 +20,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     }
 
     function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom){
-        const matrix = createMaxtrix(dimensions, convertBayerToFloat(matrixCreationFunc(dimensions), 256));
+        const matrix = createMaxtrix(dimensions, convertBayerToFloat(matrixCreationFunc(dimensions), 255));
         //for some reason we need to use same coefficient as webgl for bw dithers
         const rCoefficient = DitherUtil.ditherRCoefficient(2, true);
         const matrixValueAdjustmentFunc = isRandom ? Math.random : ()=>{ return 1;} ;
@@ -55,11 +55,11 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
      */
     function convertBayerToFloat(bayerMatrix, fullValue=1){
         const length = bayerMatrix.length;
-        const fraction = 1 / length;
+        const fraction = 1 / (length - 1);
         const floatData = new Float32Array(length);
         
         bayerMatrix.forEach((value, i)=>{
-            floatData[i] = ((fraction * value) - 0.5) * fullValue;
+            floatData[i] = (fraction * value - 0.5) * fullValue;
         });
         return floatData;
     }
