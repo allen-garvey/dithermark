@@ -92,7 +92,6 @@
                 break;
             }
         }
-
         
         <?php //bubble sort
             //can't use insertion sort since if we iterate array in reverse we would have to use continue
@@ -134,7 +133,7 @@
         vec3 outputPixel = pixel.rgb;
         vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
         vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
-        float bayerValue = bayerPixel.r * u_bayer_texture_dimensions;
+        float bayerValue = bayerPixel.r * (u_bayer_texture_dimensions - 1.0);
         int planIndex = int(bayerValue * float(u_colors_array_length) / u_bayer_texture_dimensions);
         int colorIndex = deviseMixingPlan(outputPixel, planIndex);
         
