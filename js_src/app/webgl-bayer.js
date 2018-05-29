@@ -61,12 +61,10 @@ App.WebglBayer = (function(){
     //is that webgl1 textures can't be floats
     function createBayerBuffer(dimensions, bayerArray){
         const arrayLength = bayerArray.length;
-        const fraction = 256 / (arrayLength - 1);
+        const fraction = 255 / (arrayLength - 1);
         const ret = new Uint8Array(4 * arrayLength);
         
         for(let i=0,index=0;i<arrayLength;i++,index+=4){
-            //for some reason no reason to round or clamp this, or it messes up ylilouma 2 dither
-            //by adding black spots
             ret[index] = bayerArray[i] * fraction;
         }
         
