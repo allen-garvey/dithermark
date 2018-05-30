@@ -236,6 +236,21 @@ App.BayerMatrix = (function(){
             0, 0, 15, 15, 15, 15, 0, 0, 
         ]);
     }
+
+    //from: http://caca.zoy.org/study/part2.html
+    //halftone pattern, similar to newspapers
+    function halftone(dimensions){
+        return new Uint8Array([
+            24, 10, 12, 26, 35, 47, 49, 37, 
+            8, 0, 2, 14, 45, 59, 61, 51,
+            22, 6, 4, 16, 43, 57, 63, 53,
+            30, 20, 18, 28, 33, 41, 55, 39,
+            34, 46, 48, 36, 25, 11, 13, 27,
+            44, 58, 60, 50, 9, 1, 3, 15,
+            42, 56, 62, 52, 23, 7, 5, 17,
+            32, 40, 54, 38, 31, 121, 19, 29, 
+        ]);
+    }
     
     //dithers are created autmagically from these export names
     //only name you can't use is hueLightness, since it will conflict with that dither
@@ -255,5 +270,6 @@ App.BayerMatrix = (function(){
         dot,
         zigZag,
         zigZagVertical,
+        halftone,
     };
 })();
