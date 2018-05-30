@@ -23,8 +23,8 @@
     
     #{{distanceFunction}}
 
-    float evaluate_mixing_error(vec3 pixel, vec3 color0, vec3 color1, vec3 color2, float rationFraction){
-        return quick_distance(pixel, color0) + quick_distance(color1, color2) * 0.1 * abs(rationFraction-0.5) + 0.5;
+    float evaluate_mixing_error(vec3 pixel, vec3 color0, vec3 color1, vec3 color2, float ratioFraction){
+        return quick_distance(pixel, color0) + quick_distance(color1, color2) * 0.1 * abs(ratioFraction-0.5) + 0.5;
     }
 
     int devise_mixing_plan(vec3 pixel, float bayerLength, float bayerValue){
@@ -60,19 +60,19 @@
                         break;
                     }
                     float ratioFloat = float(ratio);
-                    float rationFraction = ratioFloat / bayerLength;
+                    float ratioFraction = ratioFloat / bayerLength;
                     <?php // Determine the two component colors ?>
                     vec3 color1 = u_colors_array[index1];
                     vec3 color2 = u_colors_array[index2];
                     <?php // Determine what mixing them in this proportion will produce ?>
                     vec3 color0 = color1 + vec3(ratioFloat) * (color2 - color1) / vec3(bayerLength);
-                    float penalty = evaluate_mixing_error(pixel, color0, color1, color2, rationFraction);
+                    float penalty = evaluate_mixing_error(pixel, color0, color1, color2, ratioFraction);
                     if(penalty < leastPenalty){
                         <?php // Keep the result that has the smallest error ?>
                         leastPenalty = penalty;
                         color1Index = index1;
                         color2Index = index2;
-                        colorRatio = rationFraction;
+                        colorRatio = ratioFraction;
                     }
                 }
             }
