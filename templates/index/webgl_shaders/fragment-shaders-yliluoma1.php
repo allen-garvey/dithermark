@@ -24,7 +24,7 @@
     #{{distanceFunction}}
 
     float evaluate_mixing_error(vec3 pixel, vec3 color0, vec3 color1, vec3 color2, float ratioFraction){
-        return quick_distance(pixel, color0) + quick_distance(color1, color2) * 0.1 * abs(ratioFraction-0.5) + 0.5;
+        return quick_distance(pixel, color0) + quick_distance(color1, color2) * 0.1 * (abs(ratioFraction-0.5) + 0.5);
     }
 
     int devise_mixing_plan(vec3 pixel, float bayerLength, float bayerValue){
