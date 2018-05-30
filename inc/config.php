@@ -74,6 +74,9 @@
     //color dither stuff
     //needs to be here because webgl shaders also rely on this constant
     define('COLOR_DITHER_MAX_COLORS', 12);
+    //this is used for yliluoma 1 dither
+    //since max dimensions for ordered dither matrix is 16, 16 * 16 = 256
+    define('ORDERED_MATRIX_MAX_LENGTH', 256);
 
     if(BUILD_MODE_RELEASE){
         define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', false);
