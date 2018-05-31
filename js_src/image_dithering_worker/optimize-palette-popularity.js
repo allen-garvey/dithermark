@@ -150,9 +150,109 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         });
     }
 
+
+    //Divides image into horizontal strips, and finds average color in each strip
+    function spatialAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        const retColors = new Uint8Array(numColors * 3);
+        const averageBuffer = new Float32Array(3);
+        if(colorQuantization.isVertical){
+            pixels = rotatePixels90Degrees(pixels, imageWidth, imageHeight);
+        }
+        //remove transparent pixels
+        const pixelsFiltered = Util.filterTransparentPixels(pixels);
+        const fraction = pixelsFiltered.length / (numColors * 4);
+
+        for(let i=1,previousEndIndex=0;i<=numColors;i++){
+            const endIndex = Math.round(i * fraction) * 4;
+            //don't need to check if endIndex is too large, since subarray will just return as much as it can if it is
+            const pixelSubarray = pixelsFiltered.subarray(previousEndIndex, endIndex);
+            const subarrayLength = pixelSubarray.length;
+            for(let j=0;j<subarrayLength;j+=4){
+                const pixel = pixelSubarray.subarray(j, j+4);
+                for(let p=0;p<3;p++){
+                    averageBuffer[p] = averageBuffer[p] + pixel[p];
+                }
+            }
+            const colorBaseIndex = (i - 1) * 3;
+            for(let p=0;p<3;p++){
+                retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / subarrayLength); 
+                averageBuffer[p] = 0;
+            }
+            previousEndIndex = endIndex;
+        }
+        return retColors;
+    }
+
+    function perceptualPixelTransform(pixel){
+        const blackThreshold = 46;
+        const whiteThreshold = 240;
+        if(Math.max(pixel[0], pixel[1], pixel[2]) < blackThreshold){
+            pixel[0] = 0;
+            pixel[1] = 0;
+            pixel[2] = 0;
+        }
+        else if(Math.min(pixel[0], pixel[1], pixel[2]) > whiteThreshold){
+            pixel[0] = 255;
+            pixel[1] = 255;
+            pixel[2] = 255;
+        }
+        return pixel;
+    }
+    function identity(v){
+        return v;
+    }
+
+    //Divides an image into zones based on sort function, and finds the average of each color in each zone
+    function sortedAverage(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelSortFunc){
+        const retColors = new Uint8Array(numColors * 3);
+        const averageBuffer = new Float32Array(3);
+        const pixelArray = Util.createPixelArray(pixels).sort(pixelSortFunc);
+        const fraction = pixelArray.length / (numColors * 4);
+        const pixelTransformFunc = isPerceptual ? perceptualPixelTransform : identity;
+
+        for(let i=1,previousEndIndex=0;i<=numColors;i++){
+            const endIndex = Math.min(Math.round(i * fraction) * 4, pixelArray.length);
+            for(let j=previousEndIndex;j<endIndex;j++){
+                const pixel = pixelTransformFunc(pixelArray[j]);
+                for(let p=0;p<3;p++){
+                    averageBuffer[p] = averageBuffer[p] + pixel[p];
+                }
+            }
+            const colorBaseIndex = (i - 1) * 3;
+            for(let p=0;p<3;p++){
+                retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / (endIndex - previousEndIndex)); 
+                averageBuffer[p] = 0;
+            }
+
+            previousEndIndex = endIndex;
+        }
+        return retColors;
+    }
+
+    //Divides an image into numColors lightness zones, and finds the average color in each zone
+    function lightnessAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
+            return PixelMath.lightness(a) - PixelMath.lightness(b);
+        });
+    }
+
+    //Divides an image into numColors hue zones, and finds the average color in each zone
+    function hueAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
+            const hueDiff = PixelMath.hue(a) - PixelMath.hue(b); 
+            if(hueDiff === 0){
+                return PixelMath.lightness(a) - PixelMath.lightness(b);
+            }
+            return hueDiff;
+        });
+    }
+
     return {
         popularity,
         lightnessPopularity,
         huePopularity,
+        spatialAverage,
+        lightnessAverage,
+        hueAverage,
     };
 })(App.PixelMath, App.OptimizePaletteUtil);
