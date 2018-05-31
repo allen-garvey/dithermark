@@ -147,7 +147,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     }
 
 
-    //Divides image into horizontal strips, and finds average color in each strip
+    //Divides image into horizontal or vertical strips, and finds average color in each strip
     function spatialAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
@@ -176,6 +176,49 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
             }
             previousEndIndex = endIndex;
         }
+        return retColors;
+    }
+
+    //Divides image into boxes, and finds average color in each box
+    function spatialAverageBoxed(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        const retColors = new Uint8Array(numColors * 3);
+        const averageBuffer = new Float32Array(3);
+        const boxBase = Math.sqrt(numColors);
+        const numBoxesVertical = Math.ceil(boxBase);
+        const numBoxesHorizontal = Math.floor(boxBase);
+        const horizontalFraction = Math.round(imageWidth / numBoxesHorizontal);
+        const verticalFraction = Math.round(imageHeight / numBoxesVertical);
+
+        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesVertical;boxVerticalIndex++,colorIndex++){
+            const yBase = boxVerticalIndex * verticalFraction;
+            const yLimit = boxVerticalIndex === numBoxesVertical - 1 ? imageHeight : (boxVerticalIndex + 1) * verticalFraction;
+            for(let boxHorizontalIndex=0;boxHorizontalIndex<numBoxesHorizontal;boxHorizontalIndex++){
+                const xBase = boxHorizontalIndex * horizontalFraction;
+                const xLimit = boxHorizontalIndex === numBoxesHorizontal - 1 ? imageWidth : (boxHorizontalIndex + 1) * horizontalFraction;
+                let length = 0;
+                for(let y=yBase;y<yLimit;y++){
+                    for(let x=xBase;x<xLimit;x++){
+                        const pixelIndex = x * 4 + y * imageWidth * 4;
+                        const pixel = pixels.subarray(pixelIndex, pixelIndex+4);
+                        //ignore transparent pixels
+                        if(pixel[3] === 0){
+                            continue;
+                        }
+                        for(let p=0;p<3;p++){
+                            averageBuffer[p] = averageBuffer[p] + pixel[p];
+                        }
+                        length++;
+                    }
+                }
+                const colorBaseIndex = colorIndex * 3;
+                for(let p=0;p<3;p++){
+                    retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / length); 
+                    averageBuffer[p] = 0;
+                }
+
+            }
+        }
+
         return retColors;
     }
 
@@ -244,6 +287,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         lightnessPopularity,
         huePopularity,
         spatialAverage,
+        spatialAverageBoxed,
         lightnessAverage,
         hueAverage,
     };

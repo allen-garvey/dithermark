@@ -64,6 +64,7 @@ function colorQuantizationModesBase(): array{
         'Spatial Average',
         new ColorQuantizationMode('SPATIAL_AVERAGE', 'Spatial Average (Horizontal)', 'spatialAverage'),
         new ColorQuantizationMode('SPATIAL_AVERAGE_VERTICAL', 'Spatial Average (Vertical)', 'spatialAverage', ['isVertical' => true]),
+        new ColorQuantizationMode('SPATIAL_AVERAGE_BOXED', 'Spatial Average (Boxed)', 'spatialAverageBoxed'),
         new ColorQuantizationMode('LIGHTNESS_AVERAGE', 'Lightness Average', 'lightnessAverage'),
         new ColorQuantizationMode('LIGHTNESS_AVERAGE', 'Perceptual Lightness Average', 'lightnessAverage', ['isPerceptual' => true]),
         new ColorQuantizationMode('HUE_AVERAGE', 'Hue Average', 'hueAverage'),
