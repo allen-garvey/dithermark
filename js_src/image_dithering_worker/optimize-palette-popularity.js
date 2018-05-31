@@ -29,10 +29,10 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     function perceptualPixelHash(r, g, b){
         const blackThreshold = 46;
         const whiteThreshold = 240;
-        if(r < blackThreshold && g < blackThreshold && b < blackThreshold){
+        if(Math.max(r,g,b) < blackThreshold){
             return '0-0-0';
         }
-        if(r > whiteThreshold && g > whiteThreshold && b > whiteThreshold){
+        if(Math.min(r,g,b) > whiteThreshold){
             return '255-255-255';
         }
         return pixelHash(r, g, b);
