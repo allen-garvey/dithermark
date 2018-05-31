@@ -86,7 +86,87 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
      * Yliluoma's ordered dithering
      * from: https://bisqwit.iki.fi/story/howto/dither/jy/
      */
-    //based on: Yliluoma's ordered dithering algorithm 2
+    //
+    //adaptation of: Yliluoma's ordered dithering algorithm 1
+    //
+    function yliluoma1EvaluateMixingError(pixelValue, mixValue, color1Value, color2Value, ratioFraction, pixelDistanceFunc){
+        return pixelDistanceFunc(pixelValue, mixValue) + pixelDistanceFunc(color1Value, color2Value) * 0.1 * (Math.abs(ratioFraction - 0.5) + 0.5);
+    }
+    function yliluoma1DeviseMixingPlan(pixelValue, colors, colorValues, bayerValue, matrixLength, pixelValueFunc, pixelDistanceFunc, mixPixel){
+        const colorsLength = colors.length;
+        let colorIndex1 = 0;
+        let colorIndex2 = 0;
+        let lowestRatio = 0;
+        let leastPenalty = Infinity;
+        // Loop through every unique combination of two colors from the palette,
+        // and through each possible way to mix those two colors. They can be
+        // mixed in exactly 64 ways, when the threshold matrix is 8x8.
+        for(let index1=0;index1<colorsLength;index1++){
+            for(let index2=index1;index2<colorsLength;index2++){
+                for(let ratio=0;ratio<matrixLength;ratio++){
+                    if(index1 === index2 && ratio != 0){
+                        break;
+                    }
+                    // Determine the two component colors
+                    const color1 = colors[index1];
+                    const color2 = colors[index2];
+                    // Determine what mixing them in this proportion will produce
+                    mixPixel[Pixel.R_INDEX] = color1[Pixel.R_INDEX] + ratio * (color2[Pixel.R_INDEX] - color1[Pixel.R_INDEX]) / matrixLength;
+                    mixPixel[Pixel.G_INDEX] = color1[Pixel.G_INDEX] + ratio * (color2[Pixel.G_INDEX] - color1[Pixel.G_INDEX]) / matrixLength;
+                    mixPixel[Pixel.B_INDEX] = color1[Pixel.B_INDEX] + ratio * (color2[Pixel.B_INDEX] - color1[Pixel.B_INDEX]) / matrixLength;
+                    // Determine how well that matches what we want to accomplish
+                    const penalty = yliluoma1EvaluateMixingError(pixelValue, pixelValueFunc(mixPixel), colorValues[index1], colorValues[index2], ratio/matrixLength, pixelDistanceFunc);
+                    // Keep the result that has the smallest error
+                    if(penalty < leastPenalty){
+                        leastPenalty = penalty;
+                        colorIndex1 = index1;
+                        colorIndex2 = index2;
+                        lowestRatio = ratio;
+                    }
+                }
+            }
+        }
+        if(lowestRatio < bayerValue){
+            return colorIndex2;
+        }
+        return colorIndex1;
+        
+    }
+    function createYliluoma1ColorDither(dimensions, bayerFuncName){
+        const matrix = createMaxtrix(dimensions, Bayer[bayerFuncName](dimensions));
+        const matrixLength = dimensions * dimensions;
+
+        return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
+            const colorsLength = colors.length;
+            const colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
+            const pixelValueFunc = colorDitherModeFuncs.pixelValue;
+            const pixelDistanceFunc = colorDitherModeFuncs.distance;
+            const colorValues = colors.map((color)=>{
+                return pixelValueFunc(color);
+            });
+            //to reduce allocations and deletions
+            const mixPixel = Pixel.create(0, 0, 0);
+
+            return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
+                //ignore transparent pixels
+                if(pixel[Pixel.A_INDEX] === 0){
+                    return pixel;
+                }
+                const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+                const planIndex = yliluoma1DeviseMixingPlan(pixelValueFunc(pixel), colors, colorValues, bayerValue, matrixLength, pixelValueFunc, pixelDistanceFunc, mixPixel);
+                const bestPixelMatch = colors[planIndex];
+                //rgb only, preserve alpha
+                for(let i=0;i<3;i++){
+                    pixel[i] = bestPixelMatch[i];
+                }
+                return pixel;
+            });
+        };
+    }
+
+    //
+    //adaptation of: Yliluoma's ordered dithering algorithm 2
+    //
     function yliluoma2DeviseMixingPlan(pixel, colors, paletteValues, planBuffer, pixelValueFunc, pixelDistanceFunc){
         const colorsLength = colors.length;
         const pixelValue = pixelValueFunc(pixel);
@@ -138,7 +218,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     function pixelLuma(pixel){
         return pixel[Pixel.R_INDEX] * 299 + pixel[Pixel.G_INDEX] * 587 + pixel[Pixel.B_INDEX] * 114;
     }
-    function createYliluoma2OrderedDither(dimensions, bayerFuncName){
+    function createYliluoma2ColorDither(dimensions, bayerFuncName){
         const matrix = createMaxtrix(dimensions, Bayer[bayerFuncName](dimensions));
         const matrixLength = dimensions * dimensions;
 
@@ -209,7 +289,8 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     */
     const exports = {
         createHueLightnessDither: colorOrderedDitherBuilder('bayer', hueLightnessPostscriptFuncBuilder),
-        createYliluoma2ColorDither: createYliluoma2OrderedDither,
+        createYliluoma2ColorDither,
+        createYliluoma1ColorDither,
     };
 
     DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{
