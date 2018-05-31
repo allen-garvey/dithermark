@@ -88,9 +88,8 @@
         vec3 outputPixel = pixel.rgb;
         vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
         vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+        float bayerValue = bayerPixel.r;
         float bayerLength = u_bayer_texture_dimensions * u_bayer_texture_dimensions;
-        <?php //bayerValue could be rounded, but only webgl2 has round function, and difference is trivial ?>
-        float bayerValue = floor(bayerPixel.r * (bayerLength - 1.0));
         int colorIndex = devise_mixing_plan(outputPixel, bayerLength, bayerValue);
         
         for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
