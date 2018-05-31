@@ -142,11 +142,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     //Divides an image into numColors hue zones, and finds the most popular color in each zone
     function huePopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            const hueDiff = PixelMath.hue(a) - PixelMath.hue(b); 
-            if(hueDiff === 0){
-                return PixelMath.lightness(a) - PixelMath.lightness(b);
-            }
-            return hueDiff;
+            return PixelMath.hue(a) - PixelMath.hue(b) || PixelMath.lightness(a) - PixelMath.lightness(b);
         });
     }
 
@@ -239,11 +235,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     //Divides an image into numColors hue zones, and finds the average color in each zone
     function hueAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            const hueDiff = PixelMath.hue(a) - PixelMath.hue(b); 
-            if(hueDiff === 0){
-                return PixelMath.lightness(a) - PixelMath.lightness(b);
-            }
-            return hueDiff;
+            return PixelMath.hue(a) - PixelMath.hue(b) || PixelMath.lightness(a) - PixelMath.lightness(b);
         });
     }
 
