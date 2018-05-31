@@ -5,11 +5,10 @@
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-luma-distance">
-    <?php //rgb with correction for luma based on: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
-        //slight difference in ratio to remove 1 multiplication in worker ?>
+    <?php //rgb with correction for luma based on: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/ ?>
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 distances = pixel1 - pixel2;
-        return dot(vec3(3.0, 6.0, 1.0), distances * distances);
+        return pixel_luma(distances * distances);
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hue-distance">

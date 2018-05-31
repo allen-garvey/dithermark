@@ -23,11 +23,6 @@
     
     #{{distanceFunction}}
 
-    <?php //have to use the same ratio as luma from the distance functions ?>
-    float pixel_luma(vec3 pixel){
-        return dot(vec3(1.0), vec3(3.0, 6.0, 1.0) * pixel);
-    }
-
     float quick_distance2(vec3 color1, vec3 color2){
         float lumaDiff = pixel_luma(color1) - pixel_luma(color2);
         return quick_distance(color1, color2) * 0.75 + lumaDiff * lumaDiff;

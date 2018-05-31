@@ -67,4 +67,8 @@
         vec3 pixelHsv = rgb2hsv(pixel);
         return pixelHsv.r;
     }
+
+    float pixel_luma(vec3 pixel){
+        return dot(vec3(0.299, 0.587, 0.114), pixel);
+    }
 </script>

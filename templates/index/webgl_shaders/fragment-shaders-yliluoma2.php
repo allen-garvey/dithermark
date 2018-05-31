@@ -23,10 +23,6 @@
     
     #{{distanceFunction}}
 
-    float pixelLuma(vec3 pixel){
-        return dot(vec3(1.0), vec3(299.0, 587.0, 114.0) * pixel);
-    }
-
     int deviseMixingPlan(vec3 pixel, int planIndex){
         vec2 planValues[<?= COLOR_DITHER_MAX_COLORS; ?>];
         int proportionTotal = 0;
@@ -71,7 +67,7 @@
                         float luma = 0.0;
                         for(int j=0;j<<?= COLOR_DITHER_MAX_COLORS; ?>;j++){
                             if(j == chosen){
-                                luma = pixelLuma(u_colors_array[j]);
+                                luma = pixel_luma(u_colors_array[j]);
                                 break;
                             }
                         }
