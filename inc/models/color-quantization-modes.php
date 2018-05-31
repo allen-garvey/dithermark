@@ -57,6 +57,8 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('PERCEPTUAL_SPATIAL_POPULARITY', 'Perceptual Spatial Popularity (Horizontal)', 'popularity', ['isPerceptual' => true]),
         new ColorQuantizationMode('SPATIAL_POPULARITY_VERTICAL', 'Spatial Popularity (Vertical)', 'popularity', ['isVertical' => true]),
         new ColorQuantizationMode('PERCEPTUAL_SPATIAL_POPULARITY_VERTICAL', 'Perceptual Spatial Popularity (Vertical)', 'popularity', ['isPerceptual' => true, 'isVertical' => true]),
+        new ColorQuantizationMode('SPATIAL_POPULARITY_BOXED', 'Spatial Popularity (Boxed)', 'spatialPopularityBoxed'),
+        new ColorQuantizationMode('PERCEPTUAL_SPATIAL_POPULARITY_BOXED', 'Perceptual Spatial Popularity (Boxed)', 'spatialPopularityBoxed', ['isPerceptual' => true]),
         new ColorQuantizationMode('LIGHTNESS_POPULARITY', 'Lightness Popularity', 'lightnessPopularity'),
         new ColorQuantizationMode('PERCEPTUAL_LIGHTNESS_POPULARITY', 'Perceptual Lightness Popularity', 'lightnessPopularity', ['isPerceptual' => true]),
         new ColorQuantizationMode('HUE_POPULARITY', 'Hue Popularity', 'huePopularity'),

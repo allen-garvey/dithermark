@@ -222,6 +222,46 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return retColors;
     }
 
+    //Divides image into boxes, and finds average color in each box
+    function spatialPopularityBoxed(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        const retColors = new Uint8Array(numColors * 3);
+        const colorsSet = new Set();
+        const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixelHash : pixelHash;
+        const boxBase = Math.sqrt(numColors);
+        const numBoxesVertical = Math.ceil(boxBase);
+        const numBoxesHorizontal = Math.floor(boxBase);
+        const horizontalFraction = Math.round(imageWidth / numBoxesHorizontal);
+        const verticalFraction = Math.round(imageHeight / numBoxesVertical);
+
+        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesVertical;boxVerticalIndex++){
+            const yBase = boxVerticalIndex * verticalFraction;
+            const yLimit = boxVerticalIndex === numBoxesVertical - 1 ? imageHeight : (boxVerticalIndex + 1) * verticalFraction;
+            for(let boxHorizontalIndex=0;boxHorizontalIndex<numBoxesHorizontal;boxHorizontalIndex++,colorIndex++){
+                const xBase = boxHorizontalIndex * horizontalFraction;
+                const xLimit = boxHorizontalIndex === numBoxesHorizontal - 1 ? imageWidth : (boxHorizontalIndex + 1) * horizontalFraction;
+                const popularityMap = new Map();
+                for(let y=yBase;y<yLimit;y++){
+                    for(let x=xBase;x<xLimit;x++){
+                        const pixelIndex = x * 4 + y * imageWidth * 4;
+                        const pixel = pixels.subarray(pixelIndex, pixelIndex+4);
+                        //ignore transparent pixels
+                        if(pixel[3] === 0){
+                            continue;
+                        }
+                        incrementMap(popularityMap, pixelHashFunc(pixel[0], pixel[1], pixel[2]));
+                    }
+                }
+                const sortedValues = [...popularityMap.keys()].sort((a, b)=>{
+                    return popularityMap.get(b) - popularityMap.get(a);
+                });
+                const colorKey = getNewUniqueValueOrDefault(colorsSet, sortedValues);
+                addColorToColors(colorKey, retColors, colorIndex);
+            }
+        }
+        console.log(retColors);
+        return retColors;
+    }
+
     function perceptualPixelTransform(pixel){
         const blackThreshold = 46;
         const whiteThreshold = 240;
@@ -290,5 +330,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         spatialAverageBoxed,
         lightnessAverage,
         hueAverage,
+        spatialPopularityBoxed,
     };
 })(App.PixelMath, App.OptimizePaletteUtil);

@@ -10,6 +10,7 @@ App.OptimizePalette = (function(Popularity, MedianCut, ArrayUtil, RgbQuant, Perc
        huePopularity: Popularity.huePopularity,
        spatialAverage: Popularity.spatialAverage,
        spatialAverageBoxed: Popularity.spatialAverageBoxed,
+       spatialPopularityBoxed: Popularity.spatialPopularityBoxed,
        hueAverage: Popularity.hueAverage,
        lightnessAverage: Popularity.lightnessAverage,
        rgbQuant: RgbQuant.rgbQuant,
