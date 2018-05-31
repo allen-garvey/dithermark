@@ -214,7 +214,6 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Hue-Lightness 16×16 (R)', 'OrderedDither.createHueLightnessDither(16, true)', 'ColorDither.createHueLightnessOrderedDither(16, true)'),
         'Ordered Arbitrary-palette Positional',
         new DitherAlgorithm('Yliluoma 1 8×8', 'OrderedDither.createYliluoma1ColorDither(8, "bayer")', 'ColorDither.createYliluoma1OrderedDither(8, "bayer")'),
-        new DitherAlgorithm('Yliluoma 1 16×16', 'OrderedDither.createYliluoma1ColorDither(16, "bayer")', 'ColorDither.createYliluoma1OrderedDither(16, "bayer")'),
         new DitherAlgorithm('Yliluoma 1 (Crosshatch Right)', 'OrderedDither.createYliluoma1ColorDither(4, "crossHatchRight")', 'ColorDither.createYliluoma1OrderedDither(4, "crossHatchRight")'),
         new DitherAlgorithm('Yliluoma 2 8×8', 'OrderedDither.createYliluoma2ColorDither(8, "bayer")', 'ColorDither.createYliluoma2OrderedDither(8, "bayer")'),
         new DitherAlgorithm('Yliluoma 2 16×16', 'OrderedDither.createYliluoma2ColorDither(16, "bayer")', 'ColorDither.createYliluoma2OrderedDither(16, "bayer")'),
