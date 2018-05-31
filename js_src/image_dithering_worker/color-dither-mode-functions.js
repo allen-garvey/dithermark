@@ -48,13 +48,11 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     }
 
     //rgb with correction for luma based on: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
-    //slight difference in ratio to remove 1 multiplication in worker
     function distanceLuma(item1, item2){
         const distR = item1[0] - item2[0];
         const distG = item1[1] - item2[1];
         const distB = item1[2] - item2[2];
-
-        return distR * distR * 3 + distG * distG * 6 + distB * distB;
+        return distR * distR * 0.299 + distG * distG * 0.587 + distB * distB * 0.114;
     }
 
 
