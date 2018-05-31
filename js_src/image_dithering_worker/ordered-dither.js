@@ -126,7 +126,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
                 }
             }
         }
-        if(lowestRatio < bayerValue){
+        if(bayerValue < lowestRatio){
             return colorIndex2;
         }
         return colorIndex1;
