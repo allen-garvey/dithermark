@@ -189,10 +189,10 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         const horizontalFraction = Math.round(imageWidth / numBoxesHorizontal);
         const verticalFraction = Math.round(imageHeight / numBoxesVertical);
 
-        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesVertical;boxVerticalIndex++,colorIndex++){
+        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesVertical;boxVerticalIndex++){
             const yBase = boxVerticalIndex * verticalFraction;
             const yLimit = boxVerticalIndex === numBoxesVertical - 1 ? imageHeight : (boxVerticalIndex + 1) * verticalFraction;
-            for(let boxHorizontalIndex=0;boxHorizontalIndex<numBoxesHorizontal;boxHorizontalIndex++){
+            for(let boxHorizontalIndex=0;boxHorizontalIndex<numBoxesHorizontal;boxHorizontalIndex++,colorIndex++){
                 const xBase = boxHorizontalIndex * horizontalFraction;
                 const xLimit = boxHorizontalIndex === numBoxesHorizontal - 1 ? imageWidth : (boxHorizontalIndex + 1) * horizontalFraction;
                 let length = 0;
