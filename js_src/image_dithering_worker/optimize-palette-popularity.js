@@ -135,7 +135,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     //Divides an image into numColors lightness zones, and finds the most popular color in each zone
     function lightnessPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            return PixelMath.lightness(a) - PixelMath.lightness(b);
+            return PixelMath.lightness(a) - PixelMath.lightness(b) || PixelMath.hue(a) - PixelMath.hue(b);
         });
     }
 
@@ -228,7 +228,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     //Divides an image into numColors lightness zones, and finds the average color in each zone
     function lightnessAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            return PixelMath.lightness(a) - PixelMath.lightness(b);
+            return PixelMath.lightness(a) - PixelMath.lightness(b) || PixelMath.hue(a) - PixelMath.hue(b);
         });
     }
 
