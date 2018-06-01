@@ -64,8 +64,6 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('HUE_POPULARITY', 'Hue Popularity', 'huePopularity'),
         new ColorQuantizationMode('PERCEPTUAL_HUE_POPULARITY', 'Perceptual Hue Popularity', 'huePopularity', ['isPerceptual' => true]),
         'Spatial Average',
-        new ColorQuantizationMode('SPATIAL_AVERAGE', 'Spatial Average (Horizontal)', 'spatialAverage'),
-        new ColorQuantizationMode('SPATIAL_AVERAGE_VERTICAL', 'Spatial Average (Vertical)', 'spatialAverage', ['isVertical' => true]),
         new ColorQuantizationMode('SPATIAL_AVERAGE_BOXED', 'Spatial Average (Boxed)', 'spatialAverageBoxed'),
         new ColorQuantizationMode('LIGHTNESS_AVERAGE', 'Lightness Average', 'lightnessAverage'),
         new ColorQuantizationMode('LIGHTNESS_AVERAGE', 'Perceptual Lightness Average', 'lightnessAverage', ['isPerceptual' => true]),

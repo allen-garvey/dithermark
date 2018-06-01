@@ -146,39 +146,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         });
     }
 
-
-    //Divides image into horizontal or vertical strips, and finds average color in each strip
-    function spatialAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        const retColors = new Uint8Array(numColors * 3);
-        const averageBuffer = new Float32Array(3);
-        if(colorQuantization.isVertical){
-            pixels = rotatePixels90Degrees(pixels, imageWidth, imageHeight);
-        }
-        //remove transparent pixels
-        const pixelsFiltered = Util.filterTransparentPixels(pixels);
-        const fraction = pixelsFiltered.length / (numColors * 4);
-
-        for(let i=1,previousEndIndex=0;i<=numColors;i++){
-            const endIndex = Math.round(i * fraction) * 4;
-            //don't need to check if endIndex is too large, since subarray will just return as much as it can if it is
-            const pixelSubarray = pixelsFiltered.subarray(previousEndIndex, endIndex);
-            const subarrayLength = pixelSubarray.length;
-            for(let j=0;j<subarrayLength;j+=4){
-                const pixel = pixelSubarray.subarray(j, j+4);
-                for(let p=0;p<3;p++){
-                    averageBuffer[p] = averageBuffer[p] + pixel[p];
-                }
-            }
-            const colorBaseIndex = (i - 1) * 3;
-            for(let p=0;p<3;p++){
-                retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / subarrayLength); 
-                averageBuffer[p] = 0;
-            }
-            previousEndIndex = endIndex;
-        }
-        return retColors;
-    }
-
     //Divides image into boxes, and finds average color in each box
     function spatialAverageBoxed(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const retColors = new Uint8Array(numColors * 3);
@@ -325,7 +292,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         popularity,
         lightnessPopularity,
         huePopularity,
-        spatialAverage,
         spatialAverageBoxed,
         lightnessAverage,
         hueAverage,
