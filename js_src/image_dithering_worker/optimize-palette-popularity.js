@@ -183,15 +183,15 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     function spatialAverageBoxed(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
-        const boxBase = Math.sqrt(numColors);
-        const numBoxesVertical = Math.ceil(boxBase);
-        const numBoxesHorizontal = Math.floor(boxBase);
-        const horizontalFraction = Math.round(imageWidth / numBoxesHorizontal);
-        const verticalFraction = Math.round(imageHeight / numBoxesVertical);
+        const numBoxesPerDimension = Math.floor(Math.sqrt(numColors));
+        const rowsWithExtraHorizontalBoxes = numColors - numBoxesPerDimension * numBoxesPerDimension; 
+        const verticalFraction = Math.round(imageHeight / numBoxesPerDimension);
 
-        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesVertical;boxVerticalIndex++){
+        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesPerDimension;boxVerticalIndex++){
             const yBase = boxVerticalIndex * verticalFraction;
-            const yLimit = boxVerticalIndex === numBoxesVertical - 1 ? imageHeight : (boxVerticalIndex + 1) * verticalFraction;
+            const yLimit = boxVerticalIndex === numBoxesPerDimension - 1 ? imageHeight : (boxVerticalIndex + 1) * verticalFraction;
+            const numBoxesHorizontal = boxVerticalIndex < rowsWithExtraHorizontalBoxes ? numBoxesPerDimension + 1 : numBoxesPerDimension;
+            const horizontalFraction = Math.round(imageWidth / numBoxesHorizontal);
             for(let boxHorizontalIndex=0;boxHorizontalIndex<numBoxesHorizontal;boxHorizontalIndex++,colorIndex++){
                 const xBase = boxHorizontalIndex * horizontalFraction;
                 const xLimit = boxHorizontalIndex === numBoxesHorizontal - 1 ? imageWidth : (boxHorizontalIndex + 1) * horizontalFraction;
@@ -227,15 +227,15 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
         const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixelHash : pixelHash;
-        const boxBase = Math.sqrt(numColors);
-        const numBoxesVertical = Math.ceil(boxBase);
-        const numBoxesHorizontal = Math.floor(boxBase);
-        const horizontalFraction = Math.round(imageWidth / numBoxesHorizontal);
-        const verticalFraction = Math.round(imageHeight / numBoxesVertical);
+        const numBoxesPerDimension = Math.floor(Math.sqrt(numColors));
+        const rowsWithExtraHorizontalBoxes = numColors - numBoxesPerDimension * numBoxesPerDimension; 
+        const verticalFraction = Math.round(imageHeight / numBoxesPerDimension);
 
-        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesVertical;boxVerticalIndex++){
+        for(let boxVerticalIndex=0,colorIndex=0;boxVerticalIndex<numBoxesPerDimension;boxVerticalIndex++){
             const yBase = boxVerticalIndex * verticalFraction;
-            const yLimit = boxVerticalIndex === numBoxesVertical - 1 ? imageHeight : (boxVerticalIndex + 1) * verticalFraction;
+            const yLimit = boxVerticalIndex === numBoxesPerDimension - 1 ? imageHeight : (boxVerticalIndex + 1) * verticalFraction;
+            const numBoxesHorizontal = boxVerticalIndex < rowsWithExtraHorizontalBoxes ? numBoxesPerDimension + 1 : numBoxesPerDimension;
+            const horizontalFraction = Math.round(imageWidth / numBoxesHorizontal);
             for(let boxHorizontalIndex=0;boxHorizontalIndex<numBoxesHorizontal;boxHorizontalIndex++,colorIndex++){
                 const xBase = boxHorizontalIndex * horizontalFraction;
                 const xLimit = boxHorizontalIndex === numBoxesHorizontal - 1 ? imageWidth : (boxHorizontalIndex + 1) * horizontalFraction;
@@ -258,7 +258,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
                 addColorToColors(colorKey, retColors, colorIndex);
             }
         }
-        console.log(retColors);
         return retColors;
     }
 
