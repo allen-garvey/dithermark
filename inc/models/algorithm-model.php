@@ -265,7 +265,7 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Fishnet (R)', 'OrderedDither.createFishnetColorDither(8, true)', 'ColorDither.createFishnetColorDither(8, true)'),
         new DitherAlgorithm('Dot 4×4 (R)', 'OrderedDither.createDotColorDither(4, true)', 'ColorDither.createDotColorDither(4, true)'),
         new DitherAlgorithm('Dot 8×8 (R)', 'OrderedDither.createDotColorDither(8, true)', 'ColorDither.createDotColorDither(8, true)'),
-        new DitherAlgorithm('Halftone', 'OrderedDither.createHalftoneColorDither(8, true)', 'ColorDither.createHalftoneColorDither(8, true)'),
+        new DitherAlgorithm('Halftone (R)', 'OrderedDither.createHalftoneColorDither(8, true)', 'ColorDither.createHalftoneColorDither(8, true)'),
         'Ordered (Square)',
         new DitherAlgorithm('Square 2×2', 'OrderedDither.createSquareColorDither(2)', 'ColorDither.createSquareColorDither(2)'),
         new DitherAlgorithm('Square 4×4', 'OrderedDither.createSquareColorDither(4)', 'ColorDither.createSquareColorDither(4)'),
