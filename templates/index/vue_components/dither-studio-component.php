@@ -50,7 +50,7 @@
             </label>
             <div>
                 <button class="btn btn-default btn-sm zoom-bar-fit-button" @click="zoomFit" title="Fit image on screen">Fit</button>
-                <button class="btn btn-default btn-sm" v-show="zoom !== 100" @click="resetZoom" title="Reset zoom to 100%">Reset</button>
+                <button class="btn btn-default btn-sm" v-show="zoom !== 100" @click="resetZoom" title="Reset zoom to 100%">Full</button>
             </div>
         </div>
     </div>
