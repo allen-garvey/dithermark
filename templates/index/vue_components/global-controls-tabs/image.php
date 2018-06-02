@@ -48,7 +48,7 @@
         <div class="spread-content" v-if="isSmoothingEnabled">
             <label>Smoothing
                 <select v-model.number="selectedImageSmoothingRadiusBefore">
-                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
+                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue === 0 ? 'None' : smoothingValue}}</option>
                 </select>
             </label>
             <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
@@ -67,7 +67,7 @@
         <div class="spread-content" v-if="isSmoothingEnabled">
             <label>Smoothing
                 <select v-model.number="selectedImageSmoothingRadiusAfter">
-                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue}}</option>
+                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue === 0 ? 'None' : smoothingValue}}</option>
                 </select>
             </label>
             <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusAfter', 'imageSmoothingValues', 'smoothing value'); ?>
