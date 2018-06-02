@@ -258,7 +258,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     */
 
     function lightnessStep(l){
-        const lightnessSteps = 4.0;
+        const lightnessSteps = 4;
         //Quantize the lightness to one of `lightnessSteps` values
         return Math.floor((0.5 + l * lightnessSteps)) / lightnessSteps;
     }
@@ -266,21 +266,19 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     function hueLightnessPostscriptFuncBuilder(matrix){
         const hslColor = new Uint16Array(3);
         return (color, x, y, pixel)=>{
-            const matrixFraction = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+            //have to add 0.5 back to matrix value, since we subtracted 0.5 when we converted the bayer matrix to float
+            const matrixFraction = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions) + 0.5;
             hslColor[0] = PixelMath.hue(color);
             hslColor[1] = PixelMath.saturation(color);
             const pixelLightness = PixelMath.lightness(color) / 255;
             
-            const l1 = lightnessStep(Math.max(pixelLightness - 0.125, 0.0));
-            const l2 = lightnessStep(Math.min(pixelLightness + 0.124, 1.0));
+            const l1 = lightnessStep(Math.max(pixelLightness - 0.125, 0));
+            const l2 = lightnessStep(Math.min(pixelLightness + 0.124, 1));
             const lightnessDiff = (pixelLightness - l1) / (l2 - l1);
             
-            //have to add 0.5 back to matrix value, since we subtracted 0.5 when we converted the bayer matrix to float
-            const adjustedLightness = (lightnessDiff < matrixFraction + 0.5) ? l1 : l2;
+            const adjustedLightness = lightnessDiff < matrixFraction ? l1 : l2;
             hslColor[2] = Math.round(adjustedLightness * 255);
-            let retPixel = PixelMath.hslToPixel(hslColor, pixel);
-
-            return retPixel;
+            return PixelMath.hslToPixel(hslColor, pixel);
         };
     }
 
