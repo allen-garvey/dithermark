@@ -51,11 +51,6 @@
     vec3 hsl2rgb(vec3 pixel){
         return hsv2rgb(hsl2hsv(pixel));
     }
-
-    float saturation(vec3 pixel){
-        vec3 pixelHsv = rgb2hsv(pixel);
-        return pixelHsv.g;
-    }
     
     float hue_distance(float hue1, float hue2){
         float distance = abs(hue1 - hue2);
