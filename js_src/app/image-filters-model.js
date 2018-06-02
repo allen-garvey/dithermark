@@ -22,7 +22,8 @@ App.ImageFiltersModel = (function(){
         //pixel values for smoothing filter
         smoothingValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16],
         //-1 means filter disabled
-        bilateralFilterValues:  [-1, 0, 3, 4, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35, 40, 50, 60],
+        //higher values are sharper, while lower values are blurrier, so it makes more sense to reverse them
+        bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
         imageFilterValues,
         //contrast highest value is 300%
         contrastFilterValues: imageFilterValues.filter((value)=>{ return value >= 100; }),
