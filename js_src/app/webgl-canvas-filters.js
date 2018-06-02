@@ -19,10 +19,13 @@ App.WebGlCanvasFilters = (function(WebGl, Shader){
 
     let filterFunc = null;
 
-    function filter(gl, texture, imageWidth, imageHeight, contrastPercentage=null, saturationPercentage=100, hueRotation=0){
+    function filter(gl, texture, imageWidth, imageHeight, contrastPercentage=100, saturationPercentage=100, hueRotation=0){
         //normalize arguments
         //contrast value of 1.5 correlates to 200% of native canvas filters
-        contrastPercentage = contrastPercentage === null ? 0 : (contrastPercentage / 100 - 1) / 2;
+        contrastPercentage = contrastPercentage / 100 - 1;
+        if(contrastPercentage > 0){
+            contrastPercentage /= 2;
+        }
         saturationPercentage = saturationPercentage / 100
         hueRotation = hueRotation / 360;
         filterFunc = filterFunc || createFilterFunc(gl);

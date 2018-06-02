@@ -17,18 +17,18 @@
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <label>Contrast
                 <select v-model.number="selectedImageContrastIndex">
-                    <option v-for="(percentage, index) in contrastFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
+                    <option v-for="(percentage, index) in canvasFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
                 </select>
             </label>
-            <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'contrastFilterValues', 'contrast amount'); ?>
+            <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'canvasFilterValues', 'contrast amount'); ?>
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <label>Saturation
                 <select v-model.number="selectedImageSaturationIndex">
-                <option v-for="(percentage, index) in imageFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
+                <option v-for="(percentage, index) in canvasFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
                 </select>
             </label>
-            <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'imageFilterValues', 'saturation amount'); ?>
+            <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'canvasFilterValues', 'saturation amount'); ?>
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <label for="hue-rotation-range">Hue rotation</label><input id="hue-rotation-range" type="range" list="hue-rotation-tickmarks" v-model.number="hueRotationValue" step="1" min="0" max="359"/>

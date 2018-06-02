@@ -98,10 +98,9 @@
                 selectedBilateralFilterValue: 0,
                 selectedBilateralFilterValueAfter: 0,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
-                imageFilterValues: ImageFiltersModel.imageFilterValues,
-                contrastFilterValues: ImageFiltersModel.contrastFilterValues,
-                selectedImageSaturationIndex: ImageFiltersModel.imageFilterValues.indexOf(100),
-                selectedImageContrastIndex: 0,
+                canvasFilterValues: ImageFiltersModel.canvasFilterValues,
+                selectedImageSaturationIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
+                selectedImageContrastIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
                 hueRotationValue: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
                 showOriginalImage: true,
@@ -200,15 +199,14 @@
             },
             imageFiltersRaw: function(){
                 const filters = {};
-                const contrast = this.contrastFilterValues[this.selectedImageContrastIndex];
-                const saturation = this.imageFilterValues[this.selectedImageSaturationIndex];
+                const contrast = this.canvasFilterValues[this.selectedImageContrastIndex];
+                const saturation = this.canvasFilterValues[this.selectedImageSaturationIndex];
                 const hue = Math.floor(this.hueRotationValue);
                 //100% is unchanged
-                //and reducing contrast is not supported
-                if(contrast > 100){
+                if(contrast !== 100){
                     filters['contrast'] = contrast;
                 }
-                if(saturation !== 100 && saturation >= 0){
+                if(saturation !== 100){
                     filters['saturation'] = saturation;
                 }
                 if(hue > 0 && hue < 360){
