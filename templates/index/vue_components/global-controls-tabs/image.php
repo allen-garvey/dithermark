@@ -38,7 +38,7 @@
             </datalist>
         </div>
         <div class="spread-content" v-if="isWebglEnabled">
-            <label>Bilateral filter
+            <label>Denoise
                 <select v-model.number="selectedBilateralFilterValue">
                 <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : value}}</option>
                 </select>
@@ -57,7 +57,7 @@
     <fieldset v-if="isWebglEnabled">
         <legend>Filters <small>(post dither)</small></legend>
         <div class="spread-content">
-            <label>Bilateral filter
+            <label>Denoise
                 <select v-model.number="selectedBilateralFilterValueAfter">
                 <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : value}}</option>
                 </select>
