@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters){
+(function(Vue, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel){
     //webworker stuff
     let ditherWorkers;
     
@@ -17,23 +17,6 @@
     //used to keep track of which tabs have loaded a new image to them, after an image is loaded
     //this is because originally, only the active tab when an image is loaded will register it as new
     const tabsThatHaveSeenImageSet = new Set();
-
-    //imageDimensions = height * width
-    //percentage is 0-100
-    //returns percentage 0-100
-    function calculatePixelationZoom(imageDimensions, percentage){
-        if(percentage >= 100){
-            return 100;
-        }
-        //based on 720 x 960 image, since large images won't be pixelized enough
-        const baseDimensions = Math.min(691200, imageDimensions) * percentage;
-        return Math.ceil(baseDimensions / imageDimensions);
-    }
-    
-    //canvas css filters
-    //contrast highest value is 300
-    const imageFilterValues = [0, 5, 10, 15, 20, 30, 40, 50, 60, 70, 75, 80, 85, 90, 95, 100, 105, 110, 115, 120, 125, 130, 135, 140, 150, 160, 180, 200];
-    const contrastFilterValues = imageFilterValues.filter((value)=>{ return value >= 100; });
 
     Vue.component('dither-studio', {
         template: document.getElementById('dither-studio-component'),
@@ -107,17 +90,17 @@
                 //pixelation
                 selectedPixelateImageZoom: 0,
                 //smoothing
-                imageSmoothingValues: [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16],
+                imageSmoothingValues: ImageFiltersModel.smoothingValues,
                 selectedImageSmoothingRadiusBefore: 0,
                 selectedImageSmoothingRadiusAfter: 0,
                 //bilateral filter
-                bilateralFilterValues: [-1, 0, 5, 7, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35, 40],
+                bilateralFilterValues: ImageFiltersModel.bilateralFilterValues,
                 selectedBilateralFilterValue: 0,
                 selectedBilateralFilterValueAfter: 0,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
-                imageFilterValues: imageFilterValues,
-                contrastFilterValues: contrastFilterValues,
-                selectedImageSaturationIndex: imageFilterValues.indexOf(100),
+                imageFilterValues: ImageFiltersModel.imageFilterValues,
+                contrastFilterValues: ImageFiltersModel.contrastFilterValues,
+                selectedImageSaturationIndex: ImageFiltersModel.imageFilterValues.indexOf(100),
                 selectedImageContrastIndex: 0,
                 hueRotationValue: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
@@ -194,7 +177,7 @@
                     const title = i===0 ? 'None': i;
                     return {
                         title,
-                        value: calculatePixelationZoom(dimensions, zoom),
+                        value: ImageFiltersModel.calculatePixelationZoom(dimensions, zoom),
                     };
                 });
             },
@@ -615,4 +598,4 @@
             },
         }
     });
-})(window.Vue, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters);
+})(window.Vue, App.Canvas, App.Timer, App.WorkerUtil, App.WebGl, App.Polyfills, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel);

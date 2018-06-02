@@ -57,6 +57,7 @@
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
             JS_APP_PATH.'constants.js',
+            JS_APP_PATH.'image-filters-model.js',
             JS_APP_PATH.'color-quantization-modes.js',
             JS_APP_PATH.'user-settings.js',
             JS_APP_PATH.'editor-themes.js',
