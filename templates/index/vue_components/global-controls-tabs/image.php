@@ -40,7 +40,7 @@
         <div class="spread-content" v-if="isWebglEnabled">
             <label>Denoise
                 <select v-model.number="selectedBilateralFilterValue">
-                <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : value}}</option>
+                <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : index}}</option>
                 </select>
             </label>
             <?php IndexView::cyclePropertyList('selectedBilateralFilterValue', 'bilateralFilterValues', 'bilateral filter amount'); ?>
@@ -59,7 +59,7 @@
         <div class="spread-content">
             <label>Denoise
                 <select v-model.number="selectedBilateralFilterValueAfter">
-                <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : value}}</option>
+                <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : index}}</option>
                 </select>
             </label>
             <?php IndexView::cyclePropertyList('selectedBilateralFilterValueAfter', 'bilateralFilterValues', 'bilateral filter amount'); ?>
