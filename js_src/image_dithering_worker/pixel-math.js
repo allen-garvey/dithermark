@@ -101,7 +101,7 @@ App.PixelMath = (function(Pixel){
         let s = saturation / 100;
         let l = lightness / 255;
     
-        let hue2rgb = function hue2rgb(p, q, t){
+        function hue2rgb(p, q, t){
             if(t < 0){
                 t += 1;   
             }
@@ -111,7 +111,7 @@ App.PixelMath = (function(Pixel){
             if(t < 1/6){ 
                 return p + (q - p) * 6 * t;
             }
-            else if(t < 1/2){
+            else if(t < 0.5){
                 return q;
             }
             else if(t < 2/3){
