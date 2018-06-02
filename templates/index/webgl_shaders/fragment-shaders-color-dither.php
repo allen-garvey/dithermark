@@ -62,7 +62,7 @@
     float lightnessStep(float l){
         float lightnessSteps = 4.0;
         <?php //Quantize the lightness to one of `lightnessSteps` values ?>
-        return floor((0.5 + l * lightnessSteps)) / lightnessSteps;
+        return floor(0.5 + l * lightnessSteps) / lightnessSteps;
     }
     
     vec3 hue_lightness_dither(vec3 pixel, float bayerValue){

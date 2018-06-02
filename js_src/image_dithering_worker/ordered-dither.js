@@ -260,7 +260,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     function lightnessStep(l){
         const lightnessSteps = 4;
         //Quantize the lightness to one of `lightnessSteps` values
-        return Math.floor((0.5 + l * lightnessSteps)) / lightnessSteps;
+        return Math.floor(0.5 + l * lightnessSteps) / lightnessSteps;
     }
 
     function hueLightnessPostscriptFuncBuilder(matrix){
