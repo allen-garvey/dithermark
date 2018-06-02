@@ -73,7 +73,7 @@
         float l2 = lightnessStep(min(pixelLightness + 0.124, 1.0));
         float lightnessDiff = (pixelLightness - l1) / (l2 - l1);
         
-        float adjustedLightness = (lightnessDiff < bayerValue) ? l1 : l2;
+        float adjustedLightness = lightnessDiff < bayerValue ? l1 : l2;
         
         return hsl2rgb(vec3(hsl.rg, adjustedLightness));
     }
