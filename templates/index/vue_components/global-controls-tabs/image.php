@@ -52,7 +52,7 @@
         </div>
         <div class="spread-content" v-if="isSmoothingEnabled">
             <div class="label-align">
-                <label for="smoothing-before-dropdown">Smoothing</label>
+                <label for="smoothing-before-dropdown">Smooth</label>
                 <select id="smoothing-before-dropdown" v-model.number="selectedImageSmoothingRadiusBefore">
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue === 0 ? 'None' : smoothingValue}}</option>
                 </select>
@@ -73,7 +73,7 @@
         </div>
         <div class="spread-content" v-if="isSmoothingEnabled">
             <div class="label-align">
-                <label for="smoothing-after-dropdown">Smoothing</label>
+                <label for="smoothing-after-dropdown">Smooth</label>
                 <select id="smoothing-after-dropdown" v-model.number="selectedImageSmoothingRadiusAfter">
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue === 0 ? 'None' : smoothingValue}}</option>
                 </select>
