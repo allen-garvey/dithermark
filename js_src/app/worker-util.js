@@ -78,17 +78,13 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         return createEmptyHeader(WorkerHeaders.HISTOGRAM);
     }
     //filterId for memorization purpores
-    function createOptimizePaletteHeader(numColors, colorQuantizationModeId, pixelation, contrast, saturation, smoothing){
-        const buffer = new Polyfills.SharedArrayBuffer(14);
+    function createOptimizePaletteHeader(numColors, colorQuantizationModeId){
+        const buffer = new Polyfills.SharedArrayBuffer(6);
         const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.OPTIMIZE_PALETTE;
         bufferView[1] = numColors;
         bufferView[2] = colorQuantizationModeId;
-        bufferView[3] = pixelation;
-        bufferView[4] = contrast;
-        bufferView[5] = saturation;
-        bufferView[6] = smoothing;
         
         return buffer;
     }

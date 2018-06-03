@@ -1,5 +1,5 @@
 (function(Timer, WorkerUtil, Algorithms, WorkerHeaders, Histogram, OptimizePalette, ColorQuantizationModes){
-    let ditherAlgorithms = Algorithms.model();
+    const ditherAlgorithms = Algorithms.model();
     let previousMessageWasLoadImageHeader = false;
     let pixelBufferOriginal;
     let imageHeight = 0;
@@ -7,9 +7,9 @@
     
     
     function histogramAction(messageHeader){
-        let messageTypeId = messageHeader.messageTypeId;
+        const messageTypeId = messageHeader.messageTypeId;
         //don't need to copy the original imagedata, since we are not modifying it
-        let pixels = new Uint8ClampedArray(pixelBufferOriginal);
+        const pixels = new Uint8ClampedArray(pixelBufferOriginal);
         let histogramBuffer;
         
         if(messageTypeId === WorkerHeaders.HUE_HISTOGRAM){
@@ -27,8 +27,8 @@
         //dither the image
         const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
-        let pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
-        let pixels = pixelBufferCopy.pixels;
+        const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
+        const pixels = pixelBufferCopy.pixels;
         
         const imageHeight = messageHeader.imageHeight;
         const imageWidth = messageHeader.imageWidth;
@@ -44,8 +44,8 @@
     function colorDitherAction(messageHeader){
         const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
 
-        let pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
-        let pixels = pixelBufferCopy.pixels;
+        const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
+        const pixels = pixelBufferCopy.pixels;
 
         const imageHeight = messageHeader.imageHeight;
         const imageWidth = messageHeader.imageWidth;
@@ -61,32 +61,31 @@
     
     function createOptimizePaletteProgressCallback(colorQuantizationModeId, numColors, messageHeader){
         return (percentage)=>{
-            postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(colorQuantizationModeId, numColors, percentage, messageHeader.pixelation, messageHeader.contrast, messageHeader.saturation, messageHeader.smoothing));
+            postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(colorQuantizationModeId, numColors, percentage));
         };
     }
 
     function optimizePaletteAction(messageHeader){
         //don't need to copy the original imagedata, since we are not modifying it
-        let pixels = new Uint8ClampedArray(pixelBufferOriginal);
-        let pixelsInput = pixels;
-        let paletteBuffer;
+        const pixels = new Uint8ClampedArray(pixelBufferOriginal);
         const colorQuantizationId = messageHeader.colorQuantizationModeId;
         const colorQuantization = ColorQuantizationModes[colorQuantizationId];
         const messageTypeId = messageHeader.messageTypeId;
         const numColors = messageHeader.numColors;
         const progressCallback = createOptimizePaletteProgressCallback(colorQuantizationId, numColors, messageHeader);
+        const algoName = colorQuantization.algo;
+        let paletteBuffer;
 
         Timer.megapixelsPerSecond(`Optimize palette ${colorQuantization.title}`, pixels.length / 4, ()=>{
-            let algoName = colorQuantization.algo;
-            paletteBuffer = OptimizePalette[algoName](pixelsInput, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
+            paletteBuffer = OptimizePalette[algoName](pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
         });
         
-        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageTypeId, colorQuantizationId, messageHeader.pixelation, messageHeader.contrast, messageHeader.saturation, messageHeader.smoothing));
+        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageTypeId, colorQuantizationId));
     }
     
     
     onmessage = function(e){
-        let messageData = e.data;
+        const messageData = e.data;
         
         //previous message was load image header, so load image
         if(previousMessageWasLoadImageHeader){
@@ -97,7 +96,7 @@
             return;
         }
         //get new headers
-        let messageHeader = WorkerUtil.parseMessageHeader(messageData);
+        const messageHeader = WorkerUtil.parseMessageHeader(messageData);
         //perform action based on headers
         switch(messageHeader.messageTypeId){
             case WorkerHeaders.DITHER:
