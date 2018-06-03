@@ -47,8 +47,14 @@
         float s = 2.0 * (b - pixel.b) / b;
         return vec3(pixel.r, s, b);
     }
-
+    <?php //conversion does not work correctly for #000 or #fff, so added special case ?>
     vec3 hsl2rgb(vec3 pixel){
+        if(pixel.b == 1.0){
+            return vec3(1.0);
+        }
+        else if(pixel.b == 0.0){
+            return vec3(0.0);
+        }
         return hsv2rgb(hsl2hsv(pixel));
     }
     
