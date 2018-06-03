@@ -20,6 +20,12 @@ App.Fs = (function(Constants){
           }
     }
 
+    class FetchError extends Error{
+        constructor(message) {
+            super(message);
+          }
+    }
+
     function openImageFile(e, imageLoadFunc, errFunc) {
         const files = e.target.files;
         if(files.length < 1){
@@ -50,6 +56,11 @@ App.Fs = (function(Constants){
                 throw new HttpRequestError('Problem fetching image url', res.status, res.statusText, res.url);
             }
             return res.blob(); 
+        }).catch((error)=>{
+            if(error instanceof TypeError){
+                throw new FetchError('Problem fetching image, probably due to CORS');
+            }
+            throw error;
         }).then((blob)=>{
             if(!blob.type.startsWith('image')){
                 throw new UnsupportedFileTypeError('File does not appear to be an image', imageUrl, blob.type);
@@ -79,10 +90,10 @@ App.Fs = (function(Constants){
     //{{message.beforeUrl}} <a :href="message.url">{{message.url}}</a> {{message.afterUrl}}
     function messageForOpenImageUrlError(error, imageUrl){
         let url = imageUrl;
-        let beforeUrl = 'Could not open';
-        let afterUrl = 'It is recommended you first download the image to your device, and then open it from there.';
+        let beforeUrl = url ? 'Could not open' : '';
+        let afterUrl = 'Try downloading the image to your device and opening it from there. Please follow your local jurisdiction’s copyright laws regarding images you do not own.';
         //error from fetch, most likely due to CORS
-        if(error instanceof TypeError){
+        if(error instanceof FetchError){
             afterUrl = `This is mostly likely due to CORS. ${afterUrl}`;
         }
         else if(error instanceof UnsupportedFileTypeError){
@@ -100,6 +111,12 @@ App.Fs = (function(Constants){
             }
             else if(error.statusCode >= 400){
                 afterUrl = `This is most likely due to lacking proper authentication. ${afterUrl}`;
+            }
+        }
+        else{
+            afterUrl = 'for some reason. Maybe try again?';
+            if(!url){
+                afterUrl = `Could not open image ${afterUrl}`;
             }
         }
 
