@@ -21,7 +21,7 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
         array[0] = messageTypeId;
         array[1] = colorQuantizationModeId;
         const copiedPixelsSubarray = array.subarray(2, array.length);
-        copiedPixelsSubarray.set(new Uint8Array(colors));
+        copiedPixelsSubarray.set(colors);
         
         return buffer;
     }
