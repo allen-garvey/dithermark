@@ -32,4 +32,7 @@
     <div v-show="!automaticallyResizeLargeImages" class="hint">
         Opening very large images can result in poor performance or browser crashes
     </div>
+    <div v-show="isWebglSupported &amp;&amp; !isWebglEnabled" class="hint">
+        With WebGL is disabled some image filters will not be available, and the Yliluoma 1 and Yliluoma 2 dithers will be very slow
+    </div>
 </div>
