@@ -11,6 +11,7 @@
             </label>
             <?php IndexView::cyclePropertyList('currentEditorThemeIndex', 'editorThemes', 'theme'); ?>
         </div>
+        <full-screen-mode-control/>
     </fieldset>
     <fieldset>
         <legend>Performance</legend>

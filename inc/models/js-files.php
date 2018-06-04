@@ -31,6 +31,7 @@
         $ret[] = 'color-picker-component';
         $ret[] = 'export-tab-component';
         $ret[] = 'open-tab-component';
+        $ret[] = 'full-screen-mode-control-component';
         $ret[] = 'bw-dither-component';
         $ret[] = 'color-dither-component';
         $ret[] = 'dither-studio-component';
