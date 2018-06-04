@@ -3,6 +3,10 @@
     position: -webkit-sticky;
     position: sticky;
     left: 0;
+
+    .full-screen-mode &{
+        display: flex;
+    }
 }
 .nav{
     display: flex;
