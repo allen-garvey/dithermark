@@ -42,11 +42,13 @@
             bottom: 15px;
         }
         label{
+            display: flex;
+            align-items: baseline;
             flex-basis: calc(100% - #{$zoom_bar_button_container_width});
             margin-bottom: 0;
         }
         input[type="range"]{
-            width: calc(100% - 138px);
+            flex-basis: calc(100% - 138px);
         }
     }
     .zoom-bar-fit-button{
