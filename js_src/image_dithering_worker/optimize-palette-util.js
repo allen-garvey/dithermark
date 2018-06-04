@@ -1,7 +1,7 @@
 /**
  * Shared functions used by optimize palette algorithms
 */
-App.OptimizePaletteUtil = (function(PixelMath){
+App.OptimizePaletteUtil = (function(PixelMath, ArrayUtil){
     //creates new UInt8ClampedArray of pixels from
     //source pixels, with fully transparent pixels removed
     function filterTransparentPixels(pixels){
@@ -54,10 +54,37 @@ App.OptimizePaletteUtil = (function(PixelMath){
         return ret;
     }
 
+    //flattens 2d array to 1d
+    //does not flatten more than 2 dimensions
+    function flattenArray(array){
+        return array.reduce((total, value)=>{
+            return total.concat(value);
+        }, []);
+    }
+
+    function countingSort(iterable, valueFunc, valueRange=256){
+        const valueMap = ArrayUtil.create(valueRange, ()=>{return [];});
+        iterable.forEach((value)=>{
+            valueMap[valueFunc(value)].push(value);
+        });
+        return flattenArray(valueMap);
+    }
+
+    function countingSortPixels(pixels, valueFunc, valueRange=256){
+        const valueMap = ArrayUtil.create(valueRange, ()=>{return [];});
+        for(let i=0;i<pixels.length;i+=4){
+            const pixel = pixels.subarray(i, i+4);
+            valueMap[valueFunc(pixel)].push(pixel);
+        }
+        return flattenArray(valueMap);
+    }
+
 
     return {
         filterTransparentPixels,
         createPixelArray,
-        pixelArrayToBuffer
+        pixelArrayToBuffer,
+        countingSort,
+        countingSortPixels,
     };
-})(App.PixelMath);
+})(App.PixelMath, App.ArrayUtil);

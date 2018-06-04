@@ -36,8 +36,8 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
 
     function sortOnLongestAxis(pixels){
         const sortIndex = findLongestAxis(pixels);
-        return pixels.sort((a, b)=>{
-            return a[sortIndex] - b[sortIndex];
+        return Util.countingSort(pixels, (pixel)=>{
+            return pixel[sortIndex];
         });
     }
 
@@ -117,9 +117,9 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
             if(cuts.length === numCuts / 4){
                 progressCallback(50);
             }
-            let newCuts = [];
+            const newCuts = [];
             cuts.forEach((cut)=>{
-                sortOnLongestAxis(cut);
+                cut = sortOnLongestAxis(cut);
                 const half = Math.ceil(cut.length / 2);
                 newCuts.push(cut.slice(0, half));
                 newCuts.push(cut.slice(half, cut.length));

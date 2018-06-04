@@ -106,11 +106,11 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     }
 
     //Divides an image into zones based on sort function, and finds the most popular color in each zome
-    function sortedPopularity(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelSortFunc){
+    function sortedPopularity(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc, valueRange){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
         const pixelHashFunc = isPerceptual ? perceptualPixelHash : pixelHash;
-        const pixelArray = Util.createPixelArray(pixels).sort(pixelSortFunc);
+        const pixelArray = Util.countingSortPixels(pixels, pixelValueFunc, valueRange);
 
         const fraction = pixelArray.length / (numColors * 4);
 
@@ -134,16 +134,12 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
     //Divides an image into numColors lightness zones, and finds the most popular color in each zone
     function lightnessPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            return PixelMath.lightness(a) - PixelMath.lightness(b) || PixelMath.hue(a) - PixelMath.hue(b);
-        });
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.lightness, 256);
     }
 
     //Divides an image into numColors hue zones, and finds the most popular color in each zone
     function huePopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            return PixelMath.hue(a) - PixelMath.hue(b) || PixelMath.lightness(a) - PixelMath.lightness(b);
-        });
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue, 360);
     }
 
     //Divides image into boxes, and finds average color in each box
@@ -248,10 +244,10 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     }
 
     //Divides an image into zones based on sort function, and finds the average of each color in each zone
-    function sortedAverage(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelSortFunc){
+    function sortedAverage(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc, valueRange){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
-        const pixelArray = Util.createPixelArray(pixels).sort(pixelSortFunc);
+        const pixelArray = Util.countingSortPixels(pixels, pixelValueFunc, valueRange);
         const fraction = pixelArray.length / (numColors * 4);
         const pixelTransformFunc = isPerceptual ? perceptualPixelTransform : identity;
 
@@ -276,16 +272,12 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
     //Divides an image into numColors lightness zones, and finds the average color in each zone
     function lightnessAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            return PixelMath.lightness(a) - PixelMath.lightness(b) || PixelMath.hue(a) - PixelMath.hue(b);
-        });
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.lightness, 256);
     }
 
     //Divides an image into numColors hue zones, and finds the average color in each zone
     function hueAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, (a, b)=>{
-            return PixelMath.hue(a) - PixelMath.hue(b) || PixelMath.lightness(a) - PixelMath.lightness(b);
-        });
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue, 360);
     }
 
     return {
