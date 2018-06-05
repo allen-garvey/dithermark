@@ -202,11 +202,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         return uniformDistribution(valueMin, valueMax, numColors);
     }
 
-    //hue is circular, so we need to wrap the values around to find the lowest possible range
-    function hueUniformPopularity(popularityMapObject, numColors){
-        const numDistinctValues = 360;
-        //we need to search in double the popularity map, since hues wrap around
-        let popularityMap = popularityMapObject.map;
+    function findLongestPopularityMapZeroSequence(popularityMap, thresholdValue=0){
         const length = popularityMap.length;
         const doubledLength = length * 2;
 
@@ -219,13 +215,14 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
                 normalizedIndex = 0;
             }
             const value = popularityMap[normalizedIndex];
-            if(value === 0){
-                if(currentSequenceLength > 0){
-                    currentSequenceLength++;
-                }
-                else{
+            if(value <= thresholdValue){
+                if(currentSequenceLength === 0){
                     currentSequenceStartIndex = i;
                     currentSequenceLength = 1;
+                    
+                }
+                else{
+                    currentSequenceLength++;
                 }
             }
             else if(currentSequenceLength > 0){
@@ -236,13 +233,26 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
                 currentSequenceLength = 0;
             }
         }
-        const normalizedSequenceLength = Math.min(longestSequenceLength, numDistinctValues);
-        const startIndex = longestSequenceStartIndex + normalizedSequenceLength;
-        const endIndex = longestSequenceStartIndex + numDistinctValues - 1;
+        const normalizedSequenceLength = Math.min(longestSequenceLength, length);
+        const startIndex = longestSequenceStartIndex;
+        
+        return {
+            startIndex,
+            length: normalizedSequenceLength,
+        };
+    }
+
+    //hue is circular, so we need to wrap the values around to find the lowest possible range
+    function hueUniformPopularity(popularityMapObject, numColors){
+        const numDistinctValues = 360;
+        
+        const longestZeroSequence = findLongestPopularityMapZeroSequence(popularityMapObject.map);
+        const startIndex = longestZeroSequence.startIndex + longestZeroSequence.length;
+        const endIndex = longestZeroSequence.startIndex + numDistinctValues - 1;
         const isCircular = endIndex - startIndex + 1 === numDistinctValues;
-        let baseUniformDistribution = uniformDistribution(startIndex, endIndex, numColors, isCircular);
+        const baseUniformDistribution = uniformDistribution(startIndex, endIndex, numColors, isCircular);
         //we now have to shift based on offset, and sort values
-        let ret = new Uint16Array(baseUniformDistribution.length);
+        const ret = new Uint16Array(baseUniformDistribution.length);
         let retIndex = 0;
         baseUniformDistribution.forEach((value, i)=>{
             let normalizedValue = value;
