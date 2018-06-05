@@ -32,6 +32,7 @@
                 //for color picker
                 shouldShowColorPicker: false,
                 colorPickerColorIndex: 0,
+                hasColorPickerChangedTheColor: false,
             };
         },
         computed: {
@@ -240,18 +241,22 @@
                         return;
                     }
                     this.colorPickerColorIndex = colorReplaceIndex;
+                    this.hasColorPickerChangedTheColor = false,
                     this.shouldShowColorPicker = true;
                 }
             },
             colorPickerValueChanged: function(color){
+                this.hasColorPickerChangedTheColor = true,
                 Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, color.hex);
             },
             colorPickerOk: function(){
                 this.shouldShowColorPicker = false;
             },
             colorPickerCanceled: function(previousColor){
+                if(this.hasColorPickerChangedTheColor){
+                    Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, previousColor);
+                }
                 this.shouldShowColorPicker = false;
-                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, previousColor);
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
         }
