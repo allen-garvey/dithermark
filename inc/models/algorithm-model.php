@@ -49,16 +49,16 @@ class DitherAlgorithm {
 /**
  * Helper functions to create dither algorithms
  */
-function bayerTitle(string $titlePrefix, int $dimensions, string $postfix=''): string{
-    return "${titlePrefix} ${dimensions}×${dimensions}${postfix}";
+function bayerTitle(string $titlePrefix, int $dimensions, string $suffix=''): string{
+    return "${titlePrefix} ${dimensions}×${dimensions}${suffix}";
 }
 function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int $dimensions, bool $isRandom=false): string{
-    $randomIndicatorPostfix = $isRandom ? ' (R)' : '';
+    $randomIndicatorSuffix = $isRandom ? ' (R)' : '';
     if($orderedMatrixName === 'bayer'){
-        return bayerTitle($titlePrefix, $dimensions, $randomIndicatorPostfix);
+        return bayerTitle($titlePrefix, $dimensions, $randomIndicatorSuffix);
     }
     $matrixTitle = titleizeCamelCase($orderedMatrixName);
-    return "${titlePrefix} (${matrixTitle})${randomIndicatorPostfix}";
+    return "${titlePrefix} (${matrixTitle})${randomIndicatorSuffix}";
 }
 function titleizeCamelCase(string $camelCase): string{
     $isFirstLetter = true;
@@ -95,7 +95,7 @@ function yliluoma2Builder(string $orderedMatrixName, int $dimensions): DitherAlg
 }
 function hueLightnessBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false): DitherAlgorithm{
     $titlePrefix = 'Hue-Lightness';
-    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions);
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom);
     $randomArg = $isRandom ? ', true' : '';
     $webworkerFunc = "OrderedDither.createHueLightnessDither(${dimensions}${randomArg})";
     $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions}${randomArg})";
