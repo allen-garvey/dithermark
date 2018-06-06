@@ -93,6 +93,14 @@ function yliluoma2Builder(string $orderedMatrixName, int $dimensions): DitherAlg
     $webglFunc = "ColorDither.createYliluoma2OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
+function hueLightnessBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false): DitherAlgorithm{
+    $titlePrefix = 'Hue-Lightness';
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions);
+    $randomArg = $isRandom ? ', true' : '';
+    $webworkerFunc = "OrderedDither.createHueLightnessDither(${dimensions}${randomArg})";
+    $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions}${randomArg})";
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
+}
 
 /**
 * Functions for opt-groups
@@ -259,9 +267,9 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Ordered 8×8 (R)', 'OrderedDither.createBayerColorDither(8, true)', 'ColorDither.createBayerColorDither(8, true)'),
         new DitherAlgorithm('Ordered 16×16 (R)', 'OrderedDither.createBayerColorDither(16, true)', 'ColorDither.createBayerColorDither(16, true)'),
         'Ordered (Hue-Lightness)',
-        new DitherAlgorithm('Hue-Lightness 16×16', 'OrderedDither.createHueLightnessDither(16)', 'ColorDither.createHueLightnessOrderedDither(16)'),
+        hueLightnessBuilder('bayer', 16),
         'Ordered (Hue-Lightness/Random)',
-        new DitherAlgorithm('Hue-Lightness 16×16 (R)', 'OrderedDither.createHueLightnessDither(16, true)', 'ColorDither.createHueLightnessOrderedDither(16, true)'),
+        hueLightnessBuilder('bayer', 16, true),
         'Ordered Arbitrary-palette Positional',
         yliluoma1Builder('bayer', 2),
         yliluoma1Builder('bayer', 8),
