@@ -29,3 +29,8 @@
     min-width: 8em;
     max-width: 100%;
 }
+
+.optimize-palette-controls-container{
+    //so 'optimize button is not cut off for phone size screens'
+    max-width: calc(100vw - 44px);
+}

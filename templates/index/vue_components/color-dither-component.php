@@ -66,7 +66,7 @@
     </fieldset>
     <fieldset>
         <legend>Optimize palette</legend>
-        <div class="spread-content">
+        <div class="spread-content optimize-palette-controls-container">
             <label>Algorithm
                 <select v-model="selectedColorQuantizationModeIndex">
                     <optgroup v-for="colorQuantizationGroup in colorQuantizationGroups" v-bind:label="colorQuantizationGroup.title">
