@@ -7,14 +7,13 @@
             request: 'webkitRequestFullscreen',
             exit: 'webkitExitFullscreen',
         }),
-        //Firefox fullscreen mode is disabled because styling is messed up
-        // MOZ: Object.freeze({
-        //     isEnabled: 'mozFullScreenEnabled',
-        //     isCurrentlyFullScreen: 'mozFullScreenElement',
-        //     change: 'onmozfullscreenchange',
-        //     request: 'mozRequestFullScreen',
-        //     exit: 'mozCancelFullScreen',
-        // }),
+        MOZ: Object.freeze({
+            isEnabled: 'mozFullScreenEnabled',
+            isCurrentlyFullScreen: 'mozFullScreenElement',
+            change: 'onmozfullscreenchange',
+            request: 'mozRequestFullScreen',
+            exit: 'mozCancelFullScreen',
+        }),
     });
 
     let fullScreenPrefix = null;

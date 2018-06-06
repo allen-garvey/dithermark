@@ -15,21 +15,24 @@
         <link rel="apple-touch-icon" href="<?= BASE_URL.'apple-touch-icon.png' ?>"/>
     </head>
     <body>
-        <header class="header">
-            <nav class="nav">
-                <h1 class="brand"><?= APP_NAME; ?></h1>
-                <ul>
-                    <li><a href="<?= APP_SUPPORT_SITE_FAQ_PAGE_URL; ?>">FAQ</a></li>
-                    <li><a href="<?= GITHUB_SOURCE_URL; ?>">Source</a></li>
-                </ul>
-            </nav>
-        </header>
-        <main>
-            <noscript><?= APP_NAME; ?> requires JavaScript to run. Please enable JavaScript in your browser settings and reload this page.</noscript>
-            <div id="app">
-                <dither-studio/>
-            </div>
-        </main>
+        <?php //this extra .total-page div is unfortunately required for FireFox full screen mode to allow scrolling, instead of just cutting content off ?>
+        <div class="total-page">
+            <header class="header">
+                <nav class="nav">
+                    <h1 class="brand"><?= APP_NAME; ?></h1>
+                    <ul>
+                        <li><a href="<?= APP_SUPPORT_SITE_FAQ_PAGE_URL; ?>">FAQ</a></li>
+                        <li><a href="<?= GITHUB_SOURCE_URL; ?>">Source</a></li>
+                    </ul>
+                </nav>
+            </header>
+            <main>
+                <noscript><?= APP_NAME; ?> requires JavaScript to run. Please enable JavaScript in your browser settings and reload this page.</noscript>
+                <div id="app">
+                    <dither-studio/>
+                </div>
+            </main>
+        </div>
         <?php foreach(vueComponentsWithTemplates() as $componentName): ?>
             <script type="vue/template" id="<?= $componentName; ?>">
                 <?php require(TEMPLATES_VUE_COMPONENTS_PATH."${componentName}.php"); ?>

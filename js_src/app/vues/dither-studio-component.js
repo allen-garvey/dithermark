@@ -258,14 +258,18 @@
                 }
             },
             currentEditorThemeIndex: function(newThemeIndex, oldThemeIndex){
-                let classList = document.documentElement.classList;
+                const classList = document.documentElement.classList;
+                //need this for firefox full screen mode to work
+                const classList2 = document.body.classList;
                 //this will be null on original page load
                 if(oldThemeIndex !== null){
-                    let oldThemeClass = this.editorThemes[oldThemeIndex].className;
+                    const oldThemeClass = this.editorThemes[oldThemeIndex].className;
                     classList.remove(oldThemeClass);
+                    classList2.remove(oldThemeClass);
                 }
-                let newThemeClass = this.editorThemes[newThemeIndex].className;
+                const newThemeClass = this.editorThemes[newThemeIndex].className;
                 classList.add(newThemeClass);
+                classList2.add(newThemeClass);
             },
             serializedGlobalSettings: function(newValue){
                 if(this.finishedInitialization){

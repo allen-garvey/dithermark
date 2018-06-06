@@ -11,6 +11,23 @@ body.full-screen-mode{
     height: 100%;
     overflow: scroll;
 }
+//so page width expands as canvases expand, so position sticky continues to work
+//as things are zoomed in
+.total-page{
+    display: inline-block;
+}
+//for firefox full screen mode so that unsplash attribution remains sticky
+.full-screen-mode #app{
+    display: inline-block;
+}
+//need this for scrolling to work in firefox full screen mode
+//for full list of browser prefixes, see
+//https://developer.mozilla.org/en-US/docs/Web/CSS/:fullscreen
+body:-moz-full-screen .total-page{
+    width: 100vw;
+    height: 100vh;
+    overflow: scroll;
+}
 
 .hidden, [v-cloak], datalist{
     display: none;
