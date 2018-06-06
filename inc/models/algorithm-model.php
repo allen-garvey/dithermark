@@ -45,6 +45,16 @@ class DitherAlgorithm {
         $this->id = $id;
     }
 }
+
+/**
+ * Helper functions to create dither algorithms
+ */
+function yliluoma1Builder(string $title, string $orderedMatrixName, int $dimensions): DitherAlgorithm{
+    $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
+    $webglFunc = "ColorDither.createYliluoma1OrderedDither(${dimensions}, '${orderedMatrixName}')";
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
+}
+
 /**
 * Functions for opt-groups
 */
@@ -83,6 +93,7 @@ function bwAlgoGroups(): string{
 function colorAlgoGroups(): string{
     return json_encode(getAlgorithmGroups(colorAlgorithmModelBase()));
 }
+
 /**
 * Base arrays for algorithms and opt-groups
 */
@@ -213,9 +224,9 @@ function colorAlgorithmModelBase(): array{
         'Ordered (Hue-Lightness/Random)',
         new DitherAlgorithm('Hue-Lightness 16×16 (R)', 'OrderedDither.createHueLightnessDither(16, true)', 'ColorDither.createHueLightnessOrderedDither(16, true)'),
         'Ordered Arbitrary-palette Positional',
-        new DitherAlgorithm('Yliluoma 1 2×2', 'OrderedDither.createYliluoma1ColorDither(2, "bayer")', 'ColorDither.createYliluoma1OrderedDither(2, "bayer")'),
-        new DitherAlgorithm('Yliluoma 1 8×8', 'OrderedDither.createYliluoma1ColorDither(8, "bayer")', 'ColorDither.createYliluoma1OrderedDither(8, "bayer")'),
-        new DitherAlgorithm('Yliluoma 1 (Crosshatch Right)', 'OrderedDither.createYliluoma1ColorDither(4, "crossHatchRight")', 'ColorDither.createYliluoma1OrderedDither(4, "crossHatchRight")'),
+        yliluoma1Builder('Yliluoma 1 2x2', 'bayer', 2),
+        yliluoma1Builder('Yliluoma 1 8x8', 'bayer', 8),
+        yliluoma1Builder('Yliluoma 1 (Crosshatch Right)', 'crossHatchRight', 4),
         new DitherAlgorithm('Yliluoma 2 2×2', 'OrderedDither.createYliluoma2ColorDither(2, "bayer")', 'ColorDither.createYliluoma2OrderedDither(2, "bayer")'),
         new DitherAlgorithm('Yliluoma 2 8×8', 'OrderedDither.createYliluoma2ColorDither(8, "bayer")', 'ColorDither.createYliluoma2OrderedDither(8, "bayer")'),
         new DitherAlgorithm('Yliluoma 2 16×16', 'OrderedDither.createYliluoma2ColorDither(16, "bayer")', 'ColorDither.createYliluoma2OrderedDither(16, "bayer")'),
