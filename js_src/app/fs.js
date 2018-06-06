@@ -91,7 +91,7 @@ App.Fs = (function(Constants){
     function messageForOpenImageUrlError(error, imageUrl){
         let url = imageUrl;
         let beforeUrl = url ? 'Could not open' : '';
-        let afterUrl = 'Try downloading the image to your device and opening it from there. Please follow your local jurisdiction’s copyright laws regarding images you do not own.';
+        let afterUrl = 'Try downloading the image to your device and opening it from there.';
         //error from fetch, most likely due to CORS
         if(error instanceof FetchError){
             afterUrl = `This is mostly likely due to CORS. ${afterUrl}`;
