@@ -54,14 +54,26 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
 
         return buffer;
     }
-    
-    function createDitherWorkerLoadImageHeader(imageWidth, imageHeight){
-        const buffer = new Polyfills.SharedArrayBuffer(6);
+    //used to reduce race conditions when image
+    //changes while worker is still working on previous image
+    //doesn't 100% eliminate problem because if image changes
+    //256 times before worker is done, will still have a problem,
+    //but Uint8 is limit for worker return message, and this 
+    //seems like a reasonable compromise
+    function generateImageId(previousImageId){
+        if(previousImageId >= 255){
+            return 0;
+        }
+        return previousImageId + 1;
+    }
+    function createLoadImageHeader(imageId, imageWidth, imageHeight){
+        const buffer = new Polyfills.SharedArrayBuffer(8);
         const bufferView = new Uint16Array(buffer);
         
         bufferView[0] = WorkerHeaders.LOAD_IMAGE;
         bufferView[1] = imageWidth;
         bufferView[2] = imageHeight;
+        bufferView[3] = imageId;
         
         return buffer;
     }
@@ -145,7 +157,8 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         ditherWorkerBwHeader: createDitherWorkerBwHeader,
         ditherWorkerColorHeader: createDitherWorkerColorHeader,
         optimizePaletteHeader: createOptimizePaletteHeader,
-        ditherWorkerLoadImageHeader: createDitherWorkerLoadImageHeader,
+        generateImageId,
+        createLoadImageHeader,
         histogramWorkerHeader: createHistogramWorkerHeader,
         colorHistogramWorkerHeader: createColorHistogramWorkerHeader,
         getDitherWorkers: getWorkers,

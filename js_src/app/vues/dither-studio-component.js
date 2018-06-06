@@ -1,5 +1,6 @@
 (function(Vue, Canvas, Timer, WorkerUtil, WebGl, Polyfills, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel){
     //webworker stuff
+    let imageId = 0;
     let ditherWorkers;
     
     //canvases
@@ -411,8 +412,9 @@
                 }
                 
                 //load image into the webworkers
+                imageId = WorkerUtil.generateImageId(imageId);
                 const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-                const ditherWorkerHeader = WorkerUtil.ditherWorkerLoadImageHeader(this.imageHeader.width, this.imageHeader.height);
+                const ditherWorkerHeader = WorkerUtil.createLoadImageHeader(imageId, this.imageHeader.width, this.imageHeader.height);
                 ditherWorkers.forEach((ditherWorker)=>{
                     //copy image to web workers
                     ditherWorker.postMessage(ditherWorkerHeader);
@@ -548,12 +550,17 @@
             
             //webworker stuff
             workerMessageReceivedDispatcher: function(e){
-                let messageData = e.data;
-                let pixelsFull = new Uint8Array(messageData);
-                //get messageTypeId from start of buffer
-                let messageTypeId = pixelsFull[0];
+                const messageData = e.data;
+                const messageFull = new Uint8Array(messageData);
+                //get image id and messageTypeId from start of buffer
+                const messageImageId = messageFull[0];
+                //check for race condition where worker was working on old image
+                if(messageImageId !== imageId){
+                    return;
+                }
+                const messageTypeId = messageFull[1];
                 //rest of the buffer is the actual pixel data
-                let pixels = pixelsFull.subarray(1);
+                const pixels = messageFull.subarray(2);
                 switch(messageTypeId){
                     case WorkerHeaders.DITHER:
                     case WorkerHeaders.DITHER_BW:

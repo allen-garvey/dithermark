@@ -1,6 +1,7 @@
 (function(Timer, WorkerUtil, Algorithms, WorkerHeaders, Histogram, OptimizePalette, ColorQuantizationModes){
     const ditherAlgorithms = Algorithms.model();
     let previousMessageWasLoadImageHeader = false;
+    let imageId;
     let pixelBufferOriginal;
     let imageHeight = 0;
     let imageWidth = 0;
@@ -13,11 +14,11 @@
         let histogramBuffer;
         
         if(messageTypeId === WorkerHeaders.HUE_HISTOGRAM){
-            histogramBuffer = WorkerUtil.createHistogramBuffer(360, messageTypeId);
+            histogramBuffer = WorkerUtil.createHistogramBuffer(360, messageTypeId, imageId);
             Histogram.createHueHistogram(pixels, histogramBuffer.array);
         }
         else{
-            histogramBuffer = WorkerUtil.createHistogramBuffer(256, messageTypeId);
+            histogramBuffer = WorkerUtil.createHistogramBuffer(256, messageTypeId, imageId);
             Histogram.createBwHistogram(pixels, histogramBuffer.array);   
         }
         postMessage(histogramBuffer.buffer);
@@ -27,7 +28,7 @@
         //dither the image
         const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
-        const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
+        const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId, imageId);
         const pixels = pixelBufferCopy.pixels;
         
         const imageHeight = messageHeader.imageHeight;
@@ -44,7 +45,7 @@
     function colorDitherAction(messageHeader){
         const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
 
-        const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId);
+        const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId, imageId);
         const pixels = pixelBufferCopy.pixels;
 
         const imageHeight = messageHeader.imageHeight;
@@ -59,9 +60,9 @@
         postMessage(pixelBufferCopy.buffer);
     }
     
-    function createOptimizePaletteProgressCallback(colorQuantizationModeId, numColors, messageHeader){
+    function createOptimizePaletteProgressCallback(imageId, colorQuantizationModeId, numColors, messageHeader){
         return (percentage)=>{
-            postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(colorQuantizationModeId, numColors, percentage));
+            postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(imageId, colorQuantizationModeId, numColors, percentage));
         };
     }
 
@@ -72,7 +73,7 @@
         const colorQuantization = ColorQuantizationModes[colorQuantizationId];
         const messageTypeId = messageHeader.messageTypeId;
         const numColors = messageHeader.numColors;
-        const progressCallback = createOptimizePaletteProgressCallback(colorQuantizationId, numColors, messageHeader);
+        const progressCallback = createOptimizePaletteProgressCallback(imageId, colorQuantizationId, numColors, messageHeader);
         const algoName = colorQuantization.algo;
         let paletteBuffer;
 
@@ -80,7 +81,7 @@
             paletteBuffer = OptimizePalette[algoName](pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
         });
         
-        postMessage(WorkerUtil.createOptimizePaletteBuffer(paletteBuffer, messageTypeId, colorQuantizationId));
+        postMessage(WorkerUtil.createOptimizePaletteBuffer(imageId, paletteBuffer, messageTypeId, colorQuantizationId));
     }
     
     
@@ -118,6 +119,7 @@
             default:
                 imageHeight = messageHeader.imageHeight;
                 imageWidth = messageHeader.imageWidth;
+                imageId = messageHeader.imageId;
                 previousMessageWasLoadImageHeader = true;
                 break;
         }

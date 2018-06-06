@@ -1,49 +1,53 @@
 App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){    
     //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
-    function copyBufferWithMessageType(pixelBufferOriginal, messageTypeId){
+    function copyBufferWithMessageType(pixelBufferOriginal, messageTypeId, imageId){
         //faster than using for loop
-        const copiedBuffer = new Polyfills.SharedArrayBuffer(pixelBufferOriginal.byteLength + 1);
+        const copiedBuffer = new Polyfills.SharedArrayBuffer(pixelBufferOriginal.byteLength + 2);
         const copiedPixels = new Uint8Array(copiedBuffer);
         
         //add messagetypeid to start of pixelbuffer
-        copiedPixels[0] = messageTypeId;
-        const copiedPixelsSubarray = copiedPixels.subarray(1, copiedPixels.length);
+        copiedPixels[0] = imageId;
+        copiedPixels[1] = messageTypeId;
+        const copiedPixelsSubarray = copiedPixels.subarray(2, copiedPixels.length);
         copiedPixelsSubarray.set(new Uint8Array(pixelBufferOriginal));
         
         return {buffer: copiedBuffer, pixels: copiedPixelsSubarray};
     }
 
-    function createOptimizePaletteBuffer(colors, messageTypeId, colorQuantizationModeId){
+    function createOptimizePaletteBuffer(imageId, colors, messageTypeId, colorQuantizationModeId){
         //faster than using for loop
-        const buffer = new Polyfills.SharedArrayBuffer(colors.length + 2);
+        const buffer = new Polyfills.SharedArrayBuffer(colors.length + 3);
         const array = new Uint8Array(buffer);
         
-        array[0] = messageTypeId;
-        array[1] = colorQuantizationModeId;
-        const copiedPixelsSubarray = array.subarray(2, array.length);
+        array[0] = imageId;
+        array[1] = messageTypeId;
+        array[2] = colorQuantizationModeId;
+        const copiedPixelsSubarray = array.subarray(3, array.length);
         copiedPixelsSubarray.set(colors);
         
         return buffer;
     }
 
     //percent done is integer 1-100
-    function createOptimizePaletteProgressBuffer(colorQuantizationModeId, colorCount, percentage){
-        const buffer = new Polyfills.SharedArrayBuffer(4);
+    function createOptimizePaletteProgressBuffer(imageId, colorQuantizationModeId, colorCount, percentage){
+        const buffer = new Polyfills.SharedArrayBuffer(5);
         const array = new Uint8Array(buffer);
-        array[0] = WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS;
-        array[1] = colorQuantizationModeId;
-        array[2] = colorCount;
-        array[3] = percentage;
+        array[0] = imageId;
+        array[1] = WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS;
+        array[2] = colorQuantizationModeId;
+        array[3] = colorCount;
+        array[4] = percentage;
         
         return buffer;
     }
     
-    function createHistogramBuffer(length, messageTypeId){
-        const buffer = new Polyfills.SharedArrayBuffer(length + 1);
+    function createHistogramBuffer(length, messageTypeId, imageId){
+        const buffer = new Polyfills.SharedArrayBuffer(length + 2);
         const fullArray = new Uint8Array(buffer);
         
-        fullArray[0] = messageTypeId;
-        const histogramArray = fullArray.subarray(1, fullArray.length);
+        fullArray[0] = imageId;
+        fullArray[1] = messageTypeId;
+        const histogramArray = fullArray.subarray(2, fullArray.length);
         
         return {buffer: buffer, array: histogramArray};
     }
@@ -94,6 +98,7 @@ App.WorkerUtil = (function(WorkerHeaders, Pixel, Polyfills){
             messageTypeId: messageData[0],
             imageWidth : messageData[1],
             imageHeight : messageData[2],
+            imageId: messageData[3],
         };
 
         return messageHeader;
