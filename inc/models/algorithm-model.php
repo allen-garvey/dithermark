@@ -49,7 +49,39 @@ class DitherAlgorithm {
 /**
  * Helper functions to create dither algorithms
  */
-function yliluoma1Builder(string $title, string $orderedMatrixName, int $dimensions): DitherAlgorithm{
+function bayerTitle(string $titlePrefix, int $dimensions, string $postfix=''): string{
+    return "${titlePrefix} ${dimensions}×${dimensions}${postfix}";
+}
+function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int $dimensions, bool $isRandom=false): string{
+    $randomIndicatorPostfix = $isRandom ? ' (R)' : '';
+    if($orderedMatrixName === 'bayer'){
+        return bayerTitle($titlePrefix, $dimensions, $randomIndicatorPostfix);
+    }
+    $matrixTitle = titleizeCamelCase($orderedMatrixName);
+    return "${titlePrefix} (${matrixTitle})${randomIndicatorPostfix}";
+}
+function titleizeCamelCase(string $camelCase): string{
+    $isFirstLetter = true;
+    $ret = '';
+    foreach(str_split($camelCase) as $char){
+        if($isFirstLetter){
+            $ret = strtoupper($char);
+            $isFirstLetter = false;
+        }
+        else if(ctype_upper($char)){
+            $ret = $ret.' '.$char;
+        }
+        else{
+            $ret .= $char;
+        }
+    }
+
+    return $ret;
+}
+
+function yliluoma1Builder(string $orderedMatrixName, int $dimensions): DitherAlgorithm{
+    $titlePrefix = 'Yliluama 1';
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions);
     $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
     $webglFunc = "ColorDither.createYliluoma1OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
@@ -224,9 +256,9 @@ function colorAlgorithmModelBase(): array{
         'Ordered (Hue-Lightness/Random)',
         new DitherAlgorithm('Hue-Lightness 16×16 (R)', 'OrderedDither.createHueLightnessDither(16, true)', 'ColorDither.createHueLightnessOrderedDither(16, true)'),
         'Ordered Arbitrary-palette Positional',
-        yliluoma1Builder('Yliluoma 1 2x2', 'bayer', 2),
-        yliluoma1Builder('Yliluoma 1 8x8', 'bayer', 8),
-        yliluoma1Builder('Yliluoma 1 (Crosshatch Right)', 'crossHatchRight', 4),
+        yliluoma1Builder('bayer', 2),
+        yliluoma1Builder('bayer', 8),
+        yliluoma1Builder('crossHatchRight', 4),
         new DitherAlgorithm('Yliluoma 2 2×2', 'OrderedDither.createYliluoma2ColorDither(2, "bayer")', 'ColorDither.createYliluoma2OrderedDither(2, "bayer")'),
         new DitherAlgorithm('Yliluoma 2 8×8', 'OrderedDither.createYliluoma2ColorDither(8, "bayer")', 'ColorDither.createYliluoma2OrderedDither(8, "bayer")'),
         new DitherAlgorithm('Yliluoma 2 16×16', 'OrderedDither.createYliluoma2ColorDither(16, "bayer")', 'ColorDither.createYliluoma2OrderedDither(16, "bayer")'),
