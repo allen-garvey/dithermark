@@ -109,7 +109,7 @@ function hueLightnessBuilder(string $orderedMatrixName, int $dimensions, bool $i
     $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions}${randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function orderedDitherBwBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false){
+function orderedDitherBwBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = $orderedMatrixName === 'bayer' ? 'Ordered' : '';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $pascalCase = ucfirst($orderedMatrixName);
@@ -118,7 +118,7 @@ function orderedDitherBwBuilder(string $orderedMatrixName, int $dimensions, bool
     $webglFunc = "BwDither.create${pascalCase}Dither(${dimensions}${randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function orderedDitherColorBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false){
+function orderedDitherColorBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = $orderedMatrixName === 'bayer' ? 'Ordered' : '';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $pascalCase = ucfirst($orderedMatrixName);
@@ -128,6 +128,14 @@ function orderedDitherColorBuilder(string $orderedMatrixName, int $dimensions, b
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 
+function errorPropBwDitherBuilder(string $funcName, string $title=''): DitherAlgorithm{
+    $title = !empty($title) ? $title : ucfirst($funcName);
+    return new DitherAlgorithm($title, "ErrorPropDither.${funcName}", '');
+}
+function errorPropColorDitherBuilder(string $funcName, string $title=''): DitherAlgorithm{
+    $title = !empty($title) ? $title : ucfirst($funcName);
+    return new DitherAlgorithm($title, "ErrorPropColorDither.${funcName}", '');
+}
 /**
 * Functions for opt-groups
 */
@@ -184,16 +192,16 @@ function bwAlgorithmModelBase(): array{
         new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3', 'BwDither.aDitherAdd3', ['requiresHighPrecisionInt' => 'true']),
         new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2', 'BwDither.aDitherAdd2', ['requiresHighPrecisionInt' => 'true']),
         'Diffusion',
-        new DitherAlgorithm('Floyd-Steinberg', 'ErrorPropDither.floydSteinberg', ''),
-        new DitherAlgorithm('Javis-Judice-Ninke', 'ErrorPropDither.javisJudiceNinke', ''),
-        new DitherAlgorithm('Stucki', 'ErrorPropDither.stucki', ''),
-        new DitherAlgorithm('Burkes', 'ErrorPropDither.burkes', ''),
-        new DitherAlgorithm('Sierra3', 'ErrorPropDither.sierra3', ''),
-        new DitherAlgorithm('Sierra2', 'ErrorPropDither.sierra2', ''),
-        new DitherAlgorithm('Sierra1', 'ErrorPropDither.sierra1', ''),
+        errorPropBwDitherBuilder('floydSteinberg', 'Floyd-Steinberg'),
+        errorPropBwDitherBuilder('javisJudiceNinke', 'Javis-Judice-Ninke'),
+        errorPropBwDitherBuilder('stucki'),
+        errorPropBwDitherBuilder('burkes'),
+        errorPropBwDitherBuilder('sierra3'),
+        errorPropBwDitherBuilder('sierra2'),
+        errorPropBwDitherBuilder('sierra1'),
         'Diffusion (Reduced Bleed)',
-        new DitherAlgorithm('Atkinson', 'ErrorPropDither.atkinson', ''),
-        new DitherAlgorithm('Garvey', 'ErrorPropDither.garvey', ''),
+        errorPropBwDitherBuilder('atkinson'),
+        errorPropBwDitherBuilder('garvey'),
         'Ordered (Bayer)',
         orderedDitherBwBuilder('bayer', 2),
         orderedDitherBwBuilder('bayer', 4),
@@ -277,16 +285,16 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3Color', 'ColorDither.aDitherAdd3', ['requiresHighPrecisionInt' => 'true']),
         new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2Color', 'ColorDither.aDitherAdd2', ['requiresHighPrecisionInt' => 'true']),
         'Diffusion',
-        new DitherAlgorithm('Floyd-Steinberg', 'ErrorPropColorDither.floydSteinberg', ''),
-        new DitherAlgorithm('Javis-Judice-Ninke', 'ErrorPropColorDither.javisJudiceNinke', ''),
-        new DitherAlgorithm('Stucki', 'ErrorPropColorDither.stucki', ''),
-        new DitherAlgorithm('Burkes', 'ErrorPropColorDither.burkes', ''),
-        new DitherAlgorithm('Sierra3', 'ErrorPropColorDither.sierra3', ''),
-        new DitherAlgorithm('Sierra2', 'ErrorPropColorDither.sierra2', ''),
-        new DitherAlgorithm('Sierra1', 'ErrorPropColorDither.sierra1', ''),
+        errorPropColorDitherBuilder('floydSteinberg', 'Floyd-Steinberg'),
+        errorPropColorDitherBuilder('javisJudiceNinke', 'Javis-Judice-Ninke'),
+        errorPropColorDitherBuilder('stucki'),
+        errorPropColorDitherBuilder('burkes'),
+        errorPropColorDitherBuilder('sierra3'),
+        errorPropColorDitherBuilder('sierra2'),
+        errorPropColorDitherBuilder('sierra1'),
         'Diffusion (Reduced Bleed)',
-        new DitherAlgorithm('Atkinson', 'ErrorPropColorDither.atkinson', ''),
-        new DitherAlgorithm('Garvey', 'ErrorPropColorDither.garvey', ''),
+        errorPropColorDitherBuilder('atkinson'),
+        errorPropColorDitherBuilder('garvey'),
         'Ordered (Bayer)',
         orderedDitherColorBuilder('bayer', 2),
         orderedDitherColorBuilder('bayer', 4),
