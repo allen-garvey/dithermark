@@ -80,10 +80,17 @@ function titleizeCamelCase(string $camelCase): string{
 }
 
 function yliluoma1Builder(string $orderedMatrixName, int $dimensions): DitherAlgorithm{
-    $titlePrefix = 'Yliluama 1';
+    $titlePrefix = 'Yliluoma 1';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions);
     $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
     $webglFunc = "ColorDither.createYliluoma1OrderedDither(${dimensions}, '${orderedMatrixName}')";
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
+}
+function yliluoma2Builder(string $orderedMatrixName, int $dimensions): DitherAlgorithm{
+    $titlePrefix = 'Yliluoma 2';
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions);
+    $webworkerFunc = "OrderedDither.createYliluoma2ColorDither(${dimensions}, '${orderedMatrixName}')";
+    $webglFunc = "ColorDither.createYliluoma2OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 
@@ -259,10 +266,10 @@ function colorAlgorithmModelBase(): array{
         yliluoma1Builder('bayer', 2),
         yliluoma1Builder('bayer', 8),
         yliluoma1Builder('crossHatchRight', 4),
-        new DitherAlgorithm('Yliluoma 2 2×2', 'OrderedDither.createYliluoma2ColorDither(2, "bayer")', 'ColorDither.createYliluoma2OrderedDither(2, "bayer")'),
-        new DitherAlgorithm('Yliluoma 2 8×8', 'OrderedDither.createYliluoma2ColorDither(8, "bayer")', 'ColorDither.createYliluoma2OrderedDither(8, "bayer")'),
-        new DitherAlgorithm('Yliluoma 2 16×16', 'OrderedDither.createYliluoma2ColorDither(16, "bayer")', 'ColorDither.createYliluoma2OrderedDither(16, "bayer")'),
-        new DitherAlgorithm('Yliluoma 2 (Crosshatch Right)', 'OrderedDither.createYliluoma2ColorDither(4, "crossHatchRight")', 'ColorDither.createYliluoma2OrderedDither(4, "crossHatchRight")'),
+        yliluoma2Builder('bayer', 2),
+        yliluoma2Builder('bayer', 8),
+        yliluoma2Builder('bayer', 16),
+        yliluoma2Builder('crossHatchRight', 4),
         'Ordered (Hatch)',
         new DitherAlgorithm('Hatch Vertical', 'OrderedDither.createHatchVerticalColorDither(4)', 'ColorDither.createHatchVerticalColorDither(4)'),
         new DitherAlgorithm('Hatch Horizontal', 'OrderedDither.createHatchHorizontalColorDither(4)', 'ColorDither.createHatchHorizontalColorDither(4)'),
