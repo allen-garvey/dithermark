@@ -136,6 +136,22 @@ function errorPropColorDitherBuilder(string $funcName, string $title=''): Dither
     $title = !empty($title) ? $title : ucfirst($funcName);
     return new DitherAlgorithm($title, "ErrorPropColorDither.${funcName}", '');
 }
+function arithmeticDitherBwBuilder(string $titleSuffix, string $funcNameSuffix): DitherAlgorithm{
+    $title = "Adither ${titleSuffix}";
+    $webworkerFunc = "Threshold.adither${funcNameSuffix}";
+    $webglFunc = "BwDither.aDither${funcNameSuffix}";
+
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc, ['requiresHighPrecisionInt' => 'true']);
+}
+
+function arithmeticDitherColorBuilder(string $titleSuffix, string $funcNameSuffix): DitherAlgorithm{
+    $title = "Adither ${titleSuffix}";
+    $webworkerFunc = "Threshold.adither${funcNameSuffix}Color";
+    $webglFunc = "ColorDither.aDither${funcNameSuffix}";
+    
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc, ['requiresHighPrecisionInt' => 'true']);
+}
+
 /**
 * Functions for opt-groups
 */
@@ -185,12 +201,12 @@ function bwAlgorithmModelBase(): array{
         'Random',
         new DitherAlgorithm('Random', 'Threshold.randomDither', 'BwDither.randomThreshold'),
         'Arithmetic',
-        new DitherAlgorithm('Adither XOR (High)', 'Threshold.aditherXor1', 'BwDither.aDitherXor1', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither XOR (Medium)', 'Threshold.aditherXor3', 'BwDither.aDitherXor3', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither XOR (Low)', 'Threshold.aditherXor2', 'BwDither.aDitherXor2', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither ADD (High)', 'Threshold.aditherAdd1', 'BwDither.aDitherAdd1', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3', 'BwDither.aDitherAdd3', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2', 'BwDither.aDitherAdd2', ['requiresHighPrecisionInt' => 'true']),
+        arithmeticDitherBwBuilder('XOR (High)', 'Xor1'),
+        arithmeticDitherBwBuilder('XOR (Medium)', 'Xor3'),
+        arithmeticDitherBwBuilder('XOR (Low)', 'Xor2'),
+        arithmeticDitherBwBuilder('ADD (High)', 'Add1'),
+        arithmeticDitherBwBuilder('ADD (Medium)', 'Add3'),
+        arithmeticDitherBwBuilder('ADD (Low)', 'Add2'),
         'Diffusion',
         errorPropBwDitherBuilder('floydSteinberg', 'Floyd-Steinberg'),
         errorPropBwDitherBuilder('javisJudiceNinke', 'Javis-Judice-Ninke'),
@@ -278,12 +294,12 @@ function colorAlgorithmModelBase(): array{
         'Random',
         new DitherAlgorithm('Random', 'Threshold.randomClosestColor', 'ColorDither.randomClosestColor'),
         'Arithmetic',
-        new DitherAlgorithm('Adither XOR (High)', 'Threshold.aditherXor1Color', 'ColorDither.aDitherXor1', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither XOR (Medium)', 'Threshold.aditherXor3Color', 'ColorDither.aDitherXor3', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither XOR (Low)', 'Threshold.aditherXor2Color', 'ColorDither.aDitherXor2', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither ADD (High)', 'Threshold.aditherAdd1Color', 'ColorDither.aDitherAdd1', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither ADD (Medium)', 'Threshold.aditherAdd3Color', 'ColorDither.aDitherAdd3', ['requiresHighPrecisionInt' => 'true']),
-        new DitherAlgorithm('Adither ADD (Low)', 'Threshold.aditherAdd2Color', 'ColorDither.aDitherAdd2', ['requiresHighPrecisionInt' => 'true']),
+        arithmeticDitherColorBuilder('XOR (High)', 'Xor1'),
+        arithmeticDitherColorBuilder('XOR (Medium)', 'Xor3'),
+        arithmeticDitherColorBuilder('XOR (Low)', 'Xor2'),
+        arithmeticDitherColorBuilder('ADD (High)', 'Add1'),
+        arithmeticDitherColorBuilder('ADD (Medium)', 'Add3'),
+        arithmeticDitherColorBuilder('ADD (Low)', 'Add2'),
         'Diffusion',
         errorPropColorDitherBuilder('floydSteinberg', 'Floyd-Steinberg'),
         errorPropColorDitherBuilder('javisJudiceNinke', 'Javis-Judice-Ninke'),
