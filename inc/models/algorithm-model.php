@@ -49,16 +49,24 @@ class DitherAlgorithm {
 /**
  * Helper functions to create dither algorithms
  */
-function bayerTitle(string $titlePrefix, int $dimensions, string $suffix=''): string{
-    return "${titlePrefix} ${dimensions}×${dimensions}${suffix}";
+function dimensionsPostfix(int $dimensions): string{
+    return "${dimensions}×${dimensions}";
 }
-function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int $dimensions, bool $isRandom=false): string{
+function bayerTitle(string $titlePrefix, int $dimensions, string $suffix=''): string{
+    $dimensionsPostfix = dimensionsPostfix($dimensions);
+    return "${titlePrefix} ${dimensionsPostfix}${suffix}";
+}
+function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): string{
     $randomIndicatorSuffix = $isRandom ? ' (R)' : '';
     if($orderedMatrixName === 'bayer'){
         return bayerTitle($titlePrefix, $dimensions, $randomIndicatorSuffix);
     }
     $matrixTitle = titleizeCamelCase($orderedMatrixName);
-    return "${titlePrefix} (${matrixTitle})${randomIndicatorSuffix}";
+    if(!empty($titlePrefix)){
+        return "${titlePrefix} (${matrixTitle})${randomIndicatorSuffix}";
+    }
+    $dimensionsPostfix = $addDimensionsToTitle ? dimensionsPostfix($dimensions).' ' : '';
+    return "${matrixTitle} ${dimensionsPostfix}${randomIndicatorSuffix}";
 }
 function titleizeCamelCase(string $camelCase): string{
     $isFirstLetter = true;
@@ -99,6 +107,24 @@ function hueLightnessBuilder(string $orderedMatrixName, int $dimensions, bool $i
     $randomArg = $isRandom ? ', true' : '';
     $webworkerFunc = "OrderedDither.createHueLightnessDither(${dimensions}${randomArg})";
     $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions}${randomArg})";
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
+}
+function orderedDitherBwBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false){
+    $titlePrefix = $orderedMatrixName === 'bayer' ? 'Ordered' : '';
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
+    $pascalCase = ucfirst($orderedMatrixName);
+    $randomArg = $isRandom ? ', true' : '';
+    $webworkerFunc = "OrderedDither.create${pascalCase}Dither(${dimensions}${randomArg})";
+    $webglFunc = "BwDither.create${pascalCase}Dither(${dimensions}${randomArg})";
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
+}
+function orderedDitherColorBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false){
+    $titlePrefix = $orderedMatrixName === 'bayer' ? 'Ordered' : '';
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
+    $pascalCase = ucfirst($orderedMatrixName);
+    $randomArg = $isRandom ? ', true' : '';
+    $webworkerFunc = "OrderedDither.create${pascalCase}ColorDither(${dimensions}${randomArg})";
+    $webglFunc = "ColorDither.create${pascalCase}ColorDither(${dimensions}${randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 
@@ -169,66 +195,71 @@ function bwAlgorithmModelBase(): array{
         new DitherAlgorithm('Atkinson', 'ErrorPropDither.atkinson', ''),
         new DitherAlgorithm('Garvey', 'ErrorPropDither.garvey', ''),
         'Ordered (Bayer)',
-        new DitherAlgorithm('Ordered 2×2', 'OrderedDither.createBayerDither(2)', 'BwDither.createBayerDither(2)'),
-        new DitherAlgorithm('Ordered 4×4', 'OrderedDither.createBayerDither(4)', 'BwDither.createBayerDither(4)'),
-        new DitherAlgorithm('Ordered 8×8', 'OrderedDither.createBayerDither(8)', 'BwDither.createBayerDither(8)'),
-        new DitherAlgorithm('Ordered 16×16', 'OrderedDither.createBayerDither(16)', 'BwDither.createBayerDither(16)'),
+        orderedDitherBwBuilder('bayer', 2),
+        orderedDitherBwBuilder('bayer', 4),
+        orderedDitherBwBuilder('bayer', 8),
+        orderedDitherBwBuilder('bayer', 16),
         'Ordered (Bayer/Random)',
-        new DitherAlgorithm('Ordered 2×2 (R)', 'OrderedDither.createBayerDither(2, true)', 'BwDither.createBayerDither(2, true)'),
-        new DitherAlgorithm('Ordered 4×4 (R)', 'OrderedDither.createBayerDither(4, true)', 'BwDither.createBayerDither(4, true)'),
-        new DitherAlgorithm('Ordered 8×8 (R)', 'OrderedDither.createBayerDither(8, true)', 'BwDither.createBayerDither(8, true)'),
-        new DitherAlgorithm('Ordered 16×16 (R)', 'OrderedDither.createBayerDither(16, true)', 'BwDither.createBayerDither(16, true)'),
+        orderedDitherBwBuilder('bayer', 2, true),
+        orderedDitherBwBuilder('bayer', 4, true),
+        orderedDitherBwBuilder('bayer', 8, true),
+        orderedDitherBwBuilder('bayer', 16, true),
         'Ordered (Hatch)',
-        new DitherAlgorithm('Hatch Vertical', 'OrderedDither.createHatchVerticalDither(4)', 'BwDither.createHatchVerticalDither(4)'),
-        new DitherAlgorithm('Hatch Horizontal', 'OrderedDither.createHatchHorizontalDither(4)', 'BwDither.createHatchHorizontalDither(4)'),
-        new DitherAlgorithm('Hatch Right', 'OrderedDither.createHatchRightDither(4)', 'BwDither.createHatchRightDither(4)'),
-        new DitherAlgorithm('Hatch Left', 'OrderedDither.createHatchLeftDither(4)', 'BwDither.createHatchLeftDither(4)'),
+        orderedDitherBwBuilder('hatchHorizontal', 4),
+        orderedDitherBwBuilder('hatchVertical', 4),
+        orderedDitherBwBuilder('hatchRight', 4),
+        orderedDitherBwBuilder('hatchLeft', 4),
         'Ordered (Hatch/Random)',
-        new DitherAlgorithm('Hatch Vertical (R)', 'OrderedDither.createHatchVerticalDither(4, true)', 'BwDither.createHatchVerticalDither(4, true)'),
-        new DitherAlgorithm('Hatch Horizontal (R)', 'OrderedDither.createHatchHorizontalDither(4, true)', 'BwDither.createHatchHorizontalDither(4, true)'),
-        new DitherAlgorithm('Hatch Right (R)', 'OrderedDither.createHatchRightDither(4, true)', 'BwDither.createHatchRightDither(4, true)'),
-        new DitherAlgorithm('Hatch Left (R)', 'OrderedDither.createHatchLeftDither(4, true)', 'BwDither.createHatchLeftDither(4, true)'),
+        orderedDitherBwBuilder('hatchHorizontal', 4, true),
+        orderedDitherBwBuilder('hatchVertical', 4, true),
+        orderedDitherBwBuilder('hatchRight', 4, true),
+        orderedDitherBwBuilder('hatchLeft', 4, true),
         'Ordered (Crosshatch)',
-        new DitherAlgorithm('Crosshatch Vertical', 'OrderedDither.createCrossHatchVerticalDither(4)', 'BwDither.createCrossHatchVerticalDither(4)'),
-        new DitherAlgorithm('Crosshatch Horizontal', 'OrderedDither.createCrossHatchHorizontalDither(4)', 'BwDither.createCrossHatchHorizontalDither(4)'),
-        new DitherAlgorithm('Crosshatch Right', 'OrderedDither.createCrossHatchRightDither(4)', 'BwDither.createCrossHatchRightDither(4)'),
-        new DitherAlgorithm('Crosshatch Left', 'OrderedDither.createCrossHatchLeftDither(4)', 'BwDither.createCrossHatchLeftDither(4)'),
+        orderedDitherBwBuilder('crossHatchHorizontal', 4),
+        orderedDitherBwBuilder('crossHatchVertical', 4),
+        orderedDitherBwBuilder('crossHatchRight', 4),
+        orderedDitherBwBuilder('crossHatchLeft', 4),
         'Ordered (Crosshatch/Random)',
-        new DitherAlgorithm('Crosshatch Vertical (R)', 'OrderedDither.createCrossHatchVerticalDither(4, true)', 'BwDither.createCrossHatchVerticalDither(4, true)'),
-        new DitherAlgorithm('Crosshatch Horizontal (R)', 'OrderedDither.createCrossHatchHorizontalDither(4, true)', 'BwDither.createCrossHatchHorizontalDither(4, true)'),
-        new DitherAlgorithm('Crosshatch Right (R)', 'OrderedDither.createCrossHatchRightDither(4, true)', 'BwDither.createCrossHatchRightDither(4, true)'),
-        new DitherAlgorithm('Crosshatch Left (R)', 'OrderedDither.createCrossHatchLeftDither(4, true)', 'BwDither.createCrossHatchLeftDither(4, true)'),
+        orderedDitherBwBuilder('crossHatchHorizontal', 4, true),
+        orderedDitherBwBuilder('crossHatchVertical', 4, true),
+        orderedDitherBwBuilder('crossHatchRight', 4, true),
+        orderedDitherBwBuilder('crossHatchLeft', 4, true),
         'Ordered (Zigzag)',
-        new DitherAlgorithm('Zigzag 4×4 Horizontal', 'OrderedDither.createZigZagDither(4)', 'BwDither.createZigZagDither(4)'),
-        new DitherAlgorithm('Zigzag 4×4 Vertical', 'OrderedDither.createZigZagVerticalDither(4)', 'BwDither.createZigZagVerticalDither(4)'),
-        new DitherAlgorithm('Zigzag 8×8 Horizontal', 'OrderedDither.createZigZagDither(8)', 'BwDither.createZigZagDither(8)'),
-        new DitherAlgorithm('Zigzag 8×8 Vertical', 'OrderedDither.createZigZagVerticalDither(8)', 'BwDither.createZigZagVerticalDither(8)'),
-        new DitherAlgorithm('Zigzag 16×16 Horizontal', 'OrderedDither.createZigZagDither(16)', 'BwDither.createZigZagDither(16)'),
-        new DitherAlgorithm('Zigzag 16×16 Vertical', 'OrderedDither.createZigZagVerticalDither(16)', 'BwDither.createZigZagVerticalDither(16)'),
+        orderedDitherBwBuilder('zigzagHorizontal',  4, false, true),
+        orderedDitherBwBuilder('zigzagVertical',    4, false, true),
+        orderedDitherBwBuilder('zigzagHorizontal',  8, false, true),
+        orderedDitherBwBuilder('zigzagVertical',    8, false, true),
+        orderedDitherBwBuilder('zigzagHorizontal', 16, false, true),
+        orderedDitherBwBuilder('zigzagVertical',   16, false, true),
         'Ordered (Zigzag/Random)',
-        new DitherAlgorithm('Zigzag 4×4 Horizontal (R)', 'OrderedDither.createZigZagDither(4, true)', 'BwDither.createZigZagDither(4, true)'),
-        new DitherAlgorithm('Zigzag 4×4 Vertical (R)', 'OrderedDither.createZigZagVerticalDither(4, true)', 'BwDither.createZigZagVerticalDither(4, true)'),
-        new DitherAlgorithm('Zigzag 8×8 Horizontal (R)', 'OrderedDither.createZigZagDither(8, true)', 'BwDither.createZigZagDither(8, true)'),
-        new DitherAlgorithm('Zigzag 8×8 Vertical (R)', 'OrderedDither.createZigZagVerticalDither(8, true)', 'BwDither.createZigZagVerticalDither(8, true)'),
-        new DitherAlgorithm('Zigzag 16×16 Horizontal (R)', 'OrderedDither.createZigZagDither(16, true)', 'BwDither.createZigZagDither(16, true)'),
-        new DitherAlgorithm('Zigzag 16×16 Vertical (R)', 'OrderedDither.createZigZagVerticalDither(16, true)', 'BwDither.createZigZagVerticalDither(16, true)'),
+        orderedDitherBwBuilder('zigzagHorizontal',  4, true, true),
+        orderedDitherBwBuilder('zigzagVertical',    4, true, true),
+        orderedDitherBwBuilder('zigzagHorizontal',  8, true, true),
+        orderedDitherBwBuilder('zigzagVertical',    8, true, true),
+        orderedDitherBwBuilder('zigzagHorizontal', 16, true, true),
+        orderedDitherBwBuilder('zigzagVertical',   16, true, true),
         'Ordered (Pattern)',
-        new DitherAlgorithm('Cluster', 'OrderedDither.createClusterDither(4)', 'BwDither.createClusterDither(4)'),
-        new DitherAlgorithm('Fishnet', 'OrderedDither.createFishnetDither(8)', 'BwDither.createFishnetDither(8)'),
-        new DitherAlgorithm('Dot 4×4', 'OrderedDither.createDotDither(4)', 'BwDither.createDotDither(4)'),
-        new DitherAlgorithm('Dot 8×8', 'OrderedDither.createDotDither(8)', 'BwDither.createDotDither(8)'),
-        new DitherAlgorithm('Halftone', 'OrderedDither.createHalftoneDither(8)', 'BwDither.createHalftoneDither(8)'),
+        orderedDitherBwBuilder('cluster', 4),
+        orderedDitherBwBuilder('fishnet', 8),
+        orderedDitherBwBuilder('dot', 4, false, true),
+        orderedDitherBwBuilder('dot', 8, false, true),
+        orderedDitherBwBuilder('halftone', 8),
         'Ordered (Pattern/Random)',
-        new DitherAlgorithm('Cluster (R)', 'OrderedDither.createClusterDither(4, true)', 'BwDither.createClusterDither(4, true)'),
-        new DitherAlgorithm('Fishnet (R)', 'OrderedDither.createFishnetDither(8, true)', 'BwDither.createFishnetDither(8, true)'),
-        new DitherAlgorithm('Dot 4×4 (R)', 'OrderedDither.createDotDither(4, true)', 'BwDither.createDotDither(4, true)'),
-        new DitherAlgorithm('Dot 8×8 (R)', 'OrderedDither.createDotDither(8, true)', 'BwDither.createDotDither(8, true)'),
-        new DitherAlgorithm('Halftone (R)', 'OrderedDither.createHalftoneDither(8, true)', 'BwDither.createHalftoneDither(8, true)'),
+        orderedDitherBwBuilder('cluster', 4, true),
+        orderedDitherBwBuilder('fishnet', 8, true),
+        orderedDitherBwBuilder('dot', 4, true, true),
+        orderedDitherBwBuilder('dot', 8, true, true),
+        orderedDitherBwBuilder('halftone', 8, true),
+        'Ordered (Square)',
+        orderedDitherBwBuilder('square', 2, false, true),
+        orderedDitherBwBuilder('square', 4, false, true),
+        orderedDitherBwBuilder('square', 8, false, true),
+        orderedDitherBwBuilder('square', 16, false, true),
         'Ordered (Square/Random)',
-        new DitherAlgorithm('Square 2×2 (R)', 'OrderedDither.createSquareDither(2, true)', 'BwDither.createSquareDither(2, true)'),
-        new DitherAlgorithm('Square 4×4 (R)', 'OrderedDither.createSquareDither(4, true)', 'BwDither.createSquareDither(4, true)'),
-        new DitherAlgorithm('Square 8×8 (R)', 'OrderedDither.createSquareDither(8, true)', 'BwDither.createSquareDither(8, true)'),
-        new DitherAlgorithm('Square 16×16 (R)', 'OrderedDither.createSquareDither(16, true)', 'BwDither.createSquareDither(16, true)'),
+        orderedDitherBwBuilder('square', 2, true, true),
+        orderedDitherBwBuilder('square', 4, true, true),
+        orderedDitherBwBuilder('square', 8, true, true),
+        orderedDitherBwBuilder('square', 16, true, true),
     ];
 }
 
@@ -257,15 +288,15 @@ function colorAlgorithmModelBase(): array{
         new DitherAlgorithm('Atkinson', 'ErrorPropColorDither.atkinson', ''),
         new DitherAlgorithm('Garvey', 'ErrorPropColorDither.garvey', ''),
         'Ordered (Bayer)',
-        new DitherAlgorithm('Ordered 2×2', 'OrderedDither.createBayerColorDither(2)', 'ColorDither.createBayerColorDither(2)'),
-        new DitherAlgorithm('Ordered 4×4', 'OrderedDither.createBayerColorDither(4)', 'ColorDither.createBayerColorDither(4)'),
-        new DitherAlgorithm('Ordered 8×8', 'OrderedDither.createBayerColorDither(8)', 'ColorDither.createBayerColorDither(8)'),
-        new DitherAlgorithm('Ordered 16×16', 'OrderedDither.createBayerColorDither(16)', 'ColorDither.createBayerColorDither(16)'),
+        orderedDitherColorBuilder('bayer', 2),
+        orderedDitherColorBuilder('bayer', 4),
+        orderedDitherColorBuilder('bayer', 8),
+        orderedDitherColorBuilder('bayer', 16),
         'Ordered (Bayer/Random)',
-        new DitherAlgorithm('Ordered 2×2 (R)', 'OrderedDither.createBayerColorDither(2, true)', 'ColorDither.createBayerColorDither(2, true)'),
-        new DitherAlgorithm('Ordered 4×4 (R)', 'OrderedDither.createBayerColorDither(4, true)', 'ColorDither.createBayerColorDither(4, true)'),
-        new DitherAlgorithm('Ordered 8×8 (R)', 'OrderedDither.createBayerColorDither(8, true)', 'ColorDither.createBayerColorDither(8, true)'),
-        new DitherAlgorithm('Ordered 16×16 (R)', 'OrderedDither.createBayerColorDither(16, true)', 'ColorDither.createBayerColorDither(16, true)'),
+        orderedDitherColorBuilder('bayer', 2, true),
+        orderedDitherColorBuilder('bayer', 4, true),
+        orderedDitherColorBuilder('bayer', 8, true),
+        orderedDitherColorBuilder('bayer', 16, true),
         'Ordered (Hue-Lightness)',
         hueLightnessBuilder('bayer', 16),
         'Ordered (Hue-Lightness/Random)',
@@ -279,61 +310,61 @@ function colorAlgorithmModelBase(): array{
         yliluoma2Builder('bayer', 16),
         yliluoma2Builder('crossHatchRight', 4),
         'Ordered (Hatch)',
-        new DitherAlgorithm('Hatch Vertical', 'OrderedDither.createHatchVerticalColorDither(4)', 'ColorDither.createHatchVerticalColorDither(4)'),
-        new DitherAlgorithm('Hatch Horizontal', 'OrderedDither.createHatchHorizontalColorDither(4)', 'ColorDither.createHatchHorizontalColorDither(4)'),
-        new DitherAlgorithm('Hatch Right', 'OrderedDither.createHatchRightColorDither(4)', 'ColorDither.createHatchRightColorDither(4)'),
-        new DitherAlgorithm('Hatch Left', 'OrderedDither.createHatchLeftColorDither(4)', 'ColorDither.createHatchLeftColorDither(4)'),
+        orderedDitherColorBuilder('hatchHorizontal', 4),
+        orderedDitherColorBuilder('hatchVertical', 4),
+        orderedDitherColorBuilder('hatchRight', 4),
+        orderedDitherColorBuilder('hatchLeft', 4),
         'Ordered (Hatch/Random)',
-        new DitherAlgorithm('Hatch Vertical (R)', 'OrderedDither.createHatchVerticalColorDither(4, true)', 'ColorDither.createHatchVerticalColorDither(4, true)'),
-        new DitherAlgorithm('Hatch Horizontal (R)', 'OrderedDither.createHatchHorizontalColorDither(4, true)', 'ColorDither.createHatchHorizontalColorDither(4, true)'),
-        new DitherAlgorithm('Hatch Right (R)', 'OrderedDither.createHatchRightColorDither(4, true)', 'ColorDither.createHatchRightColorDither(4, true)'),
-        new DitherAlgorithm('Hatch Left (R)', 'OrderedDither.createHatchLeftColorDither(4, true)', 'ColorDither.createHatchLeftColorDither(4, true)'),
+        orderedDitherColorBuilder('hatchHorizontal', 4, true),
+        orderedDitherColorBuilder('hatchVertical', 4, true),
+        orderedDitherColorBuilder('hatchRight', 4, true),
+        orderedDitherColorBuilder('hatchLeft', 4, true),
         'Ordered (Crosshatch)',
-        new DitherAlgorithm('Crosshatch Vertical', 'OrderedDither.createCrossHatchVerticalColorDither(4)', 'ColorDither.createCrossHatchVerticalColorDither(4)'),
-        new DitherAlgorithm('Crosshatch Horizontal', 'OrderedDither.createCrossHatchHorizontalColorDither(4)', 'ColorDither.createCrossHatchHorizontalColorDither(4)'),
-        new DitherAlgorithm('Crosshatch Right', 'OrderedDither.createCrossHatchRightColorDither(4)', 'ColorDither.createCrossHatchRightColorDither(4)'),
-        new DitherAlgorithm('Crosshatch Left', 'OrderedDither.createCrossHatchLeftColorDither(4)', 'ColorDither.createCrossHatchLeftColorDither(4)'),
+        orderedDitherColorBuilder('crossHatchHorizontal', 4),
+        orderedDitherColorBuilder('crossHatchVertical', 4),
+        orderedDitherColorBuilder('crossHatchRight', 4),
+        orderedDitherColorBuilder('crossHatchLeft', 4),
         'Ordered (Crosshatch/Random)',
-        new DitherAlgorithm('Crosshatch Vertical (R)', 'OrderedDither.createCrossHatchVerticalColorDither(4, true)', 'ColorDither.createCrossHatchVerticalColorDither(4, true)'),
-        new DitherAlgorithm('Crosshatch Horizontal (R)', 'OrderedDither.createCrossHatchHorizontalColorDither(4, true)', 'ColorDither.createCrossHatchHorizontalColorDither(4, true)'),
-        new DitherAlgorithm('Crosshatch Right (R)', 'OrderedDither.createCrossHatchRightColorDither(4, true)', 'ColorDither.createCrossHatchRightColorDither(4, true)'),
-        new DitherAlgorithm('Crosshatch Left (R)', 'OrderedDither.createCrossHatchLeftColorDither(4, true)', 'ColorDither.createCrossHatchLeftColorDither(4, true)'),
+        orderedDitherColorBuilder('crossHatchHorizontal', 4, true),
+        orderedDitherColorBuilder('crossHatchVertical', 4, true),
+        orderedDitherColorBuilder('crossHatchRight', 4, true),
+        orderedDitherColorBuilder('crossHatchLeft', 4, true),
         'Ordered (Zigzag)',
-        new DitherAlgorithm('Zigzag 4×4 Horizontal', 'OrderedDither.createZigZagColorDither(4)', 'ColorDither.createZigZagColorDither(4)'),
-        new DitherAlgorithm('Zigzag 4×4 Vertical', 'OrderedDither.createZigZagVerticalColorDither(4)', 'ColorDither.createZigZagVerticalColorDither(4)'),
-        new DitherAlgorithm('Zigzag 8×8 Horizontal', 'OrderedDither.createZigZagColorDither(8)', 'ColorDither.createZigZagColorDither(8)'),
-        new DitherAlgorithm('Zigzag 8×8 Vertical', 'OrderedDither.createZigZagVerticalColorDither(8)', 'ColorDither.createZigZagVerticalColorDither(8)'),
-        new DitherAlgorithm('Zigzag 16×16 Horizontal', 'OrderedDither.createZigZagColorDither(16)', 'ColorDither.createZigZagColorDither(16)'),
-        new DitherAlgorithm('Zigzag 16×16 Vertical', 'OrderedDither.createZigZagVerticalColorDither(16)', 'ColorDither.createZigZagVerticalColorDither(16)'),
+        orderedDitherColorBuilder('zigzagHorizontal',  4, false, true),
+        orderedDitherColorBuilder('zigzagVertical',    4, false, true),
+        orderedDitherColorBuilder('zigzagHorizontal',  8, false, true),
+        orderedDitherColorBuilder('zigzagVertical',    8, false, true),
+        orderedDitherColorBuilder('zigzagHorizontal', 16, false, true),
+        orderedDitherColorBuilder('zigzagVertical',   16, false, true),
         'Ordered (Zigzag/Random)',
-        new DitherAlgorithm('Zigzag 4×4 Horizontal (R)', 'OrderedDither.createZigZagColorDither(4, true)', 'ColorDither.createZigZagColorDither(4, true)'),
-        new DitherAlgorithm('Zigzag 4×4 Vertical (R)', 'OrderedDither.createZigZagVerticalColorDither(4, true)', 'ColorDither.createZigZagVerticalColorDither(4, true)'),
-        new DitherAlgorithm('Zigzag 8×8 Horizontal (R)', 'OrderedDither.createZigZagColorDither(8, true)', 'ColorDither.createZigZagColorDither(8, true)'),
-        new DitherAlgorithm('Zigzag 8×8 Vertical (R)', 'OrderedDither.createZigZagVerticalColorDither(8, true)', 'ColorDither.createZigZagVerticalColorDither(8, true)'),
-        new DitherAlgorithm('Zigzag 16×16 Horizontal (R)', 'OrderedDither.createZigZagColorDither(16, true)', 'ColorDither.createZigZagColorDither(16, true)'),
-        new DitherAlgorithm('Zigzag 16×16 Vertical (R)', 'OrderedDither.createZigZagVerticalColorDither(16, true)', 'ColorDither.createZigZagVerticalColorDither(16, true)'),
+        orderedDitherColorBuilder('zigzagVertical',    4, true, true),
+        orderedDitherColorBuilder('zigzagHorizontal',  4, true, true),
+        orderedDitherColorBuilder('zigzagVertical',    8, true, true),
+        orderedDitherColorBuilder('zigzagHorizontal',  8, true, true),
+        orderedDitherColorBuilder('zigzagVertical',   16, true, true),
+        orderedDitherColorBuilder('zigzagHorizontal', 16, true, true),
         'Ordered (Pattern)',
-        new DitherAlgorithm('Cluster', 'OrderedDither.createClusterColorDither(4)', 'ColorDither.createClusterColorDither(4)'),
-        new DitherAlgorithm('Fishnet', 'OrderedDither.createFishnetColorDither(8)', 'ColorDither.createFishnetColorDither(8)'),
-        new DitherAlgorithm('Dot 4×4', 'OrderedDither.createDotColorDither(4)', 'ColorDither.createDotColorDither(4)'),
-        new DitherAlgorithm('Dot 8×8', 'OrderedDither.createDotColorDither(8)', 'ColorDither.createDotColorDither(8)'),
-        new DitherAlgorithm('Halftone', 'OrderedDither.createHalftoneColorDither(8)', 'ColorDither.createHalftoneColorDither(8)'),
+        orderedDitherColorBuilder('cluster', 4),
+        orderedDitherColorBuilder('fishnet', 8),
+        orderedDitherColorBuilder('dot', 4, false, true),
+        orderedDitherColorBuilder('dot', 8, false, true),
+        orderedDitherColorBuilder('halftone', 8),
         'Ordered (Pattern/Random)',
-        new DitherAlgorithm('Cluster (R)', 'OrderedDither.createClusterColorDither(4, true)', 'ColorDither.createClusterColorDither(4, true)'),
-        new DitherAlgorithm('Fishnet (R)', 'OrderedDither.createFishnetColorDither(8, true)', 'ColorDither.createFishnetColorDither(8, true)'),
-        new DitherAlgorithm('Dot 4×4 (R)', 'OrderedDither.createDotColorDither(4, true)', 'ColorDither.createDotColorDither(4, true)'),
-        new DitherAlgorithm('Dot 8×8 (R)', 'OrderedDither.createDotColorDither(8, true)', 'ColorDither.createDotColorDither(8, true)'),
-        new DitherAlgorithm('Halftone (R)', 'OrderedDither.createHalftoneColorDither(8, true)', 'ColorDither.createHalftoneColorDither(8, true)'),
+        orderedDitherColorBuilder('cluster', 4, true),
+        orderedDitherColorBuilder('fishnet', 8, true),
+        orderedDitherColorBuilder('dot', 4, true, true),
+        orderedDitherColorBuilder('dot', 8, true, true),
+        orderedDitherColorBuilder('halftone', 8, true),
         'Ordered (Square)',
-        new DitherAlgorithm('Square 2×2', 'OrderedDither.createSquareColorDither(2)', 'ColorDither.createSquareColorDither(2)'),
-        new DitherAlgorithm('Square 4×4', 'OrderedDither.createSquareColorDither(4)', 'ColorDither.createSquareColorDither(4)'),
-        new DitherAlgorithm('Square 8×8', 'OrderedDither.createSquareColorDither(8)', 'ColorDither.createSquareColorDither(8)'),
-        new DitherAlgorithm('Square 16×16', 'OrderedDither.createSquareColorDither(16)', 'ColorDither.createSquareColorDither(16)'),
+        orderedDitherColorBuilder('square', 2, false, true),
+        orderedDitherColorBuilder('square', 4, false, true),
+        orderedDitherColorBuilder('square', 8, false, true),
+        orderedDitherColorBuilder('square', 16, false, true),
         'Ordered (Square/Random)',
-        new DitherAlgorithm('Square 2×2 (R)', 'OrderedDither.createSquareColorDither(2, true)', 'ColorDither.createSquareColorDither(2, true)'),
-        new DitherAlgorithm('Square 4×4 (R)', 'OrderedDither.createSquareColorDither(4, true)', 'ColorDither.createSquareColorDither(4, true)'),
-        new DitherAlgorithm('Square 8×8 (R)', 'OrderedDither.createSquareColorDither(8, true)', 'ColorDither.createSquareColorDither(8, true)'),
-        new DitherAlgorithm('Square 16×16 (R)', 'OrderedDither.createSquareColorDither(16, true)', 'ColorDither.createSquareColorDither(16, true)'),
+        orderedDitherColorBuilder('square', 2, true, true),
+        orderedDitherColorBuilder('square', 4, true, true),
+        orderedDitherColorBuilder('square', 8, true, true),
+        orderedDitherColorBuilder('square', 16, true, true),
     ];
 }
 

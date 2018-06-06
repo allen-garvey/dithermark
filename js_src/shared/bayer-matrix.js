@@ -157,7 +157,7 @@ App.BayerMatrix = (function(){
         return rotate90Degrees(crossHatchRight(dimensions), dimensions);
     }
 
-    function zigZag(dimensions){
+    function zigzagHorizontal(dimensions){
         if(dimensions <= 4){
             return new Uint8Array([
                 7,  0,  0,  7,
@@ -198,8 +198,8 @@ App.BayerMatrix = (function(){
         ]);
     }
 
-    function zigZagVertical(dimensions){
-        return rotate90Degrees(zigZag(dimensions), dimensions);
+    function zigzagVertical(dimensions){
+        return rotate90Degrees(zigzagHorizontal(dimensions), dimensions);
     }
 
     //fishnet pattern
@@ -268,8 +268,8 @@ App.BayerMatrix = (function(){
         crossHatchLeft,
         fishnet,
         dot,
-        zigZag,
-        zigZagVertical,
+        zigzagHorizontal,
+        zigzagVertical,
         halftone,
     };
 })();
