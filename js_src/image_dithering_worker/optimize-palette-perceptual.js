@@ -1,9 +1,9 @@
 /**
  * Perceptual median cut and perceptual uniform color quantization algorithms
  */
-App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
+App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     
-    function createPopularityMap(pixels, numColors, numDistinctValues, pixelValueFunc){
+    function createPopularityMap(pixels, numDistinctValues, pixelValueFunc){
         let popularityMap = new Float32Array(numDistinctValues);
         let count = 0;
         for(let i=0;i<pixels.length;i+=4){
@@ -438,10 +438,6 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
             return Math.floor((value * weight + value2 * counterWeight) / 2); 
         });
     }
-    
-    function calculateAverage(list){
-        return list.reduce((acc, value)=>{ return acc + value;}, 0) / list.length;
-    }
 
     function perceptualMedianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
         let logarithmicBucketCapacityFunc = (numPixels, numBuckets, currentBucketNum, previousBucketCapacity)=>{
@@ -449,13 +445,13 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
                 return Math.ceil(previousBucketCapacity / Math.LN10);
         };
         //lightness
-        let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
+        let lightnessesPopularityMapObject = createPopularityMap(pixels, 256, PixelMath.lightness);
         let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
         let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
         
         //saturation
-        let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
+        let saturationsPopularityMapObject = createPopularityMap(pixels, 101, PixelMath.saturation);
         let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
         let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
         let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
@@ -501,7 +497,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         if(colorQuantization.isVibrant){
             hueFunc = vibrantHueFunc;
         }
-        let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let huePopularityMapObject = createPopularityMap(pixels, 360, hueFunc);
         let huesMedian = medianPopularityHues(huePopularityMapObject, numColors);
         let hueMix = colorQuantization.hueMix;
         let hues = averageArrays(huesMedian.average, huesMedian.median);
@@ -524,13 +520,13 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
                 return Math.ceil(previousBucketCapacity / Math.LN10);
         };
         //lightness
-        let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
+        let lightnessesPopularityMapObject = createPopularityMap(pixels, 256, PixelMath.lightness);
         let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
         let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
         
         //saturation
-        let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
+        let saturationsPopularityMapObject = createPopularityMap(pixels, 101, PixelMath.saturation);
         let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
         let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
         let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
@@ -576,7 +572,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         if(colorQuantization.isVibrant){
             hueFunc = vibrantHueFunc;
         }
-        let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let huePopularityMapObject = createPopularityMap(pixels, 360, hueFunc);
         let huesMedian = calculatedPopularityHues(huePopularityMapObject, numColors);
         let hueMix = colorQuantization.hueMix;
         // let hues = averageArrays(huesMedian.average, huesMedian.median);
@@ -585,7 +581,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         if(hueMix < 2){
             let uniformPopularityMapObject = huePopularityMapObject;
             if(colorQuantization.isVibrant){
-                uniformPopularityMapObject = createPopularityMap(pixels, numColors, 360, defaultHueFunc);
+                uniformPopularityMapObject = createPopularityMap(pixels, 360, defaultHueFunc);
             }
             let huesUniform = hueUniformPopularity(uniformPopularityMapObject, numColors);
             hues = averageHueArrays(hues, huesUniform, hueMix);
@@ -600,13 +596,12 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
     }
 
     function uniformQuantization(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
-        let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
+        let lightnessesPopularityMapObject = createPopularityMap(pixels, 256, PixelMath.lightness);
         let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
 
-        let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
+        let saturationsPopularityMapObject = createPopularityMap(pixels, 101, PixelMath.saturation);
         let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
         
-        const saturationAverage = calculateAverage(saturations);
         let defaultHueFunc = (pixel)=>{
             let lightness = PixelMath.lightness(pixel);
             //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
@@ -644,7 +639,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         if(colorQuantization.isVibrant){
             hueFunc = vibrantHueFunc;
         }
-        let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let huePopularityMapObject = createPopularityMap(pixels, 360, hueFunc);
         let hues = hueUniformPopularity(huePopularityMapObject, numColors);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
         hues = sortHues(hues, huePopularityMap);
@@ -657,10 +652,10 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
      * Monochrome quantization stuff
      */
     function monochromeQuantization(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
-        let lightnessesPopularityMapObject = createPopularityMap(pixels, numColors, 256, PixelMath.lightness);
+        let lightnessesPopularityMapObject = createPopularityMap(pixels, 256, PixelMath.lightness);
         let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
 
-        let saturationsPopularityMapObject = createPopularityMap(pixels, numColors, 101, PixelMath.saturation);
+        let saturationsPopularityMapObject = createPopularityMap(pixels, 101, PixelMath.saturation);
         let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
 
         let defaultHueFunc = (pixel)=>{
@@ -680,7 +675,7 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
         };
         
         let hueFunc = defaultHueFunc;
-        let huePopularityMapObject = createPopularityMap(pixels, numColors, 360, hueFunc);
+        let huePopularityMapObject = createPopularityMap(pixels, 360, hueFunc);
         let mostPopularHue = 0;
         let mostPopularHueCount = 0;
         huePopularityMapObject.map.forEach((hueCount, hue)=>{
@@ -720,4 +715,4 @@ App.OptimizePalettePerceptual = (function(Pixel, PixelMath, ArrayUtil){
        uniform: uniformQuantization,
        monochrome: monochromeQuantization,
     };
-})(App.Pixel, App.PixelMath, App.ArrayUtil);
+})(App.PixelMath, App.ArrayUtil);
