@@ -7,7 +7,7 @@
     let imageWidth = 0;
     
     
-    function histogramAction(messageHeader){
+    function histogramAction(imageId, messageHeader){
         const messageTypeId = messageHeader.messageTypeId;
         //don't need to copy the original imagedata, since we are not modifying it
         const pixels = new Uint8ClampedArray(pixelBufferOriginal);
@@ -24,7 +24,7 @@
         postMessage(histogramBuffer.buffer);
     }
     
-    function ditherAction(messageHeader){
+    function ditherAction(imageId, messageHeader){
         //dither the image
         const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
@@ -42,7 +42,7 @@
         postMessage(pixelBufferCopy.buffer);
     }
 
-    function colorDitherAction(messageHeader){
+    function colorDitherAction(imageId, messageHeader){
         const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
 
         const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId, imageId);
@@ -66,7 +66,7 @@
         };
     }
 
-    function optimizePaletteAction(messageHeader){
+    function optimizePaletteAction(imageId, messageHeader){
         //don't need to copy the original imagedata, since we are not modifying it
         const pixels = new Uint8ClampedArray(pixelBufferOriginal);
         const colorQuantizationId = messageHeader.colorQuantizationModeId;
@@ -102,17 +102,17 @@
         switch(messageHeader.messageTypeId){
             case WorkerHeaders.DITHER:
             case WorkerHeaders.DITHER_BW:
-                ditherAction(messageHeader);
+                ditherAction(imageId, messageHeader);
                 break;
             case WorkerHeaders.DITHER_COLOR:
-                colorDitherAction(messageHeader);
+                colorDitherAction(imageId, messageHeader);
                 break;
             case WorkerHeaders.HISTOGRAM:
             case WorkerHeaders.HUE_HISTOGRAM:
-                histogramAction(messageHeader);
+                histogramAction(imageId, messageHeader);
                 break;
             case WorkerHeaders.OPTIMIZE_PALETTE:
-                optimizePaletteAction(messageHeader);
+                optimizePaletteAction(imageId, messageHeader);
                 break;
             //LOAD_IMAGE case
             //just sets flag since it means next message will be the actual image data
