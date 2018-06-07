@@ -66,7 +66,7 @@
         };
     }
 
-    function optimizePaletteAction(imageId, messageHeader){
+    function optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight){
         //don't need to copy the original imagedata, since we are not modifying it
         const pixels = new Uint8ClampedArray(pixelBufferOriginal);
         const colorQuantizationId = messageHeader.colorQuantizationModeId;
@@ -112,7 +112,7 @@
                 histogramAction(imageId, messageHeader);
                 break;
             case WorkerHeaders.OPTIMIZE_PALETTE:
-                optimizePaletteAction(imageId, messageHeader);
+                optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight);
                 break;
             //LOAD_IMAGE case
             //just sets flag since it means next message will be the actual image data
