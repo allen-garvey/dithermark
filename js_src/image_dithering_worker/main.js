@@ -24,7 +24,7 @@
         postMessage(histogramBuffer.buffer);
     }
     
-    function ditherAction(imageId, messageHeader){
+    function bwDitherAction(imageId, messageHeader){
         //dither the image
         const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
         
@@ -102,7 +102,7 @@
         switch(messageHeader.messageTypeId){
             case WorkerHeaders.DITHER:
             case WorkerHeaders.DITHER_BW:
-                ditherAction(imageId, messageHeader);
+                bwDitherAction(imageId, messageHeader);
                 break;
             case WorkerHeaders.DITHER_COLOR:
                 colorDitherAction(imageId, messageHeader);
