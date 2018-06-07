@@ -681,9 +681,9 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         huePopularityMapObject = filterHues(huePopularityMapObject, imageHeight * imageWidth);
         let huesMedian = calculatedPopularityHues(huePopularityMapObject, numColors);
         let hueMix = colorQuantization.hueMix;
-        // let hues = averageArrays(huesMedian.average, huesMedian.median);
+        let hues = averageArrays(huesMedian.average, huesMedian.median);
         // let hues = huesMedian.average;
-        let hues = huesMedian.median;
+        // let hues = huesMedian.median;
         if(hueMix < 2){
             let uniformPopularityMapObject = huePopularityMapObject;
             // if(colorQuantization.isVibrant){
