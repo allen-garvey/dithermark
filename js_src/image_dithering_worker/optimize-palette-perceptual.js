@@ -601,20 +601,17 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         const largestValue = popularityMap.reduce((currentMax, value)=>{
             return Math.max(currentMax, value);
         }, 0);
-        const thresholdMin = Math.ceil(largestValue / 32);
-        const thresholdMax = Math.floor(largestValue * 0.3);
+        const thresholdMin = Math.ceil(largestValue / 100);
         console.log(`largest value is ${largestValue}, threshold is ${thresholdMin}`);
     
        let newCount = 0;
         for(let i=0;i<popularityMap.length;i++){
-            if(popularityMap[i] > thresholdMax){
+            if(popularityMap[i] < thresholdMin){
                 popularityMap[i] = 0;
             }
             else{
-                popularityMap[i] = Math.floor(popularityMap[i] / thresholdMin);
+                popularityMap[i] = Math.floor(Math.log2(popularityMap[i]) * 256);
             }
-            // popularityMap[i] = Math.floor(popularityMap[i] / Math.max(thresholdMin, 2 * popularityMap[i]));
-
             newCount += popularityMap[i];
         }
         huePopularityMapObject.count = newCount;
