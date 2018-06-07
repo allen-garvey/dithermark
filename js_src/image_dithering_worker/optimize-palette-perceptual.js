@@ -604,9 +604,8 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         const largestValueThreshold = Math.ceil(largestValue / 100);
         const imageThreshold = Math.ceil(imageDimensions / 2000); 
         const thresholdMin = Math.min(largestValueThreshold, imageThreshold);
-        console.log(`largest value is ${largestValue}, image threshold is ${imageThreshold} largest value threshold is ${largestValueThreshold}`);
     
-       let newCount = 0;
+        let newCount = 0;
         for(let i=0;i<popularityMap.length;i++){
             if(popularityMap[i] < thresholdMin){
                 popularityMap[i] = 0;
