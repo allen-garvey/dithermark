@@ -1,4 +1,4 @@
-(function(Timer, WorkerUtil, Algorithms, WorkerHeaders, Histogram, OptimizePalette, ColorQuantizationModes){
+(function(Timer, WorkerUtil, Algorithms, WorkerHeaders, Histogram, ColorQuantizationModes){
     const ditherAlgorithms = Algorithms.model();
     let previousMessageWasLoadImageHeader = false;
     let imageId;
@@ -74,11 +74,11 @@
         const messageTypeId = messageHeader.messageTypeId;
         const numColors = messageHeader.numColors;
         const progressCallback = createOptimizePaletteProgressCallback(imageId, colorQuantizationId, numColors, messageHeader);
-        const algoName = colorQuantization.algo;
+        const quantizationFunction = colorQuantization.algo;
         let paletteBuffer;
 
         Timer.megapixelsPerSecond(`Optimize palette ${colorQuantization.title}`, pixels.length / 4, ()=>{
-            paletteBuffer = OptimizePalette[algoName](pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
+            paletteBuffer = quantizationFunction(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
         });
         
         postMessage(WorkerUtil.createOptimizePaletteBuffer(imageId, paletteBuffer, messageTypeId, colorQuantizationId));
@@ -123,5 +123,5 @@
                 break;
         }
     };
-})(App.Timer, App.WorkerUtil, App.Algorithms, App.WorkerHeaders, App.Histogram, App.OptimizePalette, App.ColorQuantizationModes);
+})(App.Timer, App.WorkerUtil, App.Algorithms, App.WorkerHeaders, App.Histogram, App.ColorQuantizationModes);
 

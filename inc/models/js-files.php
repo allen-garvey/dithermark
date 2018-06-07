@@ -86,7 +86,6 @@
     
     function workerJsFiles(): array{
         return array_merge(sharedJsFiles(), [
-            JS_WORKER_PATH.'color-quantization-modes.js',
             JS_WORKER_PATH.'pixel-math.js',
             JS_WORKER_PATH.'color-dither-mode-functions.js',
             JS_WORKER_PATH.'image.js',
@@ -104,7 +103,7 @@
             JS_WORKER_PATH.'optimize-palette-median-cut.js',
             JS_WORKER_PATH.'optimize-palette-rgb-quant.js',
             JS_WORKER_PATH.'optimize-palette-octree.js',
-            JS_WORKER_PATH.'optimize-palette.js',
+            JS_WORKER_PATH.'color-quantization-modes.js',
             JS_WORKER_PATH.'main.js'
         ]);
     }
