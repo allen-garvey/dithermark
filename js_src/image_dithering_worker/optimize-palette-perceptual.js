@@ -595,14 +595,16 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         return PixelMath.hslArrayToRgb(hsl);
     }
 
-    function filterHues(huePopularityMapObject){
+    function filterHues(huePopularityMapObject, imageDimensions){
         //find largest value
         const popularityMap = huePopularityMapObject.map;
         const largestValue = popularityMap.reduce((currentMax, value)=>{
             return Math.max(currentMax, value);
         }, 0);
-        const thresholdMin = Math.ceil(largestValue / 100);
-        console.log(`largest value is ${largestValue}, threshold is ${thresholdMin}`);
+        const largestValueThreshold = Math.ceil(largestValue / 100);
+        const imageThreshold = Math.ceil(imageDimensions / 2000); 
+        const thresholdMin = Math.min(largestValueThreshold, imageThreshold);
+        console.log(`largest value is ${largestValue}, image threshold is ${imageThreshold} largest value threshold is ${largestValueThreshold}`);
     
        let newCount = 0;
         for(let i=0;i<popularityMap.length;i++){
@@ -618,7 +620,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         return huePopularityMapObject;
     }
 
-    function perceptualMedianCut3(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
+    function perceptualMedianCut3(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         let logarithmicBucketCapacityFunc = (numPixels, _numBuckets, _currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
                 return Math.ceil(previousBucketCapacity / Math.LN10);
@@ -677,13 +679,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             hueFunc = vibrantHueFunc;
         }
         let huePopularityMapObject = createPopularityMap(pixels, 360, hueFunc);
-        console.log('hues before filter');
-        //for logging we need to copy
-        let copy = new Float32Array(huePopularityMapObject.map);
-        console.log(copy);
-        huePopularityMapObject = filterHues(huePopularityMapObject);
-        console.log('hues after filter');
-        console.log(huePopularityMapObject.map);
+        huePopularityMapObject = filterHues(huePopularityMapObject, imageHeight * imageWidth);
         let huesMedian = calculatedPopularityHues(huePopularityMapObject, numColors);
         let hueMix = colorQuantization.hueMix;
         // let hues = averageArrays(huesMedian.average, huesMedian.median);
