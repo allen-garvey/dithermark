@@ -84,8 +84,7 @@
         postMessage(WorkerUtil.createOptimizePaletteBuffer(imageId, paletteBuffer, messageTypeId, colorQuantizationId));
     }
     
-    
-    onmessage = function(e){
+    onmessage = (e)=>{
         const messageData = e.data;
         
         //previous message was load image header, so load image
@@ -123,7 +122,6 @@
                 previousMessageWasLoadImageHeader = true;
                 break;
         }
-        
     };
 })(App.Timer, App.WorkerUtil, App.Algorithms, App.WorkerHeaders, App.Histogram, App.OptimizePalette, App.ColorQuantizationModes);
 
