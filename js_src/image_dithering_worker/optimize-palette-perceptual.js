@@ -34,6 +34,10 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         let saturationMax = 0;
         let saturationMin = Infinity;
         let saturationTotal = 0;
+        let saturationHighCount = 0;
+        let saturationLowCount = 0;
+        let saturationHighTotal = 0;
+        let saturationLowTotal = 0;
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
@@ -51,6 +55,14 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             }
             else if(saturation < saturationMin){
                 saturationMin = saturation;
+            }
+            if(saturation < 50){
+                saturationLowCount++;
+                saturationLowTotal += saturation;
+            }
+            else{
+                saturationHighCount++;
+                saturationHighTotal += saturation;
             }
             lightnessMap[lightness] = lightnessMap[lightness] + 1;
             let lightnessDiff;
@@ -90,6 +102,10 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
                 min: saturationMin,
                 max: saturationMax,
                 count: pixelCount,
+                highCount: saturationHighCount,
+                lowCount: saturationLowCount,
+                lowAverage: saturationLowTotal / saturationLowCount,
+                highAverage: saturationHighTotal / saturationHighCount,
             },
             lightness: {
                 map: lightnessMap,
@@ -827,25 +843,27 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         return PixelMath.hslArrayToRgb(hsl);
     }
 
-    function logarithmicSaturations(numColors, saturationMin, saturationMax){
-        const saturationDiff = saturationMax - saturationMin;
-        const saturations = new Uint8Array(numColors);
+    /**
+     * Distributes values logarithmically so that more values are closer to min or max value
+     * and less values are in the middle
+     */
+    function logarithmicEdgeDistribution(numColors, valueMin, valueMax){
+        const diff = valueMax - valueMin;
+        const ret = new Uint8Array(numColors);
         const halfColors = Math.min(numColors / 2);
-        const saturationDiffLowHalf = Math.min(saturationDiff / 2);
-        const lowBase = Math.log(saturationDiffLowHalf) / Math.log(halfColors);
+        const diffLowHalf = Math.min(diff / 2);
+        const lowBase = Math.log(diffLowHalf) / Math.log(halfColors);
         //have half saturations be relatively low, and half saturations relatively high
 
         for(let i=0;i<halfColors;i++){
-            saturations[i] = lowBase**i;
+            ret[i] = lowBase**i;
         }
-        const highDiff = saturationDiff - saturationDiffLowHalf;
+        const highDiff = diff - diffLowHalf;
         const highBase = Math.log(highDiff) / Math.log(numColors - halfColors);
         for(let exponent=0,i=halfColors;i<numColors;exponent++,i++){
-            saturations[i] = saturationMax - Math.floor(highDiff / highBase**exponent);
+            ret[i] = valueMax - Math.floor(highDiff / highBase**exponent);
         }
-        console.log('saturations');
-        console.log(saturations);
-        return saturations;
+        return ret;
     }
 
     function perceptualMedianCut4(pixels, numColors, colorQuantization, imageWidth, imageHeight){
@@ -859,10 +877,15 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
         let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
+        console.log('lightnesses');
+        console.log(lightnesses);
         
         //saturation
         let saturationStats = hslPopularityMap.saturation;
-        const saturations = logarithmicSaturations(numColors, saturationStats.min, saturationStats.max);
+        console.log(saturationStats);
+        const saturations = logarithmicEdgeDistribution(numColors, saturationStats.min, saturationStats.max);
+        console.log('saturations');
+        console.log(saturations);
         
         //hue
         let huePopularityMapObject = hslPopularityMap.hue;
