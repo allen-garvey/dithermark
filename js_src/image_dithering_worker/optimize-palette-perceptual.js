@@ -27,10 +27,13 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
 
     function createHslPopularityMap(pixels){
         const hueMap = new Float32Array(360);
-        const saturationMap = new Float32Array(101);
+        // const saturationMap = new Float32Array(101);
         const lightnessMap = new Float32Array(256);
         const maxLightnessDiffCubed = 127 * 127 * 127;
         let pixelCount = 0;
+        let saturationMax = 0;
+        let saturationMin = Infinity;
+        let saturationTotal = 0;
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
@@ -41,7 +44,14 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             const hue = PixelMath.hue(pixel);
             const saturation = PixelMath.saturation(pixel);
             const lightness = PixelMath.lightness(pixel);
-            saturationMap[saturation] = saturationMap[saturation] + 1;
+            // saturationMap[saturation] = saturationMap[saturation] + 1;
+            saturationTotal += saturation;
+            if(saturation > saturationMax){
+                saturationMax = saturation;
+            }
+            else if(saturation < saturationMin){
+                saturationMin = saturation;
+            }
             lightnessMap[lightness] = lightnessMap[lightness] + 1;
             let lightnessDiff;
             if(lightness >= 128){
@@ -75,7 +85,10 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
                 count: huePixelCount,
             },
             saturation: {
-                map: saturationMap,
+                // map: saturationMap,
+                average: saturationTotal / pixelCount,
+                min: saturationMin,
+                max: saturationMax,
                 count: pixelCount,
             },
             lightness: {
@@ -827,10 +840,18 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
         
         //saturation
-        let saturationsPopularityMapObject = hslPopularityMap.saturation;
-        let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
-        let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
-        let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
+        let saturationStats = hslPopularityMap.saturation;
+        // let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
+        // let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
+        // let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
+        console.log(saturationStats);
+        const saturationDiff = saturationStats.max - saturationStats.min;
+        const saturations = new Uint8Array(numColors);
+        for(let i=0;i<numColors;i++){
+            saturations[i] = saturationStats.max - Math.floor(saturationDiff / 1.21**i);
+        }
+        console.log('saturations');
+        console.log(saturations);
         
         //hue
         let huePopularityMapObject = hslPopularityMap.hue;
