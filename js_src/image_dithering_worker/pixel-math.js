@@ -39,6 +39,12 @@ App.PixelMath = (function(Pixel){
         }
         return ret;
     }
+
+    function hueDistance(hue1, hue2){
+        const dist1 = Math.abs(hue1 - hue2);
+        //since hue is circular
+        return Math.min(dist1, 359 - dist1);
+    }
     
     //based on: https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
     //returns saturation is range 0-100
@@ -150,6 +156,7 @@ App.PixelMath = (function(Pixel){
     return {
        lightness: pixelLightness,
        hue: pixelHue,
+       hueDistance,
        saturation: pixelSaturation,
        hslArrayToRgb: hslArrayToRgb,
        hslToPixel: hslToPixel,

@@ -13,25 +13,19 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
         return ret;
     }
 
-    function hueDistance(hue1, hue2){
-        const dist1 = distance1d(hue1, hue2);
-        //since hue is circular
-        return Math.min(dist1, 359 - dist1);
-    }
-
     function distance1d(value1, value2){
         return Math.abs(value1 - value2);
     }
 
     function distanceHueLightness(item1, item2){
-        const dist1 = hueDistance(item1[0], item2[0]) / 359;
+        const dist1 = PixelMath.hueDistance(item1[0], item2[0]) / 359;
         const dist2 = (item1[2] - item2[2]) / 255;
 
         return dist1 * dist1 + dist2 * dist2;
     }
 
     function distanceHslWeighted(item1, item2){
-        const hueDist = hueDistance(item1[0], item2[0]) / 359;
+        const hueDist = PixelMath.hueDistance(item1[0], item2[0]) / 359;
         const satDist = (item1[1] - item2[1]) / 100;
         const lighnesstDist = (item1[2] - item2[2]) / 255;
 
@@ -125,7 +119,7 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     };
     ret[ColorDitherModes.get('HUE').id] = {
         pixelValue: PixelMath.hue,
-        distance: hueDistance,
+        distance: PixelMath.hueDistance,
         dimensions: 1,
         incrementValue: incrementHue,
         errorAmount: errorAmountHue,
