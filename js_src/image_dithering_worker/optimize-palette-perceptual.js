@@ -77,7 +77,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             let closestDistance = Infinity;
             let closestIndex = 0;
             hues.forEach((value, index)=>{
-                const distance = Math.abs(hue - value);
+                const distance = PixelMath.hueDistance(hue, value);
                 if(distance < closestDistance){
                     closestDistance = distance;
                     closestIndex = index;
@@ -96,8 +96,11 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             if(lightness < 16 || lightness > 240){
                 continue;
             }
-            const hue = PixelMath.hue(pixel);
             const saturation = PixelMath.saturation(pixel);
+            if(saturation === 0){
+                continue;
+            }
+            const hue = PixelMath.hue(pixel);
             const index = findClosestHue(hue, hues);
             const normalizedIndex = index * 2;
             const fraction = saturation / 100;
