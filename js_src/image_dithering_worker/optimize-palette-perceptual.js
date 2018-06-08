@@ -25,6 +25,103 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         };
     }
 
+    function createHslPopularityMap(pixels, pixelCount){
+        const hueMap = new Float32Array(360);
+        const saturationMap = new Float32Array(101);
+        const lightnessMap = new Float32Array(256);
+        const maxLightnessDiffCubed = 127 * 127 * 127;
+        for(let i=0;i<pixels.length;i+=4){
+            let pixel = pixels.subarray(i, i+5);
+            //ignore transparent pixels
+            if(pixel[3] === 0){
+                continue;
+            }
+            const hue = PixelMath.hue(pixel);
+            const saturation = PixelMath.saturation(pixel);
+            const lightness = PixelMath.lightness(pixel);
+            saturationMap[saturation] = saturationMap[saturation] + 1;
+            lightnessMap[lightness] = lightnessMap[lightness] + 1;
+            let lightnessDiff;
+            if(lightness >= 128){
+                lightnessDiff = lightness - 128;
+            }
+            else{
+                lightnessDiff = 127 - lightness;
+            }
+            const hueCountValue = saturation / 100 * ((maxLightnessDiffCubed - lightnessDiff * lightnessDiff * lightnessDiff) / maxLightnessDiffCubed);
+            hueMap[hue] = hueMap[hue] + hueCountValue;
+        }
+        let huePixelCount = 0;
+        for(let i=0;i<hueMap.length;i++){
+            hueMap[i] = Math.ceil(hueMap[i]);
+            huePixelCount += hueMap[i];
+        }
+        return {
+            hue: {
+                map: hueMap,
+                count: huePixelCount,
+            },
+            saturation: {
+                map: saturationMap,
+                count: pixelCount,
+            },
+            lightness: {
+                map: lightnessMap,
+                count: pixelCount,
+            },
+        };
+    }
+
+    function sortHuesByClosestLightness(hues, pixels){
+        function findClosestHue(hue, hues){
+            let closestDistance = Infinity;
+            let closestIndex = 0;
+            hues.forEach((value, index)=>{
+                const distance = Math.abs(hue - value);
+                if(distance < closestDistance){
+                    closestDistance = distance;
+                    closestIndex = index;
+                }
+            });
+            return closestIndex;
+        }
+        const hueAverageLigtnessMap = new Float32Array(2 * hues.length);
+        for(let i=0;i<pixels.length;i+=4){
+            let pixel = pixels.subarray(i, i+5);
+            //ignore transparent pixels
+            if(pixel[3] === 0){
+                continue;
+            }
+            const lightness = PixelMath.lightness(pixel);
+            if(lightness < 16 || lightness > 240){
+                continue;
+            }
+            const hue = PixelMath.hue(pixel);
+            const saturation = PixelMath.saturation(pixel);
+            const index = findClosestHue(hue, hues);
+            const normalizedIndex = index * 2;
+            const fraction = saturation / 100;
+            hueAverageLigtnessMap[normalizedIndex] = hueAverageLigtnessMap[normalizedIndex] + lightness * fraction;
+            hueAverageLigtnessMap[normalizedIndex+1] = hueAverageLigtnessMap[normalizedIndex+1] + fraction;
+        }
+        //get averages
+        for(let i=0;i<hueAverageLigtnessMap.length;i+=2){
+            hueAverageLigtnessMap[i] = hueAverageLigtnessMap[i] / hueAverageLigtnessMap[i+1];
+        }
+        let sortedHues = ArrayUtil.create(hues.length, (i)=>{
+            return {
+                hue: hues[i],
+                lightness: hueAverageLigtnessMap[i*2],
+            };
+        }).sort((a, b)=>{
+            return a.lightness - b.lightness;
+        });
+        for(let i=0;i<hues.length;i++){
+            hues[i] = sortedHues[i].hue;
+        }
+        return hues;
+    }
+
     function findMin(popularityMap){
         for(let i=0;i<popularityMap.length;i++){
             if(popularityMap[i] > 0){
@@ -701,6 +798,44 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         return PixelMath.hslArrayToRgb(hsl);
     }
 
+    function perceptualMedianCut4(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        const hslPopularityMap = createHslPopularityMap(pixels, imageWidth * imageHeight);
+        let logarithmicBucketCapacityFunc = (numPixels, _numBuckets, _currentBucketNum, previousBucketCapacity)=>{
+                previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
+                return Math.ceil(previousBucketCapacity / Math.LN10);
+        };
+        //lightness
+        let lightnessesPopularityMapObject = hslPopularityMap.lightness;
+        let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
+        let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
+        let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
+        
+        //saturation
+        let saturationsPopularityMapObject = hslPopularityMap.saturation;
+        let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
+        let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
+        let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
+        
+        //hue
+        let huePopularityMapObject = hslPopularityMap.hue;
+        huePopularityMapObject = filterHues(huePopularityMapObject, imageHeight * imageWidth);
+        let huesMedian = calculatedPopularityHues(huePopularityMapObject, numColors);
+        let hueMix = colorQuantization.hueMix;
+        let hues = averageArrays(huesMedian.average, huesMedian.median);
+        // let hues = huesMedian.average;
+        // let hues = huesMedian.median;
+        if(hueMix < 2){
+            let uniformPopularityMapObject = huePopularityMapObject;
+            let huesUniform = hueUniformPopularity(uniformPopularityMapObject, numColors);
+            hues = averageHueArrays(hues, huesUniform, hueMix);
+        }
+        hues = sortHuesByClosestLightness(hues, pixels);
+        
+        //convert to hsl and return results
+        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        return PixelMath.hslArrayToRgb(hsl);
+    }
+
     function uniformQuantization(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
         let lightnessesPopularityMapObject = createPopularityMap(pixels, 256, PixelMath.lightness);
         let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
@@ -819,6 +954,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
        medianCut: perceptualMedianCut,
        medianCut2: perceptualMedianCut2,
        medianCut3: perceptualMedianCut3,
+       medianCut4: perceptualMedianCut4,
        uniform: uniformQuantization,
        monochrome: monochromeQuantization,
     };
