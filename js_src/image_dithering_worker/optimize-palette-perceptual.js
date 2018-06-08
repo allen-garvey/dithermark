@@ -850,18 +850,21 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     function logarithmicEdgeDistribution(numColors, valueMin, valueMax){
         const diff = valueMax - valueMin;
         const ret = new Uint8Array(numColors);
-        const halfColors = Math.min(numColors / 2);
-        const diffLowHalf = Math.min(diff / 2);
+        const halfColors = Math.floor(numColors / 2);
+        const diffLowHalf = Math.floor(diff / 2);
         const lowBase = Math.log(diffLowHalf) / Math.log(halfColors);
         //have half saturations be relatively low, and half saturations relatively high
 
         for(let i=0;i<halfColors;i++){
-            ret[i] = lowBase**i;
+            ret[i] = Math.round(lowBase**i) + valueMin;
         }
         const highDiff = diff - diffLowHalf;
         const highBase = Math.log(highDiff) / Math.log(numColors - halfColors);
         for(let exponent=0,i=halfColors;i<numColors;exponent++,i++){
-            ret[i] = valueMax - Math.floor(highDiff / highBase**exponent);
+            ret[i] = Math.round(valueMax - Math.floor(highDiff / highBase**exponent));
+        }
+        return ret;
+    }
         }
         return ret;
     }
