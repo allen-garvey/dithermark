@@ -885,6 +885,36 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     }
 
     /**
+     * Distributes half the values logarithmically so that more values are closer to min or max value
+     * middle values are distributed evenly in linear fashion
+     */
+    function logarithmicEdgeLinearMiddleDistribution(numColors, valueMin, valueMax){
+        const diff = valueMax - valueMin;
+        const ret = new Uint8Array(numColors);
+        const bottomQuarterColors = Math.floor(numColors / 4);
+        const topQuarterColors =  numColors - bottomQuarterColors;
+        const diffLowHalf = Math.floor(diff / 4);
+        const lowBase = Math.log(diffLowHalf) / Math.log(bottomQuarterColors);
+        //have half saturations be relatively low, and half saturations relatively high
+
+        for(let i=0;i<bottomQuarterColors;i++){
+            ret[i] = Math.round(lowBase**i) + valueMin;
+        }
+
+        const multiplier = (diff / 2) / (numColors - (bottomQuarterColors + (numColors - topQuarterColors)) + 1);
+        for(let index=1, i=bottomQuarterColors;i<topQuarterColors;i++,index++){
+            ret[i] = Math.round(diffLowHalf + index * multiplier);
+        }
+
+        const highDiff = diffLowHalf;
+        const highBase = Math.log(highDiff) / Math.log(numColors - topQuarterColors);
+        for(let exponent=0,i=topQuarterColors;i<numColors;exponent++,i++){
+            ret[i] = Math.round(valueMax - Math.floor(highDiff / highBase**exponent));
+        }
+        return ret;
+    }
+
+    /**
      * Distributes values logarithmically so that more values are closer to the center value
      * and less values are on the edges
      * used for range of values 0-255 (i.e. lightness)
@@ -892,7 +922,6 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     function logarithmicCenterDistribution(numColors, valueMin, valueMax, valueAverage){
         //center is average of average and median
         const centerValue = Math.floor(((valueMax - valueMin) / 2 + valueAverage) / 2);
-        console.log(`center value is ${centerValue} max is ${valueMax} min ${valueMin} average ${valueAverage}`);
         const ret = new Uint8Array(numColors);
         const halfColors = Math.floor(numColors / 2);
         const lowHalfCeil = Math.max(valueMin, centerValue);
@@ -958,7 +987,8 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         //saturation
         const saturationStats = hslPopularityMap.saturation;
         console.log(saturationStats);
-        const saturations = logarithmicEdgeDistribution(numColors, saturationStats.min, saturationStats.max);
+        const saturationDistributionFunc = saturationStats.average > 30 ? logarithmicEdgeLinearMiddleDistribution : logarithmicEdgeDistribution;
+        const saturations = saturationDistributionFunc(numColors, saturationStats.min, saturationStats.max);
         console.log('saturations');
         console.log(saturations);
         
