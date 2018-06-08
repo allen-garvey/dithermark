@@ -827,6 +827,27 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         return PixelMath.hslArrayToRgb(hsl);
     }
 
+    function logarithmicSaturations(numColors, saturationMin, saturationMax){
+        const saturationDiff = saturationMax - saturationMin;
+        const saturations = new Uint8Array(numColors);
+        const halfColors = Math.min(numColors / 2);
+        const saturationDiffLowHalf = Math.min(saturationDiff / 2);
+        const lowBase = Math.log(saturationDiffLowHalf) / Math.log(halfColors);
+        //have half saturations be relatively low, and half saturations relatively high
+
+        for(let i=0;i<halfColors;i++){
+            saturations[i] = lowBase**i;
+        }
+        const highDiff = saturationDiff - saturationDiffLowHalf;
+        const highBase = Math.log(highDiff) / Math.log(numColors - halfColors);
+        for(let exponent=0,i=halfColors;i<numColors;exponent++,i++){
+            saturations[i] = saturationMax - Math.floor(highDiff / highBase**exponent);
+        }
+        console.log('saturations');
+        console.log(saturations);
+        return saturations;
+    }
+
     function perceptualMedianCut4(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const hslPopularityMap = createHslPopularityMap(pixels);
         let logarithmicBucketCapacityFunc = (numPixels, _numBuckets, _currentBucketNum, previousBucketCapacity)=>{
@@ -841,17 +862,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         
         //saturation
         let saturationStats = hslPopularityMap.saturation;
-        // let medianSaturations = medianPopularityBase(saturationsPopularityMapObject, numColors, 101, logarithmicBucketCapacityFunc);
-        // let uniformSaturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
-        // let saturations = averageArrays(medianSaturations.average, uniformSaturations, 1.2);
-        console.log(saturationStats);
-        const saturationDiff = saturationStats.max - saturationStats.min;
-        const saturations = new Uint8Array(numColors);
-        for(let i=0;i<numColors;i++){
-            saturations[i] = saturationStats.max - Math.floor(saturationDiff / 1.21**i);
-        }
-        console.log('saturations');
-        console.log(saturations);
+        const saturations = logarithmicSaturations(numColors, saturationStats.min, saturationStats.max);
         
         //hue
         let huePopularityMapObject = hslPopularityMap.hue;
