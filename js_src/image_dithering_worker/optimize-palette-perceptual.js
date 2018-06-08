@@ -25,17 +25,19 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         };
     }
 
-    function createHslPopularityMap(pixels, pixelCount){
+    function createHslPopularityMap(pixels){
         const hueMap = new Float32Array(360);
         const saturationMap = new Float32Array(101);
         const lightnessMap = new Float32Array(256);
         const maxLightnessDiffCubed = 127 * 127 * 127;
+        let pixelCount = 0;
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
             if(pixel[3] === 0){
                 continue;
             }
+            pixelCount++;
             const hue = PixelMath.hue(pixel);
             const saturation = PixelMath.saturation(pixel);
             const lightness = PixelMath.lightness(pixel);
@@ -51,8 +53,8 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             const hueCountValue = saturation * saturation * saturation / 1000000 * ((maxLightnessDiffCubed - lightnessDiff * lightnessDiff * lightnessDiff) / maxLightnessDiffCubed);
             hueMap[hue] = hueMap[hue] + hueCountValue;
         }
-        console.log('non normalized hues');
-        console.log(new Float32Array(hueMap));
+        // console.log('non normalized hues');
+        // console.log(new Float32Array(hueMap));
         // const multiplier = Math.min(512, pixelCount / 360);
         // const multiplier = 1024;
         // const multiplier = 4096;
@@ -65,8 +67,8 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             hueMap[i] = Math.round(hueMap[i] * multiplier);
             huePixelCount += hueMap[i];
         }
-        console.log('normalized hues');
-        console.log(new Float32Array(hueMap));
+        // console.log('normalized hues');
+        // console.log(new Float32Array(hueMap));
         return {
             hue: {
                 map: hueMap,
@@ -813,7 +815,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     }
 
     function perceptualMedianCut4(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        const hslPopularityMap = createHslPopularityMap(pixels, imageWidth * imageHeight);
+        const hslPopularityMap = createHslPopularityMap(pixels);
         let logarithmicBucketCapacityFunc = (numPixels, _numBuckets, _currentBucketNum, previousBucketCapacity)=>{
                 previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
                 return Math.ceil(previousBucketCapacity / Math.LN10);
