@@ -31,6 +31,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         const lightnessMap = new Float32Array(256);
         const maxLightnessDiffCubed = 127 * 127 * 127;
         let pixelCount = 0;
+        //saturation stats
         let saturationMax = 0;
         let saturationMin = Infinity;
         let saturationTotal = 0;
@@ -38,6 +39,9 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         let saturationLowCount = 0;
         let saturationHighTotal = 0;
         let saturationLowTotal = 0;
+        //lightness stats
+        let lightnessMax = 0;
+        let lightnessMin = Infinity;
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
@@ -63,6 +67,12 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             else{
                 saturationHighCount++;
                 saturationHighTotal += saturation;
+            }
+            if(lightness > lightnessMax){
+                lightnessMax = lightness;
+            }
+            else if(lightness < lightnessMin){
+                lightnessMin = lightness;
             }
             lightnessMap[lightness] = lightnessMap[lightness] + 1;
             let lightnessDiff;
@@ -108,7 +118,13 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
                 highAverage: saturationHighTotal / saturationHighCount,
             },
             lightness: {
+                mapObject: {
+                    map: lightnessMap,
+                    count: pixelCount,
+                },
                 map: lightnessMap,
+                min: lightnessMin,
+                max: lightnessMax,
                 count: pixelCount,
             },
         };
@@ -865,26 +881,76 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         }
         return ret;
     }
+
+    /**
+     * Distributes values logarithmically so that more values are closer to the center value
+     * and less values are on the edges
+     * used for range of values 0-255 (i.e. lightness)
+     */
+    function logarithmicCenterDistribution(numColors, valueMin, valueMax){
+        const ret = new Uint8Array(numColors);
+        const halfColors = Math.floor(numColors / 2);
+        const lowHalfCeil = Math.max(valueMin, 127);
+        const diffLowHalf = lowHalfCeil - valueMin;
+        const lowMultiplier = diffLowHalf / Math.log2(halfColors);
+        //have half saturations be relatively low, and half saturations relatively high
+        for(let i=0,logIndex=1;i<halfColors;i++,logIndex++){
+            ret[i] = Math.round(Math.log2(logIndex) * lowMultiplier + valueMin);
+        }
+        
+        const highHalfFloor = Math.min(lowHalfCeil+1, valueMax);
+        const highDiff = valueMax - highHalfFloor;
+        const highMultiplier = highDiff / Math.log2(numColors - halfColors);
+        for(let logIndex=Math.ceil(numColors / 2), i=halfColors;i<numColors;i++,logIndex--){
+            ret[i] = Math.round(valueMax - (Math.log2(logIndex) * highMultiplier));;
         }
         return ret;
     }
 
     function perceptualMedianCut4(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const hslPopularityMap = createHslPopularityMap(pixels);
-        let logarithmicBucketCapacityFunc = (numPixels, _numBuckets, _currentBucketNum, previousBucketCapacity)=>{
-                previousBucketCapacity = previousBucketCapacity > 0 ? previousBucketCapacity : numPixels;
-                return Math.ceil(previousBucketCapacity / Math.LN10);
-        };
         //lightness
-        let lightnessesPopularityMapObject = hslPopularityMap.lightness;
+        let lightnessesPopularityMapObject = hslPopularityMap.lightness.mapObject;
         let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
         let uniformLightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
         let lightnesses = averageArrays(medianLightnesses.average, uniformLightnesses, .8);
+        
+        //saturation
+        const saturationStats = hslPopularityMap.saturation;
+        console.log(saturationStats);
+        const saturations = logarithmicEdgeDistribution(numColors, saturationStats.min, saturationStats.max);
+        console.log('saturations');
+        console.log(saturations);
+        
+        //hue
+        let huePopularityMapObject = hslPopularityMap.hue;
+        huePopularityMapObject = filterHues(huePopularityMapObject, imageHeight * imageWidth);
+        let huesMedian = calculatedPopularityHues(huePopularityMapObject, numColors);
+        let hueMix = colorQuantization.hueMix;
+        let hues = averageArrays(huesMedian.average, huesMedian.median);
+        // let hues = huesMedian.average;
+        // let hues = huesMedian.median;
+        if(hueMix < 2){
+            let uniformPopularityMapObject = huePopularityMapObject;
+            let huesUniform = hueUniformPopularity(uniformPopularityMapObject, numColors);
+            hues = averageHueArrays(hues, huesUniform, hueMix);
+        }
+        hues = sortHuesByClosestLightness(hues, pixels);
+        
+        //convert to hsl and return results
+        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        return PixelMath.hslArrayToRgb(hsl);
+    }
+
+    function perceptualMedianCut5(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        const hslPopularityMap = createHslPopularityMap(pixels);
+        const lightnessStats = hslPopularityMap.lightness;
+        const lightnesses = logarithmicCenterDistribution(numColors, lightnessStats.min, lightnessStats.max);
         console.log('lightnesses');
         console.log(lightnesses);
         
         //saturation
-        let saturationStats = hslPopularityMap.saturation;
+        const saturationStats = hslPopularityMap.saturation;
         console.log(saturationStats);
         const saturations = logarithmicEdgeDistribution(numColors, saturationStats.min, saturationStats.max);
         console.log('saturations');
@@ -1029,6 +1095,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
        medianCut2: perceptualMedianCut2,
        medianCut3: perceptualMedianCut3,
        medianCut4: perceptualMedianCut4,
+       medianCut5: perceptualMedianCut5,
        uniform: uniformQuantization,
        monochrome: monochromeQuantization,
     };
