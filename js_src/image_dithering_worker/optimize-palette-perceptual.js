@@ -48,14 +48,18 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             else{
                 lightnessDiff = 127 - lightness;
             }
-            const hueCountValue = saturation * saturation / 10000 * ((maxLightnessDiffCubed - lightnessDiff * lightnessDiff * lightnessDiff) / maxLightnessDiffCubed);
+            const hueCountValue = saturation * saturation * saturation / 1000000 * ((maxLightnessDiffCubed - lightnessDiff * lightnessDiff * lightnessDiff) / maxLightnessDiffCubed);
             hueMap[hue] = hueMap[hue] + hueCountValue;
         }
         console.log('non normalized hues');
         console.log(new Float32Array(hueMap));
         // const multiplier = Math.min(512, pixelCount / 360);
-        const multiplier = 1024;
+        // const multiplier = 1024;
         // const multiplier = 4096;
+        //wide hue range looks better with multiplier of 8
+        // const multiplier = 8;
+        //narrow hue range looks better with multiplier of 128
+        const multiplier = 128;
         let huePixelCount = 0;
         for(let i=0;i<hueMap.length;i++){
             hueMap[i] = Math.round(hueMap[i] * multiplier);
