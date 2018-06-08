@@ -42,6 +42,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         //lightness stats
         let lightnessMax = 0;
         let lightnessMin = Infinity;
+        let lightnessTotal = 0;
         for(let i=0;i<pixels.length;i+=4){
             let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
@@ -74,6 +75,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             else if(lightness < lightnessMin){
                 lightnessMin = lightness;
             }
+            lightnessTotal += lightness;
             lightnessMap[lightness] = lightnessMap[lightness] + 1;
             let lightnessDiff;
             if(lightness >= 128){
@@ -122,10 +124,10 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
                     map: lightnessMap,
                     count: pixelCount,
                 },
-                map: lightnessMap,
                 min: lightnessMin,
                 max: lightnessMax,
                 count: pixelCount,
+                average: lightnessTotal / pixelCount,
             },
         };
     }
@@ -887,10 +889,13 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
      * and less values are on the edges
      * used for range of values 0-255 (i.e. lightness)
      */
-    function logarithmicCenterDistribution(numColors, valueMin, valueMax){
+    function logarithmicCenterDistribution(numColors, valueMin, valueMax, valueAverage){
+        //center is average of average and median
+        const centerValue = Math.floor(((valueMax - valueMin) / 2 + valueAverage) / 2);
+        console.log(`center value is ${centerValue} max is ${valueMax} min ${valueMin} average ${valueAverage}`);
         const ret = new Uint8Array(numColors);
         const halfColors = Math.floor(numColors / 2);
-        const lowHalfCeil = Math.max(valueMin, 127);
+        const lowHalfCeil = Math.max(valueMin, centerValue);
         const diffLowHalf = lowHalfCeil - valueMin;
         const lowMultiplier = diffLowHalf / Math.log2(halfColors);
         //have half saturations be relatively low, and half saturations relatively high
@@ -945,7 +950,8 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     function perceptualMedianCut5(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const hslPopularityMap = createHslPopularityMap(pixels);
         const lightnessStats = hslPopularityMap.lightness;
-        const lightnesses = logarithmicCenterDistribution(numColors, lightnessStats.min, lightnessStats.max);
+        console.log(lightnessStats);
+        const lightnesses = logarithmicCenterDistribution(numColors, lightnessStats.min, lightnessStats.max, lightnessStats.average);
         console.log('lightnesses');
         console.log(lightnesses);
         
