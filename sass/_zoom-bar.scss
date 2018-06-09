@@ -7,13 +7,19 @@
     justify-content: space-between;
     align-items: flex-end;
     padding: 4px $global_horizontal_padding;
-    label{
-        flex-basis: 100%;
-        margin-bottom: 12px;
-    }
+}
+
+.zoom-bar-controls{
+    display: flex;
+    align-items: flex-end;
+    flex-basis: 100%;
+    margin-bottom: 12px;
     input[type="range"]{
-        width: calc(100% - 140px);
+        flex-basis: calc(100% - 138px);
         vertical-align: bottom;
+    }
+    label{
+        align-self: center;
     }
 }
 
@@ -38,7 +44,7 @@
 		border-top: $controls_border;
 		//-1 pixel so it hides border
         width: calc(100% - #{$pinned_dither_controls_width});
-        
+
         .full-screen-mode &{
             bottom: $chrome_fullscreen_horizontal_scrollbar_height;
         }
@@ -46,15 +52,11 @@
         .full-screen-mode:-moz-full-screen &{
             bottom: 0;
         }
-        label{
-            display: flex;
-            align-items: baseline;
-            flex-basis: calc(100% - #{$zoom_bar_button_container_width});
-            margin-bottom: 0;
-        }
-        input[type="range"]{
-            flex-basis: calc(100% - 138px);
-        }
+    }
+    .zoom-bar-controls{
+        // align-items: baseline;
+        flex-basis: calc(100% - #{$zoom_bar_button_container_width});
+        margin-bottom: 0;
     }
     .zoom-bar-fit-button{
         margin-right: 0;
