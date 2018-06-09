@@ -37,25 +37,42 @@ body{
 }
 
 .editor-dark{
-    color: white;
+    //tint of magenta #FF00FF
+    color: #f0eff0;
     background-color: #333;
     --main-bg-color: #333;
     --pinned-controls-bg-color: #444; //this is intentionally different from the background color, so controls are slightly lighter
-    --main-text-color: white;
-    --main-text-color-rgb: 255, 255, 255;
+    --main-text-color: #f0eff0;
+    --main-text-color-rgb: 240, 239, 240;
     --disabled-text-color: #666;
     --border-color: #6a6a6a;
     --pinned-controls-border-color: #6a6a6a;
 }
 
 .editor-black{
-    color: white;
+    //tint of magenta #FF00FF
+    color: #f0eff0;
     background-color: black;
     --main-bg-color: black;
     --pinned-controls-bg-color: black;
-    --main-text-color: white;
-    --main-text-color-rgb: 255, 255, 255;
+    --main-text-color: #f0eff0;
+    --main-text-color-rgb: 240, 239, 240;
     --disabled-text-color: #666;
     --border-color: #7a7a7a;
     --pinned-controls-border-color: #7a7a7a;
+}
+
+//colors links in dark and black themes
+//can't use variables since we want to use default link colors
+//for light themes
+.editor-black, .editor-dark{
+    a{
+        //tints of magenta #FF00FF
+        &:link{
+            color: #c1b8c1
+        }
+        &:visited{
+            color: #958e95
+        }
+    }
 }
