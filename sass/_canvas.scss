@@ -15,7 +15,6 @@
 .image-canvas-container{
     display: flex;
     margin-top: 12px;
-    max-width: 100%;
 }
 
 .show-original .output-canvas + .output-canvas{
@@ -29,8 +28,6 @@
     }
     
     .image-canvas-container{
-        max-width: none;
-
         &::before, &::after{
             content: '';
             width: $pinned_controls_canvas_padding;
