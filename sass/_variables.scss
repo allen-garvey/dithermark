@@ -52,3 +52,7 @@ $zoom_bar_button_container_width: 87px;
 
 //canvases
 $canvasMargin: 25px;
+
+//fullscreen mode
+//for some reason chrome doesn't take into account horizontal scrollbars in full screen mode
+$chrome_fullscreen_horizontal_scrollbar_height : 15px;

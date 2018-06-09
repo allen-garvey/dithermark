@@ -38,9 +38,9 @@
 		border-top: $controls_border;
 		//-1 pixel so it hides border
         width: calc(100% - #{$pinned_dither_controls_width});
-        //chrome scrollbars take up 15px from bottom
+        
         .full-screen-mode &{
-            bottom: 15px;
+            bottom: $chrome_fullscreen_horizontal_scrollbar_height;
         }
         //firefox takes into account scrollbars and doesn't overlap them
         .full-screen-mode:-moz-full-screen &{
