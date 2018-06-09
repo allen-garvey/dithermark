@@ -25,6 +25,9 @@
 
 //styles for desktop
 @include pinned_controls_mq{
+	.transform-button-container{
+		text-align: left;
+	}
 	//reset tablet styles
 	.controls{
 		// position: static;

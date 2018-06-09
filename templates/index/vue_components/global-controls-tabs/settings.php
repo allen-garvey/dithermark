@@ -28,7 +28,7 @@
         </div>
     </fieldset>
     <div v-show="!isLivePreviewEnabled" class="hint">
-        To update the image, press the transform button
+        To update the image output, use the &#8220;Dither&#8221; button
     </div>
     <div v-show="!automaticallyResizeLargeImages" class="hint">
         Opening very large images can result in poor performance or browser crashes

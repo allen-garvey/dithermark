@@ -3,7 +3,7 @@
         <canvas ref="histogramCanvas" width="<?= HISTOGRAM_COLOR_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Hue histogram"></canvas>
     </div>
     <div class="transform-button-container">
-        <button class="btn btn-success btn-sm"  v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Transform</button>
+        <button class="btn btn-success btn-sm"  v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Dither</button>
     </div>
     <div class="spread-content">
         <label>Algorithm
