@@ -58,8 +58,8 @@
     <div ref="unsplashAttributionContainer">
         <unsplash-attribution v-if="loadedImage &amp;&amp; loadedImage.unsplash" :unsplash-info="loadedImage.unsplash" />
     </div>
-    <div class="image-canvas-supercontainer" v-show="isImageLoaded">
-        <div class="image-canvas-container" :class="{'show-original': showOriginalImage}">
+    <div class="image-canvas-supercontainer" v-show="isImageLoaded" :class="{'show-original': showOriginalImage}">
+        <div class="image-canvas-container">
         <?php //<canvas ref="saveImageCanvas" class="hidden"></canvas> //used when saving image, so pixelated images are scaled correctly ?>
         <?php //   <canvas ref="originalImageCanvas" class="hidden"></canvas>//original non-pixelated image loaded by user ?>
         <?php //    <canvas ref="sourceCanvas" class="hidden"></canvas>< //pixelated-image used as source to dithers ?>

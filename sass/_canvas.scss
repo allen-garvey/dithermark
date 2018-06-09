@@ -6,6 +6,10 @@
     display: flex;
     justify-content: center;
     overflow-x: scroll;
+    max-width: 100vw;
+    &.show-original{
+        max-width: calc(100vw - #{$chrome_fullscreen_horizontal_scrollbar_height});
+    }
 }
 
 .image-canvas-container{
@@ -14,7 +18,7 @@
     max-width: 100%;
 }
 
-.output-canvas + .output-canvas{
+.show-original .output-canvas + .output-canvas{
     margin-left: $canvasMargin;
 }
 
