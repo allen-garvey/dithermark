@@ -11,6 +11,10 @@ App.PixelMath = (function(Pixel){
         const min = Math.min(pixel[0], pixel[1], pixel[2]);
         return Math.floor((max + min) / 2.0);
     }
+
+    function pixelLuma(pixel){
+        return Math.round(pixel[R_INDEX] * 0.299 + pixel[G_INDEX] * 0.587 + pixel[B_INDEX] * 0.114);
+    }
     
     //based on wikipedia formulas: https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
     //returns hue in range 0 - 359
@@ -156,6 +160,7 @@ App.PixelMath = (function(Pixel){
     return {
        lightness: pixelLightness,
        hue: pixelHue,
+       luma: pixelLuma,
        hueDistance,
        saturation: pixelSaturation,
        hslArrayToRgb: hslArrayToRgb,

@@ -137,6 +137,10 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.lightness, 256);
     }
 
+    function lumaPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.luma, 256);
+    }
+
     //Divides an image into numColors hue zones, and finds the most popular color in each zone
     function huePopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue, 360);
@@ -280,13 +284,19 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue, 360);
     }
 
+    function lumaAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.luma, 256);
+    }
+
     return {
         popularity,
         lightnessPopularity,
+        lumaPopularity,
         huePopularity,
         spatialAverageBoxed,
         lightnessAverage,
         hueAverage,
+        lumaAverage,
         spatialPopularityBoxed,
     };
 })(App.PixelMath, App.OptimizePaletteUtil);
