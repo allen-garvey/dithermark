@@ -25,7 +25,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         };
     }
 
-    function createHslPopularityMap(pixels){
+    function createHslPopularityMap(pixels, hueClamp=false){
         const hueMap = new Float32Array(360);
         // const saturationMap = new Float32Array(101);
         const lightnessMap = new Float32Array(256);
@@ -92,21 +92,21 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         // const multiplier = Math.min(512, pixelCount / 360);
         // const multiplier = 1024;
         // const multiplier = 4096;
+
+
         //wide hue range looks better with multiplier of 8
         // const multiplier = 8;
         //narrow hue range looks better with multiplier of 128
+        const hueClampFunc = hueClamp ? (num)=>{ return Math.round(Math.log2(num)); } : (num)=>{ return num; };
         const multiplier = 128;
-        let huePixelCount = 0;
         for(let i=0;i<hueMap.length;i++){
-            hueMap[i] = Math.round(hueMap[i] * multiplier);
-            huePixelCount += hueMap[i];
+            hueMap[i] = hueClampFunc(hueMap[i] * multiplier);
         }
         // console.log('normalized hues');
         // console.log(new Float32Array(hueMap));
         return {
             hue: {
                 map: hueMap,
-                count: huePixelCount,
             },
             saturation: {
                 // map: saturationMap,
@@ -755,7 +755,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         return PixelMath.hslArrayToRgb(hsl);
     }
 
-    function filterHues(huePopularityMapObject, imageDimensions){
+    function filterHues(huePopularityMapObject, imageDimensions, logBase=2){
         //find largest value
         const popularityMap = huePopularityMapObject.map;
         const largestValue = popularityMap.reduce((currentMax, value)=>{
@@ -764,14 +764,16 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         const largestValueThreshold = Math.ceil(largestValue / 100);
         const imageThreshold = Math.ceil(imageDimensions / 2000); 
         const thresholdMin = Math.min(largestValueThreshold, imageThreshold);
-    
+        
+        const logFunc = logBase === 2 ? Math.log2 : (num)=>{return Math.log(num) / Math.log(logBase);};
+
         let newCount = 0;
         for(let i=0;i<popularityMap.length;i++){
             if(popularityMap[i] < thresholdMin){
                 popularityMap[i] = 0;
             }
             else{
-                popularityMap[i] = Math.floor(Math.log2(popularityMap[i]) * 256);
+                popularityMap[i] = Math.floor(logFunc(popularityMap[i]) * 256);
             }
             newCount += popularityMap[i];
         }
@@ -942,7 +944,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     }
 
     function perceptualMedianCut4(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        const hslPopularityMap = createHslPopularityMap(pixels);
+        const hslPopularityMap = createHslPopularityMap(pixels, colorQuantization.hueClamp);
         //lightness
         let lightnessesPopularityMapObject = hslPopularityMap.lightness.mapObject;
         let medianLightnesses = medianPopularityBase(lightnessesPopularityMapObject, numColors, 256);
@@ -977,7 +979,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     }
 
     function perceptualMedianCut5(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        const hslPopularityMap = createHslPopularityMap(pixels);
+        const hslPopularityMap = createHslPopularityMap(pixels, colorQuantization.hueClamp);
         const lightnessStats = hslPopularityMap.lightness;
         console.log(lightnessStats);
         const lightnesses = logarithmicCenterDistribution(numColors, lightnessStats.min, lightnessStats.max, lightnessStats.average);
@@ -994,11 +996,11 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         
         //hue
         let huePopularityMapObject = hslPopularityMap.hue;
-        huePopularityMapObject = filterHues(huePopularityMapObject, imageHeight * imageWidth);
+        huePopularityMapObject = filterHues(huePopularityMapObject, imageHeight * imageWidth, colorQuantization.hueFilterLog);
         let huesMedian = calculatedPopularityHues(huePopularityMapObject, numColors);
         let hueMix = colorQuantization.hueMix;
-        let hues = averageArrays(huesMedian.average, huesMedian.median);
-        // let hues = huesMedian.average;
+        // let hues = averageArrays(huesMedian.average, huesMedian.median);
+        let hues = huesMedian.average;
         // let hues = huesMedian.median;
         if(hueMix < 2){
             let uniformPopularityMapObject = huePopularityMapObject;
