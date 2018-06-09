@@ -876,12 +876,12 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         //have half saturations be relatively low, and half saturations relatively high
 
         for(let i=0;i<halfColors;i++){
-            ret[i] = Math.round(lowBase**i) + valueMin;
+            ret[i] = Math.round(Math.pow(lowBase, i)) + valueMin;
         }
         const highDiff = diff - diffLowHalf;
         const highBase = Math.log(highDiff) / Math.log(numColors - halfColors);
         for(let exponent=0,i=halfColors;i<numColors;exponent++,i++){
-            ret[i] = Math.round(valueMax - Math.floor(highDiff / highBase**exponent));
+            ret[i] = Math.round(valueMax - Math.floor(highDiff / Math.pow(highBase, exponent)));
         }
         return ret;
     }
@@ -900,7 +900,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         //have half saturations be relatively low, and half saturations relatively high
 
         for(let i=0;i<bottomQuarterColors;i++){
-            ret[i] = Math.round(lowBase**i) + valueMin;
+            ret[i] = Math.round(Math.pow(lowBase, i)) + valueMin;
         }
 
         const multiplier = (diff / 2) / (numColors - (bottomQuarterColors + (numColors - topQuarterColors)) + 1);
@@ -911,7 +911,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         const highDiff = diffLowHalf;
         const highBase = Math.log(highDiff) / Math.log(numColors - topQuarterColors);
         for(let exponent=0,i=topQuarterColors;i<numColors;exponent++,i++){
-            ret[i] = Math.round(valueMax - Math.floor(highDiff / highBase**exponent));
+            ret[i] = Math.round(valueMax - Math.floor(highDiff / Math.pow(highBase, exponent)));
         }
         return ret;
     }
