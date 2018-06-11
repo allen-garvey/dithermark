@@ -1,5 +1,5 @@
 <?php
-    if(!IS_FASTCGI){
+    if(!defined('IS_FASTCGI') || !IS_FASTCGI){
         require_once('inc'.DIRECTORY_SEPARATOR.'config.php');
     }
     require_once(MODELS_PATH.'js-files.php');
