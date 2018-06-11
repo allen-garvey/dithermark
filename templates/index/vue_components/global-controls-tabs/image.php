@@ -10,7 +10,7 @@
             <div class="label-align">
                 <label for="pixelate-dropdown">Pixelate</label>
                 <select id="pixelate-dropdown" v-model.number="selectedPixelateImageZoom">
-                    <option v-for="(pixelateZoom, index) in pixelateImageZooms" v-bind:value="index">{{pixelateZoom.title}}</option>
+                    <option v-for="(pixelateZoom, index) in pixelateImageZooms" v-bind:value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedPixelateImageZoom', 'pixelateImageZooms', 'pixelation value'); ?>
@@ -45,7 +45,7 @@
             <div class="label-align">
                 <label for="denoise-before-dropdown">Denoise</label>
                 <select id="denoise-before-dropdown" v-model.number="selectedBilateralFilterValue">
-                    <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : index}}</option>
+                    <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedBilateralFilterValue', 'bilateralFilterValues', 'bilateral filter amount'); ?>
@@ -54,7 +54,7 @@
             <div class="label-align">
                 <label for="smoothing-before-dropdown">Smooth</label>
                 <select id="smoothing-before-dropdown" v-model.number="selectedImageSmoothingRadiusBefore">
-                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue === 0 ? 'None' : smoothingValue}}</option>
+                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
@@ -66,7 +66,7 @@
             <div class="label-align">
                 <label for="denoise-after-dropdown">Denoise</label>
                 <select id="denoise-after-dropdown" v-model.number="selectedBilateralFilterValueAfter">
-                    <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{value < 0 ? 'None' : index}}</option>
+                    <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedBilateralFilterValueAfter', 'bilateralFilterValues', 'bilateral filter amount'); ?>
@@ -75,7 +75,7 @@
             <div class="label-align">
                 <label for="smoothing-after-dropdown">Smooth</label>
                 <select id="smoothing-after-dropdown" v-model.number="selectedImageSmoothingRadiusAfter">
-                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{smoothingValue === 0 ? 'None' : smoothingValue}}</option>
+                    <option v-for="(smoothingValue, index) in imageSmoothingValues" v-bind:value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusAfter', 'imageSmoothingValues', 'smoothing value'); ?>

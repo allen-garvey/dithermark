@@ -173,16 +173,12 @@
             pixelateImageZooms: function(){
                 const dimensions = this.isImageLoaded ? this.loadedImage.height * this.loadedImage.width : 0;
 
-                return [100, 70, 60, 50, 35, 30, 25, 20, 15, 12, 10, 7, 5, 2].map((zoom, i)=>{
-                    const title = i===0 ? 'None': i;
-                    return {
-                        title,
-                        value: ImageFiltersModel.calculatePixelationZoom(dimensions, zoom),
-                    };
+                return [100, 70, 60, 50, 35, 30, 25, 20, 15, 12, 10, 7, 5, 2].map((zoom)=>{
+                    return ImageFiltersModel.calculatePixelationZoom(dimensions, zoom);
                 });
             },
             pixelateImageZoom: function(){
-                return this.pixelateImageZooms[this.selectedPixelateImageZoom].value;
+                return this.pixelateImageZooms[this.selectedPixelateImageZoom];
             },
             webglWarningMessage: function(){
                 //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
@@ -604,6 +600,12 @@
             },
             showModalPrompt: function(...modalPromptArgs){
                 this.$refs.modalPromptComponent.show(...modalPromptArgs);
+            },
+            /**
+             * Image tab
+             */
+            imageFilterSteppedDropdownOption: function(index, offValue=0){
+                return index === offValue ? 'None' : index;
             },
         }
     });
