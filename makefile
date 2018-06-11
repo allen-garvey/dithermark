@@ -41,7 +41,7 @@ CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
 all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
 
-install: $(JS_OUTPUT_DIR)
+install:
 	npm install
 
 #used when changing between PHP_BUILD_MODES
@@ -50,11 +50,11 @@ reset:
 	rm -f $(JS_WORKER_OUTPUT)
 	rm $(HTML_INDEX)
 
-#don't use variable, to guard against it becoming unset
+#don't use variable with -rf, to guard against it becoming unset
 clean: reset
-	rm -rf ./public_html/js
+	rm -r $(JS_APP_OUTPUT_RELEASE)
+	rm -r $(JS_WORKER_OUTPUT_RELEASE)
 	rm -rf ./public_html/styles
-	rm $(HTML_INDEX)
 
 #target specific variable
 release: PHP_BUILD_MODE=release
@@ -67,9 +67,6 @@ gulp_release: $(JS_APP_OUTPUT) $(JS_WORKER_OUTPUT) $(SASS_SRC)
 
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
-
-$(JS_OUTPUT_DIR):
-	mkdir -p $(JS_OUTPUT_DIR)
 
 $(VUE_OUTPUT): $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED)
 	cat $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED) > $(VUE_OUTPUT) 

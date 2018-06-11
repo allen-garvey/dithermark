@@ -1,5 +1,7 @@
 <?php
-    require_once('inc'.DIRECTORY_SEPARATOR.'config.php');
+    if(!IS_FASTCGI){
+        require_once('inc'.DIRECTORY_SEPARATOR.'config.php');
+    }
     require_once(MODELS_PATH.'js-files.php');
     require_once(VIEWS_PATH.'index-view.php');
 ?>

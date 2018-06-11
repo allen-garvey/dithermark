@@ -26,7 +26,7 @@ Thumbs.db
 *.eot
 *.woff
 *.zip
-public_html/js/*
+public_html/js/*.js
 public_html/styles/*
 public_html/index.html
 *.rb
