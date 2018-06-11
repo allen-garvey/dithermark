@@ -13,7 +13,7 @@ App.ImageFiltersModel = (function(){
     }
 
     function pixelationValues(imageDimensions){
-        return [100, 70, 60, 50, 35, 30, 25, 20, 15, 12, 10, 7, 5, 2].map((zoomPercentage)=>{
+        return [100, 70, 60, 50, 45, 40, 37, 35, 32, 30, 27, 25, 22, 20, 17, 15, 12, 10, 7, 5, 4, 3].map((zoomPercentage)=>{
             return calculatePixelationZoom(imageDimensions, zoomPercentage);
         });
     }
