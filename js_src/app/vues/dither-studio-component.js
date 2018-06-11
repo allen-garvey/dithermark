@@ -172,10 +172,7 @@
             },
             pixelateImageZooms: function(){
                 const dimensions = this.isImageLoaded ? this.loadedImage.height * this.loadedImage.width : 0;
-
-                return [100, 70, 60, 50, 35, 30, 25, 20, 15, 12, 10, 7, 5, 2].map((zoom)=>{
-                    return ImageFiltersModel.calculatePixelationZoom(dimensions, zoom);
-                });
+                return ImageFiltersModel.pixelationValues(dimensions);
             },
             pixelateImageZoom: function(){
                 return this.pixelateImageZooms[this.selectedPixelateImageZoom];

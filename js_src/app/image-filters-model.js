@@ -11,6 +11,14 @@ App.ImageFiltersModel = (function(){
         const baseDimensions = Math.min(691200, imageDimensions) * percentage;
         return Math.ceil(baseDimensions / imageDimensions);
     }
+
+    function pixelationValues(imageDimensions){
+        return [100, 70, 60, 50, 35, 30, 25, 20, 15, 12, 10, 7, 5, 2].map((zoomPercentage)=>{
+            return calculatePixelationZoom(imageDimensions, zoomPercentage);
+        });
+    }
+
+
     /**
      * canvas css filters
      * values are percentage
@@ -27,7 +35,7 @@ App.ImageFiltersModel = (function(){
         bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
         canvasFilterValues,
         canvasFilterValuesDefaultIndex: canvasFilterValues.indexOf(100),
-        calculatePixelationZoom,
+        pixelationValues,
     };
 
 })();
