@@ -251,6 +251,16 @@ App.BayerMatrix = (function(){
             32, 40, 54, 38, 31, 121, 19, 29, 
         ]);
     }
+
+    function checkerboard(dimensions){
+        return new Uint8Array([
+             1, 2,
+             2, 1,
+ 
+             
+             
+        ]);
+    }
     
     //dithers are created autmagically from these export names
     //only name you can't use is hueLightness, since it will conflict with that dither
@@ -271,5 +281,6 @@ App.BayerMatrix = (function(){
         zigzagHorizontal,
         zigzagVertical,
         halftone,
+        checkerboard,
     };
 })();
