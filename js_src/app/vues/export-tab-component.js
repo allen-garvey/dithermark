@@ -11,6 +11,7 @@
             return {
                 saveImageFileName: '',
                 saveImageFileType: 'image/png',
+                isCurrentlySavingImage: false,
             };
         },
         computed: {
@@ -40,6 +41,10 @@
             //downloads image
             //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
             saveImage: function(){
+                if(this.isCurrentlySavingImage){
+                    return;
+                }
+                this.isCurrentlySavingImage = true;
                 this.saveRequested((transformCanvas, pixelateImageZoom, unsplash)=>{
                     //if the image is pixelated, that means the transformCanvas is scaled down,
                     //so we have to scale it back up to 100% first. Otherwise, we can just use the transformCanvas
@@ -55,6 +60,7 @@
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                         saveImageLink.click();
+
                         //clear the canvas to free up memory
                         if(sourceCanvas === saveImageCanvas){
                             Canvas.clear(saveImageCanvas);
@@ -65,6 +71,7 @@
                             //arguably should be POST request here, but much easier to just use GET
                             fetch(`${Constants.unsplashDownloadUrl}?photo_id=${unsplash.id}`);
                         }
+                        this.isCurrentlySavingImage = false;
                     });
                 });
             },
