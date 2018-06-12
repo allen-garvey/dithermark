@@ -7,5 +7,6 @@ App.Constants = {
     histogramColorWidth: <?= HISTOGRAM_COLOR_WIDTH; ?>,
     ditherWorkerUrl: '<?= JS_DITHER_WORKER_URL; ?>',
     unsplashApiUrl: '<?= UNSPLASH_API_URL; ?>',
+    unsplashApiPhotoIdQueryKey: '<?= UNSPLASH_PHOTO_ID_QUERY_KEY; ?>',
     unsplashDownloadUrl: '<?= UNSPLASH_DOWNLOAD_URL; ?>',
 };

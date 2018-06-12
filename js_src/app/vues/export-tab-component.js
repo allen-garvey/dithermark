@@ -69,7 +69,7 @@
                         //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
                         if(unsplash){
                             //arguably should be POST request here, but much easier to just use GET
-                            fetch(`${Constants.unsplashDownloadUrl}?photo_id=${unsplash.id}`);
+                            fetch(`${Constants.unsplashDownloadUrl}?${Constants.unsplashApiPhotoIdQueryKey}=${unsplash.id}`);
                         }
                         this.isCurrentlySavingImage = false;
                     });

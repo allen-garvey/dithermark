@@ -92,6 +92,9 @@
     //since max dimensions for ordered dither matrix is 16, 16 * 16 = 256
     define('ORDERED_MATRIX_MAX_LENGTH', 256);
 
+    //for when downoading Unsplash image
+    define('UNSPLASH_PHOTO_ID_QUERY_KEY', 'photo_id');
+
     if(BUILD_MODE_RELEASE){
         define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', false);
         define('ENABLE_TIMER_LOGGING', false);
