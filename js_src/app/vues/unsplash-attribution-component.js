@@ -6,7 +6,7 @@
         props: ['unsplashInfo'],
         computed: {
             unsplashQueryParam: function(){
-                return `?utm_source=${Constants.appName.toLowerCase()}&utm_medium=referral`;
+                return `?utm_source=${Constants.unsplashReferralAppName}&utm_medium=referral`;
             },
             authorName: function(){
                 return this.unsplashInfo.author.name;
