@@ -1,6 +1,5 @@
 App.Constants = {
     appName: '<?= APP_NAME; ?>',
-    maxWebworkers: <?= MAX_WEBWORKERS; ?>,
     colorDitherMaxColors: <?= COLOR_DITHER_MAX_COLORS; ?>,
     histogramHeight: <?= HISTOGRAM_HEIGHT; ?>,
     histogramBwWidth: <?= HISTOGRAM_BW_WIDTH; ?>,

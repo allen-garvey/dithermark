@@ -77,7 +77,6 @@
     * JS application constants
     */
     define('APP_NAME', 'Dithermark');
-    define('MAX_WEBWORKERS', 8);
     
     define('HISTOGRAM_HEIGHT', 96);
     //has to be multiple of 256, since there are 256 lightness values

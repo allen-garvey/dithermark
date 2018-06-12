@@ -1,5 +1,5 @@
 
-App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
+App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, ArrayUtil){
     function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
         //(5 + (3 * 2)) * 2
         const buffer = new Polyfills.SharedArrayBuffer(22);
@@ -121,20 +121,19 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
     
     //creates queue of webworkers
     function createWorkers(workerSrc){
-        let numWorkers = 1;
         const hardwareConcurrency = window.navigator.hardwareConcurrency;
-        if(hardwareConcurrency){
-            numWorkers = Math.min(hardwareConcurrency * 2, Constants.maxWebworkers);
-        }
-        const workers = new Array(numWorkers);
-        for(let i=0;i<numWorkers;i++){
-            workers[i] = new Worker(workerSrc);
-        }
+        //limit webworkers to 8 because hardwareConcurrency doesn't distinguish between
+        //real cores and hyperthreads, and running on 4 core machine at least having more than 8 workers shows no benefit
+        //multiply by 2 because some browsers lie about cores (i.e. Safari)
+        const numWorkers = hardwareConcurrency ? Math.min(hardwareConcurrency * 2, 8) : 1;
+        const workers = ArrayUtil.create(numWorkers, ()=>{
+            return new Worker(workerSrc);
+        });
         
         let workerCurrentIndex = 0;
     
         function getNextWorker(){
-            let worker = workers[workerCurrentIndex];
+            const worker = workers[workerCurrentIndex];
             workerCurrentIndex++;
             if(workerCurrentIndex === workers.length){
                 workerCurrentIndex = 0;
@@ -163,4 +162,4 @@ App.WorkerUtil = (function(Polyfills, WorkerHeaders, ColorPicker, Constants){
         colorHistogramWorkerHeader: createColorHistogramWorkerHeader,
         getDitherWorkers: getWorkers,
     };
-})(App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.Constants);
+})(App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ArrayUtil);
