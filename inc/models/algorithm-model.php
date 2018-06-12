@@ -49,12 +49,12 @@ class DitherAlgorithm {
 /**
  * Helper functions to create dither algorithms
  */
-function dimensionsPostfix(int $dimensions): string{
+function dimensionsSuffix(int $dimensions): string{
     return "${dimensions}×${dimensions}";
 }
 function bayerTitle(string $titlePrefix, int $dimensions, string $suffix=''): string{
-    $dimensionsPostfix = dimensionsPostfix($dimensions);
-    return "${titlePrefix} ${dimensionsPostfix}${suffix}";
+    $dimensionsSuffix = dimensionsSuffix($dimensions);
+    return "${titlePrefix} ${dimensionsSuffix}${suffix}";
 }
 function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): string{
     $randomIndicatorSuffix = $isRandom ? ' (R)' : '';
@@ -63,10 +63,11 @@ function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int 
     }
     $matrixTitle = titleizeCamelCase($orderedMatrixName);
     if(!empty($titlePrefix)){
-        return "${titlePrefix} (${matrixTitle})${randomIndicatorSuffix}";
+        $dimensionsSuffix = $addDimensionsToTitle ? ' '.dimensionsSuffix($dimensions) : '';    
+        return "${titlePrefix} ${matrixTitle}${dimensionsSuffix}${randomIndicatorSuffix}";
     }
-    $dimensionsPostfix = $addDimensionsToTitle ? dimensionsPostfix($dimensions).' ' : '';
-    return "${matrixTitle} ${dimensionsPostfix}${randomIndicatorSuffix}";
+    $dimensionsSuffix = $addDimensionsToTitle ? dimensionsSuffix($dimensions).' ' : '';
+    return "${matrixTitle} ${dimensionsSuffix}${randomIndicatorSuffix}";
 }
 function titleizeCamelCase(string $camelCase): string{
     $isFirstLetter = true;
@@ -87,16 +88,16 @@ function titleizeCamelCase(string $camelCase): string{
     return $ret;
 }
 
-function yliluoma1Builder(string $orderedMatrixName, int $dimensions): DitherAlgorithm{
+function yliluoma1Builder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Yliluoma 1';
-    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions);
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
     $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
     $webglFunc = "ColorDither.createYliluoma1OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function yliluoma2Builder(string $orderedMatrixName, int $dimensions): DitherAlgorithm{
+function yliluoma2Builder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Yliluoma 2';
-    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions);
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
     $webworkerFunc = "OrderedDither.createYliluoma2ColorDither(${dimensions}, '${orderedMatrixName}')";
     $webglFunc = "ColorDither.createYliluoma2OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
@@ -327,20 +328,43 @@ function colorAlgorithmModelBase(): array{
         hueLightnessBuilder('bayer', 16),
         'Ordered (Hue-Lightness/Random)',
         hueLightnessBuilder('bayer', 16, true),
-        'Ordered Arbitrary-palette Positional',
+        'Yliluoma\'s Ordered Dithering 1',
         yliluoma1Builder('bayer', 2),
         yliluoma1Builder('bayer', 8),
+        yliluoma1Builder('hatchHorizontal', 4),
+        yliluoma1Builder('hatchVertical', 4),
+        yliluoma1Builder('hatchRight', 4),
+        yliluoma1Builder('hatchLeft', 4),
         yliluoma1Builder('crossHatchRight', 4),
+        yliluoma1Builder('crossHatchLeft', 4),
+        yliluoma1Builder('checkerboard', 2),
+        yliluoma1Builder('cluster', 4),
+        yliluoma1Builder('fishnet', 8),
         yliluoma1Builder('halftone', 8),
-        yliluoma1Builder('dot', 4),
-        yliluoma1Builder('dot', 8),
+        yliluoma1Builder('dot', 4, true),
+        yliluoma1Builder('dot', 8, true),
+        'Yliluoma\'s Ordered Dithering 2',
         yliluoma2Builder('bayer', 2),
         yliluoma2Builder('bayer', 8),
         yliluoma2Builder('bayer', 16),
+        yliluoma2Builder('hatchRight', 4),
+        yliluoma2Builder('hatchLeft', 4),
+        yliluoma2Builder('crossHatchHorizontal', 4),
+        yliluoma2Builder('crossHatchVertical', 4),
         yliluoma2Builder('crossHatchRight', 4),
+        yliluoma2Builder('crossHatchLeft', 4),
+        yliluoma2Builder('zigzagHorizontal',  4, true),
+        yliluoma2Builder('zigzagVertical',    4, true),
+        yliluoma2Builder('zigzagHorizontal',  8, true),
+        yliluoma2Builder('zigzagVertical',    8, true),
+        yliluoma2Builder('zigzagHorizontal', 16, true),
+        yliluoma2Builder('zigzagVertical',   16, true),
+        yliluoma2Builder('checkerboard', 2),
+        yliluoma2Builder('cluster', 4),
+        yliluoma2Builder('fishnet', 8),
         yliluoma2Builder('halftone', 8),
-        yliluoma2Builder('dot', 4),
-        yliluoma2Builder('dot', 8),
+        yliluoma2Builder('dot', 4, true),
+        yliluoma2Builder('dot', 8, true),
         'Ordered (Hatch)',
         orderedDitherColorBuilder('hatchHorizontal', 4),
         orderedDitherColorBuilder('hatchVertical', 4),
