@@ -14,6 +14,8 @@
     align-items: flex-end;
     flex-basis: 100%;
     margin-bottom: 12px;
+    //max width required for Microsoft Edge at small screen sizes, otherwise it keeps expanding
+    max-width: calc(100vw - #{$chrome_fullscreen_horizontal_scrollbar_height});
     input[type="range"]{
         flex-basis: calc(100% - 138px);
         vertical-align: bottom;
