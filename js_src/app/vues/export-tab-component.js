@@ -55,17 +55,17 @@
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                         saveImageLink.click();
+                        //clear the canvas to free up memory
+                        if(sourceCanvas === saveImageCanvas){
+                            Canvas.clear(saveImageCanvas);
+                        }
+                        //follow Unsplash API guidelines for triggering download
+                        //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
+                        if(unsplash){
+                            //arguably should be POST request here, but much easier to just use GET
+                            fetch(`${Constants.unsplashDownloadUrl}?photo_id=${unsplash.id}`);
+                        }
                     });
-                    //clear the canvas to free up memory
-                    if(sourceCanvas === saveImageCanvas){
-                        Canvas.clear(saveImageCanvas);
-                    }
-                    //follow Unsplash API guidelines for triggering download
-                    //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
-                    if(unsplash){
-                        //arguably should be POST request here, but much easier to just use GET
-                        fetch(`${Constants.unsplashDownloadUrl}?photo_id=${unsplash.id}`);
-                    }
                 });
             },
         },
