@@ -1,4 +1,4 @@
-App.Fs = (function(Constants){
+App.Fs = (function(){
     const imageElement = new Image();
     //need to store reference so we can free it when a new one is created
     let currentImageObjectUrl = null;
@@ -157,4 +157,4 @@ App.Fs = (function(Constants){
         messageForOpenImageUrlError,
     };
     
-})(App.Constants);
+})();
