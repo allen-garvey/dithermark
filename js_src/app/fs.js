@@ -127,17 +127,26 @@ App.Fs = (function(Constants){
         };
     }
     
+    function processSaveImageBlob(blob, callback){
+        const objectUrl = URL.createObjectURL(blob); 
+        callback(objectUrl);
+        URL.revokeObjectURL(objectUrl);
+    }
+
     function saveImage(canvas, fileType, callback){
-        //edge and mobile safari don't support toBlob
-        if(!canvas.toBlob){
-            callback(canvas.toDataURL(fileType));
-        }
-        else{
+        if(canvas.toBlob){
             canvas.toBlob((blob)=>{
-                let objectUrl = URL.createObjectURL(blob); 
-                callback(objectUrl);
-                URL.revokeObjectURL(objectUrl);
+                processSaveImageBlob(blob, callback);
             }, fileType);
+        }
+        //edge and mobile safari don't support toBlob
+        //fetch polyfill based on: https://stackoverflow.com/questions/12168909/blob-from-dataurl
+        else{
+            fetch(canvas.toDataURL(fileType)).then((res)=>{
+                return res.blob();
+            }).then((blob)=>{
+                processSaveImageBlob(blob, callback);
+            });
         }
     }
     
