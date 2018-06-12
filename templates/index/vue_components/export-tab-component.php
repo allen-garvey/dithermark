@@ -14,6 +14,6 @@
         </label>
     </div>
     <div>
-        <button class="btn btn-success" v-on:click="saveImage" title="Save image to downloads folder">Save</button>
+        <button class="btn btn-success" @click="saveImage" title="Save image to downloads folder">Save</button>
     </div>
 </div>
