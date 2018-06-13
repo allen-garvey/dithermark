@@ -102,12 +102,12 @@ function yliluoma2Builder(string $orderedMatrixName, int $dimensions, bool $addD
     $webglFunc = "ColorDither.createYliluoma2OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function hueLightnessBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false): DitherAlgorithm{
+function hueLightnessBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Hue-Lightness';
-    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom);
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $randomArg = $isRandom ? ', true' : '';
-    $webworkerFunc = "OrderedDither.createHueLightnessDither(${dimensions}${randomArg})";
-    $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions}${randomArg})";
+    $webworkerFunc = "OrderedDither.createHueLightnessDither('${orderedMatrixName}',${dimensions}${randomArg})";
+    $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions},'${orderedMatrixName}'${randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function orderedDitherBwBuilder(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): DitherAlgorithm{
@@ -325,9 +325,61 @@ function colorAlgorithmModelBase(): array{
         orderedDitherColorBuilder('bayer', 8, true),
         orderedDitherColorBuilder('bayer', 16, true),
         'Ordered (Hue-Lightness)',
+        hueLightnessBuilder('bayer', 2),
+        hueLightnessBuilder('bayer', 4),
         hueLightnessBuilder('bayer', 16),
+        hueLightnessBuilder('hatchHorizontal', 4),
+        hueLightnessBuilder('hatchVertical', 4),
+        hueLightnessBuilder('hatchRight', 4),
+        hueLightnessBuilder('hatchLeft', 4),
+        hueLightnessBuilder('crossHatchHorizontal', 4),
+        hueLightnessBuilder('crossHatchVertical', 4),
+        hueLightnessBuilder('crossHatchRight', 4),
+        hueLightnessBuilder('crossHatchLeft', 4),
+        hueLightnessBuilder('zigzagHorizontal',  4, false, true),
+        hueLightnessBuilder('zigzagVertical',    4, false, true),
+        hueLightnessBuilder('zigzagHorizontal',  8, false, true),
+        hueLightnessBuilder('zigzagVertical',    8, false, true),
+        hueLightnessBuilder('zigzagHorizontal', 16, false, true),
+        hueLightnessBuilder('zigzagVertical',   16, false, true),
+        hueLightnessBuilder('checkerboard', 2),
+        hueLightnessBuilder('cluster', 4),
+        hueLightnessBuilder('fishnet', 8),
+        hueLightnessBuilder('dot', 4, false, true),
+        hueLightnessBuilder('dot', 8, false, true),
+        hueLightnessBuilder('halftone', 8),
+        hueLightnessBuilder('square', 2, false, true),
+        hueLightnessBuilder('square', 4, false, true),
+        hueLightnessBuilder('square', 8, false, true),
+        hueLightnessBuilder('square', 16, false, true),
         'Ordered (Hue-Lightness/Random)',
+        hueLightnessBuilder('bayer', 2, true),
+        hueLightnessBuilder('bayer', 4, true),
         hueLightnessBuilder('bayer', 16, true),
+        hueLightnessBuilder('hatchHorizontal', 4, true),
+        hueLightnessBuilder('hatchVertical', 4, true),
+        hueLightnessBuilder('hatchRight', 4, true),
+        hueLightnessBuilder('hatchLeft', 4, true),
+        hueLightnessBuilder('crossHatchHorizontal', 4, true),
+        hueLightnessBuilder('crossHatchVertical', 4, true),
+        hueLightnessBuilder('crossHatchRight', 4, true),
+        hueLightnessBuilder('crossHatchLeft', 4, true),
+        hueLightnessBuilder('zigzagHorizontal',  4, true, true),
+        hueLightnessBuilder('zigzagVertical',    4, true, true),
+        hueLightnessBuilder('zigzagHorizontal',  8, true, true),
+        hueLightnessBuilder('zigzagVertical',    8, true, true),
+        hueLightnessBuilder('zigzagHorizontal', 16, true, true),
+        hueLightnessBuilder('zigzagVertical',   16, true, true),
+        hueLightnessBuilder('checkerboard', 2, true),
+        hueLightnessBuilder('cluster', 4, true),
+        hueLightnessBuilder('fishnet', 8, true),
+        hueLightnessBuilder('dot', 4, true, true),
+        hueLightnessBuilder('dot', 8, true, true),
+        hueLightnessBuilder('halftone', 8, true),
+        hueLightnessBuilder('square', 2, true, true),
+        hueLightnessBuilder('square', 4, true, true),
+        hueLightnessBuilder('square', 8, true, true),
+        hueLightnessBuilder('square', 16, true, true),
         'Yliluoma\'s Ordered Dithering 1',
         yliluoma1Builder('bayer', 2),
         yliluoma1Builder('bayer', 8),

@@ -245,7 +245,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         aDitherXor1: createArithmeticDither(ADITHER_XOR1),
         aDitherXor2: createArithmeticDither(ADITHER_XOR2),
         aDitherXor3: createArithmeticDither(ADITHER_XOR3),
-        createHueLightnessOrderedDither: orderedDitherBuilder('bayer', 'bayer', HUE_LIGHTNESS_ORDERED_DITHER),
+        createHueLightnessOrderedDither: orderedDitherBuilder2(HUE_LIGHTNESS_ORDERED_DITHER),
         createYliluoma1OrderedDither: orderedDitherBuilder2(YLILUOMA1),
         createYliluoma2OrderedDither: orderedDitherBuilder2(YLILUOMA2),
     };

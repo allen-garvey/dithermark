@@ -82,6 +82,12 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
         };
     }
 
+    function colorOrderedDitherBuilder2(postscriptFuncBuilder=null){
+        return (bayerFuncName, dimensions, isRandom=false)=>{
+            return createColorOrderedDither(dimensions, Bayer[bayerFuncName], isRandom, postscriptFuncBuilder);
+        };
+    }
+
     /**
      * Yliluoma's ordered dithering
      * from: https://bisqwit.iki.fi/story/howto/dither/jy/
@@ -286,7 +292,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     * Automagically generated exports based on patterns in BayerMatrix module
     */
     const exports = {
-        createHueLightnessDither: colorOrderedDitherBuilder('bayer', hueLightnessPostscriptFuncBuilder),
+        createHueLightnessDither: colorOrderedDitherBuilder2(hueLightnessPostscriptFuncBuilder),
         createYliluoma2ColorDither,
         createYliluoma1ColorDither,
     };
