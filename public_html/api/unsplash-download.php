@@ -7,6 +7,7 @@
 require_once('../../inc/config.php');
 
 if(!isset($_REQUEST[UNSPLASH_PHOTO_ID_QUERY_KEY])){
+    http_response_code(400);
     if(!BUILD_MODE_RELEASE){
         echo 'No '.UNSPLASH_PHOTO_ID_QUERY_KEY.' given';
     }
@@ -26,6 +27,7 @@ $photoId = $_REQUEST[UNSPLASH_PHOTO_ID_QUERY_KEY];
 
 //make sure photoId is an integer
 if(!filter_var($photoId, FILTER_VALIDATE_INT)){
+    http_response_code(400);
     if(!BUILD_MODE_RELEASE){
         echo 'Invalid '.UNSPLASH_PHOTO_ID_QUERY_KEY;
     }
@@ -35,6 +37,7 @@ $photoId = (int) $photoId;
 $unsplashImageData = openJson(UNSPLASH_RANDOM_IMAGES_JSON);
 
 if(!isPhotoIdValid($photoId, $unsplashImageData)){
+    http_response_code(400);
     if(!BUILD_MODE_RELEASE){
         echo 'Invalid '.UNSPLASH_PHOTO_ID_QUERY_KEY;
     }
@@ -46,11 +49,15 @@ $unsplashDownloadUrl = $unsplashImageData[$photoId]['download'].'?client_id='.UN
 try{
     $response = file_get_contents($unsplashDownloadUrl);
     if(!BUILD_MODE_RELEASE){
+        header('Content-Type: application/json');
         echo $response;
     }
 }
 catch(Exception $ex){
-    echo 'Problem contacting unsplash download url';
+    http_response_code(500);
+    if(!BUILD_MODE_RELEASE){
+        echo 'Problem contacting unsplash download url';
+    }
 }
 
 
