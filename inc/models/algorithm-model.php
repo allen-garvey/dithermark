@@ -159,7 +159,7 @@ function yliluoma1BuilderBase(string $orderedMatrixName, int $dimensions, bool $
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function yliluoma1Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
-    return yliluoma1BuilderBase($pattern->jsFuncName(), $pattern->dimensions(), true, $pattern->addDimensionsToTitle());
+    return yliluoma1BuilderBase($pattern->jsFuncName(), $pattern->dimensions(), $pattern->addDimensionsToTitle());
 }
 function yliluoma2BuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Yliluoma 2';
@@ -169,7 +169,7 @@ function yliluoma2BuilderBase(string $orderedMatrixName, int $dimensions, bool $
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function yliluoma2Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
-    return yliluoma2BuilderBase($pattern->jsFuncName(), $pattern->dimensions(), true, $pattern->addDimensionsToTitle());
+    return yliluoma2BuilderBase($pattern->jsFuncName(), $pattern->dimensions(), $pattern->addDimensionsToTitle());
 }
 /**
  * Hue Lightness
