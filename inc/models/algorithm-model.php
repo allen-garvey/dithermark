@@ -10,7 +10,7 @@ class DitherAlgorithm {
 
     //appOptions is addition key-values to add to App algorithm model
     //currently only works with boolean and number values
-    function __construct(string $name, string $workerFunc, string $webglFunc, array $appOptions=[]) {
+    function __construct(string $name, string $workerFunc, string $webglFunc, array $appOptions=[]){
         $this->name = $name;
         $this->workerFunc = $workerFunc;
         $this->webglFunc = $webglFunc;
@@ -44,6 +44,67 @@ class DitherAlgorithm {
         }
         $this->id = $id;
     }
+}
+
+/**
+ * Ordered Matrix Patters
+ */
+
+class OrderedMatrixPattern {
+    protected $jsFuncName;
+    protected $dimensions;
+    protected $addDimensionsToTitle;
+
+    function __construct(string $jsFuncName, int $dimensions, bool $addDimensionsToTitle=false){
+        $this->jsFuncName = $jsFuncName;
+        $this->dimensions = $dimensions;
+        $this->addDimensionsToTitle = $addDimensionsToTitle;
+    }
+
+    public function jsFuncName(): string{
+        return $this->jsFuncName;
+    }
+
+    public function dimensions(): int{
+        return $this->dimensions;
+    }
+
+    public function addDimensionsToTitle(): bool{
+        return $this->addDimensionsToTitle;
+    }
+}
+
+function getOrderedMatrixPatterns(): array{
+    return [
+        'BAYER_2'                   => new OrderedMatrixPattern('bayer', 2, true),
+        'BAYER_4'                   => new OrderedMatrixPattern('bayer', 4, true),
+        'BAYER_8'                   => new OrderedMatrixPattern('bayer', 8, true),
+        'BAYER_16'                  => new OrderedMatrixPattern('bayer', 16, true),
+        'HATCH_HORIZONTAL'          => new OrderedMatrixPattern('hatchHorizontal', 4),
+        'HATCH_VERTICAL'            => new OrderedMatrixPattern('hatchVertical', 4),
+        'HATCH_RIGHT'               => new OrderedMatrixPattern('hatchRight', 4),
+        'HATCH_LEFT'                => new OrderedMatrixPattern('hatchLeft', 4),
+        'CROSS_HATCH_HORIZONTAL'    => new OrderedMatrixPattern('crossHatchHorizontal', 4),
+        'CROSS_HATCH_VERTICAL'      => new OrderedMatrixPattern('crossHatchVertical', 4),
+        'CROSS_HATCH_RIGHT'         => new OrderedMatrixPattern('crossHatchRight', 4),
+        'CROSS_HATCH_LEFT'          => new OrderedMatrixPattern('crossHatchLeft', 4),
+        'ZIGZAG_HORIZONTAL_4'       => new OrderedMatrixPattern('zigzagHorizontal',  4, true),
+        'ZIGZAG_VERTICAL_4'         => new OrderedMatrixPattern('zigzagVertical',    4, true),
+        'ZIGZAG_HORIZONTAL_8'       => new OrderedMatrixPattern('zigzagHorizontal',  8, true),
+        'ZIGZAG_VERTICAL_8'         => new OrderedMatrixPattern('zigzagVertical',    8, true),
+        'ZIGZAG_HORIZONTAL_16'      => new OrderedMatrixPattern('zigzagHorizontal', 16, true),
+        'ZIGZAG_VERTICAL_16'        => new OrderedMatrixPattern('zigzagVertical',   16, true),
+        'CHECKERBOARD'              => new OrderedMatrixPattern('checkerboard', 2),
+        'CLUSTER'                   => new OrderedMatrixPattern('cluster', 4),
+        'FISHNET'                   => new OrderedMatrixPattern('fishnet', 8),
+        'DOT_4'                     => new OrderedMatrixPattern('dot', 4, true),
+        'DOT_8'                     => new OrderedMatrixPattern('dot', 8, true),
+        'HALFTONE'                  => new OrderedMatrixPattern('halftone', 8),
+        'SQUARE_2'                  => new OrderedMatrixPattern('square', 2, true),
+        'SQUARE_4'                  => new OrderedMatrixPattern('square', 4, true),
+        'SQUARE_8'                  => new OrderedMatrixPattern('square', 8, true),
+        'SQUARE_16'                 => new OrderedMatrixPattern('square', 16, true),
+    ];
 }
 
 /**
@@ -90,19 +151,25 @@ function titleizeCamelCase(string $camelCase): string{
 /**
  * Yliluoma Dithers
  */
-function yliluoma1Builder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
+function yliluoma1BuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Yliluoma 1';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
     $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
     $webglFunc = "ColorDither.createYliluoma1OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function yliluoma2Builder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
+function yliluoma1Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return yliluoma1BuilderBase($pattern->jsFuncName(), $pattern->dimensions(), true, $pattern->addDimensionsToTitle());
+}
+function yliluoma2BuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Yliluoma 2';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
     $webworkerFunc = "OrderedDither.createYliluoma2ColorDither(${dimensions}, '${orderedMatrixName}')";
     $webglFunc = "ColorDither.createYliluoma2OrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
+}
+function yliluoma2Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return yliluoma2BuilderBase($pattern->jsFuncName(), $pattern->dimensions(), true, $pattern->addDimensionsToTitle());
 }
 /**
  * Hue Lightness
@@ -115,11 +182,11 @@ function hueLightnessBuilderBase(string $orderedMatrixName, int $dimensions, boo
     $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions},'${orderedMatrixName}'${randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function hueLightnessBuilder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    return hueLightnessBuilderBase($orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
+function hueLightnessBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return hueLightnessBuilderBase($pattern->jsFuncName(), $pattern->dimensions(), false, $pattern->addDimensionsToTitle());
 }
-function hueLightnessRandomBuilder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    return hueLightnessBuilderBase($orderedMatrixName, $dimensions, true, $addDimensionsToTitle);
+function hueLightnessRandomBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return hueLightnessBuilderBase($pattern->jsFuncName(), $pattern->dimensions(), true, $pattern->addDimensionsToTitle());
 }
 /**
  * Vanilla Bw ordered dither 
@@ -133,11 +200,11 @@ function orderedDitherBwBuilderBase(string $orderedMatrixName, int $dimensions, 
     $webglFunc = "BwDither.create${pascalCase}Dither(${dimensions}${randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function orderedDitherBwBuilder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    return orderedDitherBwBuilderBase($orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
+function orderedDitherBwBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return orderedDitherBwBuilderBase($pattern->jsFuncName(), $pattern->dimensions(), false, $pattern->addDimensionsToTitle());
 }
-function orderedDitherBwRandomBuilder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    return orderedDitherBwBuilderBase($orderedMatrixName, $dimensions, true, $addDimensionsToTitle);
+function orderedDitherBwRandomBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return orderedDitherBwBuilderBase($pattern->jsFuncName(), $pattern->dimensions(), true, $pattern->addDimensionsToTitle());
 }
 /**
  * Vanilla Color ordered dither 
@@ -151,11 +218,11 @@ function orderedDitherColorBuilderBase(string $orderedMatrixName, int $dimension
     $webglFunc = "ColorDither.create${pascalCase}ColorDither(${dimensions}${randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
-function orderedDitherColorBuilder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    return orderedDitherColorBuilderBase($orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
+function orderedDitherColorBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return orderedDitherColorBuilderBase($pattern->jsFuncName(), $pattern->dimensions(), false, $pattern->addDimensionsToTitle());
 }
-function orderedDitherColorRandomBuilder(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    return orderedDitherColorBuilderBase($orderedMatrixName, $dimensions, true, $addDimensionsToTitle);
+function orderedDitherColorRandomBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return orderedDitherColorBuilderBase($pattern->jsFuncName(), $pattern->dimensions(), true, $pattern->addDimensionsToTitle());
 }
 /**
  * Error prop dither
@@ -230,6 +297,8 @@ function colorAlgoGroups(): string{
 * Base arrays for algorithms and opt-groups
 */
 function bwAlgorithmModelBase(): array{
+    $patterns = getOrderedMatrixPatterns();
+
     return [
         'Threshold',
         new DitherAlgorithm('Threshold', 'Threshold.image', 'BwDither.threshold'),
@@ -254,77 +323,79 @@ function bwAlgorithmModelBase(): array{
         errorPropBwDitherBuilder('atkinson'),
         errorPropBwDitherBuilder('garvey'),
         'Ordered (Bayer)',
-        orderedDitherBwBuilder('bayer', 2),
-        orderedDitherBwBuilder('bayer', 4),
-        orderedDitherBwBuilder('bayer', 8),
-        orderedDitherBwBuilder('bayer', 16),
+        orderedDitherBwBuilder($patterns['BAYER_2']),
+        orderedDitherBwBuilder($patterns['BAYER_4']),
+        orderedDitherBwBuilder($patterns['BAYER_8']),
+        orderedDitherBwBuilder($patterns['BAYER_16']),
         'Ordered (Bayer/Random)',
-        orderedDitherBwRandomBuilder('bayer', 2),
-        orderedDitherBwRandomBuilder('bayer', 4),
-        orderedDitherBwRandomBuilder('bayer', 8),
-        orderedDitherBwRandomBuilder('bayer', 16),
+        orderedDitherBwRandomBuilder($patterns['BAYER_2']),
+        orderedDitherBwRandomBuilder($patterns['BAYER_4']),
+        orderedDitherBwRandomBuilder($patterns['BAYER_8']),
+        orderedDitherBwRandomBuilder($patterns['BAYER_16']),
         'Ordered (Hatch)',
-        orderedDitherBwBuilder('hatchHorizontal', 4),
-        orderedDitherBwBuilder('hatchVertical', 4),
-        orderedDitherBwBuilder('hatchRight', 4),
-        orderedDitherBwBuilder('hatchLeft', 4),
+        orderedDitherBwBuilder($patterns['HATCH_HORIZONTAL']),
+        orderedDitherBwBuilder($patterns['HATCH_VERTICAL']),
+        orderedDitherBwBuilder($patterns['HATCH_RIGHT']),
+        orderedDitherBwBuilder($patterns['HATCH_LEFT']),
         'Ordered (Hatch/Random)',
-        orderedDitherBwRandomBuilder('hatchHorizontal', 4),
-        orderedDitherBwRandomBuilder('hatchVertical', 4),
-        orderedDitherBwRandomBuilder('hatchRight', 4),
-        orderedDitherBwRandomBuilder('hatchLeft', 4),
+        orderedDitherBwRandomBuilder($patterns['HATCH_HORIZONTAL']),
+        orderedDitherBwRandomBuilder($patterns['HATCH_VERTICAL']),
+        orderedDitherBwRandomBuilder($patterns['HATCH_RIGHT']),
+        orderedDitherBwRandomBuilder($patterns['HATCH_LEFT']),
         'Ordered (Crosshatch)',
-        orderedDitherBwBuilder('crossHatchHorizontal', 4),
-        orderedDitherBwBuilder('crossHatchVertical', 4),
-        orderedDitherBwBuilder('crossHatchRight', 4),
-        orderedDitherBwBuilder('crossHatchLeft', 4),
+        orderedDitherBwBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
+        orderedDitherBwBuilder($patterns['CROSS_HATCH_VERTICAL']),
+        orderedDitherBwBuilder($patterns['CROSS_HATCH_RIGHT']),
+        orderedDitherBwBuilder($patterns['CROSS_HATCH_LEFT']),
         'Ordered (Crosshatch/Random)',
-        orderedDitherBwRandomBuilder('crossHatchHorizontal', 4),
-        orderedDitherBwRandomBuilder('crossHatchVertical', 4),
-        orderedDitherBwRandomBuilder('crossHatchRight', 4),
-        orderedDitherBwRandomBuilder('crossHatchLeft', 4),
+        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
+        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_VERTICAL']),
+        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_RIGHT']),
+        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_LEFT']),
         'Ordered (Zigzag)',
-        orderedDitherBwBuilder('zigzagHorizontal',  4, true),
-        orderedDitherBwBuilder('zigzagVertical',    4, true),
-        orderedDitherBwBuilder('zigzagHorizontal',  8, true),
-        orderedDitherBwBuilder('zigzagVertical',    8, true),
-        orderedDitherBwBuilder('zigzagHorizontal', 16, true),
-        orderedDitherBwBuilder('zigzagVertical',   16, true),
+        orderedDitherBwBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
+        orderedDitherBwBuilder($patterns['ZIGZAG_VERTICAL_4']),
+        orderedDitherBwBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
+        orderedDitherBwBuilder($patterns['ZIGZAG_VERTICAL_8']),
+        orderedDitherBwBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
+        orderedDitherBwBuilder($patterns['ZIGZAG_VERTICAL_16']),
         'Ordered (Zigzag/Random)',
-        orderedDitherBwRandomBuilder('zigzagHorizontal',  4, true),
-        orderedDitherBwRandomBuilder('zigzagVertical',    4, true),
-        orderedDitherBwRandomBuilder('zigzagHorizontal',  8, true),
-        orderedDitherBwRandomBuilder('zigzagVertical',    8, true),
-        orderedDitherBwRandomBuilder('zigzagHorizontal', 16, true),
-        orderedDitherBwRandomBuilder('zigzagVertical',   16, true),
+        orderedDitherBwRandomBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
+        orderedDitherBwRandomBuilder($patterns['ZIGZAG_VERTICAL_4']),
+        orderedDitherBwRandomBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
+        orderedDitherBwRandomBuilder($patterns['ZIGZAG_VERTICAL_8']),
+        orderedDitherBwRandomBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
+        orderedDitherBwRandomBuilder($patterns['ZIGZAG_VERTICAL_16']),
         'Ordered (Pattern)',
-        orderedDitherBwBuilder('checkerboard', 2),
-        orderedDitherBwBuilder('cluster', 4),
-        orderedDitherBwBuilder('fishnet', 8),
-        orderedDitherBwBuilder('dot', 4, true),
-        orderedDitherBwBuilder('dot', 8, true),
-        orderedDitherBwBuilder('halftone', 8),
+        orderedDitherBwBuilder($patterns['CHECKERBOARD']),
+        orderedDitherBwBuilder($patterns['CLUSTER']),
+        orderedDitherBwBuilder($patterns['FISHNET']),
+        orderedDitherBwBuilder($patterns['DOT_4']),
+        orderedDitherBwBuilder($patterns['DOT_8']),
+        orderedDitherBwBuilder($patterns['HALFTONE']),
         'Ordered (Pattern/Random)',
-        orderedDitherBwRandomBuilder('checkerboard', 2),
-        orderedDitherBwRandomBuilder('cluster', 4),
-        orderedDitherBwRandomBuilder('fishnet', 8),
-        orderedDitherBwRandomBuilder('dot', 4, true),
-        orderedDitherBwRandomBuilder('dot', 8, true),
-        orderedDitherBwRandomBuilder('halftone', 8),
+        orderedDitherBwRandomBuilder($patterns['CHECKERBOARD']),
+        orderedDitherBwRandomBuilder($patterns['CLUSTER']),
+        orderedDitherBwRandomBuilder($patterns['FISHNET']),
+        orderedDitherBwRandomBuilder($patterns['DOT_4']),
+        orderedDitherBwRandomBuilder($patterns['DOT_8']),
+        orderedDitherBwRandomBuilder($patterns['HALFTONE']),
         'Ordered (Square)',
-        orderedDitherBwBuilder('square', 2, true),
-        orderedDitherBwBuilder('square', 4, true),
-        orderedDitherBwBuilder('square', 8, true),
-        orderedDitherBwBuilder('square', 16, true),
+        orderedDitherBwBuilder($patterns['SQUARE_2']),
+        orderedDitherBwBuilder($patterns['SQUARE_4']),
+        orderedDitherBwBuilder($patterns['SQUARE_8']),
+        orderedDitherBwBuilder($patterns['SQUARE_16']),
         'Ordered (Square/Random)',
-        orderedDitherBwRandomBuilder('square', 2, true),
-        orderedDitherBwRandomBuilder('square', 4, true),
-        orderedDitherBwRandomBuilder('square', 8, true),
-        orderedDitherBwRandomBuilder('square', 16, true),
+        orderedDitherBwRandomBuilder($patterns['SQUARE_2']),
+        orderedDitherBwRandomBuilder($patterns['SQUARE_4']),
+        orderedDitherBwRandomBuilder($patterns['SQUARE_8']),
+        orderedDitherBwRandomBuilder($patterns['SQUARE_16']),
     ];
 }
 
 function colorAlgorithmModelBase(): array{
+    $patterns = getOrderedMatrixPatterns();
+
     return [
         'Threshold',
         new DitherAlgorithm('Closest Color', 'Threshold.closestColor', 'ColorDither.closestColor'),
@@ -349,166 +420,166 @@ function colorAlgorithmModelBase(): array{
         errorPropColorDitherBuilder('atkinson'),
         errorPropColorDitherBuilder('garvey'),
         'Ordered (Bayer)',
-        orderedDitherColorBuilder('bayer', 2),
-        orderedDitherColorBuilder('bayer', 4),
-        orderedDitherColorBuilder('bayer', 8),
-        orderedDitherColorBuilder('bayer', 16),
+        orderedDitherColorBuilder($patterns['BAYER_2']),
+        orderedDitherColorBuilder($patterns['BAYER_4']),
+        orderedDitherColorBuilder($patterns['BAYER_8']),
+        orderedDitherColorBuilder($patterns['BAYER_16']),
         'Ordered (Bayer/Random)',
-        orderedDitherColorRandomBuilder('bayer', 2),
-        orderedDitherColorRandomBuilder('bayer', 4),
-        orderedDitherColorRandomBuilder('bayer', 8),
-        orderedDitherColorRandomBuilder('bayer', 16),
+        orderedDitherColorRandomBuilder($patterns['BAYER_2']),
+        orderedDitherColorRandomBuilder($patterns['BAYER_4']),
+        orderedDitherColorRandomBuilder($patterns['BAYER_8']),
+        orderedDitherColorRandomBuilder($patterns['BAYER_16']),
         'Ordered (Hue-Lightness)',
-        hueLightnessBuilder('bayer', 2),
-        hueLightnessBuilder('bayer', 4),
-        hueLightnessBuilder('bayer', 16),
-        hueLightnessBuilder('hatchHorizontal', 4),
-        hueLightnessBuilder('hatchVertical', 4),
-        hueLightnessBuilder('hatchRight', 4),
-        hueLightnessBuilder('hatchLeft', 4),
-        hueLightnessBuilder('crossHatchHorizontal', 4),
-        hueLightnessBuilder('crossHatchVertical', 4),
-        hueLightnessBuilder('crossHatchRight', 4),
-        hueLightnessBuilder('crossHatchLeft', 4),
-        hueLightnessBuilder('zigzagHorizontal',  4, true),
-        hueLightnessBuilder('zigzagVertical',    4, true),
-        hueLightnessBuilder('zigzagHorizontal',  8, true),
-        hueLightnessBuilder('zigzagVertical',    8, true),
-        hueLightnessBuilder('zigzagHorizontal', 16, true),
-        hueLightnessBuilder('zigzagVertical',   16, true),
-        hueLightnessBuilder('checkerboard', 2),
-        hueLightnessBuilder('cluster', 4),
-        hueLightnessBuilder('fishnet', 8),
-        hueLightnessBuilder('dot', 4, true),
-        hueLightnessBuilder('dot', 8, true),
-        hueLightnessBuilder('halftone', 8),
-        hueLightnessBuilder('square', 2, true),
-        hueLightnessBuilder('square', 4, true),
-        hueLightnessBuilder('square', 8, true),
-        hueLightnessBuilder('square', 16, true),
+        hueLightnessBuilder($patterns['BAYER_2']),
+        hueLightnessBuilder($patterns['BAYER_4']),
+        hueLightnessBuilder($patterns['BAYER_16']),
+        hueLightnessBuilder($patterns['HATCH_HORIZONTAL']),
+        hueLightnessBuilder($patterns['HATCH_VERTICAL']),
+        hueLightnessBuilder($patterns['HATCH_RIGHT']),
+        hueLightnessBuilder($patterns['HATCH_LEFT']),
+        hueLightnessBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
+        hueLightnessBuilder($patterns['CROSS_HATCH_VERTICAL']),
+        hueLightnessBuilder($patterns['CROSS_HATCH_RIGHT']),
+        hueLightnessBuilder($patterns['CROSS_HATCH_LEFT']),
+        hueLightnessBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
+        hueLightnessBuilder($patterns['ZIGZAG_VERTICAL_4']),
+        hueLightnessBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
+        hueLightnessBuilder($patterns['ZIGZAG_VERTICAL_8']),
+        hueLightnessBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
+        hueLightnessBuilder($patterns['ZIGZAG_VERTICAL_16']),
+        hueLightnessBuilder($patterns['CHECKERBOARD']),
+        hueLightnessBuilder($patterns['CLUSTER']),
+        hueLightnessBuilder($patterns['FISHNET']),
+        hueLightnessBuilder($patterns['DOT_4']),
+        hueLightnessBuilder($patterns['DOT_8']),
+        hueLightnessBuilder($patterns['HALFTONE']),
+        hueLightnessBuilder($patterns['SQUARE_2']),
+        hueLightnessBuilder($patterns['SQUARE_4']),
+        hueLightnessBuilder($patterns['SQUARE_8']),
+        hueLightnessBuilder($patterns['SQUARE_16']),
         'Ordered (Hue-Lightness/Random)',
-        hueLightnessRandomBuilder('bayer', 2),
-        hueLightnessRandomBuilder('bayer', 4),
-        hueLightnessRandomBuilder('bayer', 16),
-        hueLightnessRandomBuilder('hatchHorizontal', 4),
-        hueLightnessRandomBuilder('hatchVertical', 4),
-        hueLightnessRandomBuilder('hatchRight', 4),
-        hueLightnessRandomBuilder('hatchLeft', 4),
-        hueLightnessRandomBuilder('crossHatchHorizontal', 4),
-        hueLightnessRandomBuilder('crossHatchVertical', 4),
-        hueLightnessRandomBuilder('crossHatchRight', 4),
-        hueLightnessRandomBuilder('crossHatchLeft', 4),
-        hueLightnessRandomBuilder('zigzagHorizontal',  4, true),
-        hueLightnessRandomBuilder('zigzagVertical',    4, true),
-        hueLightnessRandomBuilder('zigzagHorizontal',  8, true),
-        hueLightnessRandomBuilder('zigzagVertical',    8, true),
-        hueLightnessRandomBuilder('zigzagHorizontal', 16, true),
-        hueLightnessRandomBuilder('zigzagVertical',   16, true),
-        hueLightnessRandomBuilder('checkerboard', 2),
-        hueLightnessRandomBuilder('cluster', 4),
-        hueLightnessRandomBuilder('fishnet', 8),
-        hueLightnessRandomBuilder('dot', 4, true),
-        hueLightnessRandomBuilder('dot', 8, true),
-        hueLightnessRandomBuilder('halftone', 8),
-        hueLightnessRandomBuilder('square', 2, true),
-        hueLightnessRandomBuilder('square', 4, true),
-        hueLightnessRandomBuilder('square', 8, true),
-        hueLightnessRandomBuilder('square', 16, true),
+        hueLightnessRandomBuilder($patterns['BAYER_2']),
+        hueLightnessRandomBuilder($patterns['BAYER_4']),
+        hueLightnessRandomBuilder($patterns['BAYER_16']),
+        hueLightnessRandomBuilder($patterns['HATCH_HORIZONTAL']),
+        hueLightnessRandomBuilder($patterns['HATCH_VERTICAL']),
+        hueLightnessRandomBuilder($patterns['HATCH_RIGHT']),
+        hueLightnessRandomBuilder($patterns['HATCH_LEFT']),
+        hueLightnessRandomBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
+        hueLightnessRandomBuilder($patterns['CROSS_HATCH_VERTICAL']),
+        hueLightnessRandomBuilder($patterns['CROSS_HATCH_RIGHT']),
+        hueLightnessRandomBuilder($patterns['CROSS_HATCH_LEFT']),
+        hueLightnessRandomBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
+        hueLightnessRandomBuilder($patterns['ZIGZAG_VERTICAL_4']),
+        hueLightnessRandomBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
+        hueLightnessRandomBuilder($patterns['ZIGZAG_VERTICAL_8']),
+        hueLightnessRandomBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
+        hueLightnessRandomBuilder($patterns['ZIGZAG_VERTICAL_16']),
+        hueLightnessRandomBuilder($patterns['CHECKERBOARD']),
+        hueLightnessRandomBuilder($patterns['CLUSTER']),
+        hueLightnessRandomBuilder($patterns['FISHNET']),
+        hueLightnessRandomBuilder($patterns['DOT_4']),
+        hueLightnessRandomBuilder($patterns['DOT_8']),
+        hueLightnessRandomBuilder($patterns['HALFTONE']),
+        hueLightnessRandomBuilder($patterns['SQUARE_2']),
+        hueLightnessRandomBuilder($patterns['SQUARE_4']),
+        hueLightnessRandomBuilder($patterns['SQUARE_8']),
+        hueLightnessRandomBuilder($patterns['SQUARE_16']),
         'Yliluoma\'s Ordered Dithering 1',
-        yliluoma1Builder('bayer', 2),
-        yliluoma1Builder('bayer', 8),
-        yliluoma1Builder('hatchHorizontal', 4),
-        yliluoma1Builder('hatchVertical', 4),
-        yliluoma1Builder('hatchRight', 4),
-        yliluoma1Builder('hatchLeft', 4),
-        yliluoma1Builder('crossHatchRight', 4),
-        yliluoma1Builder('crossHatchLeft', 4),
-        yliluoma1Builder('checkerboard', 2),
-        yliluoma1Builder('cluster', 4),
-        yliluoma1Builder('fishnet', 8),
-        yliluoma1Builder('halftone', 8),
-        yliluoma1Builder('dot', 4, true),
-        yliluoma1Builder('dot', 8, true),
+        yliluoma1Builder($patterns['BAYER_2']),
+        yliluoma1Builder($patterns['BAYER_8']),
+        yliluoma1Builder($patterns['HATCH_HORIZONTAL']),
+        yliluoma1Builder($patterns['HATCH_VERTICAL']),
+        yliluoma1Builder($patterns['HATCH_RIGHT']),
+        yliluoma1Builder($patterns['HATCH_LEFT']),
+        yliluoma1Builder($patterns['CROSS_HATCH_RIGHT']),
+        yliluoma1Builder($patterns['CROSS_HATCH_LEFT']),
+        yliluoma1Builder($patterns['CHECKERBOARD']),
+        yliluoma1Builder($patterns['CLUSTER']),
+        yliluoma1Builder($patterns['FISHNET']),
+        yliluoma1Builder($patterns['HALFTONE']),
+        yliluoma1Builder($patterns['DOT_4']),
+        yliluoma1Builder($patterns['DOT_8']),
         'Yliluoma\'s Ordered Dithering 2',
-        yliluoma2Builder('bayer', 2),
-        yliluoma2Builder('bayer', 8),
-        yliluoma2Builder('bayer', 16),
-        yliluoma2Builder('hatchRight', 4),
-        yliluoma2Builder('hatchLeft', 4),
-        yliluoma2Builder('crossHatchHorizontal', 4),
-        yliluoma2Builder('crossHatchVertical', 4),
-        yliluoma2Builder('crossHatchRight', 4),
-        yliluoma2Builder('crossHatchLeft', 4),
-        yliluoma2Builder('zigzagHorizontal',  4, true),
-        yliluoma2Builder('zigzagVertical',    4, true),
-        yliluoma2Builder('zigzagHorizontal',  8, true),
-        yliluoma2Builder('zigzagVertical',    8, true),
-        yliluoma2Builder('zigzagHorizontal', 16, true),
-        yliluoma2Builder('zigzagVertical',   16, true),
-        yliluoma2Builder('checkerboard', 2),
-        yliluoma2Builder('cluster', 4),
-        yliluoma2Builder('fishnet', 8),
-        yliluoma2Builder('halftone', 8),
-        yliluoma2Builder('dot', 4, true),
-        yliluoma2Builder('dot', 8, true),
+        yliluoma2Builder($patterns['BAYER_2']),
+        yliluoma2Builder($patterns['BAYER_8']),
+        yliluoma2Builder($patterns['BAYER_16']),
+        yliluoma2Builder($patterns['HATCH_RIGHT']),
+        yliluoma2Builder($patterns['HATCH_LEFT']),
+        yliluoma2Builder($patterns['CROSS_HATCH_HORIZONTAL']),
+        yliluoma2Builder($patterns['CROSS_HATCH_VERTICAL']),
+        yliluoma2Builder($patterns['CROSS_HATCH_RIGHT']),
+        yliluoma2Builder($patterns['CROSS_HATCH_LEFT']),
+        yliluoma2Builder($patterns['ZIGZAG_HORIZONTAL_4']),
+        yliluoma2Builder($patterns['ZIGZAG_VERTICAL_4']),
+        yliluoma2Builder($patterns['ZIGZAG_HORIZONTAL_8']),
+        yliluoma2Builder($patterns['ZIGZAG_VERTICAL_8']),
+        yliluoma2Builder($patterns['ZIGZAG_HORIZONTAL_16']),
+        yliluoma2Builder($patterns['ZIGZAG_VERTICAL_16']),
+        yliluoma2Builder($patterns['CHECKERBOARD']),
+        yliluoma2Builder($patterns['CLUSTER']),
+        yliluoma2Builder($patterns['FISHNET']),
+        yliluoma2Builder($patterns['HALFTONE']),
+        yliluoma2Builder($patterns['DOT_4']),
+        yliluoma2Builder($patterns['DOT_8']),
         'Ordered (Hatch)',
-        orderedDitherColorBuilder('hatchHorizontal', 4),
-        orderedDitherColorBuilder('hatchVertical', 4),
-        orderedDitherColorBuilder('hatchRight', 4),
-        orderedDitherColorBuilder('hatchLeft', 4),
+        orderedDitherColorBuilder($patterns['HATCH_HORIZONTAL']),
+        orderedDitherColorBuilder($patterns['HATCH_VERTICAL']),
+        orderedDitherColorBuilder($patterns['HATCH_RIGHT']),
+        orderedDitherColorBuilder($patterns['HATCH_LEFT']),
         'Ordered (Hatch/Random)',
-        orderedDitherColorRandomBuilder('hatchHorizontal', 4),
-        orderedDitherColorRandomBuilder('hatchVertical', 4),
-        orderedDitherColorRandomBuilder('hatchRight', 4),
-        orderedDitherColorRandomBuilder('hatchLeft', 4),
+        orderedDitherColorRandomBuilder($patterns['HATCH_HORIZONTAL']),
+        orderedDitherColorRandomBuilder($patterns['HATCH_VERTICAL']),
+        orderedDitherColorRandomBuilder($patterns['HATCH_RIGHT']),
+        orderedDitherColorRandomBuilder($patterns['HATCH_LEFT']),
         'Ordered (Crosshatch)',
-        orderedDitherColorBuilder('crossHatchHorizontal', 4),
-        orderedDitherColorBuilder('crossHatchVertical', 4),
-        orderedDitherColorBuilder('crossHatchRight', 4),
-        orderedDitherColorBuilder('crossHatchLeft', 4),
+        orderedDitherColorBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
+        orderedDitherColorBuilder($patterns['CROSS_HATCH_VERTICAL']),
+        orderedDitherColorBuilder($patterns['CROSS_HATCH_RIGHT']),
+        orderedDitherColorBuilder($patterns['CROSS_HATCH_LEFT']),
         'Ordered (Crosshatch/Random)',
-        orderedDitherColorRandomBuilder('crossHatchHorizontal', 4),
-        orderedDitherColorRandomBuilder('crossHatchVertical', 4),
-        orderedDitherColorRandomBuilder('crossHatchRight', 4),
-        orderedDitherColorRandomBuilder('crossHatchLeft', 4),
+        orderedDitherColorRandomBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
+        orderedDitherColorRandomBuilder($patterns['CROSS_HATCH_VERTICAL']),
+        orderedDitherColorRandomBuilder($patterns['CROSS_HATCH_RIGHT']),
+        orderedDitherColorRandomBuilder($patterns['CROSS_HATCH_LEFT']),
         'Ordered (Zigzag)',
-        orderedDitherColorBuilder('zigzagHorizontal',  4, true),
-        orderedDitherColorBuilder('zigzagVertical',    4, true),
-        orderedDitherColorBuilder('zigzagHorizontal',  8, true),
-        orderedDitherColorBuilder('zigzagVertical',    8, true),
-        orderedDitherColorBuilder('zigzagHorizontal', 16, true),
-        orderedDitherColorBuilder('zigzagVertical',   16, true),
+        orderedDitherColorBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
+        orderedDitherColorBuilder($patterns['ZIGZAG_VERTICAL_4']),
+        orderedDitherColorBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
+        orderedDitherColorBuilder($patterns['ZIGZAG_VERTICAL_8']),
+        orderedDitherColorBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
+        orderedDitherColorBuilder($patterns['ZIGZAG_VERTICAL_16']),
         'Ordered (Zigzag/Random)',
-        orderedDitherColorRandomBuilder('zigzagVertical',    4, true),
-        orderedDitherColorRandomBuilder('zigzagHorizontal',  4, true),
-        orderedDitherColorRandomBuilder('zigzagVertical',    8, true),
-        orderedDitherColorRandomBuilder('zigzagHorizontal',  8, true),
-        orderedDitherColorRandomBuilder('zigzagVertical',   16, true),
-        orderedDitherColorRandomBuilder('zigzagHorizontal', 16, true),
+        orderedDitherColorRandomBuilder($patterns['ZIGZAG_VERTICAL_4']),
+        orderedDitherColorRandomBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
+        orderedDitherColorRandomBuilder($patterns['ZIGZAG_VERTICAL_8']),
+        orderedDitherColorRandomBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
+        orderedDitherColorRandomBuilder($patterns['ZIGZAG_VERTICAL_16']),
+        orderedDitherColorRandomBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
         'Ordered (Pattern)',
-        orderedDitherColorBuilder('checkerboard', 2),
-        orderedDitherColorBuilder('cluster', 4),
-        orderedDitherColorBuilder('fishnet', 8),
-        orderedDitherColorBuilder('dot', 4, true),
-        orderedDitherColorBuilder('dot', 8, true),
-        orderedDitherColorBuilder('halftone', 8),
+        orderedDitherColorBuilder($patterns['CHECKERBOARD']),
+        orderedDitherColorBuilder($patterns['CLUSTER']),
+        orderedDitherColorBuilder($patterns['FISHNET']),
+        orderedDitherColorBuilder($patterns['DOT_4']),
+        orderedDitherColorBuilder($patterns['DOT_8']),
+        orderedDitherColorBuilder($patterns['HALFTONE']),
         'Ordered (Pattern/Random)',
-        orderedDitherColorRandomBuilder('checkerboard', 2),
-        orderedDitherColorRandomBuilder('cluster', 4),
-        orderedDitherColorRandomBuilder('fishnet', 8),
-        orderedDitherColorRandomBuilder('dot', 4, true),
-        orderedDitherColorRandomBuilder('dot', 8, true),
-        orderedDitherColorRandomBuilder('halftone', 8),
+        orderedDitherColorRandomBuilder($patterns['CHECKERBOARD']),
+        orderedDitherColorRandomBuilder($patterns['CLUSTER']),
+        orderedDitherColorRandomBuilder($patterns['FISHNET']),
+        orderedDitherColorRandomBuilder($patterns['DOT_4']),
+        orderedDitherColorRandomBuilder($patterns['DOT_8']),
+        orderedDitherColorRandomBuilder($patterns['HALFTONE']),
         'Ordered (Square)',
-        orderedDitherColorBuilder('square', 2, true),
-        orderedDitherColorBuilder('square', 4, true),
-        orderedDitherColorBuilder('square', 8, true),
-        orderedDitherColorBuilder('square', 16, true),
+        orderedDitherColorBuilder($patterns['SQUARE_2']),
+        orderedDitherColorBuilder($patterns['SQUARE_4']),
+        orderedDitherColorBuilder($patterns['SQUARE_8']),
+        orderedDitherColorBuilder($patterns['SQUARE_16']),
         'Ordered (Square/Random)',
-        orderedDitherColorRandomBuilder('square', 2, true),
-        orderedDitherColorRandomBuilder('square', 4, true),
-        orderedDitherColorRandomBuilder('square', 8, true),
-        orderedDitherColorRandomBuilder('square', 16, true),
+        orderedDitherColorRandomBuilder($patterns['SQUARE_2']),
+        orderedDitherColorRandomBuilder($patterns['SQUARE_4']),
+        orderedDitherColorRandomBuilder($patterns['SQUARE_8']),
+        orderedDitherColorRandomBuilder($patterns['SQUARE_16']),
     ];
 }
 
