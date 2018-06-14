@@ -41,9 +41,6 @@ CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
 
 all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
 
-install:
-	npm install
-
 #used when changing between PHP_BUILD_MODES
 reset:
 	rm -f $(JS_APP_OUTPUT)
