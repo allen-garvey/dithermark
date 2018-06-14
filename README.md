@@ -1,6 +1,6 @@
 # Dithermark
 
-
+An interactive, in-browser demonstration of image dithering and color quantization algorithms. Demo at [https://app.dithermark.com](https://app.dithermark.com)
 
 ## Dependencies for building
 
@@ -17,7 +17,8 @@
 
 ## Dependencies for running
 
-* Recent version (circa 2017 or later) of either Google Chrome, Mozilla Firefox, Apple Safari or Microsoft Edge
+* Dithermark requires advanced browser features such as: ES6 syntax, typed arrays, webworkers, fetch api, canvas api, CSS variables and WebGL 1 (optional) and so requires a browser version from roughly the second half of 2017 or later
+* Tested to work on at least Google Chrome 63, Mozilla Firefox 60, Apple Safari 11.1 and Microsoft Edge 16 (may work on earlier versions as well, but has not been tested and is not officially supported)
 
 ## Getting Started
 
