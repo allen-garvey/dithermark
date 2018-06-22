@@ -22,7 +22,7 @@
                     <option v-for="(percentage, index) in canvasFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'canvasFilterValues', 'contrast amount'); ?>
+            <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'canvasFilterValues', 'contrast percentage'); ?>
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <div class="label-align">
@@ -31,7 +31,8 @@
                     <option v-for="(percentage, index) in canvasFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'canvasFilterValues', 'saturation amount'); ?>
+            <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'canvasFilterValues', 'saturation percentage'); ?>
+        </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <div class="label-align">
                 <label for="brightness-dropdown">Brightness</label>
