@@ -137,7 +137,7 @@ App.Fs = (function(){
         if(canvas.toBlob){
             canvas.toBlob((blob)=>{
                 processSaveImageBlob(blob, callback);
-            }, fileType);
+            }, fileType, 1);
         }
         //edge and mobile safari don't support toBlob
         //fetch polyfill based on: https://stackoverflow.com/questions/12168909/blob-from-dataurl
