@@ -133,6 +133,21 @@ App.Fs = (function(){
         URL.revokeObjectURL(objectUrl);
     }
 
+    //based on: https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+    //for edge and mobile safari
+    function canvasToBlobPolyfill(canvas, fileType, callback){
+        setTimeout(()=> {
+            const binaryString = atob(canvas.toDataURL(fileType, 1).split(',')[1]);
+            const length = binaryString.length;
+            const array = new Uint8Array(length);
+
+            for(let i=0;i<length;i++){
+                array[i] = binaryString.charCodeAt(i);
+            }
+            processSaveImageBlob(new Blob([array], {type: fileType}), callback);
+        }, 0);
+    }
+
     function saveImage(canvas, fileType, callback){
         if(canvas.toBlob){
             canvas.toBlob((blob)=>{
@@ -140,13 +155,8 @@ App.Fs = (function(){
             }, fileType, 1);
         }
         //edge and mobile safari don't support toBlob
-        //fetch polyfill based on: https://stackoverflow.com/questions/12168909/blob-from-dataurl
         else{
-            fetch(canvas.toDataURL(fileType)).then((res)=>{
-                return res.blob();
-            }).then((blob)=>{
-                processSaveImageBlob(blob, callback);
-            });
+            canvasToBlobPolyfill(canvas, fileType, callback);
         }
     }
     
