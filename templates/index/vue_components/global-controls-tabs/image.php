@@ -32,6 +32,14 @@
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'canvasFilterValues', 'saturation amount'); ?>
+        <div class="spread-content" v-if="areCanvasFiltersEnabled">
+            <div class="label-align">
+                <label for="brightness-dropdown">Brightness</label>
+                <select id="brightness-dropdown" v-model.number="selectedImageBrightnessIndex">
+                    <option v-for="(percentage, index) in canvasFilterValues" v-bind:value="index">{{`${percentage}%`}}</option>
+                </select>
+            </div>
+            <?php IndexView::cyclePropertyList('selectedImageBrightnessIndex', 'canvasFilterValues', 'brightness percentage'); ?>
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <label for="hue-rotation-range">Hue rotation</label>

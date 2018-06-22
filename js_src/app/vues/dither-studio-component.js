@@ -102,6 +102,7 @@
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
                 selectedImageSaturationIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
                 selectedImageContrastIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
+                selectedImageBrightnessIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
                 hueRotationValue: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
                 showOriginalImage: true,
@@ -195,6 +196,7 @@
                 const filters = {};
                 const contrast = this.canvasFilterValues[this.selectedImageContrastIndex];
                 const saturation = this.canvasFilterValues[this.selectedImageSaturationIndex];
+                const brightness = this.canvasFilterValues[this.selectedImageBrightnessIndex];
                 const hue = Math.floor(this.hueRotationValue);
                 //100% is unchanged
                 if(contrast !== 100){
@@ -202,6 +204,9 @@
                 }
                 if(saturation !== 100){
                     filters['saturation'] = saturation;
+                }
+                if(brightness !== 100){
+                    filters['brightness'] = brightness;
                 }
                 if(hue > 0 && hue < 360){
                     filters['hue'] = hue;
@@ -216,6 +221,9 @@
                 }
                 if('saturation' in filtersRaw){
                     filters.push(`saturate(${filtersRaw.saturation}%)`);
+                }
+                if('brightness' in filtersRaw){
+                    filters.push(`brightness(${filtersRaw.brightness}%)`);
                 }
                 if('hue' in filtersRaw){
                     filters.push(`hue-rotate(${filtersRaw.hue}deg)`);
