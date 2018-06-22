@@ -4,7 +4,6 @@
 
 .image-canvas-supercontainer{
     display: flex;
-    justify-content: center;
     overflow-x: scroll;
     max-width: 100vw;
     &.show-original{
@@ -23,7 +22,6 @@
 
 @include pinned_controls_mq{
     .image-canvas-supercontainer{
-        justify-content: flex-start;
         overflow-x: initial;
     }
     
