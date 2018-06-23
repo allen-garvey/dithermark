@@ -4,6 +4,9 @@
 //technically saturation and hue_rotation produce slightly different results than native canvas filters, but we are not
 //going to worry about that right now, especially because the saturation change arguably looks better than native canvas
 //saturation filter and eventually, all browser will probably support native filters anyway
+//
+//brightness code simplified version of https://stackoverflow.com/questions/1506299/applying-brightness-and-contrast-with-opengl-es
+//u_brightness >=0, where 1 is unchanged
 ?>
 <script type="webgl/fragment-shader" id="webgl-fragment-canvas-filters">
 precision mediump float;
@@ -12,6 +15,7 @@ varying vec2 v_texcoord;
 uniform sampler2D u_texture;
 uniform float u_contrast;
 uniform float u_saturation;
+uniform float u_brightness;
 uniform float u_hue_rotation;
 
 #{{hslFunctions}}
@@ -34,6 +38,8 @@ void main(){
     else {
         adjustedPixel = (adjustedPixel - 0.5) * (1.0 + u_contrast) + 0.5;
     }
+    <?php //brightness ?>
+    adjustedPixel *= u_brightness;
 
     gl_FragColor = vec4(adjustedPixel, pixel.a);
     

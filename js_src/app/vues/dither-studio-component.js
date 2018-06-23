@@ -436,7 +436,7 @@
                     return;
                 }
                 const imageHeader = this.imageHeader;
-                WebGlCanvasFilters.filter(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, filters.contrast, filters.saturation, filters.hue);
+                WebGlCanvasFilters.filter(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, filters.contrast, filters.saturation, filters.brightness,filters.hue);
                 sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                 sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
