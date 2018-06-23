@@ -5,10 +5,7 @@
 .image-canvas-supercontainer{
     display: flex;
     overflow-x: scroll;
-    max-width: 100vw;
-    &.show-original{
-        max-width: calc(100vw - #{$chrome_fullscreen_horizontal_scrollbar_height});
-    }
+    max-width: calc(100vw - #{$chrome_fullscreen_horizontal_scrollbar_height});
 }
 
 .image-canvas-container{
