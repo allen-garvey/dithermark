@@ -10,7 +10,7 @@
     
     Vue.component('bw-dither-section', {
         template: document.getElementById('bw-dither-component'),
-        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
+        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'isColorPickerLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
         created: function(){
             this.resetColorReplace();
         },
@@ -249,7 +249,13 @@
                 this.hasColorPickerChangedTheColor = true,
                 Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, color.hex);
             },
-            colorPickerOk: function(){
+            colorPickerOk: function(selectedColor){
+                //by default palette hex codes are in lower case, but color picker hex is always in upper case
+                const selectedColorHex = selectedColor.hex.toLowerCase();
+                //this will be true when color picker live update is disabled and the color has been changed
+                if(this.colorReplaceColors[this.colorPickerColorIndex] !== selectedColorHex){
+                    Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, selectedColorHex);
+                }
                 this.shouldShowColorPicker = false;
             },
             colorPickerCanceled: function(previousColor){

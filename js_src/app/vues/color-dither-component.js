@@ -13,7 +13,7 @@
     
     Vue.component('color-dither-section', {
         template: document.getElementById('color-dither-component'),
-        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
+        props: ['isWebglEnabled', 'isLivePreviewEnabled', 'isColorPickerLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
         created: function(){
             //select first non-custom palette
             //needs to be done here to initialize palettes correctly
@@ -348,7 +348,13 @@
                 this.hasColorPickerChangedTheColor = true;
                 Vue.set(this.colorsShadow, this.colorPickerColorIndex, color.hex);
             },
-            colorPickerOk: function(color){
+            colorPickerOk: function(selectedColor){
+                //by default palette hex codes are in lower case, but color picker hex is always in upper case
+                const selectedColorHex = selectedColor.hex.toLowerCase();
+                //this will be true when color picker live update is disabled and the color has been changed
+                if(this.colorsShadow[this.colorPickerColorIndex] !== selectedColorHex){
+                    Vue.set(this.colorsShadow, this.colorPickerColorIndex, selectedColorHex);
+                }
                 this.shouldShowColorPicker = false;
             },
             colorPickerCanceled: function(previousColor){

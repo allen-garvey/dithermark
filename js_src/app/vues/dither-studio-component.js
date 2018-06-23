@@ -62,6 +62,7 @@
             this.currentEditorThemeIndex = EditorThemes.indexForKey(this.editorThemes, globalSettings.editorThemeKey);
             this.showOriginalImage = globalSettings.showOriginalImage;
             this.isLivePreviewEnabled = globalSettings.isLivePreviewEnabled;
+            this.isColorPickerLivePreviewEnabledSetting = globalSettings.isColorPickerLivePreviewEnabled;
             this.automaticallyResizeLargeImages = globalSettings.automaticallyResizeLargeImages;
             this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
 
@@ -79,6 +80,7 @@
                 //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
                 loadedImage: null,
                 isLivePreviewEnabled: true,
+                isColorPickerLivePreviewEnabledSetting: false,
                 automaticallyResizeLargeImages: true,
                 isWebglSupported: false,
                 isWebglEnabled: false,
@@ -117,6 +119,9 @@
             };
         },
         computed: {
+            isColorPickerLivePreviewEnabled: function(){
+                return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
+            },
             zoomMin: function(){
                 if(!this.isImageLoaded){
                     return 0;
@@ -243,6 +248,7 @@
                     editorThemeKey: editorThemeKey,
                     isWebglEnabled: this.isWebglEnabled,
                     isLivePreviewEnabled: this.isLivePreviewEnabled,
+                    isColorPickerLivePreviewEnabled: this.isColorPickerLivePreviewEnabledSetting,
                     automaticallyResizeLargeImages: this.automaticallyResizeLargeImages,
                     showOriginalImage: this.showOriginalImage,
                 };

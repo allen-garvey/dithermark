@@ -23,6 +23,7 @@ App.UserSettings = (function(localStorage){
         return {
             isWebglEnabled: true,
             isLivePreviewEnabled: true,
+            isColorPickerLivePreviewEnabled: false,
             automaticallyResizeLargeImages: true,
             showOriginalImage: false,
         };

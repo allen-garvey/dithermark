@@ -19,6 +19,9 @@
             <label>Live update
                 <input type="checkbox" v-model="isLivePreviewEnabled" title="Immediately transform image when controls change"/>
             </label>
+            <label v-if="isLivePreviewEnabled">Color picker live update
+                <input type="checkbox" v-model="isColorPickerLivePreviewEnabledSetting" title="Update colors immediately when selected in color picker"/>
+            </label>
             <label>Shrink large images
                 <input type="checkbox" v-model="automaticallyResizeLargeImages" title="Automatically shrink large images when opening them"/>
             </label>
@@ -27,13 +30,16 @@
             </label>
         </div>
     </fieldset>
-    <div v-show="!isLivePreviewEnabled" class="hint">
+    <div v-if="!isLivePreviewEnabled" class="hint">
         To update the image output, use the &#8220;Dither&#8221; button
     </div>
-    <div v-show="!automaticallyResizeLargeImages" class="hint">
+    <div v-if="isLivePreviewEnabled &amp;&amp; !isColorPickerLivePreviewEnabledSetting" class="hint">
+        Colors won&#8217;t update until you press the color picker OK button
+    </div>
+    <div v-if="!automaticallyResizeLargeImages" class="hint">
         Opening very large images can result in poor performance or browser crashes
     </div>
-    <div v-show="isWebglSupported &amp;&amp; !isWebglEnabled" class="hint">
+    <div v-if="isWebglSupported &amp;&amp; !isWebglEnabled" class="hint">
         With WebGL is disabled some image filters will not be available, and the Yliluoma 1 and Yliluoma 2 dithers will be very slow
     </div>
 </div>

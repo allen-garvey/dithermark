@@ -1,7 +1,7 @@
 (function(Vue, VueColor){
     Vue.component('color-picker', {
         template: document.getElementById('color-picker-component'),
-        props: ['selectedColor'],
+        props: ['selectedColor', 'shouldLiveUpdate'],
         components: {
             'photoshop-picker': VueColor.Photoshop,
         },

@@ -45,7 +45,7 @@
     </div>
     <fieldset>
         <legend>Color palette</legend>
-        <color-picker v-if="shouldShowColorPicker" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="shouldShowColorPicker = false" @cancel="colorPickerCanceled" />
+        <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
         <div class="colors-list-container" @dragover="handleColorDragover">
             <template v-for="(color, i) in colors">
                 <color-input id-prefix="color" :on-click="createColorInputClicked(i)" :is-selected="shouldShowColorPicker &amp;&amp; colorPickerColorIndex===i" :color-index="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" />
