@@ -58,7 +58,7 @@
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             
             //load global settings
-            const globalSettings = UserSettings.getGlobalSettings();
+            const globalSettings = UserSettings.getGlobalSettings(this.areControlsPinned());
             this.currentEditorThemeIndex = EditorThemes.indexForKey(this.editorThemes, globalSettings.editorThemeKey);
             this.showOriginalImage = globalSettings.showOriginalImage;
             this.isLivePreviewEnabled = globalSettings.isLivePreviewEnabled;

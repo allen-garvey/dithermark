@@ -19,11 +19,13 @@ App.UserSettings = (function(localStorage){
         localStorage.setItem(USER_GLOBAL_SETTINGS_KEY, JSON.stringify(globalSettings));
     }
 
-    function defaultGlobalSettings(){
+    function defaultGlobalSettings(areControlsPinned){
         return {
             isWebglEnabled: true,
             isLivePreviewEnabled: true,
-            isColorPickerLivePreviewEnabled: false,
+            //disable color picker live preview for mobile, since it slows down performance
+            //and they can't see the benefits anyway
+            isColorPickerLivePreviewEnabled: areControlsPinned,
             automaticallyResizeLargeImages: true,
             showOriginalImage: false,
         };
@@ -39,9 +41,9 @@ App.UserSettings = (function(localStorage){
         return object;
     }
 
-    function getGlobalSettings(){
+    function getGlobalSettings(areControlsPinned){
         const globalSettings = localStorage.getItem(USER_GLOBAL_SETTINGS_KEY);
-        const defaultSettings = defaultGlobalSettings();
+        const defaultSettings = defaultGlobalSettings(areControlsPinned);
         if(!globalSettings){
             return defaultSettings;
         }
