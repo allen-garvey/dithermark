@@ -405,7 +405,7 @@
                 this.activeDitherSection.imageLoaded(this.imageHeader, true);
                 //this is so mobile users will actually be able to see that an image has loaded
                 //have to use a timer since unsplashAttributionContainer won't be in proper place on initial page load
-                if(getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') != 'fixed'){
+                if(!this.areControlsPinned()){
                     setTimeout(()=>{
                         this.$refs.unsplashAttributionContainer.scrollIntoView({behavior: 'smooth', block: 'start'});
                     }, 1);
@@ -525,6 +525,12 @@
                 }
                 this.zoomImage();
             },
+            areControlsPinned: function(){
+                return getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') === 'fixed';
+            },
+            /**
+             * Zoom stuff
+             */
             zoomImage: function(){
                 let scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.copy(sourceCanvas, sourceCanvasOutput, scaleAmount);
@@ -540,9 +546,8 @@
                 const widthMultiplier = this.showOriginalImage ? 50 : 100;
                 //if controls are pinned, we need to subtract the width of controls
                 let windowWidth = window.innerWidth;
-                const controlsContainer = this.$refs.controlsContainer; 
-                if(getComputedStyle(controlsContainer).getPropertyValue('position') === 'fixed'){
-                    windowWidth -= controlsContainer.offsetWidth;
+                if(this.areControlsPinned()){
+                    windowWidth -= this.$refs.controlsContainer.offsetWidth;
                 }
                 if(this.showOriginalImage){
                     windowWidth -= parseInt(getComputedStyle(this.$refs.transformCanvasOutput).getPropertyValue('margin-left').replace(/[\D]/, ''));
