@@ -171,6 +171,22 @@ function yliluoma2BuilderBase(string $orderedMatrixName, int $dimensions, bool $
 function yliluoma2Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
     return yliluoma2BuilderBase($pattern->jsFuncName(), $pattern->dimensions(), $pattern->addDimensionsToTitle());
 }
+
+/**
+ * Stark Ordered Dither 
+ */
+function starkOrderedDitherBuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
+    $titlePrefix = 'Stark Ordered Dither';
+    $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
+    // $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
+    $webworkerFunc = '';
+    $webglFunc = "ColorDither.createStarkOrderedDither(${dimensions}, '${orderedMatrixName}')";
+    return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
+}
+function starkOrderedDitherBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
+    return starkOrderedDitherBuilderBase($pattern->jsFuncName(), $pattern->dimensions(), $pattern->addDimensionsToTitle());
+}
+
 /**
  * Hue Lightness
  */
@@ -485,6 +501,34 @@ function colorAlgorithmModelBase(): array{
         hueLightnessRandomBuilder($patterns['SQUARE_4']),
         hueLightnessRandomBuilder($patterns['SQUARE_8']),
         hueLightnessRandomBuilder($patterns['SQUARE_16']),
+        'Stark Ordered Dither',
+        starkOrderedDitherBuilder($patterns['BAYER_2']),
+        starkOrderedDitherBuilder($patterns['BAYER_4']),
+        starkOrderedDitherBuilder($patterns['BAYER_16']),
+        starkOrderedDitherBuilder($patterns['HATCH_HORIZONTAL']),
+        starkOrderedDitherBuilder($patterns['HATCH_VERTICAL']),
+        starkOrderedDitherBuilder($patterns['HATCH_RIGHT']),
+        starkOrderedDitherBuilder($patterns['HATCH_LEFT']),
+        starkOrderedDitherBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
+        starkOrderedDitherBuilder($patterns['CROSS_HATCH_VERTICAL']),
+        starkOrderedDitherBuilder($patterns['CROSS_HATCH_RIGHT']),
+        starkOrderedDitherBuilder($patterns['CROSS_HATCH_LEFT']),
+        starkOrderedDitherBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
+        starkOrderedDitherBuilder($patterns['ZIGZAG_VERTICAL_4']),
+        starkOrderedDitherBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
+        starkOrderedDitherBuilder($patterns['ZIGZAG_VERTICAL_8']),
+        starkOrderedDitherBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
+        starkOrderedDitherBuilder($patterns['ZIGZAG_VERTICAL_16']),
+        starkOrderedDitherBuilder($patterns['CHECKERBOARD']),
+        starkOrderedDitherBuilder($patterns['CLUSTER']),
+        starkOrderedDitherBuilder($patterns['FISHNET']),
+        starkOrderedDitherBuilder($patterns['DOT_4']),
+        starkOrderedDitherBuilder($patterns['DOT_8']),
+        starkOrderedDitherBuilder($patterns['HALFTONE']),
+        starkOrderedDitherBuilder($patterns['SQUARE_2']),
+        starkOrderedDitherBuilder($patterns['SQUARE_4']),
+        starkOrderedDitherBuilder($patterns['SQUARE_8']),
+        starkOrderedDitherBuilder($patterns['SQUARE_16']),
         'Yliluoma\'s Ordered Dithering 1',
         yliluoma1Builder($patterns['BAYER_2']),
         yliluoma1Builder($patterns['BAYER_8']),

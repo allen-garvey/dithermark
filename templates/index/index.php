@@ -52,6 +52,7 @@
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-canvas-filters.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-yliluoma1.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-yliluoma2.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-stark-ordered-color-dither.php'); ?>
         <script type="text/javascript" src="<?= JS_VUE_URL; ?>"></script>
         <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>

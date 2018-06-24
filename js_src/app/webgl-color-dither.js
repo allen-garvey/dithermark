@@ -14,8 +14,9 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
     const ADITHER_XOR3 = 11;
     const YLILUOMA1 = 12;
     const YLILUOMA2 = 13;
+    const STARK_ORDERED_DITHER = 14;
     //should be length of algorithm keys above
-    const numAlgoKeys = 14;
+    const numAlgoKeys = 15;
     
     //creates container to lookup something by algorithm and color mode
     function createLookupContainer(){
@@ -54,6 +55,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         const fragmentShaderBaseText = shaderText('webgl-color-dither-base-fshader').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader'));
         const yliluoma1FragmentShaderBase = shaderText('webgl-yliluoma1-color-fshader').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader'));
         const yliluoma2FragmentShaderBase = shaderText('webgl-yliluoma2-color-fshader').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader'));
+        const starkOrderedDitherFragmentShaderBase = shaderText('webgl-stark-ordered-color-dither-fshader').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader'));
         const aDitherDeclaration = shaderText('webgl-arithmetic-dither-fshader-declaration');
         const aDitherBody = shaderText('webgl-arithmetic-dither-color-body');
         const bitwiseFunctionsText = Shader.generateBitwiseFunctionsText();
@@ -125,6 +127,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         fragmentShaderTexts[ADITHER_XOR3] = shaderTextContainer(generateADitherShader(Shader.aDitherXor3Return));
         fragmentShaderTexts[YLILUOMA1] = shaderTextContainer(yliluoma1FragmentShaderBase);
         fragmentShaderTexts[YLILUOMA2] = shaderTextContainer(yliluoma2FragmentShaderBase);
+        fragmentShaderTexts[STARK_ORDERED_DITHER] = shaderTextContainer(starkOrderedDitherFragmentShaderBase);
         
         return fragmentShaderTexts;
     }
@@ -248,6 +251,7 @@ App.WebGlColorDither = (function(WebGl, ColorDitherModes, BayerWebgl, Shader, Ba
         createHueLightnessOrderedDither: orderedDitherBuilder2(HUE_LIGHTNESS_ORDERED_DITHER),
         createYliluoma1OrderedDither: orderedDitherBuilder2(YLILUOMA1),
         createYliluoma2OrderedDither: orderedDitherBuilder2(YLILUOMA2),
+        createStarkOrderedDither: orderedDitherBuilder2(STARK_ORDERED_DITHER),
     };
 
     DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{
