@@ -87,8 +87,6 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             const hueCountValue = saturation * saturation * saturation / 1000000 * ((maxLightnessDiffCubed - lightnessDiff * lightnessDiff * lightnessDiff) / maxLightnessDiffCubed);
             hueMap[hue] = hueMap[hue] + hueCountValue;
         }
-        // console.log('non normalized hues');
-        // console.log(new Float32Array(hueMap));
         // const multiplier = Math.min(512, pixelCount / 360);
         // const multiplier = 1024;
         // const multiplier = 4096;
@@ -102,8 +100,6 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         for(let i=0;i<hueMap.length;i++){
             hueMap[i] = hueClampFunc(hueMap[i] * multiplier);
         }
-        // console.log('normalized hues');
-        // console.log(new Float32Array(hueMap));
         return {
             hue: {
                 map: hueMap,
@@ -953,10 +949,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         
         //saturation
         const saturationStats = hslPopularityMap.saturation;
-        console.log(saturationStats);
         const saturations = logarithmicEdgeDistribution(numColors, saturationStats.min, saturationStats.max);
-        console.log('saturations');
-        console.log(saturations);
         
         //hue
         let huePopularityMapObject = hslPopularityMap.hue;
@@ -981,18 +974,12 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     function perceptualMedianCut5(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const hslPopularityMap = createHslPopularityMap(pixels, colorQuantization.hueClamp);
         const lightnessStats = hslPopularityMap.lightness;
-        console.log(lightnessStats);
         const lightnesses = logarithmicCenterDistribution(numColors, lightnessStats.min, lightnessStats.max, lightnessStats.average);
-        console.log('lightnesses');
-        console.log(lightnesses);
         
         //saturation
         const saturationStats = hslPopularityMap.saturation;
-        console.log(saturationStats);
         const saturationDistributionFunc = saturationStats.average > 30 ? logarithmicEdgeLinearMiddleDistribution : logarithmicEdgeDistribution;
         const saturations = saturationDistributionFunc(numColors, saturationStats.min, saturationStats.max);
-        console.log('saturations');
-        console.log(saturations);
         
         //hue
         let huePopularityMapObject = hslPopularityMap.hue;
