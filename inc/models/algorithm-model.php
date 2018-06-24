@@ -176,7 +176,7 @@ function yliluoma2Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
  * Stark Ordered Dither 
  */
 function starkOrderedDitherBuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    $titlePrefix = 'Stark Ordered Dither';
+    $titlePrefix = 'Stark';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
     // $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
     $webworkerFunc = '';
