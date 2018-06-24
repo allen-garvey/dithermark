@@ -313,9 +313,7 @@ function colorAlgoGroups(): string{
 * Base arrays for algorithms and opt-groups
 */
 function bwAlgorithmModelBase(): array{
-    $patterns = getOrderedMatrixPatterns();
-
-    return [
+    $ret = [
         'Threshold',
         new DitherAlgorithm('Threshold', 'Threshold.image', 'BwDither.threshold'),
         'Random',
@@ -338,75 +336,9 @@ function bwAlgorithmModelBase(): array{
         'Diffusion (Reduced Bleed)',
         errorPropBwDitherBuilder('atkinson'),
         errorPropBwDitherBuilder('garvey'),
-        'Ordered (Bayer)',
-        orderedDitherBwBuilder($patterns['BAYER_2']),
-        orderedDitherBwBuilder($patterns['BAYER_4']),
-        orderedDitherBwBuilder($patterns['BAYER_8']),
-        orderedDitherBwBuilder($patterns['BAYER_16']),
-        'Ordered (Bayer/Random)',
-        orderedDitherBwRandomBuilder($patterns['BAYER_2']),
-        orderedDitherBwRandomBuilder($patterns['BAYER_4']),
-        orderedDitherBwRandomBuilder($patterns['BAYER_8']),
-        orderedDitherBwRandomBuilder($patterns['BAYER_16']),
-        'Ordered (Hatch)',
-        orderedDitherBwBuilder($patterns['HATCH_HORIZONTAL']),
-        orderedDitherBwBuilder($patterns['HATCH_VERTICAL']),
-        orderedDitherBwBuilder($patterns['HATCH_RIGHT']),
-        orderedDitherBwBuilder($patterns['HATCH_LEFT']),
-        'Ordered (Hatch/Random)',
-        orderedDitherBwRandomBuilder($patterns['HATCH_HORIZONTAL']),
-        orderedDitherBwRandomBuilder($patterns['HATCH_VERTICAL']),
-        orderedDitherBwRandomBuilder($patterns['HATCH_RIGHT']),
-        orderedDitherBwRandomBuilder($patterns['HATCH_LEFT']),
-        'Ordered (Crosshatch)',
-        orderedDitherBwBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
-        orderedDitherBwBuilder($patterns['CROSS_HATCH_VERTICAL']),
-        orderedDitherBwBuilder($patterns['CROSS_HATCH_RIGHT']),
-        orderedDitherBwBuilder($patterns['CROSS_HATCH_LEFT']),
-        'Ordered (Crosshatch/Random)',
-        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_HORIZONTAL']),
-        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_VERTICAL']),
-        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_RIGHT']),
-        orderedDitherBwRandomBuilder($patterns['CROSS_HATCH_LEFT']),
-        'Ordered (Zigzag)',
-        orderedDitherBwBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
-        orderedDitherBwBuilder($patterns['ZIGZAG_VERTICAL_4']),
-        orderedDitherBwBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
-        orderedDitherBwBuilder($patterns['ZIGZAG_VERTICAL_8']),
-        orderedDitherBwBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
-        orderedDitherBwBuilder($patterns['ZIGZAG_VERTICAL_16']),
-        'Ordered (Zigzag/Random)',
-        orderedDitherBwRandomBuilder($patterns['ZIGZAG_HORIZONTAL_4']),
-        orderedDitherBwRandomBuilder($patterns['ZIGZAG_VERTICAL_4']),
-        orderedDitherBwRandomBuilder($patterns['ZIGZAG_HORIZONTAL_8']),
-        orderedDitherBwRandomBuilder($patterns['ZIGZAG_VERTICAL_8']),
-        orderedDitherBwRandomBuilder($patterns['ZIGZAG_HORIZONTAL_16']),
-        orderedDitherBwRandomBuilder($patterns['ZIGZAG_VERTICAL_16']),
-        'Ordered (Pattern)',
-        orderedDitherBwBuilder($patterns['CHECKERBOARD']),
-        orderedDitherBwBuilder($patterns['CLUSTER']),
-        orderedDitherBwBuilder($patterns['FISHNET']),
-        orderedDitherBwBuilder($patterns['DOT_4']),
-        orderedDitherBwBuilder($patterns['DOT_8']),
-        orderedDitherBwBuilder($patterns['HALFTONE']),
-        'Ordered (Pattern/Random)',
-        orderedDitherBwRandomBuilder($patterns['CHECKERBOARD']),
-        orderedDitherBwRandomBuilder($patterns['CLUSTER']),
-        orderedDitherBwRandomBuilder($patterns['FISHNET']),
-        orderedDitherBwRandomBuilder($patterns['DOT_4']),
-        orderedDitherBwRandomBuilder($patterns['DOT_8']),
-        orderedDitherBwRandomBuilder($patterns['HALFTONE']),
-        'Ordered (Square)',
-        orderedDitherBwBuilder($patterns['SQUARE_2']),
-        orderedDitherBwBuilder($patterns['SQUARE_4']),
-        orderedDitherBwBuilder($patterns['SQUARE_8']),
-        orderedDitherBwBuilder($patterns['SQUARE_16']),
-        'Ordered (Square/Random)',
-        orderedDitherBwRandomBuilder($patterns['SQUARE_2']),
-        orderedDitherBwRandomBuilder($patterns['SQUARE_4']),
-        orderedDitherBwRandomBuilder($patterns['SQUARE_8']),
-        orderedDitherBwRandomBuilder($patterns['SQUARE_16']),
     ];
+
+    return array_merge($ret, bwOrderedDitherAlgorithmModel());
 }
 
 function colorAlgorithmModelBase(): array{
@@ -494,6 +426,22 @@ function colorOrderedDitherAlgorithmModel(): array{
         if(array_key_exists($patternKey, $yliluoma2PatternKeys)){
             $subArray[] = yliluoma2Builder($patternValue);
         }
+
+        $ret = array_merge($ret, $subArray);
+    }
+
+    return $ret;
+}
+
+function bwOrderedDitherAlgorithmModel(): array{
+    $patterns = getOrderedMatrixPatterns();
+    $ret = [];
+    
+    foreach($patterns as $patternKey => $patternValue){
+        $subArray = [orderedMatrixTitle('', $patternValue->jsFuncName(), $patternValue->dimensions(), false, $patternValue->addDimensionsToTitle())];
+
+        $subArray[] = orderedDitherBwBuilder($patternValue);
+        $subArray[] = orderedDitherBwRandomBuilder($patternValue);
 
         $ret = array_merge($ret, $subArray);
     }
