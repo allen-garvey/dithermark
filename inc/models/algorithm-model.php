@@ -119,7 +119,7 @@ function bayerTitle(string $titlePrefix, int $dimensions, string $suffix=''): st
 }
 function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): string{
     $randomIndicatorSuffix = $isRandom ? ' (R)' : '';
-    if($orderedMatrixName === 'bayer'){
+    if($orderedMatrixName === 'bayer' && !empty($titlePrefix)){
         return bayerTitle($titlePrefix, $dimensions, $randomIndicatorSuffix);
     }
     $matrixTitle = titleizeCamelCase($orderedMatrixName);
@@ -208,7 +208,7 @@ function hueLightnessRandomBuilder(OrderedMatrixPattern $pattern): DitherAlgorit
  * Vanilla Bw ordered dither 
  */
 function orderedDitherBwBuilderBase(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    $titlePrefix = $orderedMatrixName === 'bayer' ? 'Ordered' : '';
+    $titlePrefix = '';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $pascalCase = ucfirst($orderedMatrixName);
     $randomArg = $isRandom ? ', true' : '';
@@ -226,7 +226,7 @@ function orderedDitherBwRandomBuilder(OrderedMatrixPattern $pattern): DitherAlgo
  * Vanilla Color ordered dither 
  */
 function orderedDitherColorBuilderBase(string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): DitherAlgorithm{
-    $titlePrefix = $orderedMatrixName === 'bayer' ? 'Ordered' : '';
+    $titlePrefix = '';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $pascalCase = ucfirst($orderedMatrixName);
     $randomArg = $isRandom ? ', true' : '';
