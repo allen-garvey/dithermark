@@ -410,8 +410,6 @@ function bwAlgorithmModelBase(): array{
 }
 
 function colorAlgorithmModelBase(): array{
-    $patterns = getOrderedMatrixPatterns();
-
     $ret = [
         'Threshold',
         new DitherAlgorithm('Closest Color', 'Threshold.closestColor', 'ColorDither.closestColor'),
