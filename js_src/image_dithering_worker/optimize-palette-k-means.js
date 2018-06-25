@@ -47,7 +47,8 @@ App.OptimizePaletteKMeans = (function(ArrayUtil, ColorDitherModes, ColorDitherMo
     function kMeans(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
         const paletteBuffer = randomInitialPalette(numColors);
         const palette = bufferToPixelArray(paletteBuffer);
-        const distanceFunc = ColorDitherModeFunctions[ColorDitherModes.get('RGB').id].distance;
+        const colorDitherModeKey = colorQuantization.distanceLuma ? 'LUMA' : 'RGB';
+        const distanceFunc = ColorDitherModeFunctions[ColorDitherModes.get(colorDitherModeKey).id].distance;
         const meansBuffer = new Float32Array(4 * numColors);
 
         //TODO, find out what this should be
