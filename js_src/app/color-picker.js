@@ -1,9 +1,9 @@
 //color picker helper functionality
 App.ColorPicker = (function(Pixel, ArrayUtil){
     function parseHex(hex, callback){
-        let r = parseInt(hex.substring(1, 3), 16);
-        let g = parseInt(hex.substring(3, 5), 16);
-        let b = parseInt(hex.substring(5, 7), 16);
+        const r = parseInt(hex.substring(1, 3), 16);
+        const g = parseInt(hex.substring(3, 5), 16);
+        const b = parseInt(hex.substring(5, 7), 16);
         
         callback(r, g, b);
     }
@@ -34,14 +34,14 @@ App.ColorPicker = (function(Pixel, ArrayUtil){
     //takes array of hex colors in form #ffffff
     //and returns single Float32Array or rgb values (no alpha)
     function colorsToVecArray(hexColors, maxColors){
-        let vec = new Float32Array(maxColors * 3);
+        const vec = new Float32Array(maxColors * 3);
         let offset = 0;
         
         hexColors.forEach((hex)=>{
             parseHex(hex, (r, g, b)=>{
-                vec[offset++]   = r / 255.0;
-                vec[offset++] = g / 255.0;
-                vec[offset++] = b / 255.0;
+                vec[offset++]   = r / 255;
+                vec[offset++] = g / 255;
+                vec[offset++] = b / 255;
             });
         });
         
@@ -69,13 +69,13 @@ App.ColorPicker = (function(Pixel, ArrayUtil){
     
     function pixelsToHexArray(pixels, length){
         function numToHex(num){
-            let hex = num.toString(16);
+            const hex = num.toString(16);
             if(hex.length < 2){
                 return '0' + hex;
             }
             return hex;
         }
-        let ret = new Array(length).fill('#000000');
+        const ret = new Array(length).fill('#000000');
         for(let i=0,index=0;i<pixels.length;i+=3,index++){
             ret[index] = `#${numToHex(pixels[i])}${numToHex(pixels[i+1])}${numToHex(pixels[i+2])}`;
         }
@@ -87,11 +87,11 @@ App.ColorPicker = (function(Pixel, ArrayUtil){
         pixelFromHex: pixelFromColorPicker,
         COLOR_REPLACE_DEFAULT_BLACK_VALUE: '#000000',
         COLOR_REPLACE_DEFAULT_WHITE_VALUE: '#ffffff',
-        colorsToVecArray: colorsToVecArray,
-        areColorArraysIdentical: areColorArraysIdentical,
-        randomPalette: randomPalette,
-        prepareForWorker: prepareForWorker,
-        pixelsToHexArray: pixelsToHexArray,
+        colorsToVecArray,
+        areColorArraysIdentical,
+        randomPalette,
+        prepareForWorker,
+        pixelsToHexArray,
     };
     
 })(App.Pixel, App.ArrayUtil);
