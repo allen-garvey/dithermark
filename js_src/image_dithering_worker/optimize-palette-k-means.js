@@ -51,8 +51,10 @@ App.OptimizePaletteKMeans = (function(ArrayUtil, ColorDitherModes, ColorDitherMo
         const distanceFunc = ColorDitherModeFunctions[ColorDitherModes.get(colorDitherModeKey).id].distance;
         const meansBuffer = new Float32Array(4 * numColors);
 
+        progressCallback(10);
         //TODO, find out what this should be
         const maximumIterations = 48;
+        const halfway = Math.floor(maximumIterations / 2);
         for(let currentIteration=0,hasConverged=false;!hasConverged && currentIteration<maximumIterations;currentIteration++){
             meansBuffer.fill(0);
             hasConverged = true;
@@ -70,6 +72,9 @@ App.OptimizePaletteKMeans = (function(ArrayUtil, ColorDitherModes, ColorDitherMo
                 meansBuffer[meansBufferIndexOffset+3]++;
             }
             hasConverged = hasConverged && convergeMeans(paletteBuffer, meansBuffer, numColors);
+            if(currentIteration === halfway){
+                progressCallback(50);
+            }
             if(hasConverged){
                 console.log(`K Means converged at iteration ${currentIteration}`);
             }
