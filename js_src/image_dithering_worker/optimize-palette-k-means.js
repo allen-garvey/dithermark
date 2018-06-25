@@ -1,11 +1,4 @@
-App.OptimizePaletteKMeans = (function(ArrayUtil, ColorDitherModes, ColorDitherModeFunctions){
-    
-    function randomInitialPalette(numColors){
-        return ArrayUtil.create(numColors * 3, ()=>{
-            return Math.round(Math.random() * 255);
-        }, Uint8Array);
-    }
-
+App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions, OptimizePalettePopularity){
     function bufferToPixelArray(buffer){
         const numItems = buffer.length / 3;
         const ret = new Array(numItems)
@@ -42,10 +35,11 @@ App.OptimizePaletteKMeans = (function(ArrayUtil, ColorDitherModes, ColorDitherMo
 
         return hasConverged;
     }
-
     
     function kMeans(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
-        const paletteBuffer = randomInitialPalette(numColors);
+        //initializing palette with spatial average boxed not because it is the best color quantization algorithm, but because it is the fastest
+        //using a better algorithm, such as octree, is slower and doesn't improve results anyway
+        const paletteBuffer = OptimizePalettePopularity.spatialAverageBoxed(pixels, numColors, null, imageWidth, imageHeight);
         const palette = bufferToPixelArray(paletteBuffer);
         const colorDitherModeKey = colorQuantization.distanceLuma ? 'LUMA' : 'RGB';
         const distanceFunc = ColorDitherModeFunctions[ColorDitherModes.get(colorDitherModeKey).id].distance;
@@ -87,4 +81,4 @@ App.OptimizePaletteKMeans = (function(ArrayUtil, ColorDitherModes, ColorDitherMo
     return {
         kMeans
     };
-})(App.ArrayUtil, App.ColorDitherModes, App.ColorDitherModeFunctions);
+})(App.ColorDitherModes, App.ColorDitherModeFunctions, App.OptimizePalettePopularity);
