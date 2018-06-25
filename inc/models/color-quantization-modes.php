@@ -55,6 +55,8 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('RGB Quant (Manhattan)', 'RgbQuant.rgbQuant', ['colorDist' => 'manhattan','method' => 2]),
         new ColorQuantizationMode('RGB Quant (Global)', 'RgbQuant.rgbQuant', ['method' => 1]),
         new ColorQuantizationMode('RGB Quant (Global Manhattan)', 'RgbQuant.rgbQuant', ['colorDist' => 'manhattan','method' => 1]),
+        'K Means',
+        new colorQuantizationMode('K Means', 'kMeans.kMeans'),
         'Spatial Popularity',
         new ColorQuantizationMode('Spatial Popularity (Horizontal)', 'Popularity.popularity'),
         new ColorQuantizationMode('Perceptual Spatial Popularity (Horizontal)', 'Popularity.popularity', ['isPerceptual' => true]),
