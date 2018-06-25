@@ -27,7 +27,7 @@
         },
         data: function(){ 
             return{
-                selectedDitherAlgorithmIndex: 20,
+                selectedDitherAlgorithmIndex: 36,
                 ditherGroups: AlgorithmModel.colorDitherGroups,
                 loadedImage: null,
                 colors: [],
