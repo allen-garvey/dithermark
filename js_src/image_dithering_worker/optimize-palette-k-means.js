@@ -1,4 +1,4 @@
-App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions, OptimizePalettePopularity){
+App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions, OptimizePalettePopularity, OptimizePalettePerceptual){
     function bufferToPixelArray(buffer){
         const numItems = buffer.length / 3;
         const ret = new Array(numItems)
@@ -61,10 +61,13 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
         return histogram; 
     }
     
+    //wide and narrow initialization generally return similar results, the reason why there is an option is because
+    //for mostly black and white images with few colors, wide is better.
+    //also on chrome, wide is generally 2x faster, however on firefox, where perceptual median cut is much slower, narrow is 2x faster
     function kMeans(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
         //initializing palette with spatial average boxed not because it is the best color quantization algorithm, but because it is the fastest
-        //using a better algorithm, such as octree, is slower and doesn't improve results anyway
-        const paletteBuffer = OptimizePalettePopularity.spatialAverageBoxed(pixels, numColors, {}, imageWidth, imageHeight);
+        //using perceptual median cut, while slower, generally results in a speedup since colors converge much quicker
+        const paletteBuffer = colorQuantization.wide ? OptimizePalettePerceptual.medianCut(pixels, numColors, {'hueMix': 1.6}, imageWidth, imageHeight) : OptimizePalettePopularity.spatialAverageBoxed(pixels, numColors, {}, imageWidth, imageHeight);
         const palette = bufferToPixelArray(paletteBuffer);
         const colorDitherModeKey = colorQuantization.distanceLuma ? 'LUMA' : 'RGB';
         const distanceFunc = ColorDitherModeFunctions[ColorDitherModes.get(colorDitherModeKey).id].distance;
@@ -104,4 +107,4 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
     return {
         kMeans
     };
-})(App.ColorDitherModes, App.ColorDitherModeFunctions, App.OptimizePalettePopularity);
+})(App.ColorDitherModes, App.ColorDitherModeFunctions, App.OptimizePalettePopularity, App.OptimizePalettePerceptual);
