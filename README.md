@@ -18,7 +18,7 @@ An interactive, in-browser demonstration of image dithering and color quantizati
 ## Dependencies for running
 
 * Dithermark requires advanced browser features such as: ES6 syntax, typed arrays, webworkers, fetch api, canvas api, CSS variables and WebGL 1 (optional) and so requires a browser version from roughly the second half of 2017 or later
-* Tested to work on at least Google Chrome 63, Mozilla Firefox 60, Apple Safari 11.1 and Microsoft Edge 16 (may work on earlier versions as well, but has not been tested and is not officially supported)
+* Tested to work on at least Google Chrome 63, Mozilla Firefox 59, Apple Safari 11.1 and Microsoft Edge 16 (may work on earlier versions as well, but has not been tested and is not officially supported)
 
 ## Getting Started
 
