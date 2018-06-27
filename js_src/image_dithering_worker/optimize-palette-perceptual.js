@@ -1088,8 +1088,8 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             for(let i=1;i<tonesCount;i++){
                 tones[i] = Math.round(hueFraction * i + tones[0]) % 360;
             }
-            //if tone count is dynamic, we want most popular hue in the middle, rather than at 0, where it will be black
-            const hueStartIndex = isDynamicTonesCount ? Math.floor(hues.length / 2) : 0;
+            //make sure most popular hue is always in the middle, rather than at 0, where it will be black
+            const hueStartIndex = Math.floor(hues.length / 2);
             for(let i=hueStartIndex,toneIndex=0;i<hues.length+hueStartIndex;i++,toneIndex++){
                 hues[i % hues.length] = tones[toneIndex % tonesCount];
             }
