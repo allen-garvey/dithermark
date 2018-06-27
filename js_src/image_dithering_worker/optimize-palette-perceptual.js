@@ -1058,38 +1058,23 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
      * Monochrome quantization stuff
      */
     function monochromeQuantization(pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
-        let lightnessesPopularityMapObject = createPopularityMap(pixels, 256, PixelMath.lightness);
-        let lightnesses = lightnessUniformPopularity(lightnessesPopularityMapObject, numColors);
+        const hslPopularityMap = createHslPopularityMap(pixels);
 
-        let saturationsPopularityMapObject = createPopularityMap(pixels, 101, PixelMath.saturation);
-        let saturations = uniformPopularityBase(saturationsPopularityMapObject, numColors);
+        const lightnesses = lightnessUniformPopularity(hslPopularityMap.lightness.mapObject, numColors);
 
-        let defaultHueFunc = (pixel)=>{
-            let lightness = PixelMath.lightness(pixel);
-            //ignores hues if the lightness too high or low since it will be hard to distinguish between black and white
-            const lightnessFloor = lightnesses[1];
-            const lightnessCeil = lightnesses[lightnesses.length - 2];
-            if(lightness <= lightnessFloor || lightness >= lightnessCeil){
-                return null;
-            }
-            //also ignore hue if saturation is too low to distinguish hue
-            const satuarationFloor = 5;
-            if(PixelMath.saturation(pixel) <= satuarationFloor){
-                return null;
-            }
-            return PixelMath.hue(pixel);
-        };
-        
-        let hueFunc = defaultHueFunc;
-        let huePopularityMapObject = createPopularityMap(pixels, 360, hueFunc);
-        let mostPopularHue = 0;
+        const saturationStats = hslPopularityMap.saturation;
+        const saturationDistributionFunc = saturationStats.average > 30 ? logarithmicEdgeLinearMiddleDistribution : logarithmicEdgeDistribution;
+        const saturations = saturationDistributionFunc(numColors, saturationStats.min, saturationStats.max);
+
         let mostPopularHueCount = 0;
-        huePopularityMapObject.map.forEach((hueCount, hue)=>{
-            if(hueCount > mostPopularHueCount){
-                mostPopularHueCount = hueCount;
-                mostPopularHue = hue;
+        const mostPopularHue = hslPopularityMap.hue.map.reduce((currentMostPopularHueIndex, currentHueCount, currentHueIndex)=>{
+            if(currentHueCount > mostPopularHueCount){
+                mostPopularHueCount = currentHueCount;
+                return currentHueIndex;
             }
-        });
+            return currentMostPopularHueIndex;
+        }, 0);
+
         const hues = new Uint16Array(numColors);
         hues.fill(mostPopularHue);
         
@@ -1099,19 +1084,16 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             const hueFraction = 360 / tonesCount;
             tones[0] = mostPopularHue;
             for(let i=1;i<tonesCount;i++){
-                tones[i] = (hueFraction * i + tones[0]) % 360;
+                tones[i] = Math.round(hueFraction * i + tones[0]) % 360;
             }
-            for(let i=0, tonesIndex=0;i<hues.length;i++,tonesIndex++){
-                tonesIndex = tonesIndex % tonesCount;
-                hues[i] = tones[tonesIndex];
+            for(let i=0;i<hues.length;i++){
+                hues[i] = tones[i % tonesCount];
             }
 
         }
 
-        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
-        let ret = PixelMath.hslArrayToRgb(hsl);
-        return ret;
-        
+        const hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        return PixelMath.hslArrayToRgb(hsl);
     }
     
     
