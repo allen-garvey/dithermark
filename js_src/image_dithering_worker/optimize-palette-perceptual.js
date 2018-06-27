@@ -1078,16 +1078,20 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         const hues = new Uint16Array(numColors);
         hues.fill(mostPopularHue);
         
-        if(colorQuantization.hueCount){
-            const tonesCount = colorQuantization.hueCount;
+        const hueCount = colorQuantization.hueCount;
+        if(hueCount){
+            const isDynamicTonesCount = hueCount < 0;
+            const tonesCount = isDynamicTonesCount ? Math.ceil(numColors / Math.abs(hueCount)) : hueCount;
             const tones = new Uint16Array(tonesCount);
             const hueFraction = 360 / tonesCount;
             tones[0] = mostPopularHue;
             for(let i=1;i<tonesCount;i++){
                 tones[i] = Math.round(hueFraction * i + tones[0]) % 360;
             }
-            for(let i=0;i<hues.length;i++){
-                hues[i] = tones[i % tonesCount];
+            //if tone count is dynamic, we want most popular hue in the middle, rather than at 0, where it will be black
+            const hueStartIndex = isDynamicTonesCount ? Math.floor(hues.length / 2) : 0;
+            for(let i=hueStartIndex,toneIndex=0;i<hues.length+hueStartIndex;i++,toneIndex++){
+                hues[i % hues.length] = tones[toneIndex % tonesCount];
             }
 
         }

@@ -36,6 +36,7 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('Tritone', 'Perceptual.monochrome', ['hueCount' => 3]),
         new ColorQuantizationMode('Quadtone', 'Perceptual.monochrome', ['hueCount' => 4]),
         new ColorQuantizationMode('Hextone', 'Perceptual.monochrome', ['hueCount' => 6]),
+        new ColorQuantizationMode('Monochrome k', 'Perceptual.monochrome', ['hueCount' => -1]),
         'Perceptual Median Cut 2',
         new ColorQuantizationMode('Perceptual Median Cut 5 (Balanced)', 'Perceptual.medianCut5', ['hueMix' => 2, 'hueClamp' => true]),
         new ColorQuantizationMode('Perceptual Median Cut 5 (Narrow)', 'Perceptual.medianCut5', ['hueMix' => 2, 'hueFilterLog' => 8]),
