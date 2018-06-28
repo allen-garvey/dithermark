@@ -36,6 +36,17 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
 
     function sortOnLongestAxis(pixels){
         const sortIndex = findLongestAxis(pixels);
+        const secondarySortIndex = sortIndex === 0 ? 2 : sortIndex - 1; 
+        return pixels.sort((a, b)=>{
+            return a[sortIndex] - b[sortIndex] || a[secondarySortIndex] - b[secondarySortIndex];
+        });
+    }
+
+    //despite being a more effecient algorithm as well as
+    //being a stable sort, counting sort is actually slower than
+    //sort(), so only use it for median, where we need a stable sort
+    function sortOnLongestAxis2(pixels){
+        const sortIndex = findLongestAxis(pixels);
         return Util.countingSort(pixels, (pixel)=>{
             return pixel[sortIndex];
         });
@@ -108,18 +119,20 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     function medianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         //find nearest power of 2 that is greater than the number of colors
         const numCuts = Math.pow(2, Math.ceil(Math.log2(numColors)));
+        const sortFunc = colorQuantization.isMedian ? sortOnLongestAxis2 : sortOnLongestAxis;
 
         let cuts = [Util.createPixelArray(pixels)];
+        const cutsLengthHalfDone = numCuts / 4;
         //approximately 10% done
         progressCallback(10);
         while(cuts.length != numCuts){
             //approximately 50% done here
-            if(cuts.length === numCuts / 4){
+            if(cuts.length === cutsLengthHalfDone){
                 progressCallback(50);
             }
             const newCuts = [];
             cuts.forEach((cut)=>{
-                cut = sortOnLongestAxis(cut);
+                cut = sortFunc(cut);
                 const half = Math.ceil(cut.length / 2);
                 newCuts.push(cut.slice(0, half));
                 newCuts.push(cut.slice(half, cut.length));
@@ -131,7 +144,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         if(colorQuantization.isMedian){
             //only have to sort 1 last time if we are taking the median, since for average the order doesn't matter
             extractColorFunc = (cut) =>{
-                return pixelArrayMedian(sortOnLongestAxis(cut));
+                return pixelArrayMedian(sortFunc(cut));
             };
         }
         let colors = cuts.map((cut)=>{
