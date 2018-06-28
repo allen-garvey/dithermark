@@ -38,39 +38,12 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return normalizePixel32Transparency(pixel32);
     }
 
-    function pixelHash(r, g, b){
-        return `${r}-${g}-${b}`;
-    }
-    //avoid having too many perceptually identical shades of black or white
-    function perceptualPixelHash(r, g, b){
-        const blackThreshold = 46;
-        const whiteThreshold = 240;
-        if(Math.max(r,g,b) < blackThreshold){
-            return '0-0-0';
-        }
-        if(Math.min(r,g,b) > whiteThreshold){
-            return '255-255-255';
-        }
-        return pixelHash(r, g, b);
-    }
     function incrementMap(map, key){
         let value = 1;
         if(map.has(key)){
             value = map.get(key) + 1;
         }
         map.set(key, value);
-    }
-    function createPopularityMap(pixels, pixelHashFunc){
-        const popularityMap = new Map();
-
-        for(let i=0;i<pixels.length;i+=4){
-            //ignore transparent pixels
-            if(pixels[i+3] === 0){
-                continue;
-            }
-            incrementMap(popularityMap, pixelHashFunc(pixels[i], pixels[i+1], pixels[i+2]));
-        }
-        return popularityMap;
     }
 
     function getNewUniqueValueOrDefault(set, array){
@@ -81,15 +54,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
             }
         }
         return array[0];
-    }
-
-    function addColorToColors(colorKey, colors, index){
-        const colorSplit = colorKey.split('-');
-        const startIndex = index * 3;
-
-        colors[startIndex] = parseInt(colorSplit[0]);
-        colors[startIndex+1] = parseInt(colorSplit[1]);
-        colors[startIndex+2] = parseInt(colorSplit[2]);
     }
 
     function addColor32ToColors(color32, colors, index){
@@ -227,7 +191,9 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     function spatialPopularityBoxed(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
-        const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixelHash : pixelHash;
+        const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixel32Hash : normalizePixel32Transparency;
+        const pixelArray = new Uint32Array(pixels.buffer);
+        const pixelBuffer = new Uint8Array(4);
         const numBoxesPerDimension = Math.floor(Math.sqrt(numColors));
         const rowsWithExtraHorizontalBoxes = numColors - numBoxesPerDimension * numBoxesPerDimension; 
         const verticalFraction = Math.round(imageHeight / numBoxesPerDimension);
@@ -243,20 +209,20 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
                 const popularityMap = new Map();
                 for(let y=yBase;y<yLimit;y++){
                     for(let x=xBase;x<xLimit;x++){
-                        const pixelIndex = x * 4 + y * imageWidth * 4;
-                        const pixel = pixels.subarray(pixelIndex, pixelIndex+4);
+                        const pixelIndex = x + y * imageWidth;
+                        const pixel32 = pixelArray[pixelIndex];
                         //ignore transparent pixels
-                        if(pixel[3] === 0){
+                        if((pixel32 & 0xff000000) >> 24 === 0){
                             continue;
                         }
-                        incrementMap(popularityMap, pixelHashFunc(pixel[0], pixel[1], pixel[2]));
+                        incrementMap(popularityMap, pixelHashFunc(pixel32, pixelBuffer));
                     }
                 }
                 const sortedValues = [...popularityMap.keys()].sort((a, b)=>{
                     return popularityMap.get(b) - popularityMap.get(a);
                 });
                 const colorKey = getNewUniqueValueOrDefault(colorsSet, sortedValues);
-                addColorToColors(colorKey, retColors, colorIndex);
+                addColor32ToColors(colorKey, retColors, colorIndex);
             }
         }
         return retColors;
