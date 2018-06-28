@@ -217,7 +217,6 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
     function octree(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
         const octreeQuantizer = new OctreeQuantizer();
-        const start = performance.now();
         const half = Math.floor(pixels.length / 8) * 4;
         //split for loop in half for the sake of progress callback
         for(let i=0;i<2;i++){
