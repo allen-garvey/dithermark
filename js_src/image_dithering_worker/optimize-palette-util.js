@@ -79,6 +79,29 @@ App.OptimizePaletteUtil = (function(PixelMath, ArrayUtil){
         return flattenArray(valueMap);
     }
 
+    //sorts Uint8 or Uint8Clamped array of pixels by pixelValueFunc
+    //32bit pixel manipulation from rgb quant
+    function sortPixelBuffer(pixels, pixelValueFunc){
+        const loadPixelBuffer = (color32, pixelBuffer)=>{
+                pixelBuffer[0] = (color32 & 0xff);
+                pixelBuffer[1] = (color32 & 0xff00) >> 8;
+                pixelBuffer[2] = (color32 & 0xff0000) >> 16;
+                pixelBuffer[3] = (color32 & 0xff000000) >> 24;
+        };
+
+        const pixel1Buffer = new Uint8Array(4);
+        const pixel2Buffer = new Uint8Array(4);
+        const buf32 = new Uint32Array(pixels.buffer);
+        buf32.sort((a32, b32)=>{
+            loadPixelBuffer(a32, pixel1Buffer);
+            loadPixelBuffer(b32, pixel2Buffer);
+            return pixelValueFunc(pixel1Buffer) - pixelValueFunc(pixel2Buffer);
+        });
+
+        const ret = new Uint8Array(buf32.buffer);
+        return ret;
+    }
+
 
     return {
         filterTransparentPixels,
@@ -86,5 +109,6 @@ App.OptimizePaletteUtil = (function(PixelMath, ArrayUtil){
         pixelArrayToBuffer,
         countingSort,
         countingSortPixels,
+        sortPixelBuffer,
     };
 })(App.PixelMath, App.ArrayUtil);

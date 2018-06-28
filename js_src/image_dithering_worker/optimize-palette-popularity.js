@@ -248,27 +248,30 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     }
 
     //Divides an image into zones based on sort function, and finds the average of each color in each zone
-    function sortedAverage(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc, valueRange){
+    function sortedAverage(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
-        const pixelArray = Util.countingSortPixels(pixels, pixelValueFunc, valueRange);
+        // const pixelArray = Util.countingSortPixels(pixels, pixelValueFunc, valueRange);
+        const pixelArray = Util.sortPixelBuffer(pixels, pixelValueFunc);
+        //it seems redundant to divide by 4 only to multiply it by 4 later, but that is because
+        //we need to make sure we only select whole pixels, and not the middles of pixels
         const fraction = pixelArray.length / (numColors * 4);
         const pixelTransformFunc = isPerceptual ? perceptualPixelTransform : identity;
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
             const endIndex = Math.min(Math.round(i * fraction) * 4, pixelArray.length);
-            for(let j=previousEndIndex;j<endIndex;j++){
-                const pixel = pixelTransformFunc(pixelArray[j]);
+            for(let j=previousEndIndex;j<endIndex;j+=4){
+                const pixel = pixelTransformFunc(pixelArray.subarray(j, j+4));
                 for(let p=0;p<3;p++){
                     averageBuffer[p] = averageBuffer[p] + pixel[p];
                 }
             }
             const colorBaseIndex = (i - 1) * 3;
+            const numPixels = (endIndex - previousEndIndex) / 4;
             for(let p=0;p<3;p++){
-                retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / (endIndex - previousEndIndex)); 
-                averageBuffer[p] = 0;
+                retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / numPixels); 
             }
-
+            averageBuffer.fill(0);
             previousEndIndex = endIndex;
         }
         return retColors;
@@ -276,16 +279,16 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
     //Divides an image into numColors lightness zones, and finds the average color in each zone
     function lightnessAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.lightness, 256);
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.lightness);
     }
 
     //Divides an image into numColors hue zones, and finds the average color in each zone
     function hueAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue, 360);
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue);
     }
 
     function lumaAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.luma, 256);
+        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.luma);
     }
 
     return {
