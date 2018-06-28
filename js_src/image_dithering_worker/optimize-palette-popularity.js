@@ -287,10 +287,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue);
     }
 
-    function lumaAverage(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedAverage(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.luma);
-    }
-
     return {
         popularity,
         lightnessPopularity,
@@ -299,7 +295,6 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         spatialAverageBoxed,
         lightnessAverage,
         hueAverage,
-        lumaAverage,
         spatialPopularityBoxed,
     };
 })(App.PixelMath, App.OptimizePaletteUtil);

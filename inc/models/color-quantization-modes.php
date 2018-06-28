@@ -78,8 +78,6 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('Spatial Average (Boxed)', 'Popularity.spatialAverageBoxed'),
         new ColorQuantizationMode('Lightness Average', 'Popularity.lightnessAverage'),
         new ColorQuantizationMode('Perceptual Lightness Average', 'Popularity.lightnessAverage', ['isPerceptual' => true]),
-        new ColorQuantizationMode('Luma Average', 'Popularity.lumaAverage'),
-        new ColorQuantizationMode('Perceptual Luma Average', 'Popularity.lumaAverage', ['isPerceptual' => true]),
         new ColorQuantizationMode('Hue Average', 'Popularity.hueAverage'),
         new ColorQuantizationMode('Perceptual Hue Average', 'Popularity.hueAverage', ['isPerceptual' => true]),
         'Octree',
