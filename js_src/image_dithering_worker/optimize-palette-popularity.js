@@ -170,7 +170,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
                             continue;
                         }
                         for(let p=0;p<3;p++){
-                            averageBuffer[p] = averageBuffer[p] + pixel[p];
+                            averageBuffer[p] += pixel[p];
                         }
                         length++;
                     }
@@ -178,8 +178,8 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
                 const colorBaseIndex = colorIndex * 3;
                 for(let p=0;p<3;p++){
                     retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / length); 
-                    averageBuffer[p] = 0;
                 }
+                averageBuffer.fill(0);
 
             }
         }
