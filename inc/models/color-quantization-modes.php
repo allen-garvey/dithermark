@@ -43,7 +43,6 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('Artiquant 3 (Narrow)', 'Perceptual.medianCut5', ['hueMix' => 2, 'hueFilterLog' => 8]),
         new ColorQuantizationMode('Artiquant 3 (Vibrant)', 'Perceptual.medianCut4', ['hueMix' => 2, 'hueClamp' => true]),
         new ColorQuantizationMode('Artiquant 3 (Wide)', 'Perceptual.medianCut3', ['hueMix' => 2, 'isVibrant' => false]),
-        new ColorQuantizationMode('Perceptual Median Cut 2', 'Perceptual.medianCut2', ['hueMix' => 1.8, 'isVibrant' => true]),
         'Artiquant 2',
         new ColorQuantizationMode('Artiquant 2 (Balanced)', 'Perceptual.medianCut', ['hueMix' => 1.6]),
         new ColorQuantizationMode('Artiquant 2 (Narrow)', 'Perceptual.medianCut', ['hueMix' => 2]),
