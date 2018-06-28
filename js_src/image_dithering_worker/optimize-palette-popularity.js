@@ -2,21 +2,14 @@
  * Color quantization popularity algorithms
 */
 App.OptimizePalettePopularity = (function(PixelMath, Util){
-    function rotatePixels90Degrees(pixels, imageWidth, imageHeight){
-        //not really necessary to copy alpha values as well, but this complicates
-        //the logic for the horizontal case, so we will leave them in
-        const length = pixels.length;
-        const ret = new Uint8Array(length);
+    function rotatePixels32Clockwise(pixels32, imageWidth, imageHeight){
+        const length = pixels32.length;
+        const ret = new Uint32Array(length);
 
-        const rowPixelLength = imageWidth * 4;
         let retIndex = 0;
-        for(let x=0;x<rowPixelLength;x+=4){
-            for(let y=0;y<length;y+=rowPixelLength){
-                const offset = y+x;
-                ret[retIndex++] = pixels[offset];
-                ret[retIndex++] = pixels[offset+1];
-                ret[retIndex++] = pixels[offset+2];
-                ret[retIndex++] = pixels[offset+3];
+        for(let x=0;x<imageWidth;x++){
+            for(let y=0;y<length;y+=imageWidth){
+                ret[retIndex++] = pixels32[x+y];
             }
         }
         return ret;
@@ -111,24 +104,30 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     function popularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
-        const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixelHash : pixelHash;
+        const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixel32Hash : normalizePixel32Transparency;
+        let pixelArray = new Uint32Array(pixels.buffer);
         if(colorQuantization.isVertical){
-            pixels = rotatePixels90Degrees(pixels, imageWidth, imageHeight);
+            pixelArray = rotatePixels32Clockwise(pixelArray, imageWidth, imageHeight);
         }
-        //remove transparent pixels
-        const pixelsFiltered = Util.filterTransparentPixels(pixels);
-        const fraction = pixelsFiltered.length / (numColors * 4);
+        const pixelBuffer = new Uint8Array(4);
+        const fraction = pixelArray.length / numColors;
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
-            const endIndex = Math.round(i * fraction) * 4;
-            //don't need to check if endIndex is too large, since subarray will just return as much as it can if it is
-            const pixelSubarray = pixelsFiltered.subarray(previousEndIndex, endIndex);
-            const popularityMap = createPopularityMap(pixelSubarray, pixelHashFunc);
+            const endIndex = Math.min(Math.round(i * fraction), pixelArray.length);
+            const popularityMap = new Map();
+            for(let j=previousEndIndex;j<endIndex;j++){
+                const pixel32 = pixelArray[j];
+                //ignore transparent pixels
+                if((pixel32 & 0xff000000) >> 24 === 0){
+                    continue;
+                }
+                incrementMap(popularityMap, pixelHashFunc(pixel32, pixelBuffer));
+            }
             const sortedValues = [...popularityMap.keys()].sort((a, b)=>{
                 return popularityMap.get(b) - popularityMap.get(a);
             });
             const colorKey = getNewUniqueValueOrDefault(colorsSet, sortedValues);
-            addColorToColors(colorKey, retColors, i-1);
+            addColor32ToColors(colorKey, retColors, i-1);
 
             previousEndIndex = endIndex;
         }
