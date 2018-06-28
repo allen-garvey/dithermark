@@ -22,6 +22,29 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return ret;
     }
 
+    //set pixel alpha value to 255
+    function normalizePixel32Transparency(pixel32, _pixelBuffer){
+        return (pixel32 | 0xff000000);
+    }
+
+    function perceptualPixel32Hash(pixel32, pixelBuffer){
+        const blackThreshold = 46;
+        const whiteThreshold = 240;
+
+        pixelBuffer[0] = (pixel32 & 0xff);
+        pixelBuffer[1] = (pixel32 & 0xff00) >> 8;
+        pixelBuffer[2] = (pixel32 & 0xff0000) >> 16;
+
+        if(Math.max(pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]) < blackThreshold){
+            return 0xff000000;
+        }
+        if(Math.min(pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]) > whiteThreshold){
+            return 0xffffffff;
+        }
+
+        return normalizePixel32Transparency(pixel32);
+    }
+
     function pixelHash(r, g, b){
         return `${r}-${g}-${b}`;
     }
@@ -76,6 +99,13 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         colors[startIndex+2] = parseInt(colorSplit[2]);
     }
 
+    function addColor32ToColors(color32, colors, index){
+        const startIndex = index * 3;
+        colors[startIndex] = (color32 & 0xff);
+        colors[startIndex+1] = (color32 & 0xff00) >> 8;
+        colors[startIndex+2] = (color32 & 0xff0000) >> 16;
+    }
+
     //divides an image into numColors horizontal or vertical strips, and finds the most
     //popular color in each strip
     function popularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
@@ -106,26 +136,31 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     }
 
     //Divides an image into zones based on sort function, and finds the most popular color in each zome
-    function sortedPopularity(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc, valueRange){
+    function sortedPopularity(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
-        const pixelHashFunc = isPerceptual ? perceptualPixelHash : pixelHash;
-        const pixelArray = Util.countingSortPixels(pixels, pixelValueFunc, valueRange);
+        const pixelHashFunc = isPerceptual ? perceptualPixel32Hash : normalizePixel32Transparency;
+        const pixelArray = Util.sortPixelBuffer(pixels, pixelValueFunc);
+        const pixelBuffer = new Uint8Array(4);
 
-        const fraction = pixelArray.length / (numColors * 4);
+        const fraction = pixelArray.length / numColors;
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
-            const endIndex = Math.min(Math.round(i * fraction) * 4, pixelArray.length);
+            const endIndex = Math.min(Math.round(i * fraction), pixelArray.length);
             const popularityMap = new Map();
             for(let j=previousEndIndex;j<endIndex;j++){
-                const pixel = pixelArray[j];
-                incrementMap(popularityMap, pixelHashFunc(pixel[0], pixel[1], pixel[2]));
+                const pixel32 = pixelArray[j];
+                //ignore transparent pixels
+                if((pixel32 & 0xff000000) >> 24 === 0){
+                    continue;
+                }
+                incrementMap(popularityMap, pixelHashFunc(pixel32, pixelBuffer));
             }
             const sortedValues = [...popularityMap.keys()].sort((a, b)=>{
                 return popularityMap.get(b) - popularityMap.get(a);
             });
             const colorKey = getNewUniqueValueOrDefault(colorsSet, sortedValues);
-            addColorToColors(colorKey, retColors, i-1);
+            addColor32ToColors(colorKey, retColors, i-1);
 
             previousEndIndex = endIndex;
         }
@@ -134,16 +169,16 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
     //Divides an image into numColors lightness zones, and finds the most popular color in each zone
     function lightnessPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.lightness, 256);
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.lightness);
     }
 
     function lumaPopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.luma, 256);
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.luma);
     }
 
     //Divides an image into numColors hue zones, and finds the most popular color in each zone
     function huePopularity(pixels, numColors, colorQuantization, imageWidth, imageHeight){
-        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue, 360);
+        return sortedPopularity(pixels, numColors, imageWidth, imageHeight, colorQuantization.isPerceptual, PixelMath.hue);
     }
 
     //Divides image into boxes, and finds average color in each box
@@ -251,8 +286,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     function sortedAverage(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
-        // const pixelArray = Util.countingSortPixels(pixels, pixelValueFunc, valueRange);
-        const pixelArray = Util.sortPixelBuffer(pixels, pixelValueFunc);
+        const pixelArray = Util.pixelBuffer32ToPixelBuffer8(Util.sortPixelBuffer(pixels, pixelValueFunc));
         //it seems redundant to divide by 4 only to multiply it by 4 later, but that is because
         //we need to make sure we only select whole pixels, and not the middles of pixels
         const fraction = pixelArray.length / (numColors * 4);

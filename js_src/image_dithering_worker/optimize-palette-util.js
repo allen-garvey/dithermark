@@ -91,15 +91,18 @@ App.OptimizePaletteUtil = (function(PixelMath, ArrayUtil){
 
         const pixel1Buffer = new Uint8Array(4);
         const pixel2Buffer = new Uint8Array(4);
-        const buf32 = new Uint32Array(pixels.buffer);
-        buf32.sort((a32, b32)=>{
+        const buffer32 = new Uint32Array(pixels.buffer);
+        buffer32.sort((a32, b32)=>{
             loadPixelBuffer(a32, pixel1Buffer);
             loadPixelBuffer(b32, pixel2Buffer);
             return pixelValueFunc(pixel1Buffer) - pixelValueFunc(pixel2Buffer);
         });
 
-        const ret = new Uint8Array(buf32.buffer);
-        return ret;
+        return buffer32;
+    }
+
+    function pixelBuffer32ToPixelBuffer8(buffer32){
+        return new Uint8Array(buffer32.buffer);
     }
 
 
@@ -110,5 +113,6 @@ App.OptimizePaletteUtil = (function(PixelMath, ArrayUtil){
         countingSort,
         countingSortPixels,
         sortPixelBuffer,
+        pixelBuffer32ToPixelBuffer8,
     };
 })(App.PixelMath, App.ArrayUtil);
