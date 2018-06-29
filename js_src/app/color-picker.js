@@ -48,18 +48,6 @@ App.ColorPicker = (function(Pixel, ArrayUtil){
         
         return vec;
     }
-
-    function randomHexColor(){
-        //left pad based on: https://stackoverflow.com/questions/9909038/formatting-hexadecimal-number-in-javascript
-        function randomHex(){
-            return ('0' + Math.round(Math.random() * 255).toString(16)).substr(-2);
-        }
-        return `#${randomHex()}${randomHex()}${randomHex()}`;
-    }
-    
-    function randomPalette(numColors){
-        return ArrayUtil.create(numColors, randomHexColor);
-    }
     
     //based on: https://stackoverflow.com/questions/7837456/how-to-compare-arrays-in-javascript?page=1&tab=votes#tab-top
     //note will not work on nested arrays/objects or NaN
@@ -89,7 +77,6 @@ App.ColorPicker = (function(Pixel, ArrayUtil){
         COLOR_REPLACE_DEFAULT_WHITE_VALUE: '#ffffff',
         colorsToVecArray,
         areColorArraysIdentical,
-        randomPalette,
         prepareForWorker,
         pixelsToHexArray,
     };

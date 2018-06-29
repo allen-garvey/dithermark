@@ -53,15 +53,14 @@
         </div>
         <div class="spread-content palette-buttons-container">
             <div>
-                <button class="btn btn-default btn-sm" @click="randomizePalette" title="Set color palette to random colors">Randomize</button>
                 <?php if(ENABLE_PRINT_COLOR_PALETTE_BUTTON): ?>
                     <print-palette-button :colors="colors" />
                 <?php endif; ?>
-                <button class="btn btn-default btn-sm" v-show="currentPalette.isSaved" @click="showRenamePalette">Rename</button>
+                <button class="btn btn-danger btn-sm" v-show="currentPalette.isSaved" @click="deletePalette">Delete</button>
             </div>
             <?php //these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both) ?>
             <button class="btn btn-primary btn-sm" v-show="currentPalette.isCustom" @click="savePalette">Save</button>
-            <button class="btn btn-danger btn-sm" v-show="currentPalette.isSaved" @click="deletePalette">Delete</button>
+            <button class="btn btn-default btn-sm" v-show="currentPalette.isSaved" @click="showRenamePalette">Rename</button>
         </div>
     </fieldset>
     <fieldset>

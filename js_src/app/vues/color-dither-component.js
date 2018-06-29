@@ -272,9 +272,6 @@
             isOptimizePaletteKeyPending: function(key){
                 return typeof this.pendingColorQuantizations[key] === 'number';
             },
-            randomizePalette: function(){
-                this.colorsShadow = ColorPicker.randomPalette(this.numColorsMax);
-            },
             savePalette: function(){
                 this.palettes.push(Palettes.generateUserSavedPalette(this.colors.slice(), ++numPalettesSaved));
                 this.selectedPaletteIndex = this.palettes.length - 1;
