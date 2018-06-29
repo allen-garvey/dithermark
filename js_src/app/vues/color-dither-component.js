@@ -212,7 +212,7 @@
                     case WorkerHeaders.OPTIMIZE_PALETTE:
                         const colors = messageBody.subarray(1, messageBody.length);
                         const optimizePaletteKey = optimizePaletteMemorizationKey(colors.length / 3, messageBody[0]);
-                        this.optimizePaletteMessageReceived(colors, optimizePaletteKey);
+                        this.optimizePaletteMessageReceived(colors, optimizePaletteKey, !this.colorQuantizationModes[messageBody[0]].shouldCache);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS:
                         const key = optimizePaletteMemorizationKey(messageBody[1], messageBody[0]);
@@ -228,18 +228,21 @@
                         break;
                 }
             },
-            optimizePaletteMessageReceived: function(colors, key){
+            optimizePaletteMessageReceived: function(colors, key, shouldCache){
                 //avoids race condition where image is changed before color quantization returns
                 if(!this.isOptimizePaletteKeyPending(key)){
                     return;
                 }
-                optimizedPalettes[key] = ColorPicker.pixelsToHexArray(colors, this.numColorsMax);
+                const colorsHexArray = ColorPicker.pixelsToHexArray(colors, this.numColorsMax);
+                if(shouldCache){
+                    optimizedPalettes[key] = colorsHexArray;
+                }
                 //have to use Vue.set for object keys
                 Vue.set(this.pendingColorQuantizations, key, false);
                 //avoids race conditions when color quantization mode or number of colors is changed before results return
                 const currentKey = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
                 if(key === currentKey){
-                    this.colorsShadow = optimizedPalettes[key].slice();
+                    this.colorsShadow = colorsHexArray.slice();
                 }
             },
             histogramWorkerMessageReceived: function(huePercentages){

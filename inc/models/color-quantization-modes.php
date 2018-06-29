@@ -4,15 +4,21 @@ class ColorQuantizationMode {
     protected $title; //display title for user, and for timer
     protected $algorithmName; //name of optimize-palette function
     protected $options; //additional key-values to be stored on model and passed to function
+    protected $shouldResultsBeCached; //false if algorithm is non-deterministic (random) so results won't be cached
 
-    function __construct(string $title, string $algorithmName, array $options=[]) {
+    function __construct(string $title, string $algorithmName, array $options=[], bool $shouldResultsBeCached=true){
         $this->title = $title;
         $this->algorithmName = $algorithmName;
         $this->options = $options;
+        $this->shouldResultsBeCached = $shouldResultsBeCached;
     }
 
     public function getTitle(): string{
         return $this->title;
+    }
+
+    public function getShouldResultsBeCached(): bool{
+        return $this->shouldResultsBeCached;
     }
 
     public function toArrayForWorker(): array{
@@ -139,7 +145,14 @@ function colorQuantizationGroups(): array{
 
 function colorQuantizationModesApp(): array{
     return array_map(function($mode){
-        return $mode->getTitle();
+        $ret = [
+            'title' => $mode->getTitle(),
+        ];
+        if(!$mode->getShouldResultsBeCached()){
+            $ret['disableCache'] = true;
+        }
+
+        return $ret;
     }, colorQuantizationModes());
 }
 
