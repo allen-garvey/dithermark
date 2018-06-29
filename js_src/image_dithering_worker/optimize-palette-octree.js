@@ -63,31 +63,31 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
         }, this.pixelCount);
     };
 
-    OctreeNode.prototype.addColor = function(color, level, parent){
+    OctreeNode.prototype.addColor = function(color32, level, parent){
         if(level >= MAX_DEPTH){
-            color.forEach((value, i)=>{
-                this.color[i] = this.color[i] + value;
-            });
+            this.color[0] += (color32 & 0xff);
+            this.color[1] += (color32 & 0xff00) >> 8;
+            this.color[2] += (color32 & 0xff0000) >> 16;
             this.pixelCount++;
             return;
         }
-        const index = this.getColorIndexForLevel(color, level);
+        const index = this.getColorIndexForLevel(color32, level);
         if(!this.children[index]){
             this.children[index] = new OctreeNode(level, parent);
         }
-        this.children[index].addColor(color, level+1, parent);
+        this.children[index].addColor(color32, level+1, parent);
     };
 
-    OctreeNode.prototype.getColorIndexForLevel = function(color, level){
+    OctreeNode.prototype.getColorIndexForLevel = function(color32, level){
         let index = 0;
         const mask = 128 >> level;
-        if(color[0] & mask){
+        if((color32 & 0xff) & mask){
             index = 4;
         }
-        if(color[1] & mask){
+        if(((color32 & 0xff00) >> 8) & mask){
             index |= 2;
         }
-        if(color[2] & mask){
+        if(((color32 & 0xff0000) >> 16) & mask){
             index |= 1;
         }
         
@@ -216,18 +216,19 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     }
 
     function octree(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
+        const pixelArray = new Uint32Array(pixels.buffer);
         const octreeQuantizer = new OctreeQuantizer();
-        const half = Math.floor(pixels.length / 8) * 4;
+        const half = Math.floor(pixelArray.length / 2);
         //split for loop in half for the sake of progress callback
         for(let i=0;i<2;i++){
-            const length = i === 0 ? half : pixels.length;
-            for(let j=i*half;j<length;j+=4){
-                const pixel = pixels.subarray(j, j+4);
+            const length = i === 0 ? half : pixelArray.length;
+            for(let j=i*half;j<length;j++){
+                const color32 = pixelArray[j];
                 //ignore transparent pixels
-                if(pixel[3] === 0){
+                if((color32 & 0xff000000) >> 24 === 0){
                     continue;
                 }
-                octreeQuantizer.addColor(pixel);
+                octreeQuantizer.addColor(color32);
             }
             progressCallback((i+1)*40);
         }
