@@ -20,18 +20,17 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return (pixel32 | 0xff000000);
     }
 
+    const CRUSHED_BLACK_THRESHOLD = 46;
+    const CRUSHED_WHITE_THRESHOLD = 240;
     function perceptualPixel32Hash(pixel32, pixelBuffer){
-        const blackThreshold = 46;
-        const whiteThreshold = 240;
-
         pixelBuffer[0] = (pixel32 & 0xff);
         pixelBuffer[1] = (pixel32 & 0xff00) >> 8;
         pixelBuffer[2] = (pixel32 & 0xff0000) >> 16;
 
-        if(Math.max(pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]) < blackThreshold){
+        if(Math.max(pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]) < CRUSHED_BLACK_THRESHOLD){
             return 0xff000000;
         }
-        if(Math.min(pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]) > whiteThreshold){
+        if(Math.min(pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]) > CRUSHED_WHITE_THRESHOLD){
             return 0xffffffff;
         }
 
@@ -236,23 +235,29 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         return retColors;
     }
 
-    function perceptualPixelTransform(pixel){
-        const blackThreshold = 46;
-        const whiteThreshold = 240;
-        if(Math.max(pixel[0], pixel[1], pixel[2]) < blackThreshold){
-            pixel[0] = 0;
-            pixel[1] = 0;
-            pixel[2] = 0;
-        }
-        else if(Math.min(pixel[0], pixel[1], pixel[2]) > whiteThreshold){
-            pixel[0] = 255;
-            pixel[1] = 255;
-            pixel[2] = 255;
-        }
-        return pixel;
+    function incrementAverage(color32, averageBuffer){
+        averageBuffer[0] += (color32 & 0xff);
+        averageBuffer[1] += (color32 & 0xff00) >> 8;
+        averageBuffer[2] += (color32 & 0xff0000) >> 16;
     }
-    function identity(v){
-        return v;
+
+    function incrementAverageCrushed(color32, averageBuffer){
+        const r = (color32 & 0xff);
+        const g = (color32 & 0xff00) >> 8;
+        const b = (color32 & 0xff0000) >> 16;
+        //don't need to do anything, since we would just be adding 0
+        if(Math.max(r,g,b) < CRUSHED_BLACK_THRESHOLD){
+            return;
+        }
+        if(Math.min(r,g,b) > CRUSHED_WHITE_THRESHOLD){
+            averageBuffer[0] += 255;
+            averageBuffer[1] += 255;
+            averageBuffer[2] += 255;
+            return;
+        }
+        averageBuffer[0] += r;
+        averageBuffer[1] += g;
+        averageBuffer[2] += b;
     }
 
     //Divides an image into zones based on sort function, and finds the average of each color in each zone
@@ -260,26 +265,23 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
         //need to copy pixels so we don't modify it
-        const pixelArray = Util.pixelBuffer32ToPixelBuffer8(Util.sortPixelBuffer(new Uint8Array(pixels), pixelValueFunc));
-        //it seems redundant to divide by 4 only to multiply it by 4 later, but that is because
-        //we need to make sure we only select whole pixels, and not the middles of pixels
-        const fraction = pixelArray.length / (numColors * 4);
-        const pixelTransformFunc = isPerceptual ? perceptualPixelTransform : identity;
+        const pixelArray = Util.sortPixelBuffer(new Uint8Array(pixels), pixelValueFunc);
+        const fraction = pixelArray.length / numColors ;
+        const incrementAverageFunc = isPerceptual ? incrementAverageCrushed : incrementAverage;
 
         for(let i=1,previousEndIndex=0;i<=numColors;i++){
-            const endIndex = Math.min(Math.round(i * fraction) * 4, pixelArray.length);
+            const endIndex = Math.min(Math.round(i * fraction), pixelArray.length);
+            let numPixels = 0;
             for(let j=previousEndIndex;j<endIndex;j+=4){
-                const pixel = pixelTransformFunc(pixelArray.subarray(j, j+4));
+                const color32 = pixelArray[j];
                 //ignore transparent pixels
-                if(pixel[3] === 0){
+                if((color32 & 0xff000000) >> 24 === 0){
                     continue;
                 }
-                for(let p=0;p<3;p++){
-                    averageBuffer[p] = averageBuffer[p] + pixel[p];
-                }
+                incrementAverageFunc(color32, averageBuffer);
+                numPixels++;
             }
             const colorBaseIndex = (i - 1) * 3;
-            const numPixels = (endIndex - previousEndIndex) / 4;
             for(let p=0;p<3;p++){
                 retColors[colorBaseIndex+p] = Math.round(averageBuffer[p] / numPixels); 
             }
