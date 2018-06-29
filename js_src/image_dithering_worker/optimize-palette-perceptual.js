@@ -7,7 +7,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         let popularityMap = new Float32Array(numDistinctValues);
         let count = 0;
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+5);
+            let pixel = pixels.subarray(i, i+4);
             //ignore transparent pixels
             if(pixel[3] === 0){
                 continue;
@@ -143,7 +143,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         }
         const hueAverageLigtnessMap = new Float32Array(2 * hues.length);
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+5);
+            let pixel = pixels.subarray(i, i+4);
             //ignore transparent pixels
             if(pixel[3] === 0){
                 continue;
@@ -501,7 +501,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         let popularityMap = new Float32Array(numDistinctValues * 2);
         
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+5);
+            let pixel = pixels.subarray(i, i+4);
             let pixelHue = pixelHueFunc(pixel);
             let index = pixelHue * 2;
             popularityMap[index] = popularityMap[index] + 1;
