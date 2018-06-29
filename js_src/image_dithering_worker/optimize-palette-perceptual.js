@@ -4,15 +4,20 @@
 App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     
     function createPopularityMap(pixels, numDistinctValues, pixelValueFunc){
-        let popularityMap = new Float32Array(numDistinctValues);
+        const popularityMap = new Float32Array(numDistinctValues);
         let count = 0;
+        const pixel = new Uint8Array(3);
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+4);
             //ignore transparent pixels
-            if(pixel[3] === 0){
+            if(pixels[i+3] === 0){
                 continue;
             }
-            let pixelValue = pixelValueFunc(pixel);
+            //load pixel manually, faster than subarray
+            pixel[0] = pixels[i];
+            pixel[1] = pixels[i+1];
+            pixel[2] = pixels[i+2];
+
+            const pixelValue = pixelValueFunc(pixel);
             if(pixelValue === null){
                 continue;
             }
@@ -43,13 +48,19 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
         let lightnessMax = 0;
         let lightnessMin = Infinity;
         let lightnessTotal = 0;
+
+        const pixel = new Uint8Array(3);
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+5);
             //ignore transparent pixels
-            if(pixel[3] === 0){
+            if(pixels[i+3] === 0){
                 continue;
             }
+            //load pixel manually, faster than subarray
+            pixel[0] = pixels[i];
+            pixel[1] = pixels[i+1];
+            pixel[2] = pixels[i+2];
             pixelCount++;
+
             const hue = PixelMath.hue(pixel);
             const saturation = PixelMath.saturation(pixel);
             const lightness = PixelMath.lightness(pixel);
@@ -142,12 +153,17 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
             return closestIndex;
         }
         const hueAverageLigtnessMap = new Float32Array(2 * hues.length);
+        const pixel = new Uint8Array(3);
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+4);
             //ignore transparent pixels
-            if(pixel[3] === 0){
+            if(pixels[i+3] === 0){
                 continue;
             }
+            //load pixel manually, faster than subarray
+            pixel[0] = pixels[i];
+            pixel[1] = pixels[i+1];
+            pixel[2] = pixels[i+2];
+
             const lightness = PixelMath.lightness(pixel);
             if(lightness < 16 || lightness > 240){
                 continue;
@@ -498,14 +514,23 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil){
     }
     
     function hueLightnessPopularityMap(pixels, numDistinctValues, pixelHueFunc){
-        let popularityMap = new Float32Array(numDistinctValues * 2);
-        
+        const popularityMap = new Float32Array(numDistinctValues * 2);
+        const pixel = new Uint8Array(3);
+
         for(let i=0;i<pixels.length;i+=4){
-            let pixel = pixels.subarray(i, i+4);
-            let pixelHue = pixelHueFunc(pixel);
-            let index = pixelHue * 2;
+            //ignore transparent pixels
+            if(pixels[i+3] === 0){
+                continue;
+            }
+            //load pixel manually, faster than subarray
+            pixel[0] = pixels[i];
+            pixel[1] = pixels[i+1];
+            pixel[2] = pixels[i+2];
+
+            const pixelHue = pixelHueFunc(pixel);
+            const index = pixelHue * 2;
             popularityMap[index] = popularityMap[index] + 1;
-            let pixelLightness = PixelMath.lightness(pixel);
+            const pixelLightness = PixelMath.lightness(pixel);
             popularityMap[index + 1] = popularityMap[index + 1] + pixelLightness;
         }
         
