@@ -65,9 +65,9 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
     //for mostly black and white images with few colors, wide is better.
     //also on chrome, wide is generally 2x faster, however on firefox, where perceptual median cut is much slower, narrow is 2x faster
     function kMeans(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
-        //initializing palette with spatial average boxed not because it is the best color quantization algorithm, but because it is the fastest
-        //using perceptual median cut, while slower, generally results in a speedup since colors converge much quicker
-        const paletteBuffer = colorQuantization.wide ? OptimizePalettePerceptual.medianCut(pixels, numColors, {'hueMix': 1.6}, imageWidth, imageHeight) : OptimizePalettePopularity.spatialAverageBoxed(pixels, numColors, {}, imageWidth, imageHeight);
+        //artiquant 2 balanced used instead of artiquant 3 balanced since it is slightly faster
+        //with negligible loss is quality
+        const paletteBuffer = OptimizePalettePerceptual.medianCut(pixels, numColors, {'hueMix': 1.6}, imageWidth, imageHeight);
         const palette = bufferToPixelArray(paletteBuffer);
         const colorDitherModeKey = colorQuantization.distanceLuma ? 'LUMA' : 'RGB';
         const distanceFunc = ColorDitherModeFunctions[ColorDitherModes.get(colorDitherModeKey).id].distance;
@@ -76,7 +76,7 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
 
         progressCallback(10);
 
-        //generally converges between 39-59 iterations
+        //generally converges in at most 59 iterations, and usually around 20
         const maximumIterations = 64;
         const halfway = Math.floor(maximumIterations / 2);
         const pixelBuffer = new Uint8ClampedArray(3);
