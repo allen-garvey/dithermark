@@ -261,6 +261,10 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
             const endIndex = Math.min(Math.round(i * fraction) * 4, pixelArray.length);
             for(let j=previousEndIndex;j<endIndex;j+=4){
                 const pixel = pixelTransformFunc(pixelArray.subarray(j, j+4));
+                //ignore transparent pixels
+                if(pixel[3] === 0){
+                    continue;
+                }
                 for(let p=0;p<3;p++){
                     averageBuffer[p] = averageBuffer[p] + pixel[p];
                 }
