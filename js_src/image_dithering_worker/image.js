@@ -3,7 +3,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
     function transformImage(pixels, imageWidth, imageHeight, pixelTransformFunc){
         let y = 0;
         let x = 0;
-        let pixel = Pixel.create(0, 0, 0);
+        const pixel = Pixel.create(0, 0, 0);
         
         for(let i=0;i<pixels.length;i+=4){
             //nothing needs to be done for transparent pixels
@@ -13,7 +13,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
                 pixel[Pixel.B_INDEX] = pixels[i+2];
                 pixel[Pixel.A_INDEX] = pixels[i+3];
                 
-                let outputPixel = pixelTransformFunc(pixel, x, y);
+                const outputPixel = pixelTransformFunc(pixel, x, y);
             
                 pixels[i] = outputPixel[0];
                 pixels[i+1] = outputPixel[1];
@@ -62,7 +62,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
 
         let y = 0;
         let x = 0;
-        let pixel = Pixel.create(0, 0, 0);
+        const pixel = Pixel.create(0, 0, 0);
         
         for(let i=0;i<pixels.length;i+=4){
             //nothing needs to be done for transparent pixels
