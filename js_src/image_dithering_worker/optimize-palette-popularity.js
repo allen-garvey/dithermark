@@ -151,6 +151,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     }
 
     //Divides image into boxes, and finds average color in each box
+    //there is no perceptual (crushed) version, since it is basically indistinguishable from regular
     function spatialAverageBoxed(pixels, numColors, colorQuantization, imageWidth, imageHeight){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
@@ -170,14 +171,14 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
                 for(let y=yBase;y<yLimit;y++){
                     for(let x=xBase;x<xLimit;x++){
                         const pixelIndex = x * 4 + y * imageWidth * 4;
-                        const pixel = pixels.subarray(pixelIndex, pixelIndex+4);
                         //ignore transparent pixels
-                        if(pixel[3] === 0){
+                        if(pixels[pixelIndex+3] === 0){
                             continue;
                         }
-                        for(let p=0;p<3;p++){
-                            averageBuffer[p] += pixel[p];
-                        }
+                        //it is much faster to use array index directly, instead of using subarray
+                        averageBuffer[0] += pixels[pixelIndex];
+                        averageBuffer[1] += pixels[pixelIndex+1];
+                        averageBuffer[2] += pixels[pixelIndex+2];
                         length++;
                     }
                 }
