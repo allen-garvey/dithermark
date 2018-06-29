@@ -69,9 +69,14 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
         const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixel32Hash : normalizePixel32Transparency;
-        let pixelArray = new Uint32Array(pixels.buffer);
+        let pixelArray;
         if(colorQuantization.isVertical){
-            pixelArray = rotatePixels32Clockwise(pixelArray, imageWidth, imageHeight);
+            //rotating creates a new copy, so we don't need to copy pixels
+            pixelArray = rotatePixels32Clockwise(new Uint32Array(pixels.buffer), imageWidth, imageHeight);
+        }
+        else{
+            //need to copy pixels so we don't modify it
+            pixelArray = new Uint32Array(new Uint8Array(pixels).buffer);
         }
         const pixelBuffer = new Uint8Array(4);
         const fraction = pixelArray.length / numColors;
@@ -103,7 +108,8 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
         const pixelHashFunc = isPerceptual ? perceptualPixel32Hash : normalizePixel32Transparency;
-        const pixelArray = Util.sortPixelBuffer(pixels, pixelValueFunc);
+        //need to copy pixels so we don't modify it
+        const pixelArray = Util.sortPixelBuffer(new Uint8Array(pixels), pixelValueFunc);
         const pixelBuffer = new Uint8Array(4);
 
         const fraction = pixelArray.length / numColors;
@@ -192,7 +198,8 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
         const retColors = new Uint8Array(numColors * 3);
         const colorsSet = new Set();
         const pixelHashFunc = colorQuantization.isPerceptual ? perceptualPixel32Hash : normalizePixel32Transparency;
-        const pixelArray = new Uint32Array(pixels.buffer);
+        //need to copy pixels so we don't modify it
+        const pixelArray = new Uint32Array(new Uint8Array(pixels).buffer);
         const pixelBuffer = new Uint8Array(4);
         const numBoxesPerDimension = Math.floor(Math.sqrt(numColors));
         const rowsWithExtraHorizontalBoxes = numColors - numBoxesPerDimension * numBoxesPerDimension; 
@@ -251,7 +258,8 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     function sortedAverage(pixels, numColors, imageWidth, imageHeight, isPerceptual, pixelValueFunc){
         const retColors = new Uint8Array(numColors * 3);
         const averageBuffer = new Float32Array(3);
-        const pixelArray = Util.pixelBuffer32ToPixelBuffer8(Util.sortPixelBuffer(pixels, pixelValueFunc));
+        //need to copy pixels so we don't modify it
+        const pixelArray = Util.pixelBuffer32ToPixelBuffer8(Util.sortPixelBuffer(new Uint8Array(pixels), pixelValueFunc));
         //it seems redundant to divide by 4 only to multiply it by 4 later, but that is because
         //we need to make sure we only select whole pixels, and not the middles of pixels
         const fraction = pixelArray.length / (numColors * 4);
