@@ -86,8 +86,8 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('Octree (Narrow)', 'Octree.octree', ['sort' => 2]),
         new ColorQuantizationMode('Octree (Narrow alt)', 'Octree.octree', ['sort' => 3]),
         'Median Cut',
-        new ColorQuantizationMode('Median Cut (Narrow)', 'MedianCut.medianCut'),
-        new ColorQuantizationMode('Median Cut (Wide)', 'MedianCut.medianCut', ['isMedian' => true]),
+        new ColorQuantizationMode('Median Cut (Narrow)', 'MedianCut.medianCutAverage'),
+        new ColorQuantizationMode('Median Cut (Wide)', 'MedianCut.medianCutMedian'),
     ];
 }
 

@@ -34,35 +34,91 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         }
     }
 
-    function sortOnLongestAxis(pixels){
-        const sortIndex = findLongestAxis(pixels);
-        const secondarySortIndex = sortIndex === 0 ? 2 : sortIndex - 1; 
-        return pixels.sort((a, b)=>{
-            return a[sortIndex] - b[sortIndex] || a[secondarySortIndex] - b[secondarySortIndex];
+    function color32Red(color32){
+        return (color32 & 0xff);
+    }
+    function color32Green(color32){
+        return (color32 & 0xff00) >> 8;
+    }
+    function color32Blue(color32){
+        return (color32 & 0xff0000) >> 16;
+    }
+
+    function colorValueFuncForColorIndex(colorIndex){
+        switch(colorIndex){
+            case 0:
+                return color32Red;
+            case 1:
+                return color32Green;
+            default:
+                return color32Blue;
+        }
+    }
+
+    function findLongestAxis32(pixels32){
+        let rMin = 256;
+        let rMax = -1;
+        let gMin = 256;
+        let gMax = -1;
+        let bMin = 256;
+        let bMax = -1;
+        pixels32.forEach((color32)=>{
+            rMin = Math.min(color32Red(color32), rMin);
+            rMax = Math.max(color32Red(color32), rMax);
+            gMin = Math.min(color32Green(color32), gMin);
+            gMax = Math.max(color32Green(color32), gMax);
+            bMin = Math.min(color32Blue(color32), bMin);
+            bMax = Math.max(color32Blue(color32), bMax);
+        });
+        const rRange = rMax - rMin;
+        const gRange = gMax - gMin;
+        const bRange = bMax - bMin;
+        const maxRange = Math.max(rRange, gRange, bRange);
+
+        //prioritized by g, r, b, since the eye is most sensitive to values in that order
+        switch(maxRange){
+            case gRange:
+                return 1;
+            case rRange:
+                return 0;
+            //blue
+            default:
+                return 2;
+        }
+    }
+
+    function sortPixels32OnLongestAxis(pixels32){
+        const sortIndex = findLongestAxis32(pixels32);
+        const secondarySortIndex = sortIndex === 0 ? 2 : sortIndex - 1;
+        const colorValueFunc1 = colorValueFuncForColorIndex(sortIndex);
+        const colorValueFunc2 = colorValueFuncForColorIndex(secondarySortIndex);
+        return pixels32.sort((a, b)=>{
+            return colorValueFunc1(a) - colorValueFunc1(b) || colorValueFunc2(a) - colorValueFunc2(b);
         });
     }
 
     //despite being a more effecient algorithm as well as
     //being a stable sort, counting sort is actually slower than
     //sort(), so only use it for median, where we need a stable sort
-    function sortOnLongestAxis2(pixels){
+    function sortOnLongestAxis(pixels){
         const sortIndex = findLongestAxis(pixels);
         return Util.countingSort(pixels, (pixel)=>{
             return pixel[sortIndex];
         });
     }
 
-    function pixelArrayAverage(pixelArray){
-        let pixelAvg = new Float32Array(3);
-        pixelArray.forEach((pixel)=>{
-            pixelAvg[0] = pixelAvg[0] + pixel[0];
-            pixelAvg[1] = pixelAvg[1] + pixel[1];
-            pixelAvg[2] = pixelAvg[2] + pixel[2];
+    function pixelArray32Average(pixelArray){
+        const pixelAvg = new Float32Array(3);
+        pixelArray.forEach((color32)=>{
+            pixelAvg[0] += color32Red(color32);
+            pixelAvg[1] += color32Green(color32);
+            pixelAvg[2] += color32Blue(color32);
         });
-        let retPixel = new Uint8ClampedArray(3);
-        retPixel[0] = Math.round(pixelAvg[0] / pixelArray.length);
-        retPixel[1] = Math.round(pixelAvg[1] / pixelArray.length);
-        retPixel[2] = Math.round(pixelAvg[2] / pixelArray.length);
+        const retPixel = new Uint8ClampedArray(3);
+        const numPixels = pixelArray.length;
+        retPixel[0] = Math.round(pixelAvg[0] / numPixels);
+        retPixel[1] = Math.round(pixelAvg[1] / numPixels);
+        retPixel[2] = Math.round(pixelAvg[2] / numPixels);
         return retPixel;
     }
 
@@ -116,19 +172,26 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         return ret;
     }
 
-    function medianCut(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
+    function medianCutMedian(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         //find nearest power of 2 that is greater than the number of colors
         const numCuts = Math.pow(2, Math.ceil(Math.log2(numColors)));
-        const sortFunc = colorQuantization.isMedian ? sortOnLongestAxis2 : sortOnLongestAxis;
+        const sortFunc = sortOnLongestAxis;
 
         let cuts = [Util.createPixelArray(pixels)];
-        const cutsLengthHalfDone = numCuts / 4;
+        const cuts25Done = numCuts / 8;
+        const cutsHalfDone = numCuts / 4;
+        const cuts75Done = numCuts / 2;
         //approximately 10% done
         progressCallback(10);
         while(cuts.length != numCuts){
-            //approximately 50% done here
-            if(cuts.length === cutsLengthHalfDone){
+            if(cuts.length === cuts25Done){
+                progressCallback(25);
+            }
+            else if(cuts.length === cutsHalfDone){
                 progressCallback(50);
+            }
+            else if(cuts.length === cuts75Done){
+                progressCallback(75);
             }
             const newCuts = [];
             cuts.forEach((cut)=>{
@@ -140,15 +203,62 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
             cuts = newCuts;
         }
 
-        let extractColorFunc = pixelArrayAverage;
-        if(colorQuantization.isMedian){
-            //only have to sort 1 last time if we are taking the median, since for average the order doesn't matter
-            extractColorFunc = (cut) =>{
-                return pixelArrayMedian(sortFunc(cut));
-            };
-        }
+        //only have to sort 1 last time since we are taking the median
         let colors = cuts.map((cut)=>{
-            return extractColorFunc(cut);
+            return pixelArrayMedian(sortFunc(cut));
+        });
+
+        if(colors.length > numColors){
+            colors = mergeMedians(colors, numColors);
+        }
+
+        return Util.pixelArrayToBuffer(colors);
+    }
+
+    function createPixel32ArrayFromVisible(pixels){
+        const pixelBuffer = new Uint32Array(pixels.buffer);
+        const length = pixelBuffer.length;
+        const pixels32 = new Uint32Array(length);
+        let numVisiblePixels = 0;
+        
+        for(let i=0;i<length;i++){
+            const color32 = pixelBuffer[i];
+            //ignore transparent pixels
+            if((color32 & 0xff000000) >> 24 === 0){
+                continue;
+            }
+            pixels32[numVisiblePixels++] = color32;
+        }
+
+        return pixels32.subarray(0, numVisiblePixels);
+    }
+
+
+    function medianCutAverage(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
+        //find nearest power of 2 that is greater than the number of colors
+        const numCuts = Math.pow(2, Math.ceil(Math.log2(numColors)));
+
+        let cuts = [createPixel32ArrayFromVisible(pixels)];
+        const cutsLengthHalfDone = numCuts / 4;
+        //approximately 10% done
+        progressCallback(10);
+        while(cuts.length != numCuts){
+            //approximately 50% done here
+            if(cuts.length === cutsLengthHalfDone){
+                progressCallback(50);
+            }
+            const newCuts = [];
+            cuts.forEach((cut)=>{
+                cut = sortPixels32OnLongestAxis(cut);
+                const half = Math.ceil(cut.length / 2);
+                newCuts.push(cut.subarray(0, half));
+                newCuts.push(cut.subarray(half, cut.length));
+            });
+            cuts = newCuts;
+        }
+
+        let colors = cuts.map((cut)=>{
+            return pixelArray32Average(cut);
         });
 
         if(colors.length > numColors){
@@ -159,6 +269,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     }
 
     return {
-        medianCut,
+        medianCutAverage,
+        medianCutMedian,
     };
 })(App.PixelMath, App.OptimizePaletteUtil);
