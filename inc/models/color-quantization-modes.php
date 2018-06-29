@@ -36,7 +36,7 @@ class ColorQuantizationMode {
 
 function colorQuantizationModesBase(): array{
     return [
-        'Monochrome',
+        'Color Wheel',
         new ColorQuantizationMode('Color wheel 1', 'Perceptual.monochrome'),
         new ColorQuantizationMode('Color wheel 2', 'Perceptual.monochrome', ['hueCount' => 2]),
         new ColorQuantizationMode('Color wheel 3', 'Perceptual.monochrome', ['hueCount' => 3]),
