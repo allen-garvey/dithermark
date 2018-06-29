@@ -212,7 +212,7 @@
                     case WorkerHeaders.OPTIMIZE_PALETTE:
                         const colors = messageBody.subarray(1, messageBody.length);
                         const optimizePaletteKey = optimizePaletteMemorizationKey(colors.length / 3, messageBody[0]);
-                        this.optimizePaletteMessageReceived(colors, optimizePaletteKey, !this.colorQuantizationModes[messageBody[0]].shouldCache);
+                        this.optimizePaletteMessageReceived(colors, optimizePaletteKey, !this.colorQuantizationModes[messageBody[0]].disableCache);
                         break;
                     case WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS:
                         const key = optimizePaletteMemorizationKey(messageBody[1], messageBody[0]);
