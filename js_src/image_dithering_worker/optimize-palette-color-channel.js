@@ -64,6 +64,10 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         return a > b;
     }
 
+    function calculatePenalty(bucketIndexDistance){
+        return Math.log2(bucketIndexDistance + 1);
+    }
+
     function reduceChannelBuckets(channelStats, reducedBucketCount, shouldMergeGreater=false, shouldAlternateComparisons=false, shouldWrap=false){
         if(reducedBucketCount <= 0){
             channelStats.bucketIndexSet.clear();
@@ -73,6 +77,10 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         //copy channel counts into single buffer, which makes logic of comparing counts easire
         //and improves memory adjacency
         const channelBuffer = channelStats.buffer;
+        const numDistinctValues = channelBuffer.length / 4;
+
+        const penaltyDistanceFunc = shouldWrap ? (smallerBucketKey, largerBucketKey)=>{ return calculatePenalty(Math.min(smallerBucketKey + numDistinctValues - largerBucketKey, largerBucketKey - smallerBucketKey)); } : (smallerBucketKey, largerBucketKey)=>{ return calculatePenalty(largerBucketKey - smallerBucketKey); };
+
         const bucketCounts = new Float32Array(channelBuffer.length / 4);
         for(let i=3,bucketIndex=0;i<channelBuffer.length;i+=4,bucketIndex++){
             bucketCounts[bucketIndex] = channelBuffer[i];
@@ -87,10 +95,15 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             const lastKeyIndex = bucketKeys.length - 1;
             let keyToMergeCombinedValue = shouldMergeGreater ? -1 : Infinity;
             const comparisonFunc = shouldMergeGreater ? mergeGreaterComparison: mergeSmallerComparison;
+            const penaltyAdjustmentFunc = shouldMergeGreater ? (value)=>{ return 1 / value; } : (value) =>{ return value; };
             let keyToMergeStartIndex = -1;
             
             for(let j=0;j<lastKeyIndex;j++){
-                const combinedValue = bucketCounts[bucketKeys[j]] + bucketCounts[bucketKeys[j+1]];
+                const bucketKey1 = bucketKeys[j];
+                const bucketKey2 = bucketKeys[j+1];
+                //penalize buckets that are far away from each other
+                const penalty = penaltyAdjustmentFunc(penaltyDistanceFunc(bucketKey1, bucketKey2));
+                const combinedValue = (bucketCounts[bucketKey1] + bucketCounts[bucketKey2]) * penalty;
                 if(comparisonFunc(combinedValue, keyToMergeCombinedValue)){
                     keyToMergeCombinedValue = combinedValue;
                     keyToMergeStartIndex = j;
@@ -98,7 +111,10 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             }
             //for hues which wrap around
             if(shouldWrap){
-                const wrappedCombinedValue = bucketCounts[bucketKeys[lastKeyIndex]] + bucketCounts[bucketKeys[0]];
+                const bucketKey1 = bucketKeys[lastKeyIndex];
+                const bucketKey2 = bucketKeys[0];
+                const penalty = penaltyAdjustmentFunc(penaltyDistanceFunc(bucketKey2, bucketKey1))
+                const wrappedCombinedValue = (bucketCounts[bucketKey1] + bucketCounts[bucketKey2]) * penalty;
                 if(comparisonFunc(wrappedCombinedValue, keyToMergeCombinedValue)){
                     keyToMergeCombinedValue = wrappedCombinedValue;
                     keyToMergeStartIndex = lastKeyIndex;
