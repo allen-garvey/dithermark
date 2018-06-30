@@ -97,10 +97,29 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
         return pixels;
     }
 
+    function forEachOpaquePixel(pixels, callback){
+        const pixel = new Uint8Array(4);
+        const length = pixels.length;
+        for(let i=0;i<length;i+=4){
+            //ignore transparent pixels
+            if(pixels[i+3] === 0){
+                continue;
+            }
+            //manually loading pixel is faster than using subarray
+            pixel[0] = pixels[i];
+            pixel[1] = pixels[i+1];
+            pixel[2] = pixels[i+2];
+            pixel[3] = pixels[i+3];
+            
+            callback(pixel);
+        }
+    }
+
     
     return {
        transform: transformImage,
        colorDither: colorDitherImage,
        findClosestColorIndex,
+       forEachOpaquePixel,
     };
 })(App.Pixel, App.ColorDitherModeFunctions, App.DitherUtil, App.PixelMath);
