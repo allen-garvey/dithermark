@@ -37,9 +37,11 @@ class ColorQuantizationMode {
 function colorQuantizationModesBase(): array{
     return [
         'Color Channel',
-        new ColorQuantizationMode('Color channel (Narrow)', 'ColorChannel.colorChannel'),
-        new ColorQuantizationMode('Color channel (Wide)', 'ColorChannel.colorChannel', ['isWide' => true]),
-        new ColorQuantizationMode('Color channel (Balanced)', 'ColorChannel.colorChannel', ['alternateComparisons' => true]),
+        new ColorQuantizationMode('Color channel (Balanced)', 'ColorChannel.colorChannel', ['greyMix' => 6]),
+        new ColorQuantizationMode('Color channel (Narrow)', 'ColorChannel.colorChannel', ['greyMix' => 16]),
+        new ColorQuantizationMode('Color channel (Wide)', 'ColorChannel.colorChannel', ['greyMix' => 4]),
+        new ColorQuantizationMode('Color channel (Wide2)', 'ColorChannel.colorChannel', ['isWide' => true]),
+        new ColorQuantizationMode('Color channel (Balanced2)', 'ColorChannel.colorChannel', ['alternateComparisons' => true]),
         'Random',
         new ColorQuantizationMode('Random palette', 'Random.random', [], false),
         'Color Wheel',

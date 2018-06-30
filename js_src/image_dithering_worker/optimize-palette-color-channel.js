@@ -44,10 +44,11 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
 
             //increment lightness buffer
             const lightnessIndex = Math.floor(lightness / lightnessFraction) * 4;
-            lightnessBuffer[lightnessIndex]   += pixel[0];
-            lightnessBuffer[lightnessIndex+1] += pixel[1];
-            lightnessBuffer[lightnessIndex+2] += pixel[2];
-            lightnessBuffer[lightnessIndex+3]++;
+            const lightnessCountFraction = 1 - hueCountFraction;
+            lightnessBuffer[lightnessIndex]   += pixel[0] * lightnessCountFraction;
+            lightnessBuffer[lightnessIndex+1] += pixel[1] * lightnessCountFraction;
+            lightnessBuffer[lightnessIndex+2] += pixel[2] * lightnessCountFraction;
+            lightnessBuffer[lightnessIndex+3] += lightnessCountFraction;
         });
 
         return {
@@ -137,6 +138,21 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         }
     }
 
+    function reduceLightnessChannelToBw(lightnessChannel){
+        const bucketKeys = [...lightnessChannel.bucketIndexSet.keys()];
+        const newBucketIndexSet = new Set();
+        if(bucketKeys.length > 0){
+            newBucketIndexSet.add(bucketKeys[0]);
+        }
+        if(bucketKeys.length > 1){
+            newBucketIndexSet.add(bucketKeys[bucketKeys.length - 1]);
+        }
+        return {
+            bucketIndexSet: newBucketIndexSet,
+            buffer: lightnessChannel.buffer,
+        };
+    }
+
     function loadPaletteBuffer(channelStats, paletteBuffer, startIndex=0){
         const channelBuffer = channelStats.buffer;
         let paletteIndex = startIndex * 3;
@@ -156,25 +172,27 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         const {hueChannel, lightnessChannel} = createImageChannels(pixels, numColors);
         const numHueBuckets = hueChannel.bucketIndexSet.size;
         const numLightnessBuckets = lightnessChannel.bucketIndexSet.size;
+        let numLightnessBucketsAdjustment = 0;
 
-        if(numHueBuckets + numLightnessBuckets > numColors){
-            console.log('reducing channels');
-            //if more unique hues than number of colors, only use 2 lightness values (black and white)
-            //otherwise use lightness (grey) values to fill up palette
-            const lightnessBucketCount = Math.max(2, numColors - numHueBuckets);
+        //increase contrast by always having black and white values
+        if(numLightnessBuckets >= 2){
+            numLightnessBucketsAdjustment = 2;
+            const bwLightnessChannel = reduceLightnessChannelToBw(lightnessChannel);
+            //have to load palette here, since we might be modifying lightness channel buffer with reduction
+            loadPaletteBuffer(bwLightnessChannel, paletteBuffer);
+        }
+        const numColorsAdjusted = numColors - numLightnessBucketsAdjustment;
+        if(numHueBuckets + numLightnessBuckets > numColorsAdjusted){
+            //add progressively more grey values as number of colors increases
+            const lightnessBucketCount = Math.max(Math.max(Math.min(Math.floor(numColors / colorQuantization.greyMix) - 1, numLightnessBuckets), numColorsAdjusted - numHueBuckets), 0);
             reduceChannelBuckets(lightnessChannel, lightnessBucketCount);
-            reduceChannelBuckets(hueChannel, numColors - lightnessBucketCount, colorQuantization.isWide, colorQuantization.alternateComparisons, true);
-            // reduceChannelBucketsAlternate(hueChannel, numColors - lightnessBucketCount, true);
+            //have to recalculate lightness bucket count, since it might have had less buckets than required
+            reduceChannelBuckets(hueChannel, numColors - lightnessChannel.bucketIndexSet.size, colorQuantization.isWide, colorQuantization.alternateComparisons, true);
         }
 
-        console.log('reduced hue channel');
-        console.log(hueChannel);
-        console.log('reduced lightness channel');
-        console.log(lightnessChannel);
-
-        loadPaletteBuffer(lightnessChannel, paletteBuffer);
+        loadPaletteBuffer(lightnessChannel, paletteBuffer, numLightnessBucketsAdjustment);
         //have to get new bucket size since we might have reduced it
-        loadPaletteBuffer(hueChannel, paletteBuffer, lightnessChannel.bucketIndexSet.size);
+        loadPaletteBuffer(hueChannel, paletteBuffer, lightnessChannel.bucketIndexSet.size + numLightnessBucketsAdjustment);
         return paletteBuffer;
     }
     
