@@ -36,12 +36,6 @@ class ColorQuantizationMode {
 
 function colorQuantizationModesBase(): array{
     return [
-        'Color Channel',
-        new ColorQuantizationMode('Color channel (Balanced)', 'ColorChannel.colorChannel', ['greyMix' => 6]),
-        new ColorQuantizationMode('Color channel (Narrow)', 'ColorChannel.colorChannel', ['greyMix' => 16]),
-        new ColorQuantizationMode('Color channel (Wide)', 'ColorChannel.colorChannel', ['greyMix' => 4]),
-        new ColorQuantizationMode('Color channel (Wide2)', 'ColorChannel.colorChannel', ['isWide' => true]),
-        new ColorQuantizationMode('Color channel (Balanced2)', 'ColorChannel.colorChannel', ['alternateComparisons' => true]),
         'Random',
         new ColorQuantizationMode('Random palette', 'Random.random', [], false),
         'Color Wheel',
@@ -52,6 +46,10 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('Color wheel 5', 'Perceptual.monochrome', ['hueCount' => 5]),
         new ColorQuantizationMode('Color wheel 6', 'Perceptual.monochrome', ['hueCount' => 6]),
         new ColorQuantizationMode('Color wheel k', 'Perceptual.monochrome', ['hueCount' => -1]),
+        'Color Channel',
+        new ColorQuantizationMode('Color channel (Balanced)', 'ColorChannel.colorChannel', ['greyMix' => 6]),
+        new ColorQuantizationMode('Color channel (Narrow)', 'ColorChannel.colorChannel', ['greyMix' => 16]),
+        new ColorQuantizationMode('Color channel (Wide)', 'ColorChannel.colorChannel', ['greyMix' => 4]),
         'Artiquant 3',
         new ColorQuantizationMode('Artiquant 3 (Balanced)', 'Perceptual.medianCut5', ['hueMix' => 2, 'hueClamp' => true]),
         new ColorQuantizationMode('Artiquant 3 (Narrow)', 'Perceptual.medianCut5', ['hueMix' => 2, 'hueFilterLog' => 8]),

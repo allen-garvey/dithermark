@@ -57,19 +57,11 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         }
     }
 
-    function mergeSmallerComparison(a, b){
-        return a < b;
-    }
-
-    function mergeGreaterComparison(a, b){
-        return a > b;
-    }
-
     function calculatePenalty(bucketIndexDistance){
         return Math.log2(bucketIndexDistance + 1);
     }
 
-    function reduceChannelBuckets(channelStats, reducedBucketCount, shouldMergeGreater=false, shouldAlternateComparisons=false, shouldWrap=false){
+    function reduceChannelBuckets(channelStats, reducedBucketCount, shouldWrap=false){
         if(reducedBucketCount <= 0){
             channelStats.bucketIndexSet.clear();
             return;
@@ -89,24 +81,19 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         const bucketIndexSet = channelStats.bucketIndexSet;
         const numReductions = bucketIndexSet.size - reducedBucketCount;
         for(let i=0;i<numReductions;i++){
-            if(shouldAlternateComparisons){
-                shouldMergeGreater = i > numReductions / 2;
-            }
             const bucketKeys = [...bucketIndexSet.keys()];
             const lastKeyIndex = bucketKeys.length - 1;
-            let keyToMergeCombinedValue = shouldMergeGreater ? -1 : Infinity;
-            const comparisonFunc = shouldMergeGreater ? mergeGreaterComparison: mergeSmallerComparison;
-            const penaltyAdjustmentFunc = shouldMergeGreater ? (value)=>{ return 1 / value; } : (value) =>{ return value; };
+            let leastCombinedValue = Infinity;
             let keyToMergeStartIndex = -1;
             
             for(let j=0;j<lastKeyIndex;j++){
                 const bucketKey1 = bucketKeys[j];
                 const bucketKey2 = bucketKeys[j+1];
                 //penalize buckets that are far away from each other
-                const penalty = penaltyAdjustmentFunc(penaltyDistanceFunc(bucketKey1, bucketKey2));
+                const penalty = penaltyDistanceFunc(bucketKey1, bucketKey2);
                 const combinedValue = (bucketCounts[bucketKey1] + bucketCounts[bucketKey2]) * penalty;
-                if(comparisonFunc(combinedValue, keyToMergeCombinedValue)){
-                    keyToMergeCombinedValue = combinedValue;
+                if(combinedValue < leastCombinedValue){
+                    leastCombinedValue = combinedValue;
                     keyToMergeStartIndex = j;
                 }
             }
@@ -114,10 +101,10 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             if(shouldWrap){
                 const bucketKey1 = bucketKeys[lastKeyIndex];
                 const bucketKey2 = bucketKeys[0];
-                const penalty = penaltyAdjustmentFunc(penaltyDistanceFunc(bucketKey2, bucketKey1))
+                const penalty = penaltyDistanceFunc(bucketKey2, bucketKey1);
                 const wrappedCombinedValue = (bucketCounts[bucketKey1] + bucketCounts[bucketKey2]) * penalty;
-                if(comparisonFunc(wrappedCombinedValue, keyToMergeCombinedValue)){
-                    keyToMergeCombinedValue = wrappedCombinedValue;
+                if(wrappedCombinedValue < leastCombinedValue){
+                    leastCombinedValue = wrappedCombinedValue;
                     keyToMergeStartIndex = lastKeyIndex;
                 }
             }
@@ -187,7 +174,7 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             const lightnessBucketCount = Math.max(Math.max(Math.min(Math.floor(numColors / colorQuantization.greyMix) - 1, numLightnessBuckets), numColorsAdjusted - numHueBuckets), 0);
             reduceChannelBuckets(lightnessChannel, lightnessBucketCount);
             //have to recalculate lightness bucket count, since it might have had less buckets than required
-            reduceChannelBuckets(hueChannel, numColors - lightnessChannel.bucketIndexSet.size, colorQuantization.isWide, colorQuantization.alternateComparisons, true);
+            reduceChannelBuckets(hueChannel, numColors - lightnessChannel.bucketIndexSet.size, true);
         }
 
         loadPaletteBuffer(lightnessChannel, paletteBuffer, numLightnessBucketsAdjustment);
