@@ -1,3 +1,11 @@
+/**
+ * The broad overview of how this algorithm works is to store the average of each pixel for each distinct hue
+ * and each distinct lightness (lightness divided into buckets by the number of ouput palette colors), 
+ * and then merge the values with the least number of pixels to get our palette.
+ * Conceptually similar to octree, but much faster, since while the merging is slightly less effecient since it
+ * involves nested loops O(n^2) actually reading the pixels is much faster and more efficient than octree.
+ * Works particularly well at preserving gradients
+ */
 App.OptimizeColorChannel = (function(PixelMath, Image){
 
     function ChannelStats(statsBuffer){
