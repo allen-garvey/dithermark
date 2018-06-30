@@ -71,14 +71,10 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
             }
             lightnessTotal += lightness;
             lightnessMap[lightness] = lightnessMap[lightness] + 1;
-            let lightnessDiff;
-            if(lightness >= 128){
-                lightnessDiff = lightness - 128;
-            }
-            else{
-                lightnessDiff = 127 - lightness;
-            }
+            
+            const lightnessDiff = lightness >= 128 ? lightness - 128 : 127 - lightness;
             const hueCountValue = saturation * saturation * saturation / 1000000 * ((maxLightnessDiffCubed - lightnessDiff * lightnessDiff * lightnessDiff) / maxLightnessDiffCubed);
+            
             hueMap[hue] = hueMap[hue] + hueCountValue;
         });
 
