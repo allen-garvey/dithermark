@@ -1,5 +1,5 @@
 
-App.Histogram = (function(Pixel, PixelMath){
+App.Histogram = (function(Pixel, PixelMath, Image){
     
     /*
     * @param pixelHashFunc - used to get index of pixel that is used for counting unique values for histogram - (@params pixel @returns int)
@@ -8,17 +8,14 @@ App.Histogram = (function(Pixel, PixelMath){
         
         //can't use int array, since we may overflow it
         const histogramArray = new Float32Array(uniqueValues);
-        
-        for(let i=0;i<pixels.length;i+=4){
-            const pixel = Pixel.create(pixels[i], pixels[i+1], pixels[i+2], pixels[i+3]);
-            if(pixel[Pixel.A_INDEX] === 0){
-                continue;
-            }
+
+        Image.forEachOpaquePixel(pixels, (pixel)=>{
             const index = pixelHashFunc(pixel);
             if(index >= 0){
                 histogramArray[index] = histogramArray[index] + 1;
             }
-        }
+        });
+
         //find maximum value so we can normalize values
         const max = histogramArray.reduce((currentMax, element)=>{
             return Math.max(currentMax, element);
@@ -52,4 +49,4 @@ App.Histogram = (function(Pixel, PixelMath){
         createBwHistogram: createBwHistogram,
         createHueHistogram: createHueHistogram,
     };
-})(App.Pixel, App.PixelMath);
+})(App.Pixel, App.PixelMath, App.Image);
