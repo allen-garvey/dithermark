@@ -1,4 +1,4 @@
-App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions, OptimizePalettePopularity, OptimizePalettePerceptual){
+App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions, OptimizePalettePerceptual){
     function bufferToPixelArray(buffer){
         const numItems = buffer.length / 3;
         const ret = new Array(numItems)
@@ -107,4 +107,4 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
     return {
         kMeans
     };
-})(App.ColorDitherModes, App.ColorDitherModeFunctions, App.OptimizePalettePopularity, App.OptimizePalettePerceptual);
+})(App.ColorDitherModes, App.ColorDitherModeFunctions, App.OptimizePalettePerceptual);
