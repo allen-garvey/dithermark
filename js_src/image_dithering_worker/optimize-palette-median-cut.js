@@ -87,16 +87,6 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         }
     }
 
-    function sortPixels32OnLongestAxis(pixels32){
-        const sortIndex = findLongestAxis32(pixels32);
-        const secondarySortIndex = sortIndex === 0 ? 2 : sortIndex - 1;
-        const colorValueFunc1 = colorValueFuncForColorIndex(sortIndex);
-        const colorValueFunc2 = colorValueFuncForColorIndex(secondarySortIndex);
-        return pixels32.sort((a, b)=>{
-            return colorValueFunc1(a) - colorValueFunc1(b) || colorValueFunc2(a) - colorValueFunc2(b);
-        });
-    }
-
     //despite being a more effecient algorithm as well as
     //being a stable sort, counting sort is actually slower than
     //sort(), so only use it for median, where we need a stable sort
@@ -128,7 +118,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         pixelBuffer[0] = (color32 & 0xff);
         pixelBuffer[1] = (color32 & 0xff00) >> 8;
         pixelBuffer[2] = (color32 & 0xff0000) >> 16;
-        
+
         return pixelBuffer;
     }
 
@@ -255,7 +245,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
             }
             const newCuts = [];
             cuts.forEach((cut)=>{
-                cut = sortPixels32OnLongestAxis(cut);
+                cut = stableSortOnLongestAxis(cut);
                 const half = Math.ceil(cut.length / 2);
                 newCuts.push(cut.subarray(0, half));
                 newCuts.push(cut.subarray(half, cut.length));
