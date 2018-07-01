@@ -135,10 +135,8 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
 
     function reduceLightnessChannelToBw(lightnessChannel){
         const bucketKeys = [...lightnessChannel.bucketIndexSet.keys()];
-        const newBucketIndexSet = new Set();
-        newBucketIndexSet.add(bucketKeys[0]);
-        newBucketIndexSet.add(bucketKeys[bucketKeys.length - 1]);
-        
+        const newBucketIndexSet = new Set([bucketKeys[0], bucketKeys[bucketKeys.length - 1]]);
+
         return {
             bucketIndexSet: newBucketIndexSet,
             buffer: lightnessChannel.buffer,
