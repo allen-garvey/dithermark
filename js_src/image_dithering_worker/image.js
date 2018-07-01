@@ -98,7 +98,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
     }
 
     function forEachOpaquePixel(pixels, callback){
-        const pixel = new Uint8Array(4);
+        const pixel = new Uint8Array(3);
         const length = pixels.length;
         for(let i=0;i<length;i+=4){
             //ignore transparent pixels
@@ -109,7 +109,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
             pixel[0] = pixels[i];
             pixel[1] = pixels[i+1];
             pixel[2] = pixels[i+2];
-            pixel[3] = pixels[i+3];
+            //don't load alpha, since it is not used
             
             callback(pixel);
         }
