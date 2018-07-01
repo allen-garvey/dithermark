@@ -178,8 +178,9 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         }
         const numColorsAdjusted = numColors - numLightnessBucketsAdjustment;
         if(numHueBuckets + numLightnessBuckets > numColorsAdjusted){
-            const hueFraction = hueChannel.count / (hueChannel.count + (lightnessChannel.count / colorQuantization.greyMix));
-            console.log(`hue fraction is ${hueFraction}`);
+            const baseLightnessFraction = lightnessChannel.count / (lightnessChannel.count + hueChannel.count);
+            //progressively add more grays as color count increases, use sqrt to decrease large baseLightnessFraction, while leaving small baseLightnessFraction relatively unchanged
+            const hueFraction = hueChannel.count / (hueChannel.count + (lightnessChannel.count / (colorQuantization.greyMix * Math.sqrt(100 * baseLightnessFraction))) * (1 - Math.log2(numColors) / numColors));
 
             const lightnessBucketCount = Math.floor(numColorsAdjusted * (1-hueFraction));
             reduceChannelBuckets(lightnessChannel, lightnessBucketCount);
