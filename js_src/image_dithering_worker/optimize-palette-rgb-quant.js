@@ -16,7 +16,7 @@
 //     colorDist: "euclidean",  // method used to determine color distance, can also be "manhattan"
 // };
 
-App.OptimizePaletteRgbQuant = (function(){
+App.OptimizePaletteRgbQuant = (function(PixelMath, Util){
 	/**
 	 * Distances
 	 */
@@ -130,11 +130,9 @@ App.OptimizePaletteRgbQuant = (function(){
 		// reduce histogram to create initial palette
 		// build full rgb palette
 		let idxrgb = idxi32.map((i32)=>{
-			return [
-				(i32 & 0xff),
-				(i32 & 0xff00) >> 8,
-				(i32 & 0xff0000) >> 16,
-			];
+			const pixelBuffer = new Uint8Array(3);
+			Util.loadPixelBuffer(i32, pixelBuffer);
+			return pixelBuffer;
 		});
 
 		const len = idxrgb.length;
@@ -197,23 +195,19 @@ App.OptimizePaletteRgbQuant = (function(){
 	// global top-population
 	RgbQuant.prototype.colorStats1D = function(buf32){
 		const histogram = {};
-		const len = buf32.length;
 
-		for(let i=0;i<len;i++){
-			let pixel = buf32[i];
-
-			// skip transparent
-			if((pixel & 0xff000000) >> 24 == 0){
-                continue;
-            }
-
-			if(pixel in histogram){
-                histogram[pixel]++;
+		buf32.forEach((color32)=>{
+			if(PixelMath.color32Alpha(color32) === 0){
+				return;
+			}
+			if(color32 in histogram){
+                histogram[color32]++;
             }
 			else{
-                histogram[pixel] = 1;
+                histogram[color32] = 1;
             }
-		}
+		});
+
 		return histogram;
 	};
 
@@ -236,23 +230,23 @@ App.OptimizePaletteRgbQuant = (function(){
 			const boxHistogram = {};
 
 			iteratePixelsInBox(box, imageWidth, (i)=>{
-				const pixel = buf32[i];
+				const color32 = buf32[i];
 
 				// skip transparent
-				if((pixel & 0xff000000) >> 24 == 0){
+				if(PixelMath.color32Alpha(color32) == 0){
 					return;
 				}
 
-				if(pixel in histogram){
-					histogram[pixel]++;
+				if(color32 in histogram){
+					histogram[color32]++;
 				}
-				else if(pixel in boxHistogram){
-					if (++boxHistogram[pixel] >= pixelFrequencyThreshold){
-						histogram[pixel] = boxHistogram[pixel];
+				else if(color32 in boxHistogram){
+					if (++boxHistogram[color32] >= pixelFrequencyThreshold){
+						histogram[color32] = boxHistogram[color32];
 					}
 				}
 				else{
-					boxHistogram[pixel] = 1;
+					boxHistogram[color32] = 1;
 				}
 			});
 		});
@@ -359,4 +353,4 @@ App.OptimizePaletteRgbQuant = (function(){
     return {
         rgbQuant
     };
-})();
+})(App.PixelMath, App.OptimizePaletteUtil);

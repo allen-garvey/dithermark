@@ -24,7 +24,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-App.OptimizePaletteOctree = (function(ArrayUtil, Util){
+App.OptimizePaletteOctree = (function(ArrayUtil, Util, PixelMath){
     const MAX_DEPTH = 8;
     const MAX_CHILDREN = 8;
 
@@ -65,9 +65,9 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
 
     OctreeNode.prototype.addColor = function(color32, level, parent){
         if(level >= MAX_DEPTH){
-            this.color[0] += (color32 & 0xff);
-            this.color[1] += (color32 & 0xff00) >> 8;
-            this.color[2] += (color32 & 0xff0000) >> 16;
+            this.color[0] += PixelMath.color32Red(color32);
+            this.color[1] += PixelMath.color32Green(color32);
+            this.color[2] += PixelMath.color32Blue(color32);
             this.pixelCount++;
             return;
         }
@@ -81,13 +81,13 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     OctreeNode.prototype.getColorIndexForLevel = function(color32, level){
         let index = 0;
         const mask = 128 >> level;
-        if((color32 & 0xff) & mask){
+        if(PixelMath.color32Red(color32) & mask){
             index = 4;
         }
-        if(((color32 & 0xff00) >> 8) & mask){
+        if(PixelMath.color32Green(color32) & mask){
             index |= 2;
         }
-        if(((color32 & 0xff0000) >> 16) & mask){
+        if(PixelMath.color32Blue(color32) & mask){
             index |= 1;
         }
         
@@ -225,7 +225,7 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
             for(let j=i*half;j<length;j++){
                 const color32 = pixelArray[j];
                 //ignore transparent pixels
-                if((color32 & 0xff000000) >> 24 === 0){
+                if(PixelMath.color32Alpha(color32) === 0){
                     continue;
                 }
                 octreeQuantizer.addColor(color32);
@@ -241,4 +241,4 @@ App.OptimizePaletteOctree = (function(ArrayUtil, Util){
     return {
         octree
     };
-})(App.ArrayUtil, App.OptimizePaletteUtil);
+})(App.ArrayUtil, App.OptimizePaletteUtil, App.PixelMath);

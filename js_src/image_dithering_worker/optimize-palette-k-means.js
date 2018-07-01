@@ -1,4 +1,4 @@
-App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions, OptimizePalettePerceptual){
+App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions, OptimizePalettePerceptual, PixelMath, Util){
     function bufferToPixelArray(buffer){
         const numItems = buffer.length / 3;
         const ret = new Array(numItems)
@@ -46,17 +46,17 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
         const length = buf32.length;
         
         for(let i=0;i<length;i++){
-			const pixel = buf32[i];
+			const color32 = buf32[i];
 
 			// skip transparent
-			if((pixel & 0xff000000) >> 24 === 0){
+			if(PixelMath.color32Alpha(color32) === 0){
                 continue;
             }
             //technically we are not normalizing the transparency values,
             //however this does not effect accuracy, it just means for semi-transparent values
             //we might be doing a little extra unneeded work
-            const previousValue = histogram.get(pixel) || 0;
-            histogram.set(pixel, previousValue + 1);
+            const previousValue = histogram.get(color32) || 0;
+            histogram.set(color32, previousValue + 1);
         }
         return histogram; 
     }
@@ -82,9 +82,7 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
         const pixelBuffer = new Uint8ClampedArray(3);
         for(let currentIteration=0,hasConverged=false;!hasConverged && currentIteration<maximumIterations;currentIteration++){
             colorHistogram.forEach((count, color32)=>{
-                pixelBuffer[0] = (color32 & 0xff);
-                pixelBuffer[1] = (color32 & 0xff00) >> 8;
-                pixelBuffer[2] = (color32 & 0xff0000) >> 16;
+                Util.loadPixelBuffer(color32, pixelBuffer);
 
                 const paletteIndex = findClosestPaletteIndex(pixelBuffer, palette, distanceFunc);
                 const meansBufferIndexOffset = paletteIndex * 4;
@@ -107,4 +105,4 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
     return {
         kMeans
     };
-})(App.ColorDitherModes, App.ColorDitherModeFunctions, App.OptimizePalettePerceptual);
+})(App.ColorDitherModes, App.ColorDitherModeFunctions, App.OptimizePalettePerceptual, App.PixelMath, App.OptimizePaletteUtil);

@@ -155,6 +155,23 @@ App.PixelMath = (function(Pixel){
 
         return value;
     }
+
+    /**
+     * 
+     * 32 bit pixel value manipulation
+     */
+    function color32Red(color32){
+        return (color32 & 0xff);
+    }
+    function color32Green(color32){
+        return (color32 & 0xff00) >> 8;
+    }
+    function color32Blue(color32){
+        return (color32 & 0xff0000) >> 16;
+    }
+    function color32Alpha(color32){
+        return (color32 & 0xff000000) >> 24;
+    }
     
     
     return {
@@ -166,5 +183,9 @@ App.PixelMath = (function(Pixel){
        hslArrayToRgb: hslArrayToRgb,
        hslToPixel: hslToPixel,
        clamp,
+       color32Red,
+       color32Green,
+       color32Blue,
+       color32Alpha,
     };
 })(App.Pixel);

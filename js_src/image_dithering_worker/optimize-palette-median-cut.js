@@ -2,24 +2,14 @@
  * Color quantization vanilla median cut algorithm
 */
 App.OptimizePaletteMedianCut = (function(PixelMath, Util){
-    function color32Red(color32){
-        return (color32 & 0xff);
-    }
-    function color32Green(color32){
-        return (color32 & 0xff00) >> 8;
-    }
-    function color32Blue(color32){
-        return (color32 & 0xff0000) >> 16;
-    }
-
     function colorValueFuncForColorIndex(colorIndex){
         switch(colorIndex){
             case 0:
-                return color32Red;
+                return PixelMath.color32Red;
             case 1:
-                return color32Green;
+                return PixelMath.color32Green;
             default:
-                return color32Blue;
+                return PixelMath.color32Blue;
         }
     }
 
@@ -31,12 +21,12 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         let bMin = 256;
         let bMax = -1;
         pixels32.forEach((color32)=>{
-            rMin = Math.min(color32Red(color32), rMin);
-            rMax = Math.max(color32Red(color32), rMax);
-            gMin = Math.min(color32Green(color32), gMin);
-            gMax = Math.max(color32Green(color32), gMax);
-            bMin = Math.min(color32Blue(color32), bMin);
-            bMax = Math.max(color32Blue(color32), bMax);
+            rMin = Math.min(PixelMath.color32Red(color32), rMin);
+            rMax = Math.max(PixelMath.color32Red(color32), rMax);
+            gMin = Math.min(PixelMath.color32Green(color32), gMin);
+            gMax = Math.max(PixelMath.color32Green(color32), gMax);
+            bMin = Math.min(PixelMath.color32Blue(color32), bMin);
+            bMax = Math.max(PixelMath.color32Blue(color32), bMax);
         });
         const rRange = rMax - rMin;
         const gRange = gMax - gMin;
@@ -67,9 +57,9 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     function pixelArray32Average(pixelArray){
         const pixelAvg = new Float32Array(3);
         pixelArray.forEach((color32)=>{
-            pixelAvg[0] += color32Red(color32);
-            pixelAvg[1] += color32Green(color32);
-            pixelAvg[2] += color32Blue(color32);
+            pixelAvg[0] += PixelMath.color32Red(color32);
+            pixelAvg[1] += PixelMath.color32Green(color32);
+            pixelAvg[2] += PixelMath.color32Blue(color32);
         });
         const retPixel = new Uint8ClampedArray(3);
         const numPixels = pixelArray.length;
@@ -83,9 +73,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         const pixelBuffer = new Uint8Array(3);
         const color32 = pixelArray[Math.floor(pixelArray.length / 2)];
         
-        pixelBuffer[0] = (color32 & 0xff);
-        pixelBuffer[1] = (color32 & 0xff00) >> 8;
-        pixelBuffer[2] = (color32 & 0xff0000) >> 16;
+        Util.loadPixelBuffer(color32, pixelBuffer);
 
         return pixelBuffer;
     }
@@ -145,7 +133,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         for(let i=0;i<length;i++){
             const color32 = pixelBuffer[i];
             //ignore transparent pixels
-            if((color32 & 0xff000000) >> 24 === 0){
+            if(PixelMath.color32Alpha(color32) === 0){
                 continue;
             }
             pixels32[numVisiblePixels++] = color32;

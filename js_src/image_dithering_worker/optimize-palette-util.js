@@ -1,7 +1,7 @@
 /**
  * Shared functions used by optimize palette algorithms
 */
-App.OptimizePaletteUtil = (function(ArrayUtil, Image){
+App.OptimizePaletteUtil = (function(ArrayUtil, PixelMath){
     //turns JavaScript array of pixels into a single Uint8Array
     //need palette count for octree, since length of pixelArray
     //might be less than number of colors returned
@@ -35,15 +35,8 @@ App.OptimizePaletteUtil = (function(ArrayUtil, Image){
     //sorts Uint8 or Uint8Clamped array of pixels by pixelValueFunc
     //32bit pixel manipulation from rgb quant
     function sortPixelBuffer(pixels, pixelValueFunc){
-        const loadPixelBuffer = (color32, pixelBuffer)=>{
-                pixelBuffer[0] = (color32 & 0xff);
-                pixelBuffer[1] = (color32 & 0xff00) >> 8;
-                pixelBuffer[2] = (color32 & 0xff0000) >> 16;
-                pixelBuffer[3] = (color32 & 0xff000000) >> 24;
-        };
-
-        const pixel1Buffer = new Uint8Array(4);
-        const pixel2Buffer = new Uint8Array(4);
+        const pixel1Buffer = new Uint8Array(3);
+        const pixel2Buffer = new Uint8Array(3);
         const buffer32 = new Uint32Array(pixels.buffer);
         buffer32.sort((a32, b32)=>{
             loadPixelBuffer(a32, pixel1Buffer);
@@ -58,11 +51,22 @@ App.OptimizePaletteUtil = (function(ArrayUtil, Image){
         return new Uint8Array(buffer32.buffer);
     }
 
+    //no loading of alpha, since we are not using it
+    function loadPixelBuffer(color32, pixelBuffer){
+        pixelBuffer[0] = PixelMath.color32Red(color32);
+        pixelBuffer[1] = PixelMath.color32Green(color32);
+        pixelBuffer[2] = PixelMath.color32Blue(color32);
+        // if(pixelBuffer.length > 3){
+        //     pixelBuffer[3] = PixelMath.color32Alpha(color32);
+        // }
+    }
+
 
     return {
         pixelArrayToBuffer,
         countingSort32,
         sortPixelBuffer,
         pixelBuffer32ToPixelBuffer8,
+        loadPixelBuffer,
     };
-})(App.ArrayUtil, App.Image);
+})(App.ArrayUtil, App.PixelMath);

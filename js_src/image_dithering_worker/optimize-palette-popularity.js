@@ -22,10 +22,8 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
     const CRUSHED_BLACK_THRESHOLD = 46;
     const CRUSHED_WHITE_THRESHOLD = 240;
-    function perceptualPixel32Hash(pixel32, pixelBuffer){
-        pixelBuffer[0] = (pixel32 & 0xff);
-        pixelBuffer[1] = (pixel32 & 0xff00) >> 8;
-        pixelBuffer[2] = (pixel32 & 0xff0000) >> 16;
+    function perceptualPixel32Hash(color32, pixelBuffer){
+        Util.loadPixelBuffer(color32, pixelBuffer);
 
         if(Math.max(pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]) < CRUSHED_BLACK_THRESHOLD){
             return 0xff000000;
@@ -34,7 +32,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
             return 0xffffffff;
         }
 
-        return normalizePixel32Transparency(pixel32);
+        return normalizePixel32Transparency(color32);
     }
 
     function incrementMap(map, key){
@@ -57,9 +55,9 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
 
     function addColor32ToColors(color32, colors, index){
         const startIndex = index * 3;
-        colors[startIndex] = (color32 & 0xff);
-        colors[startIndex+1] = (color32 & 0xff00) >> 8;
-        colors[startIndex+2] = (color32 & 0xff0000) >> 16;
+        colors[startIndex] = PixelMath.color32Red(color32);
+        colors[startIndex+1] = PixelMath.color32Green(color32);
+        colors[startIndex+2] = PixelMath.color32Blue(color32);
     }
 
     //divides an image into numColors horizontal or vertical strips, and finds the most
@@ -84,12 +82,12 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
             const endIndex = Math.min(Math.round(i * fraction), pixelArray.length);
             const popularityMap = new Map();
             for(let j=previousEndIndex;j<endIndex;j++){
-                const pixel32 = pixelArray[j];
+                const color32 = pixelArray[j];
                 //ignore transparent pixels
-                if((pixel32 & 0xff000000) >> 24 === 0){
+                if(PixelMath.color32Alpha(color32) === 0){
                     continue;
                 }
-                incrementMap(popularityMap, pixelHashFunc(pixel32, pixelBuffer));
+                incrementMap(popularityMap, pixelHashFunc(color32, pixelBuffer));
             }
             const sortedValues = [...popularityMap.keys()].sort((a, b)=>{
                 return popularityMap.get(b) - popularityMap.get(a);
@@ -117,12 +115,12 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
             const endIndex = Math.min(Math.round(i * fraction), pixelArray.length);
             const popularityMap = new Map();
             for(let j=previousEndIndex;j<endIndex;j++){
-                const pixel32 = pixelArray[j];
+                const color32 = pixelArray[j];
                 //ignore transparent pixels
-                if((pixel32 & 0xff000000) >> 24 === 0){
+                if(PixelMath.color32Alpha(color32) === 0){
                     continue;
                 }
-                incrementMap(popularityMap, pixelHashFunc(pixel32, pixelBuffer));
+                incrementMap(popularityMap, pixelHashFunc(color32, pixelBuffer));
             }
             const sortedValues = [...popularityMap.keys()].sort((a, b)=>{
                 return popularityMap.get(b) - popularityMap.get(a);
@@ -217,12 +215,12 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
                 for(let y=yBase;y<yLimit;y++){
                     for(let x=xBase;x<xLimit;x++){
                         const pixelIndex = x + y * imageWidth;
-                        const pixel32 = pixelArray[pixelIndex];
+                        const color32 = pixelArray[pixelIndex];
                         //ignore transparent pixels
-                        if((pixel32 & 0xff000000) >> 24 === 0){
+                        if(PixelMath.color32Alpha(color32) === 0){
                             continue;
                         }
-                        incrementMap(popularityMap, pixelHashFunc(pixel32, pixelBuffer));
+                        incrementMap(popularityMap, pixelHashFunc(color32, pixelBuffer));
                     }
                 }
                 const sortedValues = [...popularityMap.keys()].sort((a, b)=>{
@@ -236,15 +234,15 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
     }
 
     function incrementAverage(color32, averageBuffer){
-        averageBuffer[0] += (color32 & 0xff);
-        averageBuffer[1] += (color32 & 0xff00) >> 8;
-        averageBuffer[2] += (color32 & 0xff0000) >> 16;
+        averageBuffer[0] += PixelMath.color32Red(color32);
+        averageBuffer[1] += PixelMath.color32Green(color32);
+        averageBuffer[2] += PixelMath.color32Blue(color32);
     }
 
     function incrementAverageCrushed(color32, averageBuffer){
-        const r = (color32 & 0xff);
-        const g = (color32 & 0xff00) >> 8;
-        const b = (color32 & 0xff0000) >> 16;
+        const r= PixelMath.color32Red(color32);
+        const g= PixelMath.color32Green(color32);
+        const b= PixelMath.color32Blue(color32);
         //don't need to do anything, since we would just be adding 0
         if(Math.max(r,g,b) < CRUSHED_BLACK_THRESHOLD){
             return;
@@ -275,7 +273,7 @@ App.OptimizePalettePopularity = (function(PixelMath, Util){
             for(let j=previousEndIndex;j<endIndex;j+=4){
                 const color32 = pixelArray[j];
                 //ignore transparent pixels
-                if((color32 & 0xff000000) >> 24 === 0){
+                if(PixelMath.color32Alpha(color32) === 0){
                     continue;
                 }
                 incrementAverageFunc(color32, averageBuffer);
