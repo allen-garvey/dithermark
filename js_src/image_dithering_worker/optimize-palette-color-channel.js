@@ -8,9 +8,10 @@
  */
 App.OptimizeColorChannel = (function(PixelMath, Image){
 
-    function ChannelStats(statsBuffer){
+    function ChannelStats(statsBuffer, count){
         this.buffer = statsBuffer;
         this.bucketIndexSet = createBucketIndexSet(statsBuffer);
+        this.count = count;
     }
 
     function createBucketIndexSet(statsBuffer){
@@ -33,6 +34,8 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         const numLightnessBuckets = Math.min(256, numColors);
         const lightnessBuffer = new Float32Array(numLightnessBuckets * 4);
         const lightnessFraction = 256 / numLightnessBuckets;
+        let hueCount = 0;
+        let lightnessCount = 0;
 
         Image.forEachOpaquePixel(pixels, (pixel)=>{
             const hue = PixelMath.hue(pixel);
@@ -48,6 +51,7 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             hueBuffer[hueIndex+1] += pixel[1] * hueCountFraction;
             hueBuffer[hueIndex+2] += pixel[2] * hueCountFraction;
             hueBuffer[hueIndex+3] += hueCountFraction;
+            hueCount += hueCountFraction;
 
 
             //increment lightness buffer
@@ -57,11 +61,12 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             lightnessBuffer[lightnessIndex+1] += pixel[1] * lightnessCountFraction;
             lightnessBuffer[lightnessIndex+2] += pixel[2] * lightnessCountFraction;
             lightnessBuffer[lightnessIndex+3] += lightnessCountFraction;
+            lightnessCount += lightnessCountFraction;
         });
 
         return {
-            hueChannel: new ChannelStats(hueBuffer),
-            lightnessChannel: new ChannelStats(lightnessBuffer),
+            hueChannel: new ChannelStats(hueBuffer, hueCount),
+            lightnessChannel: new ChannelStats(lightnessBuffer, lightnessCount),
         }
     }
 
@@ -173,11 +178,13 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         }
         const numColorsAdjusted = numColors - numLightnessBucketsAdjustment;
         if(numHueBuckets + numLightnessBuckets > numColorsAdjusted){
-            //add progressively more grey values as number of colors increases
-            const lightnessBucketCount = Math.max(Math.max(Math.min(Math.floor(numColors / colorQuantization.greyMix) - 1, numLightnessBuckets), numColorsAdjusted - numHueBuckets), 0);
+            const hueFraction = hueChannel.count / (hueChannel.count + (lightnessChannel.count / colorQuantization.greyMix));
+            console.log(`hue fraction is ${hueFraction}`);
+
+            const lightnessBucketCount = Math.floor(numColorsAdjusted * (1-hueFraction));
             reduceChannelBuckets(lightnessChannel, lightnessBucketCount);
             //have to recalculate lightness bucket count, since it might have had less buckets than required
-            reduceChannelBuckets(hueChannel, numColors - lightnessChannel.bucketIndexSet.size, true);
+            reduceChannelBuckets(hueChannel, numColorsAdjusted - lightnessChannel.bucketIndexSet.size, true);
         }
 
         loadPaletteBuffer(lightnessChannel, paletteBuffer, numLightnessBucketsAdjustment);
