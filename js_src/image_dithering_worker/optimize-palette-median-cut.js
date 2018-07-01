@@ -92,21 +92,21 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
 
     function removeDuplicatePixelsWithinLimit(pixelArray, minSize){
         function pixelKey(pixel){
-            return `${pixel[0]}-${pixel[1]}-${pixel[2]}`;
+            return pixel[0] + pixel[1] * 256 + pixel[2] * 256 * 256;
         }
         let ret = [];
-        let keys = {};
+        let keys = new Set();
         const maxSkipped = pixelArray.length - minSize;
         let numSkipped = 0;
 
         pixelArray.forEach((pixel)=>{
             if(numSkipped < maxSkipped){
                 const key = pixelKey(pixel);
-                if(keys[key]){
+                if(keys.has(key)){
                     numSkipped++;
                     return;
                 }
-                keys[key] = true;
+                keys.add(key);
             }
             ret.push(pixel);
         });
@@ -116,7 +116,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
 
     //prune colors by taking darkest and lightest colors
     //and middle lightest colors
-    function mergeMedians(medianPixels, numColors){
+    function reduceColors(medianPixels, numColors){
         medianPixels = removeDuplicatePixelsWithinLimit(medianPixels, numColors);
         if(medianPixels.length === numColors){
             return medianPixels;
@@ -160,14 +160,9 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         const numCuts = Math.pow(2, Math.ceil(Math.log2(numColors)));
 
         let cuts = [createPixel32ArrayFromVisible(pixels)];
-        const cutsLengthHalfDone = numCuts / 4;
         //approximately 10% done
         progressCallback(10);
         while(cuts.length != numCuts){
-            //approximately 50% done here
-            if(cuts.length === cutsLengthHalfDone){
-                progressCallback(50);
-            }
             const newCuts = [];
             cuts.forEach((cut)=>{
                 cut = stableSortOnLongestAxis(cut);
@@ -192,7 +187,7 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
         }
 
         if(colors.length > numColors){
-            colors = mergeMedians(colors, numColors);
+            colors = reduceColors(colors, numColors);
         }
 
         return Util.pixelArrayToBuffer(colors);
