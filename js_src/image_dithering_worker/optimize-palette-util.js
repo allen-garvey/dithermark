@@ -2,21 +2,6 @@
  * Shared functions used by optimize palette algorithms
 */
 App.OptimizePaletteUtil = (function(ArrayUtil, Image){
-    //create Javascript array of pixels from UInt8ClampedArray
-    //discards alpha value, and filters fully-transparent pixels
-    //usefull for when pixels need to be sorted
-    function createPixelArray(pixels){
-        let ret = [];
-        for(let i=0;i<pixels.length;i+=4){
-            //ignore transparent pixels
-            if(pixels[i+3] > 0){
-                //don't save alpha value, since we don't need it
-                ret.push(pixels.subarray(i, i+3));
-            }
-        }
-        return ret;
-    }
-
     //turns JavaScript array of pixels into a single Uint8Array
     //need palette count for octree, since length of pixelArray
     //might be less than number of colors returned
@@ -32,29 +17,19 @@ App.OptimizePaletteUtil = (function(ArrayUtil, Image){
         return ret;
     }
 
-    //flattens 2d array to 1d
-    //does not flatten more than 2 dimensions
-    function flattenArray(array){
-        return array.reduce((total, value)=>{
-            return total.concat(value);
-        }, []);
-    }
-
-    function countingSort(iterable, valueFunc, valueRange=256){
-        const valueMap = ArrayUtil.create(valueRange, ()=>{return [];});
-        iterable.forEach((value)=>{
+    //sorts Float32Array of pixels using counting sort algorithm
+    function countingSort32(array, valueFunc){
+        const valueMap = ArrayUtil.create(256, ()=>{ return []; });
+        array.forEach((value)=>{
             valueMap[valueFunc(value)].push(value);
         });
-        return flattenArray(valueMap);
-    }
-
-    function countingSortPixels(pixels, valueFunc, valueRange=256){
-        const valueMap = ArrayUtil.create(valueRange, ()=>{return [];});
-        for(let i=0;i<pixels.length;i+=4){
-            const pixel = pixels.subarray(i, i+4);
-            valueMap[valueFunc(pixel)].push(pixel);
-        }
-        return flattenArray(valueMap);
+        let arrayIndex = 0;
+        valueMap.forEach((subarray)=>{
+            subarray.forEach((value)=>{
+                array[arrayIndex++] = value;
+            });
+        });
+        return array;
     }
 
     //sorts Uint8 or Uint8Clamped array of pixels by pixelValueFunc
@@ -85,10 +60,8 @@ App.OptimizePaletteUtil = (function(ArrayUtil, Image){
 
 
     return {
-        createPixelArray,
         pixelArrayToBuffer,
-        countingSort,
-        countingSortPixels,
+        countingSort32,
         sortPixelBuffer,
         pixelBuffer32ToPixelBuffer8,
     };

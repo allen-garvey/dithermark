@@ -100,11 +100,10 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     //despite being a more effecient algorithm as well as
     //being a stable sort, counting sort is actually slower than
     //sort(), so only use it for median, where we need a stable sort
-    function sortOnLongestAxis(pixels){
-        const sortIndex = findLongestAxis(pixels);
-        return Util.countingSort(pixels, (pixel)=>{
-            return pixel[sortIndex];
-        });
+    function stableSortOnLongestAxis(pixels32){
+        const sortIndex = findLongestAxis32(pixels32);
+        const colorValueFunc = colorValueFuncForColorIndex(sortIndex);
+        return Util.countingSort32(pixels32, colorValueFunc);
     }
 
     function pixelArray32Average(pixelArray){
@@ -123,7 +122,14 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     }
 
     function pixelArrayMedian(pixelArray){
-        return pixelArray[Math.floor(pixelArray.length / 2)];
+        const pixelBuffer = new Uint8Array(3);
+        const color32 = pixelArray[Math.floor(pixelArray.length / 2)];
+        
+        pixelBuffer[0] = (color32 & 0xff);
+        pixelBuffer[1] = (color32 & 0xff00) >> 8;
+        pixelBuffer[2] = (color32 & 0xff0000) >> 16;
+        
+        return pixelBuffer;
     }
 
     function removeDuplicatePixelsWithinLimit(pixelArray, minSize){
@@ -175,9 +181,9 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
     function medianCutMedian(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         //find nearest power of 2 that is greater than the number of colors
         const numCuts = Math.pow(2, Math.ceil(Math.log2(numColors)));
-        const sortFunc = sortOnLongestAxis;
+        const sortFunc = stableSortOnLongestAxis;
 
-        let cuts = [Util.createPixelArray(pixels)];
+        let cuts = [createPixel32ArrayFromVisible(pixels)];
         const cuts25Done = numCuts / 8;
         const cutsHalfDone = numCuts / 4;
         const cuts75Done = numCuts / 2;
@@ -197,8 +203,8 @@ App.OptimizePaletteMedianCut = (function(PixelMath, Util){
             cuts.forEach((cut)=>{
                 cut = sortFunc(cut);
                 const half = Math.ceil(cut.length / 2);
-                newCuts.push(cut.slice(0, half));
-                newCuts.push(cut.slice(half, cut.length));
+                newCuts.push(cut.subarray(0, half));
+                newCuts.push(cut.subarray(half, cut.length));
             });
             cuts = newCuts;
         }
