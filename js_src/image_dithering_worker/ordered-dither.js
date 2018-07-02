@@ -116,10 +116,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
             });
 
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-                //ignore transparent pixels
-                if(pixel[Pixel.A_INDEX] === 0){
-                    return pixel;
-                }
+                //transparent pixels are automatically ignored, so don't have to check
                 const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 const pixelValue = pixelValueFunc(pixel);
                 
@@ -226,10 +223,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
             const mixPixel = new Uint8Array(3);
 
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-                //ignore transparent pixels
-                if(pixel[Pixel.A_INDEX] === 0){
-                    return pixel;
-                }
+                //transparent pixels are automatically ignored, so don't have to check
                 const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 const planIndex = yliluoma1DeviseMixingPlan(pixelValueFunc(pixel), colors, colorValues, bayerValue, matrixLength, pixelValueFunc, pixelDistanceFunc, mixPixel);
                 const bestPixelMatch = colors[planIndex];
@@ -312,10 +306,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
             const planBuffer = colorsLength < 256 ? new Uint8Array(colorsLength) : new Uint16Array(colorsLength);
 
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
-                //ignore transparent pixels
-                if(pixel[Pixel.A_INDEX] === 0){
-                    return pixel;
-                }
+                //transparent pixels are automatically ignored, so don't have to check
                 const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
                 const planIndex = Math.floor(bayerValue * colorsLength / matrixLength);
                 const plan = yliluoma2DeviseMixingPlan(pixel, colors, paletteValues, planBuffer, pixelValueFunc, pixelDistanceFunc);
