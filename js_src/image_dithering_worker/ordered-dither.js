@@ -1,6 +1,6 @@
 App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorDitherModeFunctions, ArrayUtil){
     
-    function createMaxtrix(dimensions, data){
+    function createMatrix(dimensions, data){
         return {
             dimensions: dimensions,
             data: data,
@@ -20,7 +20,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     }
 
     function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom){
-        const matrix = createMaxtrix(dimensions, convertBayerToFloat(matrixCreationFunc(dimensions), 255));
+        const matrix = createMatrix(dimensions, convertBayerToFloat(matrixCreationFunc(dimensions), 255));
         //for some reason we need to use same coefficient as webgl for bw dithers
         const rCoefficient = DitherUtil.ditherRCoefficient(2, true);
         const matrixValueAdjustmentFunc = isRandom ? Math.random : ()=>{ return 1;} ;
@@ -66,7 +66,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     }
 
     function createColorOrderedDither(dimensions, bayerCreationFunc, isRandom, postscriptFuncBuilder=null){
-        const matrix = createMaxtrix(dimensions, convertBayerToFloat(bayerCreationFunc(dimensions)));
+        const matrix = createMatrix(dimensions, convertBayerToFloat(bayerCreationFunc(dimensions)));
         const postscriptFunc = postscriptFuncBuilder ? postscriptFuncBuilder(matrix) : null;
         const matrixValueAdjustmentFunc = isRandom ? Math.random : ()=>{ return 1;} ;
 
@@ -100,7 +100,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
             return 1 -  (matrix[i] * fraction * ditherRCoefficient);
         }, Float32Array);
 
-        return createMaxtrix(dimensions, matrixData);
+        return createMatrix(dimensions, matrixData);
     }
 
     function createStarkColorOrderedDither(dimensions, bayerFuncName){
@@ -212,7 +212,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
         
     }
     function createYliluoma1ColorDither(dimensions, bayerFuncName){
-        const matrix = createMaxtrix(dimensions, Bayer[bayerFuncName](dimensions));
+        const matrix = createMatrix(dimensions, Bayer[bayerFuncName](dimensions));
         const matrixLength = dimensions * dimensions;
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
@@ -297,7 +297,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
         return pixel[Pixel.R_INDEX] * 299 + pixel[Pixel.G_INDEX] * 587 + pixel[Pixel.B_INDEX] * 114;
     }
     function createYliluoma2ColorDither(dimensions, bayerFuncName){
-        const matrix = createMaxtrix(dimensions, Bayer[bayerFuncName](dimensions));
+        const matrix = createMatrix(dimensions, Bayer[bayerFuncName](dimensions));
         const matrixLength = dimensions * dimensions;
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
