@@ -19,7 +19,9 @@
             //needs to be done here to initialize palettes correctly
             this.selectedPaletteIndex = 1;
             this.numColors = this.numColorsMax;
-            this.palettes = Palettes.get(this.numColorsMax).concat(UserSettings.getPalettes(this.numColorsMax));
+            const defaultPalettes = Palettes.get(this.numColorsMax);
+            this.defaultPalettesLength = defaultPalettes.length;
+            this.palettes = defaultPalettes.concat(UserSettings.getPalettes(this.numColorsMax));
         },
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook
@@ -35,6 +37,7 @@
                 colorsShadow: [],
                 draggedIndex: null,
                 palettes: [],
+                defaultPalettesLength: 0,
                 selectedPaletteIndex: null,
                 numColors: null,
                 numColorsMin: 2,

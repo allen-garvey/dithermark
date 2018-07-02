@@ -28,7 +28,15 @@
     <div class="spread-content">
         <label>Color palette
             <select v-model="selectedPaletteIndex">
-                <option v-for="(palette, index) in palettes" v-bind:value="index">{{palette.title}}</option>
+                <optgroup label="Scratch" v-if="palettes.length > 0">
+                    <option value="0">{{palettes[0].title}}</option>
+                </optgroup>
+                <optgroup label="Default palettes">
+                    <option v-for="(palette, index) in palettes.slice(1, defaultPalettesLength)" :value="index+1">{{palette.title}}</option>
+                </optgroup>
+                <optgroup label="Saved palettes">
+                    <option v-for="(palette, index) in palettes.slice(defaultPalettesLength)" :value="index+defaultPalettesLength">{{palette.title}}</option>
+                </optgroup>
             </select>
         </label>
         <?php IndexView::cyclePropertyList('selectedPaletteIndex', 'palettes', 'color palette', 1); ?>
