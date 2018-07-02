@@ -179,7 +179,7 @@ function starkOrderedDitherBuilderBase(string $orderedMatrixName, int $dimension
     $titlePrefix = 'Stark';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
     // $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
-    $webworkerFunc = '';
+    $webworkerFunc = "OrderedDither.createStarkColorOrderedDither(${dimensions}, '${orderedMatrixName}')";
     $webglFunc = "ColorDither.createStarkOrderedDither(${dimensions}, '${orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }

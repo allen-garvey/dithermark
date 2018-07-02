@@ -1,4 +1,4 @@
-App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorDitherModeFunctions){
+App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorDitherModeFunctions, ArrayUtil){
     
     function createMaxtrix(dimensions, data){
         return {
@@ -53,15 +53,16 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     /**
      * Color dither stuff
      */
+    function calculateFloatMatrixFraction(matrixLength){
+        return 1 / (matrixLength - 1);
+    }
     function convertBayerToFloat(bayerMatrix, fullValue=1){
         const length = bayerMatrix.length;
-        const fraction = 1 / (length - 1);
-        const floatData = new Float32Array(length);
-        
-        bayerMatrix.forEach((value, i)=>{
-            floatData[i] = (fraction * value - 0.5) * fullValue;
-        });
-        return floatData;
+        const fraction = calculateFloatMatrixFraction(length);
+
+        ArrayUtil.create(length, (i)=>{
+            return (fraction * bayerMatrix[i] - 0.5) * fullValue;
+        }, Float32Array);
     }
 
     function createColorOrderedDither(dimensions, bayerCreationFunc, isRandom, postscriptFuncBuilder=null){
@@ -85,6 +86,78 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
     function colorOrderedDitherBuilder2(postscriptFuncBuilder=null){
         return (bayerFuncName, dimensions, isRandom=false)=>{
             return createColorOrderedDither(dimensions, Bayer[bayerFuncName], isRandom, postscriptFuncBuilder);
+        };
+    }
+
+    /**
+     * Stark ordered dither
+     */
+    function createStarkFloatMatrix(matrix, dimensions, ditherRCoefficient){
+        const length = matrix.length;
+        const fraction = calculateFloatMatrixFraction(length);
+
+        const matrixData = ArrayUtil.create(length, (i)=>{
+            return 1 -  (matrix[i] * fraction * ditherRCoefficient);
+        }, Float32Array);
+
+        return createMaxtrix(dimensions, matrixData);
+    }
+
+    function createStarkColorOrderedDither(dimensions, bayerFuncName){
+        const baseMatrix = Bayer[bayerFuncName](dimensions);
+
+        return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
+            const matrix = createStarkFloatMatrix(baseMatrix, dimensions, DitherUtil.ditherRCoefficient(colors.length, true));
+            const colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
+            const pixelValueFunc = colorDitherModeFuncs.pixelValue;
+            const pixelDistanceFunc = colorDitherModeFuncs.distance;
+            const colorValues = colors.map((color)=>{
+                return pixelValueFunc(color);
+            });
+
+            return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
+                //ignore transparent pixels
+                if(pixel[Pixel.A_INDEX] === 0){
+                    return pixel;
+                }
+                const bayerValue = matrixValue(matrix, x % matrix.dimensions, y % matrix.dimensions);
+                const pixelValue = pixelValueFunc(pixel);
+                
+                let shortestDistance = Infinity;
+                let shortestDistanceColorIndex = 0;
+
+                //find color with shortest distance to pixel
+                colorValues.forEach((colorValue, i)=>{
+                    const currentDistance = pixelDistanceFunc(pixelValue, colorValue);
+                    if(currentDistance < shortestDistance){
+                        shortestDistance = currentDistance;
+                        shortestDistanceColorIndex = i;
+                    }
+                });
+                let pixelMatchIndex = shortestDistanceColorIndex;
+
+                //find greatest allowed distance
+                //check for shortest distance being 0, so we don't divide by 0
+                if(bayerValue < 1){
+                    let greatestAllowedDistance = -1;
+                    let greatestAllowedDistanceIndex = shortestDistanceColorIndex;
+                    colorValues.forEach((colorValue, i)=>{
+                        const currentDistance = pixelDistanceFunc(pixelValue, colorValue);
+                        if(currentDistance > greatestAllowedDistance && currentDistance / shortestDistance * bayerValue < 1){
+                            greatestAllowedDistance = currentDistance;
+                            greatestAllowedDistanceIndex = i;
+                        }
+                    });
+                    pixelMatchIndex = greatestAllowedDistanceIndex;
+                }
+                
+                const pixelMatch = colors[pixelMatchIndex];
+                //rgb only, preserve alpha
+                for(let i=0;i<3;i++){
+                    pixel[i] = pixelMatch[i];
+                }
+                return pixel;
+            });
         };
     }
 
@@ -143,7 +216,6 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
         const matrixLength = dimensions * dimensions;
 
         return (pixels, imageWidth, imageHeight, colorDitherModeId, colors)=>{
-            const colorsLength = colors.length;
             const colorDitherModeFuncs = ColorDitherModeFunctions[colorDitherModeId];
             const pixelValueFunc = colorDitherModeFuncs.pixelValue;
             const pixelDistanceFunc = colorDitherModeFuncs.distance;
@@ -151,7 +223,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
                 return pixelValueFunc(color);
             });
             //to reduce allocations and deletions
-            const mixPixel = Pixel.create(0, 0, 0);
+            const mixPixel = new Uint8Array(3);
 
             return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
                 //ignore transparent pixels
@@ -295,6 +367,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
         createHueLightnessDither: colorOrderedDitherBuilder2(hueLightnessPostscriptFuncBuilder),
         createYliluoma2ColorDither,
         createYliluoma1ColorDither,
+        createStarkColorOrderedDither,
     };
 
     DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey, colorDitherKey)=>{
@@ -304,4 +377,4 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
 
     return exports;
     
-})(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath, App.DitherUtil, App.ColorDitherModeFunctions);
+})(App.Image, App.Pixel, App.BayerMatrix, App.PixelMath, App.DitherUtil, App.ColorDitherModeFunctions, App.ArrayUtil);
