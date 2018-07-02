@@ -371,6 +371,8 @@ function colorAlgorithmModelBase(): array{
 
 function colorOrderedDitherAlgorithmModel(): array{
     $patterns = getOrderedMatrixPatterns();
+    //if using patterns greater than dimension 8 with yliluoma 1,
+    //make sure to increase YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH constant in config.php
     $yliluoma1PatternKeys = [
         'BAYER_2' => true,
         'BAYER_8' => true,

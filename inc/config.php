@@ -87,9 +87,9 @@
     //color dither stuff
     //needs to be here because webgl shaders also rely on this constant
     define('COLOR_DITHER_MAX_COLORS', 12);
-    //this is used for yliluoma 1 dither
-    //since max dimensions for ordered dither matrix is 16, 16 * 16 = 256
-    define('ORDERED_MATRIX_MAX_LENGTH', 256);
+    //this is used for yliluoma 1 dither for largest dimensions used
+    //dimensions are 8 instead of 16, since at dimensions 16 it is very slow, while not being much different than 8
+    define('YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH', 8*8);
 
     //for unsplash referral links
     define('UNSPLASH_REFERRAL_APP_NAME', 'dithermark');

@@ -52,7 +52,7 @@
                 if(index2 >= u_colors_array_length){
                     break;
                 }
-                for(int ratio=0;ratio<<?= ORDERED_MATRIX_MAX_LENGTH; ?>;ratio++){
+                for(int ratio=0;ratio<<?= YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH; ?>;ratio++){
                     if(ratio >= bayerLengthInt){
                         break;
                     }
