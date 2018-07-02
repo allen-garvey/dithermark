@@ -32,10 +32,6 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         let saturationMax = 0;
         let saturationMin = Infinity;
         let saturationTotal = 0;
-        let saturationHighCount = 0;
-        let saturationLowCount = 0;
-        let saturationHighTotal = 0;
-        let saturationLowTotal = 0;
         //lightness stats
         let lightnessMax = 0;
         let lightnessMin = Infinity;
@@ -54,14 +50,6 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
             }
             else if(saturation < saturationMin){
                 saturationMin = saturation;
-            }
-            if(saturation < 50){
-                saturationLowCount++;
-                saturationLowTotal += saturation;
-            }
-            else{
-                saturationHighCount++;
-                saturationHighTotal += saturation;
             }
             if(lightness > lightnessMax){
                 lightnessMax = lightness;
@@ -101,10 +89,6 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
                 min: saturationMin,
                 max: saturationMax,
                 count: pixelCount,
-                highCount: saturationHighCount,
-                lowCount: saturationLowCount,
-                lowAverage: saturationLowTotal / saturationLowCount,
-                highAverage: saturationHighTotal / saturationHighCount,
             },
             lightness: {
                 mapObject: {
