@@ -60,7 +60,7 @@ App.OrderedDither = (function(Image, Pixel, Bayer, PixelMath, DitherUtil, ColorD
         const length = bayerMatrix.length;
         const fraction = calculateFloatMatrixFraction(length);
 
-        ArrayUtil.create(length, (i)=>{
+        return ArrayUtil.create(length, (i)=>{
             return (fraction * bayerMatrix[i] - 0.5) * fullValue;
         }, Float32Array);
     }
