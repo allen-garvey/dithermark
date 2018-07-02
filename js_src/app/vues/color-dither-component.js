@@ -5,8 +5,6 @@
     //caching for optimize palette
     let optimizedPalettes;
 
-    let numPalettesSaved = 0;
-
     function optimizePaletteMemorizationKey(numColors, modeId){
         return `${numColors}-${modeId}`;
     }
@@ -281,7 +279,7 @@
                 return typeof this.pendingColorQuantizations[key] === 'number';
             },
             savePalette: function(){
-                this.palettes.push(Palettes.generateUserSavedPalette(this.colors.slice(), ++numPalettesSaved));
+                this.palettes.push(Palettes.generateUserSavedPalette(this.colors.slice(), this.palettes.length - this.defaultPalettesLength + 1));
                 this.selectedPaletteIndex = this.palettes.length - 1;
                 this.saveUserPalettes();
             },
