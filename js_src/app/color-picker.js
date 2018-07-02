@@ -55,7 +55,7 @@ App.ColorPicker = (function(Pixel, ArrayUtil){
         return array1.length == array2.length && array1.every((v,i)=> v === array2[i]);
     }
     
-    function pixelsToHexArray(pixels, length){
+    function pixelsToHexArray(pixels){
         function numToHex(num){
             const hex = num.toString(16);
             if(hex.length < 2){
@@ -63,8 +63,10 @@ App.ColorPicker = (function(Pixel, ArrayUtil){
             }
             return hex;
         }
-        const ret = new Array(length).fill('#000000');
-        for(let i=0,index=0;i<pixels.length;i+=3,index++){
+        const pixelsLength = pixels.length;
+        const ret = new Array(pixelsLength / 3);
+        
+        for(let i=0,index=0;i<pixelsLength;i+=3,index++){
             ret[index] = `#${numToHex(pixels[i])}${numToHex(pixels[i+1])}${numToHex(pixels[i+2])}`;
         }
         

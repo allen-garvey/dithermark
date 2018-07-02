@@ -233,7 +233,7 @@
                 if(!this.isOptimizePaletteKeyPending(key)){
                     return;
                 }
-                const colorsHexArray = ColorPicker.pixelsToHexArray(colors, this.numColorsMax);
+                const colorsHexArray = ColorPicker.pixelsToHexArray(colors);
                 if(shouldCache){
                     optimizedPalettes[key] = colorsHexArray;
                 }
@@ -242,8 +242,13 @@
                 //avoids race conditions when color quantization mode or number of colors is changed before results return
                 const currentKey = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
                 if(key === currentKey){
-                    this.colorsShadow = colorsHexArray.slice();
+                    this.changePaletteToOptimizePaletteResult(colorsHexArray.slice());
                 }
+            },
+            changePaletteToOptimizePaletteResult: function(colorsHexArrayCopy){
+                //this is so if optimize palette result has less colors than max, we keep the colors that are already in the palette
+                //at the end of the palette
+                this.colorsShadow = colorsHexArrayCopy.concat(this.colorsShadow.slice(colorsHexArrayCopy.length, this.numColorsMax));
             },
             histogramWorkerMessageReceived: function(huePercentages){
                 Histogram.drawColorHistogram(histogramCanvas, huePercentages);
@@ -260,7 +265,7 @@
                     return;
                 }
                 if(optimizedPalettes[key]){
-                    this.colorsShadow = optimizedPalettes[key].slice();
+                    this.changePaletteToOptimizePaletteResult(optimizedPalettes[key].slice());
                     return;
                 }
                 //have to use Vue.set for object keys
