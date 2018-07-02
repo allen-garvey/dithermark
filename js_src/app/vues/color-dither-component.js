@@ -19,7 +19,7 @@
             //needs to be done here to initialize palettes correctly
             this.selectedPaletteIndex = 1;
             this.numColors = this.numColorsMax;
-            this.palettes = Palettes.get().concat(UserSettings.getPalettes());
+            this.palettes = Palettes.get(this.numColorsMax).concat(UserSettings.getPalettes(this.numColorsMax));
         },
         mounted: function(){
             //have to get canvases here, because DOM manipulation needs to happen in mounted hook

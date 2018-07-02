@@ -1,6 +1,6 @@
-App.ColorPalettes = (function(){
+App.ColorPalettes = (function(ArrayUtil){
     
-    function getPalettes(){
+    function defaultPalettes(){
         return [
             {title: 'Custom', isCustom: true},
             {title: 'Elevate', colors: ['#201A0B', '#fcfae2', '#492910', '#a9220f', '#2b347c', '#F4B38A', '#fce76e', '#2b7409', '#080000', '#6a94ab', '#d0ca40', '#234309']},
@@ -33,6 +33,22 @@ App.ColorPalettes = (function(){
         ];
     }
 
+    function getPalettes(minimumColorsLength){
+        return padPaletteColorsToMinimumLength(defaultPalettes(), minimumColorsLength);
+    }
+
+    //make sure each palette has at least the minimum number of colors
+    function padPaletteColorsToMinimumLength(palettes, minimumColorsLength){
+        return palettes.map((palette)=>{
+            if(!palette.isCustom && palette.colors.length < minimumColorsLength){
+                palette.colors = palette.colors.concat(ArrayUtil.create(minimumColorsLength - palette.colors.length, ()=>{
+                    return '#000000';
+                }));
+            }
+            return palette;
+        });
+    }
+
     function generateUserSavedPaletteTitle(savedPaletteId){
         return `Saved Palette ${savedPaletteId}`;
     }
@@ -48,6 +64,7 @@ App.ColorPalettes = (function(){
     return {
         get: getPalettes,
         generateUserSavedPalette,
+        padPaletteColorsToMinimumLength,
     };
     
-})();
+})(App.ArrayUtil);

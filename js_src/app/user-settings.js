@@ -1,5 +1,5 @@
 //module for saving and retrieving user settings in localStorage
-App.UserSettings = (function(localStorage){
+App.UserSettings = (function(localStorage, ColorPalettes){
     const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
     const USER_GLOBAL_SETTINGS_KEY = 'user-global-settings';
 
@@ -50,11 +50,15 @@ App.UserSettings = (function(localStorage){
         return mergeObjectWithDefault(JSON.parse(globalSettings), defaultSettings);
     }
 
+    function getPalettes(minimumColorsLength){
+        return ColorPalettes.padPaletteColorsToMinimumLength(getSettingOrDefault(USER_SAVED_PALETTES_KEY, []), minimumColorsLength);
+    }
+
 
     return {
-        getPalettes: ()=>{ return getSettingOrDefault(USER_SAVED_PALETTES_KEY, []); },
+        getPalettes,
         savePalettes,
         getGlobalSettings,
         saveGlobalSettings,
     };
-})(window.localStorage);
+})(window.localStorage, App.ColorPalettes);
