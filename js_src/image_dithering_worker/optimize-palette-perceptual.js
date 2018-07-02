@@ -522,8 +522,8 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
     //both arrays should be the same length
     //based on artistic/psychological principle that very dark or very light colors should be less saturated
     //while colors with medium lightness should be the most saturated
-    function zipHsl(hues, saturations, lightnesses, numColors, centerSaturation){
-        let ret = new Uint16Array(numColors * 3);
+    function zipHsl(hues, saturations, lightnesses, numColors){
+        const ret = new Uint16Array(numColors * 3);
         
         //lightness
         for(let retIndex=2, lightnessIndex=0;retIndex<ret.length;retIndex+=3,lightnessIndex++){
@@ -532,25 +532,16 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         
         //saturation
         //have most saturated colors in middle brightness, while darkest and lightest colors are less saturated
-        if(centerSaturation){
-            let retIndex = 1;
-            let saturationIndex = 0;
-            let half = Math.floor(ret.length / 2);
-            for(;retIndex < half;retIndex+=3,saturationIndex+=2){
-                ret[retIndex] = saturations[saturationIndex];
-                ret[ret.length - 1 - retIndex] = saturations[saturationIndex + 1];
-            }
-            //for odd numbers
-            if(ret.length % 2 === 1){
-                let middle = half + 1;
-                ret[middle * 3 + 1] = saturations[middle];
-            }
+        const half = Math.floor(numColors / 2) * 3;
+        const backIndexBase = ret.length - 1;
+        for(let retIndex = 1, saturationIndex = 0;retIndex < half;retIndex+=3,saturationIndex+=2){
+            ret[retIndex] = saturations[saturationIndex];
+            ret[backIndexBase - retIndex] = saturations[saturationIndex + 1];
         }
-        //match increase saturation with lightness
-        else{
-            for(let retIndex=1, saturationIndex=0;retIndex<ret.length;retIndex+=3,saturationIndex++){
-                ret[retIndex] = saturations[saturationIndex];
-            }
+        //for odd numbers
+        if(numColors % 2 === 1){
+            //add 1 to half, becuase half is the base index, and saturation is in the second position
+            ret[half + 1] = saturations[Math.floor(saturations.length / 2) + 1];
         }
         
         //hues
@@ -653,7 +644,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         hues = sortHues(hues, huePopularityMap);
         
         //convert to hsl and return results
-        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        const hsl = zipHsl(hues, saturations, lightnesses, numColors);
         return PixelMath.hslArrayToRgb(hsl);
     }
 
@@ -761,7 +752,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         hues = sortHues(hues, huePopularityMap);
         
         //convert to hsl and return results
-        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        const hsl = zipHsl(hues, saturations, lightnesses, numColors);
         return PixelMath.hslArrayToRgb(hsl);
     }
 
@@ -873,7 +864,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         hues = sortHuesByClosestLightness(hues, pixels);
         
         //convert to hsl and return results
-        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        const hsl = zipHsl(hues, saturations, lightnesses, numColors);
         return PixelMath.hslArrayToRgb(hsl);
     }
 
@@ -886,7 +877,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         const saturationStats = hslPopularityMap.saturation;
         const saturationDistributionFunc = saturationStats.average > 30 ? logarithmicEdgeLinearMiddleDistribution : logarithmicEdgeDistribution;
         const saturations = saturationDistributionFunc(numColors, saturationStats.min, saturationStats.max);
-        
+
         //hue
         let huePopularityMapObject = hslPopularityMap.hue;
         huePopularityMapObject = filterHues(huePopularityMapObject, imageHeight * imageWidth, colorQuantization.hueFilterLog);
@@ -903,7 +894,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         hues = sortHuesByClosestLightness(hues, pixels);
         
         //convert to hsl and return results
-        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        const hsl = zipHsl(hues, saturations, lightnesses, numColors);
         return PixelMath.hslArrayToRgb(hsl);
     }
 
@@ -955,7 +946,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         let hues = hueUniformPopularity(huePopularityMapObject, numColors);
         let huePopularityMap = hueLightnessPopularityMap(pixels, 360, hueFunc);
         hues = sortHues(hues, huePopularityMap);
-        let hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        const hsl = zipHsl(hues, saturations, lightnesses, numColors);
         let ret = PixelMath.hslArrayToRgb(hsl);
         return ret;
     }
@@ -1002,7 +993,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
 
         }
 
-        const hsl = zipHsl(hues, saturations, lightnesses, numColors, true);
+        const hsl = zipHsl(hues, saturations, lightnesses, numColors);
         return PixelMath.hslArrayToRgb(hsl);
     }
     
