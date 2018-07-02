@@ -34,7 +34,7 @@
                 <optgroup label="Default palettes">
                     <option v-for="(palette, index) in palettes.slice(1, defaultPalettesLength)" :value="index+1">{{palette.title}}</option>
                 </optgroup>
-                <optgroup label="Saved palettes">
+                <optgroup label="Saved palettes" v-if="palettes.length - defaultPalettesLength > 0">
                     <option v-for="(palette, index) in palettes.slice(defaultPalettesLength)" :value="index+defaultPalettesLength">{{palette.title}}</option>
                 </optgroup>
             </select>
