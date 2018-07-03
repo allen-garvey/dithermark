@@ -2,7 +2,7 @@ App.ColorPalettes = (function(ArrayUtil){
     
     function defaultPalettes(){
         return [
-            {title: 'Custom', isCustom: true},
+            {title: '---', isCustom: true},
             {title: 'Elevate', colors: ['#201A0B', '#fcfae2', '#492910', '#a9220f', '#2b347c', '#F4B38A', '#fce76e', '#2b7409', '#080000', '#6a94ab', '#d0ca40', '#234309', '#ac3cc6', '#510711', '#351757']},
             {title: 'Primaries', colors: ['#000000', '#ffffff', '#c40000', '#000075', '#ffff8a', '#6f207a', '#f8c2f7', '#22531a', '#ff8800', '#40321e', '#485ca4', '#87d255', '#e065de', '#5c373f', '#dbd21a']},
             {title: 'Galaxy', colors: ['#0d3677', '#D2ebf0', '#763a70', '#f9d2f4', '#242440', '#cd20cd', '#c5c565', '#b17633', '#554d28', '#2e337a', '#fefde9', '#181823', '#bda833', '#c866c4', '#914343']},
