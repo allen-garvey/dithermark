@@ -23,30 +23,82 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         }, Uint8Array);
     }
 
+    function redHues(count){
+        const width = 120;
+        const multiplier = width / count;
+        const ret = new Uint16Array(count);
+        for(let i=0;i<count;i++){
+            let hue = Math.round(i * multiplier);
+            if(hue > 60){
+                hue = (hue + 300) % 360
+            } 
+            ret[i] = hue;
+        }
+        return ret;
+    }
+
+    function greenHues(count){
+        const offset = 60;
+        const width = 120;
+        const limit = offset + width;
+        const middle = offset + width / 2;
+        const multiplier = width / count;
+        const ret = new Uint16Array(count);
+        for(let i=0;i<count;i++){
+            let hue = Math.round(i * multiplier + middle) % 360;
+            if(hue > limit){
+                hue = (hue + (360 - offset)) % 360;
+            }
+            ret[i] = hue;
+        }
+        return ret;
+    }
+
+    function blueHues(count){
+        const offset = 180;
+        const width = 120;
+        const limit = offset + width;
+        const middle = offset + width / 2;
+        const multiplier = width / count;
+        const ret = new Uint16Array(count);
+        for(let i=0;i<count;i++){
+            let hue = Math.round(i * multiplier + middle) % 360;
+            if(hue > limit){
+                hue = (hue + (360 - offset)) % 360;
+            }
+            ret[i] = hue;
+        }
+        return ret;
+    }
+
     function generateHues(numColors, isRotated=false){
-        //don't need greatest color index, since hues wrap around
-        const multiplier = 360 / numColors;
-        const offset = isRotated ? multiplier / 2 : 0;
+        const redCount = numColors === 3 ? 1 : Math.ceil(numColors / 2);
+        const greenCount = numColors === 3 ? 1 : Math.ceil((numColors - redCount) * 2 / 3);
+        const blueCount = numColors - redCount - greenCount;
 
-        const hues = ArrayUtil.create(numColors, (i)=>{
-            return Math.round(i * multiplier + offset) % 360;
-        }, Uint16Array);
+        const reds = redHues(redCount);
+        const greens = greenHues(greenCount);
+        const blues = blueHues(blueCount);
 
-        const halfLimit = Math.ceil(numColors / 2);
-        const halfOffset = Math.floor(numColors / 2);
-        for(let i=1;i<halfLimit;i+=2){
-            const temp = hues[i+halfOffset];
-            hues[i+halfOffset] = hues[i];
-            hues[i] = temp;
-        }
+        const hues = new Uint16Array(numColors);
 
-        //rotate hues so that red is in the middle, and is the most saturated
-        const huesRet = new Uint16Array(numColors);
-        for(let i=0;i<numColors;i++){
-            huesRet[(i+halfOffset) % numColors] = hues[i];
-        }
+        blues.forEach((hue, i)=>{
+            hues[i] = hue;
+        });
 
-        return huesRet;
+        reds.forEach((hue, i)=>{
+            hues[i + blues.length] = hue;
+        });
+
+        greens.forEach((hue, i)=>{
+            hues[i + reds.length + blues.length] = hue;
+        });
+
+        // for(let i=0;i<numColors;i++){
+        //     huesRet[(i+halfOffset) % numColors] = hues[i];
+        // }
+
+        return hues;
     }
 
 
