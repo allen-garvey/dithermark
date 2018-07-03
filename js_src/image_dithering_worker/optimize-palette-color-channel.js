@@ -28,7 +28,8 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
     }
 
     function createImageChannels(pixels, numColors){
-        const maxLightnessDiffCubed = 127 * 127 * 127;
+        const maxLightnessDiff = 127;
+        const maxSaturationCubed = 1000000;
 
         const hueBuffer = new Float32Array(360 * 4);
         const numLightnessBuckets = Math.min(256, numColors);
@@ -50,7 +51,7 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             //increment hue buffer
             //hue percentages from createHslPopularityMap in optimize palette perceptual
             const lightnessDiff = lightness >= 128 ? lightness - 128 : 127 - lightness;
-            const hueCountFraction = saturation * saturation * saturation / 1000000 * ((maxLightnessDiffCubed - lightnessDiff * lightnessDiff * lightnessDiff) / maxLightnessDiffCubed);
+            const hueCountFraction = saturation * saturation * saturation / maxSaturationCubed * ((maxLightnessDiff - lightnessDiff) / maxLightnessDiff);
             const hueIndex = hue * 4;
             hueBuffer[hueIndex]   += pixel[0] * hueCountFraction;
             hueBuffer[hueIndex+1] += pixel[1] * hueCountFraction;

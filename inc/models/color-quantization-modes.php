@@ -48,7 +48,7 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('Color wheel k', 'Perceptual.monochrome', ['hueCount' => -1]),
         'Color Channel',
         new ColorQuantizationMode('Color channel (Balanced)', 'ColorChannel.colorChannel', ['greyMix' => 4]),
-        new ColorQuantizationMode('Color channel (Vibrant)', 'ColorChannel.colorChannel', ['greyMix' => 16]),
+        new ColorQuantizationMode('Color channel (Vibrant)', 'ColorChannel.colorChannel', ['greyMix' => 32]),
         new ColorQuantizationMode('Color channel (Wide)', 'ColorChannel.colorChannel', ['greyMix' => 1]),
         'Artiquant 3',
         new ColorQuantizationMode('Artiquant 3 (Balanced)', 'Perceptual.medianCut5', ['hueMix' => 2, 'hueClamp' => true]),
