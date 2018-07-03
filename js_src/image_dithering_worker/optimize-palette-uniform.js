@@ -23,80 +23,134 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         }, Uint8Array);
     }
 
-    function redHues(count){
+    function redHues(count, isRotated=false){
         const width = 120;
         const multiplier = width / count;
+        const offset = isRotated ? multiplier / 2 : 0;
         const ret = new Uint16Array(count);
         for(let i=0;i<count;i++){
-            let hue = Math.round(i * multiplier);
+            let hue = Math.round(i * multiplier + offset);
             if(hue > 60){
                 hue = (hue + 300) % 360
             } 
             ret[i] = hue;
         }
+        //make sure red (0) is in middle so it is most saturated
+        if(count > 2){
+            const half = Math.floor(count / 2) - 1;
+            const temp = ret[half];
+            ret[half] = ret[0];
+            ret[0] = temp;
+        }
+
         return ret;
     }
 
-    function greenHues(count){
-        const offset = 60;
+    function greenHues(count, isRotated=false){
+        const start = 60;
         const width = 120;
-        const limit = offset + width;
-        const middle = offset + width / 2;
+        const limit = start + width;
+        const middle = start + width / 2;
         const multiplier = width / count;
+        const offset = isRotated ? multiplier / 2 : 0;
         const ret = new Uint16Array(count);
         for(let i=0;i<count;i++){
-            let hue = Math.round(i * multiplier + middle) % 360;
+            let hue = Math.round(i * multiplier + middle + offset) % 360;
             if(hue > limit){
-                hue = (hue + (360 - offset)) % 360;
+                hue = (hue + (360 - start)) % 360;
             }
             ret[i] = hue;
         }
         return ret;
     }
 
-    function blueHues(count){
-        const offset = 180;
+    function blueHues(count, isRotated=false){
+        const start = 180;
         const width = 120;
-        const limit = offset + width;
-        const middle = offset + width / 2;
+        const limit = start + width;
+        const middle = start + width / 2;
         const multiplier = width / count;
+        const offset = isRotated ? multiplier / 2 : 0;
         const ret = new Uint16Array(count);
         for(let i=0;i<count;i++){
-            let hue = Math.round(i * multiplier + middle) % 360;
+            let hue = Math.round(i * multiplier + middle + offset) % 360;
             if(hue > limit){
-                hue = (hue + (360 - offset)) % 360;
+                hue = (hue + (360 - start)) % 360;
             }
             ret[i] = hue;
         }
         return ret;
     }
+
+    function calculateHueCounts(numColors, isRotated=false){
+        if(isRotated){
+            const greenCount = numColors <= 3 ? 1 : Math.round(2 * numColors / 5);
+            const redCount = numColors <= 3 ? 1 : Math.floor((numColors - greenCount) * 5 / 8);
+            const blueCount = numColors - redCount - greenCount;
+            
+            return {
+                redCount,
+                greenCount,
+                blueCount
+            };
+        }
+
+        const redCount = numColors === 3 ? 1 : Math.ceil(numColors / 2);
+        const greenCount = numColors === 3 ? 1 : Math.floor((numColors - redCount) * 2 / 3);
+        const blueCount = numColors - redCount - greenCount;
+        
+        return {
+            redCount,
+            greenCount,
+            blueCount
+        };
+    }
+
 
     function generateHues(numColors, isRotated=false){
-        const redCount = numColors === 3 ? 1 : Math.ceil(numColors / 2);
-        const greenCount = numColors === 3 ? 1 : Math.ceil((numColors - redCount) * 2 / 3);
-        const blueCount = numColors - redCount - greenCount;
+        const {redCount, greenCount, blueCount} = calculateHueCounts(numColors, isRotated);
 
-        const reds = redHues(redCount);
-        const greens = greenHues(greenCount);
-        const blues = blueHues(blueCount);
+        console.log(`redcount ${redCount} greenCount ${greenCount} blueCount ${blueCount}`);
+
+        const reds = redHues(redCount, isRotated);
+        const greens = greenHues(greenCount, isRotated);
+        const blues = blueHues(blueCount, isRotated);
 
         const hues = new Uint16Array(numColors);
 
-        blues.forEach((hue, i)=>{
-            hues[i] = hue;
-        });
-
-        reds.forEach((hue, i)=>{
-            hues[i + blues.length] = hue;
-        });
-
-        greens.forEach((hue, i)=>{
-            hues[i + reds.length + blues.length] = hue;
-        });
-
-        // for(let i=0;i<numColors;i++){
-        //     huesRet[(i+halfOffset) % numColors] = hues[i];
-        // }
+        let redIndex = 0;
+        let greenIndex = 0;
+        let blueIndex = 0;
+        if(isRotated){
+            //shuffle hues, so we get sequence g,b,r
+            for(let i=0,colorIndex=0;i<numColors;i++){
+                if(colorIndex === 1 && blueIndex < blues.length){
+                    hues[i] = blues[blueIndex++];
+                }
+                else if(colorIndex === 2 && redIndex < reds.length){
+                    hues[i] = reds[redIndex++];
+                }
+                else{
+                    hues[i] = greens[greenIndex++];
+                }
+                colorIndex = (colorIndex + 1) % 3;
+            }
+        }
+        else{
+            //shuffle hues, so we get sequence b,r,g
+            for(let i=0,colorIndex=0;i<numColors;i++){
+                if(colorIndex === 0 && blueIndex < blues.length){
+                    hues[i] = blues[blueIndex++];
+                }
+                else if(colorIndex === 1 && greenIndex < greens.length){
+                    hues[i] = greens[greenIndex++];
+                }
+                else{
+                    hues[i] = reds[redIndex++];
+                }
+                colorIndex = (colorIndex + 1) % 3;
+            }
+        }
 
         return hues;
     }
@@ -114,8 +168,6 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         console.log(lightnesses);
 
         const hsl = Perceptual.zipHsl(hues, saturations, lightnesses, numColors);
-        console.log('hsl');
-        console.log(hsl);
         return PixelMath.hslArrayToRgb(hsl);
     }
     
