@@ -525,7 +525,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
         //for odd numbers
         if(numColors % 2 === 1){
             //add 1 to half, becuase half is the base index, and saturation is in the second position
-            ret[half + 1] = saturations[Math.floor(saturations.length / 2) + 1];
+            ret[half + 1] = saturations[saturations.length - 1];
         }
         
         //hues
