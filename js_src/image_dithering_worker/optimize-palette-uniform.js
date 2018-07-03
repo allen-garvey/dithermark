@@ -40,35 +40,10 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
             hues[i] = temp;
         }
 
-        //rotate hues so purple hue is at index 0 (black)
+        //rotate hues so that red is in the middle, and is the most saturated
         const huesRet = new Uint16Array(numColors);
-        let purpleIndex = 0;
         for(let i=0;i<numColors;i++){
-            if(hues[i] >= 260 && hues[i] <= 290){
-                purpleIndex = i;
-                break;
-            }
-        }
-        for(let i=0;i<numColors;i++){
-            const adjustedIndex = (i + purpleIndex) % numColors;
-            huesRet[i] = hues[adjustedIndex];
-        }
-        //swap middle purple with red, so red is most saturated
-        if(isRotated){
-            let currentRedIndex = 0;
-            for(let i=0;i<numColors;i++){
-                if(huesRet[i] === hues[0]){
-                    currentRedIndex = i;
-                    break;
-                }
-            }
-            for(let i=1;i<numColors;i++){
-                if(huesRet[i] >= 250 && huesRet[i] <= 300){
-                    huesRet[currentRedIndex] = huesRet[i];
-                    huesRet[i] = hues[0];
-                    break;
-                }
-            }
+            huesRet[(i+halfOffset) % numColors] = hues[i];
         }
 
         return huesRet;
