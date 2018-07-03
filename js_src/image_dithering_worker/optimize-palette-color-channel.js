@@ -32,8 +32,13 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
 
         const hueBuffer = new Float32Array(360 * 4);
         const numLightnessBuckets = Math.min(256, numColors);
+
         const lightnessBuffer = new Float32Array(numLightnessBuckets * 4);
         const lightnessFraction = 256 / numLightnessBuckets;
+
+        const lightnessHistogram = new Float32Array(256 * 4);
+
+        let pixelCount = 0;
         let hueCount = 0;
         let lightnessCount = 0;
 
@@ -62,11 +67,22 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             lightnessBuffer[lightnessIndex+2] += pixel[2] * lightnessCountFraction;
             lightnessBuffer[lightnessIndex+3] += lightnessCountFraction;
             lightnessCount += lightnessCountFraction;
+
+            //increment lightness histgram, used for black and white values
+            const lightnessHistogramIndex = lightness * 4;
+            for(let i=0;i<3;i++){
+                lightnessHistogram[lightnessHistogramIndex+i] += pixel[i];
+            }
+            lightnessHistogram[lightnessHistogramIndex+3]++;
+
+            pixelCount++;
         });
 
         return {
             hueChannel: new ChannelStats(hueBuffer, hueCount),
             lightnessChannel: new ChannelStats(lightnessBuffer, lightnessCount),
+            lightnessHistogram,
+            pixelCount,
         }
     }
 
@@ -138,14 +154,32 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         }
     }
 
-    function reduceLightnessChannelToBw(lightnessChannel){
-        const bucketKeys = [...lightnessChannel.bucketIndexSet.keys()];
-        const newBucketIndexSet = new Set([bucketKeys[0], bucketKeys[bucketKeys.length - 1]]);
+    function loadPaletteBufferBw(paletteBuffer, lightnessHistogram, pixelCount){
+        const imageFractionalPixels = pixelCount * 0.02;
+        const pixelAverageBuffer = new Float32Array(4);
 
-        return {
-            bucketIndexSet: newBucketIndexSet,
-            buffer: lightnessChannel.buffer,
-        };
+        //get average for black pixel
+        for(let i=0;pixelAverageBuffer[3]<imageFractionalPixels;i+=4){
+            for(let j=0;j<4;j++){
+                pixelAverageBuffer[j] += lightnessHistogram[i+j];
+            }
+        }
+        //load black pixel to palette
+        for(let i=0;i<3;i++){
+            paletteBuffer[i] = Math.round(pixelAverageBuffer[i] / pixelAverageBuffer[3]);
+        }
+
+        pixelAverageBuffer.fill(0);
+        //get average for white pixel
+        for(let i=lightnessHistogram.length-4;pixelAverageBuffer[3]<imageFractionalPixels;i-=4){
+            for(let j=0;j<4;j++){
+                pixelAverageBuffer[j] += lightnessHistogram[i+j];
+            }
+        }
+        //load white pixel to palette
+        for(let i=0;i<3;i++){
+            paletteBuffer[i+3] = Math.round(pixelAverageBuffer[i] / pixelAverageBuffer[3]);
+        }
     }
 
     function loadPaletteBuffer(channelStats, paletteBuffer, startIndex=0){
@@ -164,19 +198,14 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
     
     function colorChannel(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         const paletteBuffer = new Uint8Array(numColors * 3);
-        const {hueChannel, lightnessChannel} = createImageChannels(pixels, numColors);
+        const {hueChannel, lightnessChannel, lightnessHistogram, pixelCount} = createImageChannels(pixels, numColors);
         const numHueBuckets = hueChannel.bucketIndexSet.size;
         const numLightnessBuckets = lightnessChannel.bucketIndexSet.size;
-        let numLightnessBucketsAdjustment = 0;
 
-        //increase contrast by always having black and white values
-        if(numLightnessBuckets >= 2){
-            numLightnessBucketsAdjustment = 2;
-            const bwLightnessChannel = reduceLightnessChannelToBw(lightnessChannel);
-            //have to load palette here, since we might be modifying lightness channel buffer with reduction
-            loadPaletteBuffer(bwLightnessChannel, paletteBuffer);
-        }
-        const numColorsAdjusted = numColors - numLightnessBucketsAdjustment;
+        //increase contrast by getting black and white values from lightness
+        loadPaletteBufferBw(paletteBuffer, lightnessHistogram, pixelCount);
+
+        const numColorsAdjusted = numColors - 2;
         if(numHueBuckets + numLightnessBuckets > numColorsAdjusted){
             const baseLightnessFraction = lightnessChannel.count / (lightnessChannel.count + hueChannel.count);
             //progressively add more grays as color count increases, use sqrt to decrease large baseLightnessFraction, while leaving small baseLightnessFraction relatively unchanged
@@ -188,9 +217,9 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             reduceChannelBuckets(hueChannel, numColorsAdjusted - lightnessChannel.bucketIndexSet.size, true);
         }
 
-        loadPaletteBuffer(lightnessChannel, paletteBuffer, numLightnessBucketsAdjustment);
+        loadPaletteBuffer(lightnessChannel, paletteBuffer, 2);
         //have to get new bucket size since we might have reduced it
-        loadPaletteBuffer(hueChannel, paletteBuffer, lightnessChannel.bucketIndexSet.size + numLightnessBucketsAdjustment);
+        loadPaletteBuffer(hueChannel, paletteBuffer, lightnessChannel.bucketIndexSet.size + 2);
         return paletteBuffer;
     }
     
