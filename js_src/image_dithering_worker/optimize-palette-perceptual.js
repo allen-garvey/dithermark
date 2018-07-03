@@ -983,6 +983,7 @@ App.OptimizePalettePerceptual = (function(PixelMath, ArrayUtil, Image){
     
     
     return {
+       zipHsl,
        medianCut: perceptualMedianCut,
        medianCut3: perceptualMedianCut3,
        medianCut4: perceptualMedianCut4,

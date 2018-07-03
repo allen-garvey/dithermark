@@ -36,6 +36,9 @@ class ColorQuantizationMode {
 
 function colorQuantizationModesBase(): array{
     return [
+        'Uniform',
+        new ColorQuantizationMode('Uniform 1', 'Uniform.uniform', ['isRotated' => true]),
+        new ColorQuantizationMode('Uniform 2', 'Uniform.uniform'),
         'Random',
         new ColorQuantizationMode('Random palette', 'Random.random', [], false),
         'Color Wheel',

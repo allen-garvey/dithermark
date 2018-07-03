@@ -100,6 +100,7 @@
             JS_WORKER_PATH.'optimize-palette-util.js',
             JS_WORKER_PATH.'optimize-palette-random.js',
             JS_WORKER_PATH.'optimize-palette-perceptual.js',
+            JS_WORKER_PATH.'optimize-palette-uniform.js',
             JS_WORKER_PATH.'optimize-palette-popularity.js',
             JS_WORKER_PATH.'optimize-palette-median-cut.js',
             JS_WORKER_PATH.'optimize-palette-rgb-quant.js',
