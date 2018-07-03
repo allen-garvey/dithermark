@@ -3,8 +3,6 @@ App.ColorPalettes = (function(ArrayUtil){
     function defaultPalettes(){
         return [
             {title: 'Custom', isCustom: true},
-            {title: 'Uniform', colors: ['#201e22', '#ebe1e6', '#a82828', '#ebeb2d', '#795633', '#2d5b2d', '#267ace', '#d69e75', '#2c3838', '#62c7ea', '#b3a2c9', '#a7c38b']},
-            {title: 'Uniform 2', colors: ['#211e22', '#e3ebe1', '#32423e', '#d1dfa5', '#2e3a5e', '#793368', '#2888a8', '#ce5026', '#ebbc2d', '#54e879', '#9a85db', '#e0c8ce']},
             {title: 'Elevate', colors: ['#201A0B', '#fcfae2', '#492910', '#a9220f', '#2b347c', '#F4B38A', '#fce76e', '#2b7409', '#080000', '#6a94ab', '#d0ca40', '#234309', '#ac3cc6', '#510711', '#351757']},
             {title: 'Primaries', colors: ['#000000', '#ffffff', '#c40000', '#000075', '#ffff8a', '#6f207a', '#f8c2f7', '#22531a', '#ff8800', '#40321e', '#485ca4', '#87d255', '#e065de', '#5c373f', '#dbd21a']},
             {title: 'Galaxy', colors: ['#0d3677', '#D2ebf0', '#763a70', '#f9d2f4', '#242440', '#cd20cd', '#c5c565', '#b17633', '#554d28', '#2e337a', '#fefde9', '#181823', '#bda833', '#c866c4', '#914343']},
