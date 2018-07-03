@@ -23,15 +23,18 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         }, Uint8Array);
     }
 
+    //picks red hues from 300-70
     function redHues(count, isRotated=false){
-        const width = 120;
+        const width = 130;
+        const start = 300;
+        const end = 70;
         const multiplier = width / count;
         const offset = isRotated ? multiplier / 2 : 0;
         const ret = new Uint16Array(count);
         for(let i=0;i<count;i++){
             let hue = Math.round(i * multiplier + offset);
-            if(hue > 60){
-                hue = (hue + 300) % 360
+            if(hue > end){
+                hue = (hue + start) % 360
             } 
             ret[i] = hue;
         }
@@ -46,9 +49,10 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         return ret;
     }
 
+    //picks green hues from 70-200
     function greenHues(count, isRotated=false){
-        const start = 60;
-        const width = 120;
+        const start = 70;
+        const width = 130;
         const limit = start + width;
         const middle = start + width / 2;
         const multiplier = width / count;
@@ -64,9 +68,10 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         return ret;
     }
 
+    //picks blue hues from 200-300
     function blueHues(count, isRotated=false){
-        const start = 180;
-        const width = 120;
+        const start = 200;
+        const width = 100;
         const limit = start + width;
         const middle = start + width / 2;
         const multiplier = width / count;
@@ -109,8 +114,6 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
 
     function generateHues(numColors, isRotated=false){
         const {redCount, greenCount, blueCount} = calculateHueCounts(numColors, isRotated);
-
-        console.log(`redcount ${redCount} greenCount ${greenCount} blueCount ${blueCount}`);
 
         const reds = redHues(redCount, isRotated);
         const greens = greenHues(greenCount, isRotated);
@@ -158,14 +161,8 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
 
     function uniformColorQuantization(_pixels, numColors, colorQuantization, _imageWidth, _imageHeight){
         const hues = generateHues(numColors, colorQuantization.isRotated);
-        console.log('hues');
-        console.log(hues);
         const saturations = generateSaturations(numColors);
-        console.log('saturations');
-        console.log(saturations);
         const lightnesses = generateLightnesses(numColors);
-        console.log('lightness');
-        console.log(lightnesses);
 
         const hsl = Perceptual.zipHsl(hues, saturations, lightnesses, numColors);
         return PixelMath.hslArrayToRgb(hsl);
