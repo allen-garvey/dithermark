@@ -153,7 +153,7 @@ App.ErrorPropModel = (function(){
         ];
     }
     //based on atkinson, but with further reduced bleed
-    function garvey(){
+    function reducedAtkinson(){
         const error1 = 1 / 16;
         const error2 = error1 * 2;
         
@@ -175,7 +175,7 @@ App.ErrorPropModel = (function(){
         sierra2,
         sierra1,
         atkinson,
-        garvey,
+        reducedAtkinson,
     };
 
 })();

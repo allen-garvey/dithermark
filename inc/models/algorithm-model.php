@@ -244,11 +244,11 @@ function orderedDitherColorRandomBuilder(OrderedMatrixPattern $pattern): DitherA
  * Error prop dither
  */
 function errorPropBwDitherBuilder(string $funcName, string $title=''): DitherAlgorithm{
-    $title = !empty($title) ? $title : ucfirst($funcName);
+    $title = !empty($title) ? $title : titleizeCamelCase($funcName);
     return new DitherAlgorithm($title, "ErrorPropDither.${funcName}", '');
 }
 function errorPropColorDitherBuilder(string $funcName, string $title=''): DitherAlgorithm{
-    $title = !empty($title) ? $title : ucfirst($funcName);
+    $title = !empty($title) ? $title : titleizeCamelCase($funcName);
     return new DitherAlgorithm($title, "ErrorPropColorDither.${funcName}", '');
 }
 /**
@@ -335,7 +335,7 @@ function bwAlgorithmModelBase(): array{
         errorPropBwDitherBuilder('sierra1'),
         'Diffusion (Reduced Bleed)',
         errorPropBwDitherBuilder('atkinson'),
-        errorPropBwDitherBuilder('garvey'),
+        errorPropBwDitherBuilder('reducedAtkinson'),
     ];
 
     return array_merge($ret, bwOrderedDitherAlgorithmModel());
@@ -364,7 +364,7 @@ function colorAlgorithmModelBase(): array{
         errorPropColorDitherBuilder('sierra1'),
         'Diffusion (Reduced Bleed)',
         errorPropColorDitherBuilder('atkinson'),
-        errorPropColorDitherBuilder('garvey'),
+        errorPropColorDitherBuilder('reducedAtkinson'),
     ];
     return array_merge($ret, colorOrderedDitherAlgorithmModel());
 }

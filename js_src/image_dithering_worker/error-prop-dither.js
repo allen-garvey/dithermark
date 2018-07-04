@@ -80,13 +80,13 @@ App.ErrorPropDither = (function(Image, Pixel, PixelMath, ErrorPropModel){
     return{
         floydSteinberg: errorPropagationDitherBuilder(ErrorPropModel.floydSteinberg()),
         atkinson: errorPropagationDitherBuilder(ErrorPropModel.atkinson()),
+        reducedAtkinson: errorPropagationDitherBuilder(ErrorPropModel.reducedAtkinson()),
         javisJudiceNinke: errorPropagationDitherBuilder(ErrorPropModel.javisJudiceNinke()),
         stucki: errorPropagationDitherBuilder(ErrorPropModel.stucki()),
         burkes: errorPropagationDitherBuilder(ErrorPropModel.burkes()),
         sierra3: errorPropagationDitherBuilder(ErrorPropModel.sierra3()),
         sierra2: errorPropagationDitherBuilder(ErrorPropModel.sierra2()),
         sierra1: errorPropagationDitherBuilder(ErrorPropModel.sierra1()),
-        garvey: errorPropagationDitherBuilder(ErrorPropModel.garvey()),
     };
     
     

@@ -1,4 +1,4 @@
-App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFunctions, ErrorPropModel){
+App.ErrorPropColorDither = (function(Image, ColorDitherModeFunctions, ErrorPropModel){
     /*
     ** Error propagation matrix stuff
     */
@@ -82,9 +82,9 @@ App.ErrorPropColorDither = (function(Image, Pixel, PixelMath, ColorDitherModeFun
         sierra2: errorPropBuilder(ErrorPropModel.sierra2()),
         sierra1: errorPropBuilder(ErrorPropModel.sierra1()),
         atkinson: errorPropBuilder(ErrorPropModel.atkinson()),
-        garvey: errorPropBuilder(ErrorPropModel.garvey()),
+        reducedAtkinson: errorPropBuilder(ErrorPropModel.reducedAtkinson()),
         
     };
     
     
-})(App.Image, App.Pixel, App.PixelMath, App.ColorDitherModeFunctions, App.ErrorPropModel);
+})(App.Image, App.ColorDitherModeFunctions, App.ErrorPropModel);
