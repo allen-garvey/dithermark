@@ -136,16 +136,14 @@ App.Fs = (function(){
     //based on: https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
     //for edge and mobile safari
     function canvasToBlobPolyfill(canvas, fileType, callback){
-        setTimeout(()=> {
-            const binaryString = atob(canvas.toDataURL(fileType, 1).split(',')[1]);
-            const length = binaryString.length;
-            const array = new Uint8Array(length);
+        const binaryString = atob(canvas.toDataURL(fileType, 1).split(',')[1]);
+        const length = binaryString.length;
+        const array = new Uint8Array(length);
 
-            for(let i=0;i<length;i++){
-                array[i] = binaryString.charCodeAt(i);
-            }
-            processSaveImageBlob(new Blob([array], {type: fileType}), callback);
-        }, 0);
+        for(let i=0;i<length;i++){
+            array[i] = binaryString.charCodeAt(i);
+        }
+        processSaveImageBlob(new Blob([array], {type: fileType}), callback);
     }
 
     function saveImage(canvas, fileType, callback){
