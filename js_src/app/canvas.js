@@ -16,7 +16,9 @@ App.Canvas = (function(Polyfills){
     
     function createWebglCanvas(canvas){
         canvas = canvas || document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        //premultipliedAlpha is from https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
+        //used to fix semi-transparent pixels being weird colors
+        const gl = canvas.getContext('webgl', {premultipliedAlpha: false}) || canvas.getContext('experimental-webgl', {premultipliedAlpha: false});
         let maxTextureSize = 0;
         let supportsHighIntPrecision = false;
         let supportsHighFloatPrecision = false;
