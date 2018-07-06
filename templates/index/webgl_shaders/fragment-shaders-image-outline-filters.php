@@ -100,7 +100,8 @@ THE SOFTWARE.
         }
         float c = clamp(10000.0 * (color.y / total.y - color.x / total.x) + 0.5, 0.0, 1.0);
         if(c < 0.5){
-            gl_FragColor = vec4(c, c, c, 1.0);
+            vec3 outlineColor = vec3(0.0);
+            gl_FragColor = vec4(outlineColor, 1.0);
         }
         else{
             gl_FragColor = vec4(0.0);
