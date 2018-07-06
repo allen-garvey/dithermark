@@ -568,7 +568,16 @@
                 // const originTexture = ditherOutputWebglTexture;
                 WebGlImageOutline.outlineImage1(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, radiusPercent);
                 const outline1OutputTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
-                WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent);
+                
+                const useBackground = true;
+                if(useBackground){
+                    const backgroundTexture = ditherOutputWebglTexture;
+                    WebGlImageOutline.outlineImage2Background(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture);
+                    //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
+                }
+                else{
+                    WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent);
+                }
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
 
                 //display outline
