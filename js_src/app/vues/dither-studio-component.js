@@ -566,22 +566,6 @@
                 //display outline
                 const scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.copy(transformCanvasWebGl, imageOutlineFilterCanvasOutput, scaleAmount);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
             },
             areControlsPinned: function(){
                 return getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') === 'fixed';
@@ -593,6 +577,7 @@
                 const scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.copy(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 Canvas.copy(transformCanvas, transformCanvasOutput, scaleAmount);
+                this.imageOutlineFilterAction();
             },
             resetZoom: function(){
                 this.zoom = 100;
