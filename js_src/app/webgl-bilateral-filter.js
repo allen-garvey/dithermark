@@ -23,13 +23,12 @@ App.WebGlBilateralFilter = (function(WebGl, Shader){
         filterFunc(gl, texture, imageWidth, imageHeight, filterExponent);
     }
 
-    function filterImage(webGlCanvas, texture, imageWidth, imageHeight, filterExponent, outputCanvas){
+    function filterImage(webGlCanvas, texture, imageWidth, imageHeight, filterExponent){
         //do the filter twice for better results
         for(let i=0;i<2;i++){
             filter(webGlCanvas.gl, texture, imageWidth, imageHeight, filterExponent);
-            outputCanvas.context.drawImage(webGlCanvas.canvas, 0, 0);
             webGlCanvas.gl.deleteTexture(texture);
-            texture = WebGl.createAndLoadTexture(webGlCanvas.gl, outputCanvas.context.getImageData(0, 0, imageWidth, imageHeight));
+            texture = WebGl.createAndLoadTextureFromCanvas(webGlCanvas.gl, webGlCanvas.canvas);
         }
 
         return texture;

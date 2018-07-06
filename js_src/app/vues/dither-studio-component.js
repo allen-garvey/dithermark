@@ -418,8 +418,13 @@
                     if(!this.areCanvasFiltersSupported){
                         this.applyWebGlCanvasFilters();
                     }
-                    this.bilateralFilterValueChanged();
-                    this.imageSmoothingBeforeChanged();
+                    let hasImageBeenTransformed = false;
+                    hasImageBeenTransformed = hasImageBeenTransformed || this.bilateralFilterValueChanged();
+                    hasImageBeenTransformed = hasImageBeenTransformed || this.imageSmoothingBeforeChanged();
+
+                    if(hasImageBeenTransformed){
+                        sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+                    }
                 }
                 
                 //load image into the webworkers
@@ -470,23 +475,25 @@
             bilateralFilterValueChanged: function(){
                 const filterExponent = this.bilateralFilterValues[this.selectedBilateralFilterValue];
                 if(filterExponent < 0){
-                    return;
+                    return false;
                 }
                 const imageHeader = this.imageHeader;
-                sourceWebglTexture = WebGlBilateralFilter.filterImage(transformCanvasWebGl, sourceWebglTexture, imageHeader.width, imageHeader.height, filterExponent, sourceCanvas);
+                sourceWebglTexture = WebGlBilateralFilter.filterImage(transformCanvasWebGl, sourceWebglTexture, imageHeader.width, imageHeader.height, filterExponent);
+                return true;
             },
             //image smoothing after pixelation, before dither
             imageSmoothingBeforeChanged: function(){
                 const smoothingRadius = this.imageSmoothingValues[this.selectedImageSmoothingRadiusBefore];
                 if(!this.isSmoothingEnabled || smoothingRadius <= 0){
-                    return;
+                    return false;
                 }
                 const imageHeader = this.imageHeader;
                 //smoothing
                 WebGlSmoothing.smooth(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, smoothingRadius);
-                sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
                 sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                
+                return true;
             },
             //image smoothing after dither
             imageSmoothingAfterChanged: function(){
@@ -506,7 +513,7 @@
                     return false;
                 }
                 const imageHeader = this.imageHeader;
-                ditherOutputWebglTexture = WebGlBilateralFilter.filterImage(transformCanvasWebGl, ditherOutputWebglTexture, imageHeader.width, imageHeader.height, filterExponent, transformCanvas);
+                ditherOutputWebglTexture = WebGlBilateralFilter.filterImage(transformCanvasWebGl, ditherOutputWebglTexture, imageHeader.width, imageHeader.height, filterExponent);
 
                 return true;
             },
@@ -515,12 +522,15 @@
                     return;
                 }
                 transformCanvasWebGl.gl.deleteTexture(ditherOutputWebglTexture);
-                ditherOutputWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, ditherOutputCanvas.context.getImageData(0, 0, this.imageHeader.width, this.imageHeader.height));
+                ditherOutputWebglTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, ditherOutputCanvas.canvas);
                 let hasImageBeenTransformed = false;
                 hasImageBeenTransformed = this.bilateralFilterValueAfterChanged() || hasImageBeenTransformed;
                 hasImageBeenTransformed = this.imageSmoothingAfterChanged() || hasImageBeenTransformed;
-                if(!hasImageBeenTransformed){
-                    //otherwise image won't be reset if no filters are active
+                if(hasImageBeenTransformed){
+                    Canvas.copy(transformCanvasWebGl, transformCanvas);
+                }
+                else{
+                    //reset output when no filters active
                     Canvas.copy(ditherOutputCanvas, transformCanvas);
                 }
                 this.zoomImage();
