@@ -466,7 +466,7 @@
                 WebGlCanvasFilters.filter(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, filters.contrast, filters.saturation, filters.brightness,filters.hue);
                 sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                sourceWebglTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, sourceCanvas.canvas);
             },
             imagePixelationChanged: function(){
                 const imageHeader = this.imageHeader;
@@ -479,7 +479,7 @@
                     transformCanvasWebGl.canvas.width = imageHeader.width;
                     transformCanvasWebGl.canvas.height = imageHeader.height;
                     transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                    sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                    sourceWebglTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, sourceCanvas.canvas);
                 }
                 //we have to unset hue-rotate here, otherwise it will remain set for some reason even though other filters reset
                 //sourceCanvas filter needs to be reset after webgl texture is created, otherwise results of the filter won't be saved in the texture
@@ -507,7 +507,7 @@
                 //smoothing
                 WebGlSmoothing.smooth(transformCanvasWebGl.gl, sourceWebglTexture, imageHeader.width, imageHeader.height, smoothingRadius);
                 transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
-                sourceWebglTexture = WebGl.createAndLoadTexture(transformCanvasWebGl.gl, sourceCanvas.context.getImageData(0, 0, imageHeader.width, imageHeader.height));
+                sourceWebglTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
                 
                 return true;
             },
