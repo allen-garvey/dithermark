@@ -444,6 +444,8 @@
                     if(hasImageBeenTransformed){
                         sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                     }
+                    //redraw outline, since it depends on texture output from these filters
+                    this.imageOutlineFilterAction();
                 }
                 
                 //load image into the webworkers
@@ -561,7 +563,10 @@
                 const imageHeight = this.imageHeader.height;
                 const radiusPercent = this.imageOutlineRadiusPercentages[this.selectedImageOutlineRadiusPercent];
                 
-                WebGlImageOutline.outlineImage1(transformCanvasWebGl.gl, sourceWebglTexture, imageWidth, imageHeight, radiusPercent);
+                //better to use source texture as input instead of dither results, because there will be less noise in image outline 
+                const inputTexture = sourceWebglTexture;
+                // const originTexture = ditherOutputWebglTexture;
+                WebGlImageOutline.outlineImage1(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, radiusPercent);
                 const outline1OutputTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
                 WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent);
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
