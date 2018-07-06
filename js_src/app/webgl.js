@@ -87,6 +87,20 @@ App.WebGl = (function(m4){
         return texture;
     }
 
+    function createAndLoadTextureFromCanvas(gl, canvas) {
+        const texture = gl.createTexture();
+        
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, canvas);
+    
+        // let's assume all images are not a power of 2
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        
+        return texture;
+    }
+
     function createAndLoadTextureFromArray(gl, pixels, imageWidth, imageHeight) {
         const texture = gl.createTexture();
         
@@ -199,6 +213,7 @@ App.WebGl = (function(m4){
     return {
         createAndLoadTexture,
         createAndLoadTextureFromArray,
+        createAndLoadTextureFromCanvas,
         createDrawImageFunc: createWebGLDrawImageFunc,
     };    
 })(App.M4);
