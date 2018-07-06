@@ -37,6 +37,7 @@
 	//desktop styles
 	.controls-container{
 		position: fixed;
+		z-index: 11;
 		display: block;
 		background-color: var(--pinned-controls-bg-color);
 		max-width: 100%;

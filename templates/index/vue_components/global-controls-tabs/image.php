@@ -89,5 +89,14 @@
             </div>
             <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusAfter', 'imageSmoothingValues', 'smoothing value'); ?>
         </div>
+        <div class="spread-content">
+            <div class="label-align">
+                <label for="image-outline-filter">Outline</label>
+                <select id="image-outline-filter" v-model.number="selectedImageOutlineRadiusPercent">
+                    <option v-for="(value, index) in imageOutlineRadiusPercentages" v-bind:value="index">{{imageFilterSteppedDropdownOption(value)}}</option>
+                </select>
+            </div>
+            <?php IndexView::cyclePropertyList('selectedImageOutlineRadiusPercent', 'imageOutlineRadiusPercentages', 'outline radius'); ?>
+        </div>
     </fieldset>
 </div>

@@ -13,8 +13,17 @@
     margin-top: 12px;
 }
 
-.show-original .output-canvas + .output-canvas{
-    margin-left: $canvasMargin;
+.source-output-canvas{
+    margin-right: $canvasMargin;
+}
+
+.transformed-canvas-output-container{
+    position: relative;
+    z-index: 1;
+}
+.outline-canvas{
+    position: absolute;
+    top: 0;
 }
 
 @include pinned_controls_mq{

@@ -1,5 +1,5 @@
 //values used in global settings- Image tab
-App.ImageFiltersModel = (function(){
+App.ImageFiltersModel = (function(ArrayUtil){
     //imageDimensions = height * width
     //percentage is 0-100
     //returns percentage 0-100
@@ -18,6 +18,12 @@ App.ImageFiltersModel = (function(){
         });
     }
 
+    function outlineRadiusPercentages(){
+        return ArrayUtil.create(121, (i)=>{
+            return i * 0.25;
+        });
+    }
+
 
     /**
      * canvas css filters
@@ -33,9 +39,10 @@ App.ImageFiltersModel = (function(){
         //-1 means filter disabled
         //higher values are sharper, while lower values are blurrier, so it makes more sense to reverse them
         bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
+        outlineRadiusPercentages,
         canvasFilterValues,
         canvasFilterValuesDefaultIndex: canvasFilterValues.indexOf(100),
         pixelationValues,
     };
 
-})();
+})(App.ArrayUtil);

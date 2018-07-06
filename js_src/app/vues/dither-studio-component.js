@@ -1,4 +1,4 @@
-(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel){
+(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel, WebGlImageOutline){
     //webworker stuff
     let imageId = 0;
     let ditherWorkers;
@@ -11,6 +11,7 @@
     let transformCanvasWebGl;
     let sourceCanvasOutput;
     let transformCanvasOutput;
+    let imageOutlineFilterCanvasOutput;
     
     let sourceWebglTexture;
     let ditherOutputWebglTexture;
@@ -56,6 +57,10 @@
             const refs = this.$refs;
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
+            //image outlines are webgl only, so no need to do this if webgl is not supported
+            if(this.isWebglSupported){
+                imageOutlineFilterCanvasOutput = Canvas.create(refs.imageOutlineFilterCanvasOutput);
+            }
             
             //load global settings
             const globalSettings = UserSettings.getGlobalSettings(this.areControlsPinned());
@@ -100,6 +105,9 @@
                 bilateralFilterValues: ImageFiltersModel.bilateralFilterValues,
                 selectedBilateralFilterValue: 0,
                 selectedBilateralFilterValueAfter: 0,
+                //image outline filter
+                selectedImageOutlineRadiusPercent: 0,
+                imageOutlineRadiusPercentages: ImageFiltersModel.outlineRadiusPercentages(),
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
                 selectedImageSaturationIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
@@ -119,6 +127,9 @@
             };
         },
         computed: {
+            isImageOutlineFilterEnabled: function(){
+                return this.isWebglEnabled && this.selectedImageOutlineRadiusPercent > 0;
+            },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
             },
@@ -341,6 +352,11 @@
                     this.imageFiltersAfterDitherChanged();
                 }
             },
+            selectedImageOutlineRadiusPercent: function(newValue, oldValue){
+                if(this.isImageLoaded && newValue !== oldValue){
+                    this.imageOutlineFilterAction();
+                }
+            },
         },
         methods: {
             /*
@@ -504,7 +520,6 @@
                 const imageHeader = this.imageHeader;
                 //smoothing
                 WebGlSmoothing.smooth(transformCanvasWebGl.gl, ditherOutputWebglTexture, imageHeader.width, imageHeader.height, smoothingRadius);
-                transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 return true;
             },
             bilateralFilterValueAfterChanged: function(){
@@ -535,6 +550,39 @@
                 }
                 this.zoomImage();
             },
+            imageOutlineFilterAction: function(){
+                if(!this.isImageOutlineFilterEnabled){
+                    return;
+                }
+                const imageWidth = this.imageHeader.width;
+                const imageHeight = this.imageHeader.height;
+                const radiusPercent = this.imageOutlineRadiusPercentages[this.selectedImageOutlineRadiusPercent];
+                
+                WebGlImageOutline.outlineImage1(transformCanvasWebGl.gl, sourceWebglTexture, imageWidth, imageHeight, radiusPercent);
+                const outline1OutputTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
+                WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent);
+                transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
+
+                //display outline
+                const scaleAmount = this.zoom / this.pixelateImageZoom;
+                Canvas.copy(transformCanvasWebGl, imageOutlineFilterCanvasOutput, scaleAmount);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            },
             areControlsPinned: function(){
                 return getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') === 'fixed';
             },
@@ -542,7 +590,7 @@
              * Zoom stuff
              */
             zoomImage: function(){
-                let scaleAmount = this.zoom / this.pixelateImageZoom;
+                const scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.copy(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 Canvas.copy(transformCanvas, transformCanvasOutput, scaleAmount);
             },
@@ -635,4 +683,4 @@
             },
         }
     });
-})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel);
+})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel, App.WebGlImageOutline);

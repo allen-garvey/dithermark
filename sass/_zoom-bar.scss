@@ -38,7 +38,8 @@
 @include pinned_controls_mq{
     .zoom-bar-container{
 		font-size: 12px;
-		position: fixed;
+        position: fixed;
+        z-index: 10;
 		bottom: 0;
 		left: 0;
 		background-color: var(--pinned-controls-bg-color);
