@@ -435,8 +435,8 @@
                         this.applyWebGlCanvasFilters();
                     }
                     let hasImageBeenTransformed = false;
-                    hasImageBeenTransformed = hasImageBeenTransformed || this.bilateralFilterValueChanged();
-                    hasImageBeenTransformed = hasImageBeenTransformed || this.imageSmoothingBeforeChanged();
+                    hasImageBeenTransformed = this.bilateralFilterValueChanged() || hasImageBeenTransformed;
+                    hasImageBeenTransformed = this.imageSmoothingBeforeChanged() || hasImageBeenTransformed;
 
                     if(hasImageBeenTransformed){
                         sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
