@@ -431,6 +431,9 @@
                 //apply filters
                 this.imagePixelationChanged();
                 if(this.isWebglEnabled){
+                    //reset source texture
+                    transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+                    sourceWebglTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, sourceCanvas.canvas);
                     if(!this.areCanvasFiltersSupported){
                         this.applyWebGlCanvasFilters();
                     }
