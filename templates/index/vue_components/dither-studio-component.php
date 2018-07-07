@@ -69,7 +69,7 @@
             <canvas ref="sourceCanvasOutput" class="source-output-canvas" v-show="showOriginalImage"></canvas><?php //original image as displayed to the user, after zoomed and pixelated ?>
             <div class="transformed-canvas-output-container">
                 <canvas ref="transformCanvasOutput"></canvas><?php //output from dither as shown to user, after zoom ?>
-                <canvas ref="imageOutlineFilterCanvasOutput" class="outline-canvas" v-show="isImageOutlineFilterEnabled"></canvas><?php //output from image outline filter as shown to user, after zoom ?>
+                <canvas ref="imageOutlineFilterCanvasOutput" class="outline-canvas" v-show="isImageOutlineFilterActive"></canvas><?php //output from image outline filter as shown to user, after zoom ?>
             </div>
         </div>
     </div>
