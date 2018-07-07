@@ -387,24 +387,24 @@
             * Loading and saving image stuff
             */
             onSaveRequested: function(scratchCanvas, callback){
-                const isImageOutlined = this.isImageOutlineFilterActive;
-                const isImagePixelated = this.pixelateImageZoom !== 100;
                 //while technicaly we can just use transformCavas directly if there is no image outline
                 //and no pixelation it makes the logic for clearing the canvas in export component easier
                 //since we don't need to check if we are using transform canvas directly
                 Canvas.copy(transformCanvas, scratchCanvas);
                 
-                if(isImageOutlined){
-                    //merge outline on top of transformCanvas output
-                    this.imageOutlineFilterAction(scratchCanvas);
-                }
-                //scale canvas
-                if(isImagePixelated){
+                //merge outline on top of transformCanvas output
+                //don't need to check if outline is active, since if not, this method call will do nothing
+                this.imageOutlineFilterAction(scratchCanvas);
+
+                //scale canvas if pixelated
+                if(this.pixelateImageZoom !== 100){
                     //need to create another canvas to copy to, since resizing canvas clears it
                     const tempCanvas = Canvas.create();
                     Canvas.copy(scratchCanvas, tempCanvas, 100 / this.pixelateImageZoom);
                     Canvas.copy(tempCanvas, scratchCanvas);
                     //free memory by clearing canvas
+                    //while temp canvas is eligible for garbage collection as soon as this scope exits
+                    //it might not be freed immediately, so clearing it will reduce memory pressure until that happens
                     Canvas.clear(tempCanvas);
                 }
 
