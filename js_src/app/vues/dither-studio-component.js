@@ -557,7 +557,7 @@
                 }
                 this.zoomImage();
             },
-            imageOutlineFilterAction: function(){
+            imageOutlineFilterAction: function(shouldMergeLayers=false){
                 if(!this.isImageOutlineFilterActive){
                     return;
                 }
@@ -583,8 +583,16 @@
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
 
                 //display outline
-                const scaleAmount = this.zoom / this.pixelateImageZoom;
-                Canvas.copy(transformCanvasWebGl, imageOutlineFilterCanvasOutput, scaleAmount);
+                if(shouldMergeLayers){
+                    //merging is for when image is exported
+                    //if want to actually see results of merge, you need to call zoomImage afterwards
+                    //or manually zoom image
+                    Canvas.merge(transformCanvasWebGl, transformCanvas);
+                }
+                else{
+                    const scaleAmount = this.zoom / this.pixelateImageZoom;
+                    Canvas.copy(transformCanvasWebGl, imageOutlineFilterCanvasOutput, scaleAmount);
+                }
             },
             areControlsPinned: function(){
                 return getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') === 'fixed';

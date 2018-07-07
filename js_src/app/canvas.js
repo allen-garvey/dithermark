@@ -77,6 +77,13 @@ App.Canvas = (function(Polyfills){
         
         targetCanvasObject.context.drawImage(sourceCanvasObject.canvas, 0, 0, sourceWidth, sourceHeight, 0, 0, scaledWidth, scaledHeight);
     }
+
+    //canvasLayer1 is merged on top of canvasLayer0
+    //canvases should be the same width and height, since we can't change them,
+    //since it would might clear them
+    function mergeCanvases(canvasLayer1, canvasLayer0){
+        canvasLayer0.context.drawImage(canvasLayer1.canvas, 0, 0);
+    }
     
     //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
     function createSharedImageBuffer(sourceCanvasObject){
@@ -134,6 +141,7 @@ App.Canvas = (function(Polyfills){
         clear: clearCanvas,
         createWebgl: createWebglCanvas,
         copy: copyCanvas,
+        merge: mergeCanvases,
         createSharedImageBuffer,
         loadImage,
         loadPixels,
