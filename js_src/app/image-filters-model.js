@@ -19,9 +19,18 @@ App.ImageFiltersModel = (function(ArrayUtil){
     }
 
     function outlineRadiusPercentages(){
-        return ArrayUtil.create(121, (i)=>{
-            return i * 0.25;
+        const step = 0.25;
+        return ArrayUtil.create(120, (i)=>{
+            return i * step + step;
         });
+    }
+
+    function outlineColorModes(){
+        return [
+            {title: 'None', value: 0},
+            {title: 'Fixed', value: 1},
+            {title: 'Palette', value: 2},
+        ];
     }
 
 
@@ -40,6 +49,7 @@ App.ImageFiltersModel = (function(ArrayUtil){
         //higher values are sharper, while lower values are blurrier, so it makes more sense to reverse them
         bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
         outlineRadiusPercentages,
+        outlineColorModes,
         canvasFilterValues,
         canvasFilterValuesDefaultIndex: canvasFilterValues.indexOf(100),
         pixelationValues,

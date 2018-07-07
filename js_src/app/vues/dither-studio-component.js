@@ -108,6 +108,8 @@
                 //image outline filter
                 selectedImageOutlineRadiusPercent: 0,
                 imageOutlineRadiusPercentages: ImageFiltersModel.outlineRadiusPercentages(),
+                imageOutlineColorModes: ImageFiltersModel.outlineColorModes(),
+                selectedOutlineColorMode: 0,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
                 selectedImageSaturationIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
@@ -129,10 +131,13 @@
         computed: {
             isImageOutlineFilterEnabled: function(){
                 //only enabled for color dither
-                return this.isWebglEnabled && this.activeDitherComponentId === 1;
+                return this.isImageLoaded && this.isWebglEnabled && this.activeDitherComponentId === 1;
             },
             isImageOutlineFilterActive: function(){
-                return this.isImageOutlineFilterEnabled && this.selectedImageOutlineRadiusPercent > 0;
+                return this.isImageOutlineFilterEnabled && this.imageOutlineColorModes[this.selectedOutlineColorMode].value > 0;
+            },
+            isImageOutlineFixedColor: function(){
+                return this.imageOutlineColorModes[this.selectedOutlineColorMode].value === 1;
             },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
@@ -357,7 +362,12 @@
                 }
             },
             selectedImageOutlineRadiusPercent: function(newValue, oldValue){
-                if(this.isImageLoaded && newValue !== oldValue){
+                if(newValue !== oldValue){
+                    this.imageOutlineFilterAction();
+                }
+            },
+            selectedOutlineColorMode: function(newValue, oldValue){
+                if(newValue !== oldValue){
                     this.imageOutlineFilterAction();
                 }
             },
@@ -592,14 +602,13 @@
                 WebGlImageOutline.outlineImage1(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, radiusPercent);
                 const outline1OutputTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
                 
-                const useBackground = true;
-                if(useBackground){
+                if(this.isImageOutlineFixedColor){
+                    WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent);
+                }
+                else{
                     const backgroundTexture = ditherOutputWebglTexture;
                     WebGlImageOutline.outlineImage2Background(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture);
                     //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
-                }
-                else{
-                    WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent);
                 }
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
 
