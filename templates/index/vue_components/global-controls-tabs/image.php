@@ -94,21 +94,26 @@
         <legend>Outline</legend>
         <div class="spread-content">
             <div class="label-align">
-                <label for="image-outline-filter">Outline color</label>
+                <label for="image-outline-filter">Mode</label>
                 <select id="image-outline-filter" v-model.number="selectedOutlineColorMode">
-                    <option v-for="(value, index) in imageOutlineColorModes" v-bind:value="value.value">{{value.title}}</option>
+                    <option v-for="(value, index) in imageOutlineColorModes" v-bind:value="index">{{value.title}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedOutlineColorMode', 'imageOutlineColorModes', 'outline color mode'); ?>
         </div>
         <div class="spread-content" v-if="isImageOutlineFilterActive">
             <div class="label-align">
-                <label for="image-outline-filter">Outline radius</label>
+                <label for="image-outline-filter">Radius</label>
                 <select id="image-outline-filter" v-model.number="selectedImageOutlineRadiusPercent">
                     <option v-for="(value, index) in imageOutlineRadiusPercentages" v-bind:value="index">{{value}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedImageOutlineRadiusPercent', 'imageOutlineRadiusPercentages', 'outline radius'); ?>
+        </div>
+        <div v-if="isImageOutlineFixedColor">
+            <label>Color
+                <input type="color" v-model="fixedOutlineColor" />
+            </label>
         </div>
     </fieldset>
 </div>

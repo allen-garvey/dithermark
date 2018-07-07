@@ -27,9 +27,9 @@ App.ImageFiltersModel = (function(ArrayUtil){
 
     function outlineColorModes(){
         return [
-            {title: 'None', value: 0},
-            {title: 'Fixed', value: 1},
-            {title: 'Palette', value: 2},
+            {title: 'None', id: 0},
+            {title: 'Fixed', id: 1},
+            {title: 'Palette', id: 2},
         ];
     }
 

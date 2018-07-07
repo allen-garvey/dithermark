@@ -2,12 +2,19 @@
 App.WebGlImageOutline = (function(WebGl, Shader){
     function createOutlineFunc(gl, filterNumber){
         const fragmentShaderText = Shader.shaderText('webgl-fragment-image-outline-filter'+filterNumber);
-        const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, ['u_radius']);
+        const customUniforms = ['u_radius'];
+        if(filterNumber === 2){
+            customUniforms.push('u_outline_color');
+        }
+        const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniforms);
         
-        return function(gl, tex, texWidth, texHeight, radius){
+        return function(gl, tex, texWidth, texHeight, radius, outlineColorVec){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
                 //initialize uniforms
                 gl.uniform1f(customUniformLocations['u_radius'], radius);
+                if(outlineColorVec){
+                    gl.uniform3fv(customUniformLocations['u_outline_color'], outlineColorVec);
+                }
             });
         };
     }
@@ -33,7 +40,7 @@ App.WebGlImageOutline = (function(WebGl, Shader){
 
     let cachedOutlineFuncs = new Array(3);
 
-    function outlineImageBase(gl, texture, imageWidth, imageHeight, filterNumber, radius){
+    function outlineImageBase(gl, texture, imageWidth, imageHeight, filterNumber, radius, outlineColorVec=null){
         const cacheIndex = filterNumber - 1;
         if(!cachedOutlineFuncs[cacheIndex]){
             cachedOutlineFuncs[cacheIndex] = createOutlineFunc(gl, filterNumber);
@@ -41,7 +48,7 @@ App.WebGlImageOutline = (function(WebGl, Shader){
         const outlineFunc = cachedOutlineFuncs[cacheIndex];
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-        outlineFunc(gl, texture, imageWidth, imageHeight, radius);
+        outlineFunc(gl, texture, imageWidth, imageHeight, radius, outlineColorVec);
     }
 
     function outlineImage1(gl, texture, imageWidth, imageHeight, radiusPercent){
@@ -49,9 +56,9 @@ App.WebGlImageOutline = (function(WebGl, Shader){
         outlineImageBase(gl, texture, imageWidth, imageHeight, 1, radius);
     }
 
-    function outlineImage2(gl, texture, imageWidth, imageHeight, radiusPercent){
+    function outlineImage2(gl, texture, imageWidth, imageHeight, radiusPercent, outlineColorVec){
         const radius = radiusPercent / imageHeight;
-        outlineImageBase(gl, texture, imageWidth, imageHeight, 2, radius);
+        outlineImageBase(gl, texture, imageWidth, imageHeight, 2, radius, outlineColorVec);
     }
 
     function outlineImage2Background(gl, texture, imageWidth, imageHeight, radiusPercent, colorsArray, backgroundTexture){

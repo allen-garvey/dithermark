@@ -1,4 +1,4 @@
-(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel, WebGlImageOutline){
+(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel, WebGlImageOutline, ColorPicker){
     //webworker stuff
     let imageId = 0;
     let ditherWorkers;
@@ -106,10 +106,11 @@
                 selectedBilateralFilterValue: 0,
                 selectedBilateralFilterValueAfter: 0,
                 //image outline filter
-                selectedImageOutlineRadiusPercent: 0,
+                selectedImageOutlineRadiusPercent: 25, //value of 6.5 is a decent default for both pixelated and not
                 imageOutlineRadiusPercentages: ImageFiltersModel.outlineRadiusPercentages(),
                 imageOutlineColorModes: ImageFiltersModel.outlineColorModes(),
                 selectedOutlineColorMode: 0,
+                fixedOutlineColor: '#000000',
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
                 selectedImageSaturationIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
@@ -134,10 +135,10 @@
                 return this.isImageLoaded && this.isWebglEnabled && this.activeDitherComponentId === 1;
             },
             isImageOutlineFilterActive: function(){
-                return this.isImageOutlineFilterEnabled && this.imageOutlineColorModes[this.selectedOutlineColorMode].value > 0;
+                return this.isImageOutlineFilterEnabled && this.imageOutlineColorModes[this.selectedOutlineColorMode].id > 0;
             },
             isImageOutlineFixedColor: function(){
-                return this.imageOutlineColorModes[this.selectedOutlineColorMode].value === 1;
+                return this.imageOutlineColorModes[this.selectedOutlineColorMode].id === 1;
             },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
@@ -367,6 +368,11 @@
                 }
             },
             selectedOutlineColorMode: function(newValue, oldValue){
+                if(newValue !== oldValue){
+                    this.imageOutlineFilterAction();
+                }
+            },
+            fixedOutlineColor: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imageOutlineFilterAction();
                 }
@@ -603,7 +609,7 @@
                 const outline1OutputTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
                 
                 if(this.isImageOutlineFixedColor){
-                    WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent);
+                    WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, ColorPicker.colorsToVecArray([this.fixedOutlineColor], 1));
                 }
                 else{
                     const backgroundTexture = ditherOutputWebglTexture;
@@ -725,4 +731,4 @@
             },
         }
     });
-})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel, App.WebGlImageOutline);
+})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel, App.WebGlImageOutline, App.ColorPicker);

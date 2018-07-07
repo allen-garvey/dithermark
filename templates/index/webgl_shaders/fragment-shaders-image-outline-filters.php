@@ -73,6 +73,7 @@ THE SOFTWARE.
     uniform sampler2D u_texture;
     varying vec2 v_texcoord;
     uniform float u_radius;
+    uniform vec3 u_outline_color;
 
     <?php //use the fragment position for a different seed per-pixel ?>
     float random(vec3 scale, float seed) {
@@ -100,8 +101,7 @@ THE SOFTWARE.
         }
         float c = clamp(10000.0 * (color.y / total.y - color.x / total.x) + 0.5, 0.0, 1.0);
         if(c < 0.5){
-            vec3 outlineColor = vec3(0.0);
-            gl_FragColor = vec4(outlineColor, 1.0);
+            gl_FragColor = vec4(u_outline_color, 1.0);
         }
         else{
             gl_FragColor = vec4(0.0);
