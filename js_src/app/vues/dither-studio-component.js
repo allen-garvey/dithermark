@@ -386,8 +386,29 @@
             /*
             * Loading and saving image stuff
             */
-            onSaveRequested: function(callback){
-                callback(transformCanvas, this.pixelateImageZoom, this.loadedImage.unsplash);
+            onSaveRequested: function(scratchCanvas, callback){
+                const isImageOutlined = this.isImageOutlineFilterActive;
+                const isImagePixelated = this.pixelateImageZoom !== 100;
+                //while technicaly we can just use transformCavas directly if there is no image outline
+                //and no pixelation it makes the logic for clearing the canvas in export component easier
+                //since we don't need to check if we are using transform canvas directly
+                Canvas.copy(transformCanvas, scratchCanvas);
+                
+                if(isImageOutlined){
+                    //merge outline on top of transformCanvas output
+                    this.imageOutlineFilterAction(scratchCanvas);
+                }
+                //scale canvas
+                if(isImagePixelated){
+                    //need to create another canvas to copy to, since resizing canvas clears it
+                    const tempCanvas = Canvas.create();
+                    Canvas.copy(scratchCanvas, tempCanvas, 100 / this.pixelateImageZoom);
+                    Canvas.copy(tempCanvas, scratchCanvas);
+                    //free memory by clearing canvas
+                    Canvas.clear(tempCanvas);
+                }
+
+                callback(scratchCanvas, this.loadedImage.unsplash);
             },
             loadImage: function(image, file){
                 this.openImageErrorMessage = null;
@@ -557,7 +578,7 @@
                 }
                 this.zoomImage();
             },
-            imageOutlineFilterAction: function(shouldMergeLayers=false){
+            imageOutlineFilterAction: function(canvasObjectToMergeOnTopOf=null){
                 if(!this.isImageOutlineFilterActive){
                     return;
                 }
@@ -583,11 +604,11 @@
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
 
                 //display outline
-                if(shouldMergeLayers){
+                if(canvasObjectToMergeOnTopOf){
                     //merging is for when image is exported
                     //if want to actually see results of merge, you need to call zoomImage afterwards
                     //or manually zoom image
-                    Canvas.merge(transformCanvasWebGl, transformCanvas);
+                    Canvas.merge(transformCanvasWebGl, canvasObjectToMergeOnTopOf);
                 }
                 else{
                     const scaleAmount = this.zoom / this.pixelateImageZoom;
