@@ -16,7 +16,7 @@
             saveTexture: function(){
                 this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
                     let gl = transformCanvasWebGl.gl;
-                    let texture = WebGl.createAndLoadTexture(gl, transformCanvas.context.getImageData(0, 0, this.loadedImage.width, this.loadedImage.height));
+                    let texture = WebGl.createAndLoadTextureFromCanvas(gl, transformCanvas.canvas);
                     this.savedTextures.push(texture);
                 });
             },
