@@ -448,8 +448,6 @@
                     if(hasImageBeenTransformed){
                         sourceCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                     }
-                    //redraw outline, since it depends on texture output from these filters
-                    this.imageOutlineFilterAction();
                 }
                 
                 //load image into the webworkers
