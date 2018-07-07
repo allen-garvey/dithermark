@@ -6,7 +6,7 @@ App.Canvas = (function(Polyfills){
     }
     
     //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-    function createCanvas(canvas){
+    function createCanvas(canvas=null){
         canvas = canvas || document.createElement('canvas');
         return {
             canvas,
