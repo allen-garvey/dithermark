@@ -128,7 +128,11 @@
         },
         computed: {
             isImageOutlineFilterEnabled: function(){
-                return this.isWebglEnabled && this.selectedImageOutlineRadiusPercent > 0;
+                //only enabled for color dither
+                return this.isWebglEnabled && this.activeDitherComponentId === 1;
+            },
+            isImageOutlineFilterActive: function(){
+                return this.isImageOutlineFilterEnabled && this.selectedImageOutlineRadiusPercent > 0;
             },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
@@ -556,7 +560,7 @@
                 this.zoomImage();
             },
             imageOutlineFilterAction: function(){
-                if(!this.isImageOutlineFilterEnabled){
+                if(!this.isImageOutlineFilterActive){
                     return;
                 }
                 const imageWidth = this.imageHeader.width;
