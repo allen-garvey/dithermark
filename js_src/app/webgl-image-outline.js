@@ -20,7 +20,7 @@ App.WebGlImageOutline = (function(WebGl, Shader){
     }
 
     function createOutlineBackgroundFunc(gl){
-        const fragmentShaderText = Shader.shaderText('webgl-fragment-image-outline-filter2-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText('webgl-rgb-distance'));
+        const fragmentShaderText = Shader.shaderText('webgl-fragment-image-outline-filter2-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText('webgl-hsl2-distance'));
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, ['u_radius', 'u_colors_array_length', 'u_colors_array', 'u_background_texture']);
         
         return function(gl, tex, texWidth, texHeight, radius, colorsArray, backgroundTexture){
