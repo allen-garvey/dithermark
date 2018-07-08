@@ -641,7 +641,7 @@
                 this.fixedOutlineColor = color.hex;
             },
             colorPickerDone: function(color){
-                this.fixedOutlineColor = color;
+                this.fixedOutlineColor = typeof color === 'object' ? color.hex : color;
                 this.shouldShowColorPicker = false;
             },
             areControlsPinned: function(){
