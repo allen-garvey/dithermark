@@ -26,7 +26,7 @@
                 return this.handleColorDragstart ? 'true' : 'false';
             },
             isBeingDragged: function(){
-                return this.colorIndex === this.draggedIndex;
+                return this.draggedIndex !== undefined && this.colorIndex === this.draggedIndex;
             },
             labelText: function(){
                 return this.label || this.colorIndex + 1;

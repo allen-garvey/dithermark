@@ -113,7 +113,7 @@
         <div v-if="isImageOutlineFixedColor">
             <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="fixedOutlineColor" @input="colorPickerValueChanged" @ok="colorPickerDone" @cancel="colorPickerDone" />
             <div class="spread-content image-outline-color-input">
-                <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :is-disabled="false" :color-value="fixedOutlineColor" dragged-index="-1" />
+                <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
             </div>
         </div>
     </fieldset>
