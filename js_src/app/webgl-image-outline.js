@@ -19,8 +19,9 @@ App.WebGlImageOutline = (function(WebGl, Shader){
         };
     }
 
-    function createOutlineBackgroundFunc(gl){
-        const fragmentShaderText = Shader.shaderText('webgl-fragment-image-outline-filter2-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText('webgl-hsl2-distance'));
+    function createOutlineBackgroundFunc(gl, isRgbDistance){
+        const distanceId = isRgbDistance ? 'rgb' : 'hsl2';
+        const fragmentShaderText = Shader.shaderText('webgl-fragment-image-outline-filter2-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText(`webgl-${distanceId}-distance`));
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, ['u_radius', 'u_colors_array_length', 'u_colors_array', 'u_background_texture']);
         
         return function(gl, tex, texWidth, texHeight, radius, colorsArray, backgroundTexture){
@@ -38,7 +39,7 @@ App.WebGlImageOutline = (function(WebGl, Shader){
         };
     }
 
-    let cachedOutlineFuncs = new Array(3);
+    let cachedOutlineFuncs = new Array(4);
 
     function outlineImageBase(gl, texture, imageWidth, imageHeight, filterNumber, radius, outlineColorVec=null){
         const cacheIndex = filterNumber - 1;
@@ -61,11 +62,11 @@ App.WebGlImageOutline = (function(WebGl, Shader){
         outlineImageBase(gl, texture, imageWidth, imageHeight, 2, radius, outlineColorVec);
     }
 
-    function outlineImage2Background(gl, texture, imageWidth, imageHeight, radiusPercent, colorsArray, backgroundTexture){
+    function outlineImage2Background(gl, texture, imageWidth, imageHeight, radiusPercent, colorsArray, backgroundTexture, isRgbDistance){
         const radius = radiusPercent / imageHeight;
-        const cacheIndex = 2;
+        const cacheIndex = isRgbDistance ? 2 : 3;
         if(!cachedOutlineFuncs[cacheIndex]){
-            cachedOutlineFuncs[cacheIndex] = createOutlineBackgroundFunc(gl);
+            cachedOutlineFuncs[cacheIndex] = createOutlineBackgroundFunc(gl, isRgbDistance);
         }
         const outlineFunc = cachedOutlineFuncs[cacheIndex];
         // Tell WebGL how to convert from clip space to pixels

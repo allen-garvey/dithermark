@@ -137,8 +137,11 @@
             isImageOutlineFilterActive: function(){
                 return this.isImageOutlineFilterEnabled && this.imageOutlineColorModes[this.selectedOutlineColorMode].id > 0;
             },
+            selectedOutlineColorModeId: function(){
+                return this.imageOutlineColorModes[this.selectedOutlineColorMode].id;
+            },
             isImageOutlineFixedColor: function(){
-                return this.imageOutlineColorModes[this.selectedOutlineColorMode].id === 1;
+                return this.selectedOutlineColorModeId === 1;
             },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
@@ -613,7 +616,7 @@
                 }
                 else{
                     const backgroundTexture = ditherOutputWebglTexture;
-                    WebGlImageOutline.outlineImage2Background(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture);
+                    WebGlImageOutline.outlineImage2Background(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedOutlineColorModeId === 3);
                     //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
                 }
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
