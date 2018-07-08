@@ -111,9 +111,10 @@
             <?php IndexView::cyclePropertyList('selectedImageOutlineRadiusPercent', 'imageOutlineRadiusPercentages', 'outline radius'); ?>
         </div>
         <div v-if="isImageOutlineFixedColor">
-            <label>Color
-                <input type="color" v-model="fixedOutlineColor" />
-            </label>
+            <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="fixedOutlineColor" @input="colorPickerValueChanged" @ok="colorPickerDone" @cancel="colorPickerDone" />
+            <div class="spread-content image-outline-color-input">
+                <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :is-disabled="false" :color-value="fixedOutlineColor" dragged-index="-1" />
+            </div>
         </div>
     </fieldset>
 </div>

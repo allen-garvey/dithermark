@@ -20,7 +20,7 @@
 
 .label-align{
     label{
-        min-width: 5em;
+        min-width: $global_controls_label_min_width;
         display: inline-block;
     }
 }

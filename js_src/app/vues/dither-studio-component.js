@@ -111,6 +111,7 @@
                 imageOutlineColorModes: ImageFiltersModel.outlineColorModes(),
                 selectedOutlineColorMode: 0,
                 fixedOutlineColor: '#000000',
+                shouldShowColorPicker: false,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
                 selectedImageSaturationIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
@@ -632,6 +633,16 @@
                     const scaleAmount = this.zoom / this.pixelateImageZoom;
                     Canvas.copy(transformCanvasWebGl, imageOutlineFilterCanvasOutput, scaleAmount);
                 }
+            },
+            /**
+             * Color picker function for outline filter fixed color
+             */
+            colorPickerValueChanged: function(color){
+                this.fixedOutlineColor = color.hex;
+            },
+            colorPickerDone: function(color){
+                this.fixedOutlineColor = color;
+                this.shouldShowColorPicker = false;
             },
             areControlsPinned: function(){
                 return getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') === 'fixed';
