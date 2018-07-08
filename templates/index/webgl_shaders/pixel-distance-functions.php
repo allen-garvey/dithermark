@@ -56,7 +56,7 @@
     }
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 hsl1 = rgb2hsl(pixel1);
-        if(hsl1.y < 0.4){
+        if(hsl1.y < 0.3){
             return rgb_distance(pixel1, pixel2);
         }
         vec3 hsl2 = rgb2hsl(pixel2);
