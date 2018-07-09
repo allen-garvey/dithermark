@@ -379,6 +379,15 @@
                     this.imageFiltersAfterDitherChanged();
                 }
             },
+            /**
+             * Image outline filter stuff
+             */
+            //clear outline canvas when not active to free up memory
+            isImageOutlineFilterActive: function(newValue, oldValue){
+                if(!newValue && newValue !== oldValue && outlineFilterCanvas){
+                    Canvas.clear(outlineFilterCanvas);
+                }
+            },
             selectedImageOutlineRadiusPercent: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imageOutlineFilterAction();
