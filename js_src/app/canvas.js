@@ -85,8 +85,19 @@ App.Canvas = (function(Polyfills){
     //canvasLayer1 is merged on top of canvasLayer0
     //canvases should be the same width and height, since we can't change them,
     //since it would might clear them
-    function mergeCanvases(canvasLayer1, canvasLayer0){
-        canvasLayer0.context.drawImage(canvasLayer1.canvas, 0, 0);
+    //globalCompositeOperation from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+    //otherwise known as blend mode
+    function mergeCanvases(canvasLayer1, canvasLayer0, globalCompositeOperation=null){
+        const context = canvasLayer0.context;
+        if(globalCompositeOperation){
+            context.globalCompositeOperation = globalCompositeOperation;
+            context.drawImage(canvasLayer1.canvas, 0, 0);
+            //reset to default
+            context.globalCompositeOperation = 'source-over';
+        }
+        else{
+            context.drawImage(canvasLayer1.canvas, 0, 0);
+        }
     }
     
     //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object

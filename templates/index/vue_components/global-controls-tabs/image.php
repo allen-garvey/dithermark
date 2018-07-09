@@ -116,5 +116,14 @@
                 <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
             </div>
         </div>
+        <div class="spread-content" v-if="isImageOutlineFixedColor">
+            <div class="label-align">
+                <label for="image-outline-filter-blend-mode">Blend mode</label>
+                <select id="image-outline-filter-blend-mode" v-model.number="selectedOutlineFixedColorBlendMode">
+                    <option v-for="(mode, index) in imageOutlineFixedColorBlendModes" v-bind:value="index">{{mode.title}}</option>
+                </select>
+            </div>
+            <?php IndexView::cyclePropertyList('selectedOutlineFixedColorBlendMode', 'imageOutlineFixedColorBlendModes', 'blend mode'); ?>
+        </div>
     </fieldset>
 </div>

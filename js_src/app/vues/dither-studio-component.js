@@ -111,6 +111,8 @@
                 imageOutlineColorModes: ImageFiltersModel.outlineColorModes(),
                 selectedOutlineColorMode: 0,
                 fixedOutlineColor: '#000000',
+                imageOutlineFixedColorBlendModes: ImageFiltersModel.canvasBlendModes(),
+                selectedOutlineFixedColorBlendMode: 0,
                 shouldShowColorPicker: false,
                 //selectedImageSaturationIndex and selectedImageContrastIndex use this array
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
@@ -392,6 +394,12 @@
                     this.zoomImage();
                 }
             },
+            selectedOutlineFixedColorBlendMode: function(newValue, oldValue){
+                if(newValue !== oldValue){
+                    this.imageOutlineFilterAction();
+                    this.zoomImage();
+                }
+            },
         },
         methods: {
             /*
@@ -632,8 +640,9 @@
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
 
                 //merge on top of transformCanvas
+                const blendMode = this.isImageOutlineFixedColor ? this.imageOutlineFixedColorBlendModes[this.selectedOutlineFixedColorBlendMode].value : null;
                 Canvas.copy(transformCanvas, outlineFilterCanvas);
-                Canvas.merge(transformCanvasWebGl, outlineFilterCanvas);
+                Canvas.merge(transformCanvasWebGl, outlineFilterCanvas, blendMode);
             },
             /**
              * Color picker function for outline filter fixed color

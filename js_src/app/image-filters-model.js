@@ -34,6 +34,38 @@ App.ImageFiltersModel = (function(ArrayUtil){
         ];
     }
 
+    //used for blending fixed outline color with dithered output
+    //values from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+    //all values might not be supported, so have to be tested first
+    function canvasBlendModes(){
+        //from: https://stackoverflow.com/questions/1026069/how-do-i-make-the-first-letter-of-a-string-uppercase-in-javascript
+        function capitalizeFirstLetter(string) {
+            return string.charAt(0).toUpperCase() + string.slice(1);
+        }
+
+        return [
+            {title: 'Normal', value: 'source-over'},
+            {value: 'overlay'},
+            {title: 'Soft light', value: 'soft-light'},
+            {title: 'Hard light', value: 'hard-light'},
+            {value: 'multiply'},
+            {title: 'Burn', value: 'color-burn'},
+            {value: 'difference'},
+            {value: 'darken'},
+            {value: 'exclusion'},
+            {title: 'Dodge', value: 'color-dodge'},
+            {value: 'screen'},
+            {value: 'lighter'},
+            {value: 'hue'},
+            {value: 'saturation'},
+            {value: 'color'},
+            {value: 'luminosity'},
+        ].map((mode)=>{
+            mode.title = mode.title || capitalizeFirstLetter(mode.value);
+            return mode;
+        });
+    }
+
 
     /**
      * canvas css filters
@@ -51,6 +83,7 @@ App.ImageFiltersModel = (function(ArrayUtil){
         bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
         outlineRadiusPercentages,
         outlineColorModes,
+        canvasBlendModes,
         canvasFilterValues,
         canvasFilterValuesDefaultIndex: canvasFilterValues.indexOf(100),
         pixelationValues,
