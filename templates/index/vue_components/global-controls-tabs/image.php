@@ -116,7 +116,7 @@
                 <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
             </div>
         </div>
-        <div class="spread-content" v-if="isImageOutlineFixedColor">
+        <div class="spread-content" v-if="isImageOutlineFixedColor &amp;&amp; areOutlineBlendModesSupported">
             <div class="label-align">
                 <label for="image-outline-filter-blend-mode">Blend mode</label>
                 <select id="image-outline-filter-blend-mode" v-model.number="selectedOutlineFixedColorBlendMode">

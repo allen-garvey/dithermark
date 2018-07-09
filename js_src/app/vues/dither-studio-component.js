@@ -154,6 +154,9 @@
             isImageOutlineFixedColor: function(){
                 return this.selectedOutlineColorModeId === 1;
             },
+            areOutlineBlendModesSupported: function(){
+                return this.imageOutlineFixedColorBlendModes.length > 1;
+            },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
             },
@@ -640,7 +643,7 @@
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
 
                 //merge on top of transformCanvas
-                const blendMode = this.isImageOutlineFixedColor ? this.imageOutlineFixedColorBlendModes[this.selectedOutlineFixedColorBlendMode].value : null;
+                const blendMode = this.isImageOutlineFixedColor && this.areOutlineBlendModesSupported ? this.imageOutlineFixedColorBlendModes[this.selectedOutlineFixedColorBlendMode].value : null;
                 Canvas.copy(transformCanvas, outlineFilterCanvas);
                 Canvas.merge(transformCanvasWebGl, outlineFilterCanvas, blendMode);
             },
