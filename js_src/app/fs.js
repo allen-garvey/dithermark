@@ -133,17 +133,17 @@ App.Fs = (function(){
         URL.revokeObjectURL(objectUrl);
     }
 
-    //based on: https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+    //based on: https://stackoverflow.com/questions/45197097/cant-save-canvas-as-image-on-edge-browser
     //for edge and mobile safari
+    //opens image in new tab
+    //polyfill from https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
+    //is extremely slow with medium size images, and doesn't work on edge anyway
     function canvasToBlobPolyfill(canvas, fileType, callback){
-        const binaryString = atob(canvas.toDataURL(fileType, 1).split(',')[1]);
-        const length = binaryString.length;
-        const array = new Uint8Array(length);
-
-        for(let i=0;i<length;i++){
-            array[i] = binaryString.charCodeAt(i);
-        }
-        processSaveImageBlob(new Blob([array], {type: fileType}), callback);
+        const html=`<img src='${canvas.toDataURL(fileType, 1)}'/>`;
+        const newTab=window.open();
+        newTab.document.write(html);
+        
+        callback(null);
     }
 
     function saveImage(canvas, fileType, callback){

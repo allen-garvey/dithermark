@@ -47,11 +47,14 @@
                 saveImageCanvas = saveImageCanvas || Canvas.create();
                 this.isCurrentlySavingImage = true;
                 this.saveRequested(saveImageCanvas, (sourceCanvas, unsplash)=>{
-                    Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl)=>{
-                        saveImageLink = saveImageLink || document.createElement('a');
-                        saveImageLink.href = objectUrl;
-                        saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
-                        saveImageLink.click();
+                    Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl=null)=>{
+                        //objectUrl will be null if we are using toBlob polyfill, which opens image in new tab
+                        if(objectUrl){
+                            saveImageLink = saveImageLink || document.createElement('a');
+                            saveImageLink.href = objectUrl;
+                            saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
+                            saveImageLink.click();
+                        }
 
                         //clear the canvas to free up memory
                         Canvas.clear(saveImageCanvas);
