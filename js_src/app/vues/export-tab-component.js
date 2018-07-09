@@ -7,11 +7,16 @@
     Vue.component('export-tab', {
         template: document.getElementById('export-tab-component'),
         props: ['save-requested'],
+        created: function(){
+            saveImageCanvas = Canvas.create();
+            this.shouldShowFileName = Canvas.isToBlobSupported(saveImageCanvas.canvas);
+        },
         data: function(){
             return {
                 saveImageFileName: '',
                 saveImageFileType: 'image/png',
                 isCurrentlySavingImage: false,
+                shouldShowFileName: true,
             };
         },
         computed: {
@@ -44,7 +49,6 @@
                 if(this.isCurrentlySavingImage){
                     return;
                 }
-                saveImageCanvas = saveImageCanvas || Canvas.create();
                 this.isCurrentlySavingImage = true;
                 this.saveRequested(saveImageCanvas, (sourceCanvas, unsplash)=>{
                     Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl=null)=>{
