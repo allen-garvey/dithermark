@@ -17,16 +17,6 @@
     margin-right: $canvasMargin;
 }
 
-.transformed-canvas-output-container{
-    position: relative;
-    z-index: 1;
-}
-.outline-canvas{
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
 @include pinned_controls_mq{
     .image-canvas-supercontainer{
         overflow-x: initial;

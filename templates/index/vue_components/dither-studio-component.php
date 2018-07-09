@@ -60,17 +60,15 @@
     </div>
     <div class="image-canvas-supercontainer" v-show="isImageLoaded" :class="{'show-original': showOriginalImage}">
         <div class="image-canvas-container">
-        <?php //<canvas ref="saveImageCanvas" class="hidden"></canvas> //used when saving image, so pixelated images are scaled correctly ?>
-        <?php //   <canvas ref="originalImageCanvas" class="hidden"></canvas>//original non-pixelated image loaded by user ?>
-        <?php //    <canvas ref="sourceCanvas" class="hidden"></canvas>< //pixelated-image used as source to dithers ?>
-        <?php //    <canvas ref="transformCanvas" class="hidden"></canvas> //output from dither ?>
-        <?php //    <canvas ref="transformCanvasWebgl" class="hidden"></canvas> //output from webgl, copied to above because otherwise chrome will freak out when we change tabs ?>
-        <?php //ditherOutputCanvas saves output from dither, before post dither filters ?>   
+        <?php // <canvas ref="saveImageCanvas" class="hidden"></canvas> //used when saving image, so pixelated images are scaled correctly ?>
+        <?php // <canvas ref="originalImageCanvas" class="hidden"></canvas>//original non-pixelated image loaded by user ?>
+        <?php // <canvas ref="sourceCanvas" class="hidden"></canvas>< //pixelated-image used as source to dithers ?>
+        <?php // <canvas ref="transformCanvas" class="hidden"></canvas> //output from dither ?>
+        <?php // outlineFilterCanvas - saves merged output of image outline filter and transform canvas; used instead of transform canvas when outline filter is active ?>
+        <?php // <canvas ref="transformCanvasWebgl" class="hidden"></canvas> //output from webgl, copied to transformCanvas because otherwise chrome will freak out when we change tabs ?>
+        <?php // ditherOutputCanvas saves output from dither, before post dither filters ?>
             <canvas ref="sourceCanvasOutput" class="source-output-canvas" v-show="showOriginalImage"></canvas><?php //original image as displayed to the user, after zoomed and pixelated ?>
-            <div class="transformed-canvas-output-container">
-                <canvas ref="transformCanvasOutput"></canvas><?php //output from dither as shown to user, after zoom ?>
-                <canvas ref="imageOutlineFilterCanvasOutput" class="outline-canvas" v-show="isImageOutlineFilterActive"></canvas><?php //output from image outline filter as shown to user, after zoom ?>
-            </div>
+            <canvas ref="transformCanvasOutput"></canvas><?php //output from dither as shown to user, after zoom ?>
         </div>
     </div>
     <modal-prompt ref="modalPromptComponent" />

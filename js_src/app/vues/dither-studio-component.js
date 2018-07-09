@@ -11,7 +11,7 @@
     let transformCanvasWebGl;
     let sourceCanvasOutput;
     let transformCanvasOutput;
-    let imageOutlineFilterCanvasOutput;
+    let outlineFilterCanvas;
     
     let sourceWebglTexture;
     let ditherOutputWebglTexture;
@@ -59,7 +59,7 @@
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
             //image outlines are webgl only, so no need to do this if webgl is not supported
             if(this.isWebglSupported){
-                imageOutlineFilterCanvasOutput = Canvas.create(refs.imageOutlineFilterCanvasOutput);
+                outlineFilterCanvas = Canvas.create();
             }
             
             //load global settings
@@ -131,6 +131,14 @@
             };
         },
         computed: {
+            //the source canvas for transformed (dithered and filtered image)
+            //before zoom
+            transformedSourceCanvas: function(){
+                if(this.isImageOutlineFilterActive){
+                    return outlineFilterCanvas;
+                }
+                return transformCanvas;
+            },
             isImageOutlineFilterEnabled: function(){
                 //only enabled for color dither
                 return this.isImageLoaded && this.isWebglEnabled && this.activeDitherComponentId === 1;
@@ -369,16 +377,19 @@
             selectedImageOutlineRadiusPercent: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imageOutlineFilterAction();
+                    this.zoomImage();
                 }
             },
             selectedOutlineColorMode: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imageOutlineFilterAction();
+                    this.zoomImage();
                 }
             },
             fixedOutlineColor: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imageOutlineFilterAction();
+                    this.zoomImage();
                 }
             },
         },
@@ -407,14 +418,10 @@
             * Loading and saving image stuff
             */
             onSaveRequested: function(scratchCanvas, callback){
-                //while technicaly we can just use transformCavas directly if there is no image outline
-                //and no pixelation it makes the logic for clearing the canvas in export component easier
+                //while technicaly we can just use transformedSourceCanvas directly if there is no pixelation
+                //it makes the logic for clearing the canvas in export component easier
                 //since we don't need to check if we are using transform canvas directly
-                Canvas.copy(transformCanvas, scratchCanvas);
-                
-                //merge outline on top of transformCanvas output
-                //don't need to check if outline is active, since if not, this method call will do nothing
-                this.imageOutlineFilterAction(scratchCanvas);
+                Canvas.copy(this.transformedSourceCanvas, scratchCanvas);
 
                 //scale canvas if pixelated
                 if(this.pixelateImageZoom !== 100){
@@ -596,9 +603,11 @@
                     //reset output when no filters active
                     Canvas.copy(ditherOutputCanvas, transformCanvas);
                 }
+                //reset the outline, since it needs to be merged with transformCanvas
+                this.imageOutlineFilterAction();
                 this.zoomImage();
             },
-            imageOutlineFilterAction: function(canvasObjectToMergeOnTopOf=null){
+            imageOutlineFilterAction: function(){
                 if(!this.isImageOutlineFilterActive){
                     return;
                 }
@@ -622,17 +631,9 @@
                 }
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
 
-                //display outline
-                if(canvasObjectToMergeOnTopOf){
-                    //merging is for when image is exported
-                    //if want to actually see results of merge, you need to call zoomImage afterwards
-                    //or manually zoom image
-                    Canvas.merge(transformCanvasWebGl, canvasObjectToMergeOnTopOf);
-                }
-                else{
-                    const scaleAmount = this.zoom / this.pixelateImageZoom;
-                    Canvas.copy(transformCanvasWebGl, imageOutlineFilterCanvasOutput, scaleAmount);
-                }
+                //merge on top of transformCanvas
+                Canvas.copy(transformCanvas, outlineFilterCanvas);
+                Canvas.merge(transformCanvasWebGl, outlineFilterCanvas);
             },
             /**
              * Color picker function for outline filter fixed color
@@ -653,8 +654,7 @@
             zoomImage: function(){
                 const scaleAmount = this.zoom / this.pixelateImageZoom;
                 Canvas.copy(sourceCanvas, sourceCanvasOutput, scaleAmount);
-                Canvas.copy(transformCanvas, transformCanvasOutput, scaleAmount);
-                this.imageOutlineFilterAction();
+                Canvas.copy(this.transformedSourceCanvas, transformCanvasOutput, scaleAmount);
             },
             resetZoom: function(){
                 this.zoom = 100;
