@@ -52,15 +52,22 @@
                 this.bwDitherAlgorithms = this.bwDitherAlgorithms.map(removeUnsupportedWebGl);
                 this.colorDitherAlgorithms = this.colorDitherAlgorithms.map(removeUnsupportedWebGl);
             }
+
+            //image outlines are webgl only, so no need to do this if webgl is not supported
+            if(this.isWebglSupported){
+                outlineFilterCanvas = Canvas.create();
+                //remove unsupported canvas blend modes
+                this.imageOutlineFixedColorBlendModes = this.imageOutlineFixedColorBlendModes.filter((blendMode)=>{
+                    return Canvas.isBlendModeSupported(outlineFilterCanvas, blendMode.value);
+                });
+                //reset to default blend mode
+                Canvas.resetBlendMode(outlineFilterCanvas);
+            }
         },
         mounted: function(){
             const refs = this.$refs;
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
-            //image outlines are webgl only, so no need to do this if webgl is not supported
-            if(this.isWebglSupported){
-                outlineFilterCanvas = Canvas.create();
-            }
             
             //load global settings
             const globalSettings = UserSettings.getGlobalSettings(this.areControlsPinned());

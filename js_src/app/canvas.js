@@ -8,6 +8,14 @@ App.Canvas = (function(Polyfills){
     function isToBlobSupported(canvas){
         return 'toBlob' in canvas;
     }
+
+    //globalCompositeOperation from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+    //otherwise known as blend mode
+    //test for support from: https://stackoverflow.com/questions/26123588/test-if-browser-supports-multiply-for-globalcompositeoperation-canvas-property
+    function isBlendModeSupported(canvasObject, globalCompositeOperation){
+        canvasObject.context.globalCompositeOperation = globalCompositeOperation;
+        return canvasObject.context.globalCompositeOperation === globalCompositeOperation;
+    }
     
     //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
     function createCanvas(canvas=null){
@@ -93,11 +101,16 @@ App.Canvas = (function(Polyfills){
             context.globalCompositeOperation = globalCompositeOperation;
             context.drawImage(canvasLayer1.canvas, 0, 0);
             //reset to default
-            context.globalCompositeOperation = 'source-over';
+            resetBlendMode(canvasLayer0);
         }
         else{
             context.drawImage(canvasLayer1.canvas, 0, 0);
         }
+    }
+
+    //returns canvas blend mode to default value
+    function resetBlendMode(canvasObject){
+        canvasObject.context.globalCompositeOperation = 'source-over';
     }
     
     //based on: https://stackoverflow.com/questions/10100798/whats-the-most-straightforward-way-to-copy-an-arraybuffer-object
@@ -157,6 +170,8 @@ App.Canvas = (function(Polyfills){
         createWebgl: createWebglCanvas,
         copy: copyCanvas,
         merge: mergeCanvases,
+        isBlendModeSupported,
+        resetBlendMode,
         createSharedImageBuffer,
         loadImage,
         loadPixels,
