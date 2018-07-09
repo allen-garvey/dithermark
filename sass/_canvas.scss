@@ -24,6 +24,7 @@
 .outline-canvas{
     position: absolute;
     top: 0;
+    left: 0;
 }
 
 @include pinned_controls_mq{
