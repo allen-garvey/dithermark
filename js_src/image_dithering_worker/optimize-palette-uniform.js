@@ -5,7 +5,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
     function generateSaturations(numColors){
         //since index starts at 0
         const greatestColorIndex = numColors - 1;
-        const greyOffset = Math.max(Math.round(10 - numColors / 4), 0);
+        const greyOffset = Math.max(Math.round(12 - numColors / 4), 0);
         const multiplier = (100 - greyOffset * 2) / greatestColorIndex;
         return ArrayUtil.create(numColors, (i)=>{
             return Math.min(Math.round(i * multiplier) + greyOffset, 100);
