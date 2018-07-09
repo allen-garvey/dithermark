@@ -684,17 +684,28 @@
                 const widthMultiplier = this.showOriginalImage ? 50 : 100;
                 //if controls are pinned, we need to subtract the width of controls
                 let windowWidth = window.innerWidth;
-                if(this.areControlsPinned()){
+                const areControlsPinned = this.areControlsPinned();
+                
+                if(areControlsPinned){
                     windowWidth -= this.$refs.controlsContainer.offsetWidth;
                 }
                 if(this.showOriginalImage){
-                    windowWidth -= parseInt(getComputedStyle(this.$refs.transformCanvasOutput).getPropertyValue('margin-left').replace(/[\D]/, ''));
+                    const margin = parseInt(getComputedStyle(this.$refs.sourceCanvasOutput).getPropertyValue('margin-right').replace(/[\D]/, ''))
+                    //2*margin is to give some horizontal padding on each side so edges are not cut off
+                    windowWidth -= 2 * margin;
                 }
-                //if zoom bar is pinned, we need to subtract height of zoom bar
+                else if(!areControlsPinned){
+                    //when controls are pinned single image fits fine, but needs a bit of extra room on mobile
+                    windowWidth -= 20;
+                }
                 let windowHeight = window.innerHeight;
+                //if zoom bar is pinned, we need to subtract height of zoom bar
                 const zoomBarContainer = this.$refs.zoomBarContainer;
                 if(getComputedStyle(zoomBarContainer).getPropertyValue('position') === 'fixed'){
-                    windowHeight -= zoomBarContainer.offsetHeight;
+                    const zoomBarHeight = zoomBarContainer.offsetHeight;
+                    //reduce height if image is portrait
+                    const multiplier = image.height > image.width ? 1.5 : 1;
+                    windowHeight -= multiplier * zoomBarHeight;
                 }
                 const widthFitPercentage = Math.floor(windowWidth / image.width * widthMultiplier);
                 const heightFitPercentage = Math.floor(windowHeight / image.height * 100);
