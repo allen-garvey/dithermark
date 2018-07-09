@@ -111,6 +111,38 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         };
     }
 
+    //make red hue the center hue, since it will be most vibrant
+    function centerRedHue(hues){
+        function distanceToRed(hue){
+            return Math.min(hue, 360 - hue);
+        }
+
+        const length = hues.length;
+
+        let mostRedIndex = 0;
+        let leastDistanceToRed = Infinity;
+
+        hues.forEach((hue, i)=>{
+            const currentDistanceToRed = distanceToRed(hue);
+            if(currentDistanceToRed < leastDistanceToRed){
+                leastDistanceToRed = currentDistanceToRed;
+                mostRedIndex = i;
+            }
+        });
+        const ret = new Uint16Array(length);
+        const halfIndex = Math.max(Math.floor(hues.length / 2) - 1, 0);
+        let offset = mostRedIndex - halfIndex;
+        if(offset < 0){
+            offset = length + offset;
+        }
+        for(let i=0;i<length;i++){
+            ret[i] = hues[(i+offset) % length];
+        }
+
+
+        return ret;
+    }
+
 
     function generateHues(numColors, isRotated=false){
         const {redCount, greenCount, blueCount} = calculateHueCounts(numColors, isRotated);
@@ -119,7 +151,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         const greens = greenHues(greenCount, isRotated);
         const blues = blueHues(blueCount, isRotated);
 
-        const hues = new Uint16Array(numColors);
+        let hues = new Uint16Array(numColors);
 
         let redIndex = 0;
         let greenIndex = 0;
@@ -138,6 +170,8 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
                 }
                 colorIndex = (colorIndex + 1) % 3;
             }
+
+            // hues = centerRedHue(hues);
         }
         else{
             //shuffle hues, so we get sequence b,r,g
@@ -153,6 +187,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
                 }
                 colorIndex = (colorIndex + 1) % 3;
             }
+            hues = centerRedHue(hues);
         }
 
         return hues;
