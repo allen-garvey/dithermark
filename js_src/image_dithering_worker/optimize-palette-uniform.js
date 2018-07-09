@@ -54,7 +54,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         const start = 70;
         const width = 130;
         const limit = start + width;
-        const middle = start + width / 2;
+        const middle = (start + width) / 2;
         const multiplier = width / count;
         const offset = isRotated ? multiplier / 2 : 0;
         const ret = new Uint16Array(count);
@@ -73,7 +73,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
         const start = 200;
         const width = 100;
         const limit = start + width;
-        const middle = start + width / 2;
+        const middle = (start + width) / 2;
         const multiplier = width / count;
         const offset = isRotated ? multiplier / 2 : 0;
         const ret = new Uint16Array(count);
@@ -162,7 +162,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
                 if(colorIndex === 1 && blueIndex < blues.length){
                     hues[i] = blues[blueIndex++];
                 }
-                else if(colorIndex === 2 && redIndex < reds.length){
+                else if(colorIndex > 0 && redIndex < reds.length){
                     hues[i] = reds[redIndex++];
                 }
                 else{
@@ -170,8 +170,6 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
                 }
                 colorIndex = (colorIndex + 1) % 3;
             }
-
-            // hues = centerRedHue(hues);
         }
         else{
             //shuffle hues, so we get sequence b,r,g
