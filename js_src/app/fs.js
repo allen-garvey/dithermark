@@ -139,8 +139,8 @@ App.Fs = (function(){
     //polyfill from https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob
     //is extremely slow with medium size images, and doesn't work on edge anyway
     function canvasToBlobPolyfill(canvas, fileType, callback){
-        const html=`<img src='${canvas.toDataURL(fileType, 1)}'/>`;
-        const newTab=window.open();
+        const html = `<img src='${canvas.toDataURL(fileType, 1)}'/>`;
+        const newTab = window.open();
         newTab.document.write(html);
         
         callback(null);
