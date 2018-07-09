@@ -110,12 +110,6 @@
             </div>
             <?php IndexView::cyclePropertyList('selectedImageOutlineRadiusPercent', 'imageOutlineRadiusPercentages', 'outline radius'); ?>
         </div>
-        <div v-if="isImageOutlineFixedColor">
-            <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="fixedOutlineColor" @input="colorPickerValueChanged" @ok="colorPickerDone" @cancel="colorPickerDone" />
-            <div class="spread-content image-outline-color-input">
-                <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
-            </div>
-        </div>
         <div class="spread-content" v-if="isImageOutlineFixedColor &amp;&amp; areOutlineBlendModesSupported">
             <div class="label-align">
                 <label for="image-outline-filter-blend-mode">Blend mode</label>
@@ -124,6 +118,12 @@
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedOutlineFixedColorBlendMode', 'imageOutlineFixedColorBlendModes', 'blend mode'); ?>
+        </div>
+        <div v-if="isImageOutlineFixedColor">
+            <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="fixedOutlineColor" @input="colorPickerValueChanged" @ok="colorPickerDone" @cancel="colorPickerDone" />
+            <div class="spread-content image-outline-color-input">
+                <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
+            </div>
         </div>
     </fieldset>
 </div>
