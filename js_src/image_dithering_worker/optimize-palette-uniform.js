@@ -5,7 +5,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
     function generateSaturations(numColors){
         //since index starts at 0
         const greatestColorIndex = numColors - 1;
-        const greyOffset = Math.max(Math.round(6 - numColors / 4), 0);
+        const greyOffset = Math.max(Math.round(10 - numColors / 4), 0);
         const multiplier = (100 - greyOffset * 2) / greatestColorIndex;
         return ArrayUtil.create(numColors, (i)=>{
             return Math.min(Math.round(i * multiplier) + greyOffset, 100);
@@ -15,7 +15,7 @@ App.OptimizePaletteUniform = (function(ArrayUtil, PixelMath, Perceptual){
     function generateLightnesses(numColors){
         //since index starts at 0
         const greatestColorIndex = numColors - 1;
-        const blackOffset = Math.max(Math.round(32 - numColors / 4), 0);
+        const blackOffset = Math.max(Math.round(42 - numColors / 4), 0);
         const range = 255 - blackOffset - Math.max(blackOffset - greatestColorIndex, 0);
         const multiplier = range / greatestColorIndex;
         return ArrayUtil.create(numColors, (i)=>{
