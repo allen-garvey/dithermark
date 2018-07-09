@@ -1,4 +1,4 @@
-App.Fs = (function(){
+App.Fs = (function(Canvas){
     const imageElement = new Image();
     //need to store reference so we can free it when a new one is created
     let currentImageObjectUrl = null;
@@ -147,7 +147,7 @@ App.Fs = (function(){
     }
 
     function saveImage(canvas, fileType, callback){
-        if(canvas.toBlob){
+        if(Canvas.isToBlobSupported(canvas)){
             canvas.toBlob((blob)=>{
                 processSaveImageBlob(blob, callback);
             }, fileType, 1);
@@ -165,4 +165,4 @@ App.Fs = (function(){
         messageForOpenImageUrlError,
     };
     
-})();
+})(App.Canvas);

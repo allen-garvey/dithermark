@@ -4,6 +4,10 @@ App.Canvas = (function(Polyfills){
     function areCanvasFiltersSupported(canvasObject){
         return 'filter' in canvasObject.context;
     }
+
+    function isToBlobSupported(canvas){
+        return 'toBlob' in canvas;
+    }
     
     //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
     function createCanvas(canvas=null){
@@ -149,5 +153,6 @@ App.Canvas = (function(Polyfills){
         minScalePercentageForImage,
         devicePixelRatio,
         areCanvasFiltersSupported,
+        isToBlobSupported,
     };
 })(App.Polyfills);
