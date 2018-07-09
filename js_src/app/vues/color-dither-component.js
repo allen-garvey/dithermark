@@ -50,6 +50,7 @@
                 shouldShowColorPicker: false,
                 colorPickerColorIndex: 0,
                 hasColorPickerChangedTheColor: false,
+                selectedPaletteIndexBeforeColorPickerOpened: 0,
             };
         },
         computed: {
@@ -347,6 +348,7 @@
                     }
                     this.colorPickerColorIndex = colorIndex;
                     this.hasColorPickerChangedTheColor = false;
+                    this.selectedPaletteIndexBeforeColorPickerOpened = this.selectedPaletteIndex;
                     this.shouldShowColorPicker = true;
                 }
             },
@@ -364,7 +366,12 @@
                 this.shouldShowColorPicker = false;
             },
             colorPickerCanceled: function(previousColor){
-                if(this.hasColorPickerChangedTheColor){
+                //reset color palette if changed to custom
+                if(this.selectedPaletteIndex !== this.selectedPaletteIndexBeforeColorPickerOpened){
+                    this.selectedPaletteIndex = this.selectedPaletteIndexBeforeColorPickerOpened;
+                }
+                //if we were already on custom, but color was changed, we need to reset it as well
+                else if(this.hasColorPickerChangedTheColor){
                     Vue.set(this.colorsShadow, this.colorPickerColorIndex, previousColor);
                 }
                 this.shouldShowColorPicker = false;
