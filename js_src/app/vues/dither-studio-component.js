@@ -703,9 +703,8 @@
                 const zoomBarContainer = this.$refs.zoomBarContainer;
                 if(getComputedStyle(zoomBarContainer).getPropertyValue('position') === 'fixed'){
                     const zoomBarHeight = zoomBarContainer.offsetHeight;
-                    //reduce height if image is portrait
-                    const multiplier = image.height > image.width ? 1.5 : 1;
-                    windowHeight -= multiplier * zoomBarHeight;
+                    //add slightly more than zoomBarHeight so there is some padding
+                    windowHeight -= 1.6 * zoomBarHeight;
                 }
                 const widthFitPercentage = Math.floor(windowWidth / image.width * widthMultiplier);
                 const heightFitPercentage = Math.floor(windowHeight / image.height * 100);
