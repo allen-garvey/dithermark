@@ -428,25 +428,15 @@
             /*
             * Loading and saving image stuff
             */
-            onSaveRequested: function(scratchCanvas, callback){
+            onSaveRequested: function(exportCanvas, callback){
+                //scale canvas if pixelated
+                const scale = this.pixelateImageZoom !== 100 ? 100 / this.pixelateImageZoom : 1;
                 //while technicaly we can just use transformedSourceCanvas directly if there is no pixelation
                 //it makes the logic for clearing the canvas in export component easier
                 //since we don't need to check if we are using transform canvas directly
-                Canvas.copy(this.transformedSourceCanvas, scratchCanvas);
+                Canvas.copy(this.transformedSourceCanvas, exportCanvas, scale);
 
-                //scale canvas if pixelated
-                if(this.pixelateImageZoom !== 100){
-                    //need to create another canvas to copy to, since resizing canvas clears it
-                    const tempCanvas = Canvas.create();
-                    Canvas.copy(scratchCanvas, tempCanvas, 100 / this.pixelateImageZoom);
-                    Canvas.copy(tempCanvas, scratchCanvas);
-                    //free memory by clearing canvas
-                    //while temp canvas is eligible for garbage collection as soon as this scope exits
-                    //it might not be freed immediately, so clearing it will reduce memory pressure until that happens
-                    Canvas.clear(tempCanvas);
-                }
-
-                callback(scratchCanvas, this.loadedImage.unsplash);
+                callback(exportCanvas, this.loadedImage.unsplash);
             },
             loadImage: function(image, file){
                 this.openImageErrorMessage = null;
