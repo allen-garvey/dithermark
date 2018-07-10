@@ -11,20 +11,35 @@
         return pixel_luma(distances * distances);
     }
 </script>
+<?php // fraction values of 0.1 and 0.3 seem to work best, but 0.1 is used to differentiate it from hue-lightness distance ?>
 <script type="webgl/fragment-shader-function" id="webgl-hue-distance">
     float quick_distance(vec3 pixel1, vec3 pixel2){
-        float hue1 = hue(pixel1);
-        float hue2 = hue(pixel2);
-        return hue_distance(hue1, hue2);
+        vec3 hsl1 = rgb2hsl(pixel1);
+        vec3 hsl2 = rgb2hsl(pixel2);
+
+        float hueDist = hue_distance(hsl1.x, hsl2.x);
+
+        if(hsl1.y < 0.1){
+            float fraction = hsl1.y / 0.1;
+            float lightnessDiff = hsl1.z - hsl2.z;
+            return 2.0 * fraction * hueDist * hueDist + (1.0 - fraction) * lightnessDiff * lightnessDiff;
+        }
+        return hueDist * hueDist;
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-hue-lightness-distance">
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 hsl1 = rgb2hsl(pixel1);
         vec3 hsl2 = rgb2hsl(pixel2);
-        float hDist = hue_distance(hsl1.r, hsl2.r);
-        float lDist = hsl1.b - hsl2.b;
-        return hDist * hDist + lDist * lDist;
+
+        float hueDist = hue_distance(hsl1.x, hsl2.x);
+        float lightnessDiff = hsl1.z - hsl2.z;
+
+        if(hsl1.y < 0.3){
+            float fraction = hsl1.y / 0.3;
+            return 2.0 * fraction * hueDist * hueDist + (1.0 - fraction) * lightnessDiff * lightnessDiff;
+        }
+        return 32.0 * hueDist * hueDist + lightnessDiff * lightnessDiff;
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-lightness-distance">
