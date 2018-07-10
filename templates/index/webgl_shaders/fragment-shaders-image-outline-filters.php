@@ -67,13 +67,14 @@ THE SOFTWARE.
 <?php 
 //@param u_radius radius in pixels (radiusPercentage / height)
 ?>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2">
+<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-base">
     precision mediump float;
 
     uniform sampler2D u_texture;
     varying vec2 v_texcoord;
     uniform float u_radius;
-    uniform vec3 u_outline_color;
+    
+    #{{customDeclaration}}
 
     <?php //use the fragment position for a different seed per-pixel ?>
     float random(vec3 scale, float seed) {
@@ -101,25 +102,18 @@ THE SOFTWARE.
         }
         float c = clamp(10000.0 * (color.y / total.y - color.x / total.x) + 0.5, 0.0, 1.0);
         if(c < 0.5){
-            gl_FragColor = vec4(u_outline_color, 1.0);
+            gl_FragColor = #{{customOutlineColor}}
         }
         else{
             gl_FragColor = vec4(0.0);
         }
     }
 </script>
-<?php 
-//@param u_radius radius in pixels (radiusPercentage / height)
-//uses closest color in palette to background color that is darker for outline color
-?>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-background">
-    precision mediump float;
-
-    uniform sampler2D u_texture;
+<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-declaration-fixed">
+    uniform vec3 u_outline_color;
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-declaration-background">
     uniform sampler2D u_background_texture;
-    varying vec2 v_texcoord;
-    uniform float u_radius;
-
     uniform int u_colors_array_length;
     uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
 
@@ -148,38 +142,10 @@ THE SOFTWARE.
 
         return outlineColor;
     }
-
-    <?php //use the fragment position for a different seed per-pixel ?>
-    float random(vec3 scale, float seed) {
-        return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);
-    }
-
-    void main(){
-        vec2 color = vec2(0.0);
-        vec2 total = vec2(0.0);
-
-        <?php //randomize the lookup values to hide the fixed number of samples ?>
-        float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);
-
-        for(float t = -30.0; t <= 30.0; t++){
-            float percent = (t + offset - 0.5) / 30.0;
-            float weight = 1.0 - abs(percent);
-            vec2 sample = texture2D(u_texture, v_texcoord + vec2(0.0, u_radius) * percent).xy;
-            color.x += sample.x * weight;
-            total.x += weight;
-            if(abs(t) < 15.0){
-                weight = weight * 2.0 - 1.0;
-                color.y += sample.y * weight;
-                total.y += weight;
-            }
-        }
-        float c = clamp(10000.0 * (color.y / total.y - color.x / total.x) + 0.5, 0.0, 1.0);
-        if(c < 0.5){
-            vec3 outlineColor = vec3(0.0);
-            gl_FragColor = vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);
-        }
-        else{
-            gl_FragColor = vec4(0.0);
-        }
-    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-color-fixed">
+    vec4(u_outline_color, 1.0);
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-color-background">
+    vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);
 </script>
