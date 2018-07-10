@@ -17,4 +17,7 @@
     <div>
         <button class="btn btn-success" @click="saveImage" :disabled="isCurrentlySavingImage" title="Save image to downloads folder">Save</button>
     </div>
+    <div v-if="!shouldShowFileName" class="hint">
+        Image will open in a new tab. Right click / long press on the image to save
+    </div>
 </div>
