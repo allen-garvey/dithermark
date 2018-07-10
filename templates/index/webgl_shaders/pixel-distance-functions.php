@@ -78,8 +78,8 @@
         float hDist = hue_distance(hsl1.r, hsl2.r);
         vec2 slDist = hsl1.gb - hsl2.gb;  
         vec3 hslDist = vec3(hDist, slDist);
-        float sMultiplier = slDist.x < 0.0 ? 2.0 : 1.0;  
 
-        return dot(vec3(8.0, sMultiplier, 4.0), hslDist * hslDist);
+        return dot(vec3(8.0, 1.0, 4.0), hslDist * hslDist);
+    }
     }
 </script>
