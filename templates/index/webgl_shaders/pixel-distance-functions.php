@@ -65,15 +65,8 @@
     //since darker colors should be less saturated
 ?>
 <script type="webgl/fragment-shader-function" id="webgl-hsl2-distance">
-    float rgb_distance(vec3 pixel1, vec3 pixel2){
-        vec3 distances = pixel1 - pixel2;
-        return dot(vec3(1.0), distances * distances);
-    }
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 hsl1 = rgb2hsl(pixel1);
-        if(hsl1.y < 0.3){
-            return rgb_distance(pixel1, pixel2);
-        }
         vec3 hsl2 = rgb2hsl(pixel2);
         float hDist = hue_distance(hsl1.r, hsl2.r);
         vec2 slDist = hsl1.gb - hsl2.gb;  
