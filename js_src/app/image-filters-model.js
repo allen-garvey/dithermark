@@ -31,6 +31,7 @@ App.ImageFiltersModel = (function(ArrayUtil){
             {title: 'Fixed', id: 1},
             {title: 'Palette (HSL)', id: 2},
             {title: 'Palette (RGB)', id: 3},
+            {title: 'Palette (Complement)', id: 4},
         ];
     }
 
