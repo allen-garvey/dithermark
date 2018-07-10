@@ -6,7 +6,7 @@
 
     Vue.component('export-tab', {
         template: document.getElementById('export-tab-component'),
-        props: ['save-requested'],
+        props: ['save-requested', 'is-image-pixelated'],
         created: function(){
             saveImageCanvas = Canvas.create();
             this.shouldShowFileName = Canvas.isToBlobSupported(saveImageCanvas.canvas);
@@ -17,6 +17,9 @@
                 saveImageFileType: 'image/png',
                 isCurrentlySavingImage: false,
                 shouldShowFileName: true,
+                //should be boolean, but v-model only supports numbers
+                //only used if image is pixelated
+                shouldUpsample: 1,
             };
         },
         computed: {
@@ -50,7 +53,7 @@
                     return;
                 }
                 this.isCurrentlySavingImage = true;
-                this.saveRequested(saveImageCanvas, (sourceCanvas, unsplash)=>{
+                this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
                     Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl=null)=>{
                         //objectUrl will be null if we are using toBlob polyfill, which opens image in new tab
                         if(objectUrl){

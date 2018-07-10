@@ -6,12 +6,21 @@
         </label>
     </div>
     <div>
-        <label class="super-label">File type</label>
+        <label class="radio-super-label">File type</label>
         <label>png
             <input type="radio" v-model="saveImageFileType" value="image/png" />
         </label>
         <label>jpeg
             <input type="radio" v-model="saveImageFileType" value="image/jpeg" />
+        </label>
+    </div>
+    <div v-if="isImagePixelated">
+        <label class="radio-super-label">Size</label>
+        <label>Upsampled
+            <input type="radio" v-model.number="shouldUpsample" value="1" />
+        </label>
+        <label>Actual
+            <input type="radio" v-model.number="shouldUpsample" value="0" />
         </label>
     </div>
     <div>

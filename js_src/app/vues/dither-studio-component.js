@@ -228,6 +228,9 @@
             pixelateImageZoom: function(){
                 return this.pixelateImageZooms[this.selectedPixelateImageZoom];
             },
+            isImagePixelated: function(){
+                return this.pixelateImageZoom !== 100;
+            },
             webglWarningMessage: function(){
                 //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
                 //for integers only
@@ -444,9 +447,9 @@
             /*
             * Loading and saving image stuff
             */
-            onSaveRequested: function(exportCanvas, callback){
+            onSaveRequested: function(exportCanvas, shouldUpsample, callback){
                 //scale canvas if pixelated
-                const scale = this.pixelateImageZoom !== 100 ? 100 / this.pixelateImageZoom : 1;
+                const scale = this.isImagePixelated && shouldUpsample ? 100 / this.pixelateImageZoom : 1;
                 //while technicaly we can just use transformedSourceCanvas directly if there is no pixelation
                 //it makes the logic for clearing the canvas in export component easier
                 //since we don't need to check if we are using transform canvas directly

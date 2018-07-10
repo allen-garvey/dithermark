@@ -1,1 +1,1 @@
-<export-tab ref="exportTab" :save-requested="onSaveRequested" />
+<export-tab ref="exportTab" :save-requested="onSaveRequested" :is-image-pixelated="isImagePixelated" />
