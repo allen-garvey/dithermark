@@ -11,6 +11,7 @@ JS_SHARED_SRC=$(shell find ./js_src/shared -type f \( -name '*.js' -o -name '*.j
 #php source
 PHP_MODELS=$(shell find ./inc/models -type f -name '*.php')
 PHP_VIEWS=$(shell find ./inc/views -type f -name '*.php')
+PHP_TEMPLATES=$(shell find ./templates/index -type f -name '*.php')
 PHP_CONFIG=inc/config.php
 
 #JS source php builders
@@ -55,15 +56,18 @@ clean: reset
 
 #target specific variable
 release: PHP_BUILD_MODE=release
-release: $(HTML_INDEX) $(VUE_OUTPUT) gulp_release
+release: $(HTML_INDEX) $(VUE_OUTPUT) $(CSS_OUTPUT) $(JS_WORKER_OUTPUT_RELEASE) $(JS_APP_OUTPUT_RELEASE)
 	rm -f $(JS_APP_OUTPUT)
 	rm -f $(JS_WORKER_OUTPUT)
 
-gulp_release: $(JS_APP_OUTPUT) $(JS_WORKER_OUTPUT) $(SASS_SRC)
-	npm run gulp:release
-
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
+
+$(JS_WORKER_OUTPUT_RELEASE): $(JS_WORKER_OUTPUT)
+	npm run gulp:minifyWorker
+
+$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT)
+	npm run gulp:minifyApp
 
 $(VUE_OUTPUT): $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED)
 	cat $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED) > $(VUE_OUTPUT) 
@@ -77,5 +81,5 @@ $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODEL
 $(CSS_OUTPUT): $(SASS_SRC)
 	npm run gulp
 
-$(HTML_INDEX): $(shell find ./templates/index -type f -name '*.php') $(PHP_CONFIG) $(PHP_VIEWS)
+$(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG) $(PHP_VIEWS)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)

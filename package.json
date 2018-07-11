@@ -8,6 +8,8 @@
     "gulp": "gulp",
     "gulp:watch": "gulp watch",
     "gulp:release": "gulp release",
+    "gulp:minifyApp": "gulp minifyApp",
+    "gulp:minifyWorker": "gulp minifyWorker",
     "start": "http-server public_html -c-1 -p 3000"
   },
   "repository": {
