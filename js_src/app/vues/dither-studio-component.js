@@ -659,11 +659,11 @@
             /**
              * Color picker function for outline filter fixed color
              */
-            colorPickerValueChanged: function(color){
-                this.fixedOutlineColor = color.hex;
+            colorPickerValueChanged: function(colorHex){
+                this.fixedOutlineColor = colorHex;
             },
-            colorPickerDone: function(color){
-                this.fixedOutlineColor = typeof color === 'object' ? color.hex : color;
+            colorPickerDone: function(colorHex){
+                this.fixedOutlineColor = colorHex;
                 this.shouldShowColorPicker = false;
             },
             areControlsPinned: function(){

@@ -352,27 +352,25 @@
                     this.shouldShowColorPicker = true;
                 }
             },
-            colorPickerValueChanged: function(color){
+            colorPickerValueChanged: function(colorHex){
                 this.hasColorPickerChangedTheColor = true;
-                Vue.set(this.colorsShadow, this.colorPickerColorIndex, color.hex);
+                Vue.set(this.colorsShadow, this.colorPickerColorIndex, colorHex);
             },
-            colorPickerOk: function(selectedColor){
-                //by default palette hex codes are in lower case, but color picker hex is always in upper case
-                const selectedColorHex = selectedColor.hex.toLowerCase();
+            colorPickerOk: function(selectedColorHex){
                 //this will be true when color picker live update is disabled and the color has been changed
                 if(this.colorsShadow[this.colorPickerColorIndex] !== selectedColorHex){
                     Vue.set(this.colorsShadow, this.colorPickerColorIndex, selectedColorHex);
                 }
                 this.shouldShowColorPicker = false;
             },
-            colorPickerCanceled: function(previousColor){
+            colorPickerCanceled: function(previousColorHex){
                 //reset color palette if changed to custom
                 if(this.selectedPaletteIndex !== this.selectedPaletteIndexBeforeColorPickerOpened){
                     this.selectedPaletteIndex = this.selectedPaletteIndexBeforeColorPickerOpened;
                 }
                 //if we were already on custom, but color was changed, we need to reset it as well
                 else if(this.hasColorPickerChangedTheColor){
-                    Vue.set(this.colorsShadow, this.colorPickerColorIndex, previousColor);
+                    Vue.set(this.colorsShadow, this.colorPickerColorIndex, previousColorHex);
                 }
                 this.shouldShowColorPicker = false;
             },

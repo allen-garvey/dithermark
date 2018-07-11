@@ -245,22 +245,20 @@
                     this.shouldShowColorPicker = true;
                 }
             },
-            colorPickerValueChanged: function(color){
+            colorPickerValueChanged: function(colorHex){
                 this.hasColorPickerChangedTheColor = true,
-                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, color.hex);
+                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, colorHex);
             },
-            colorPickerOk: function(selectedColor){
-                //by default palette hex codes are in lower case, but color picker hex is always in upper case
-                const selectedColorHex = selectedColor.hex.toLowerCase();
+            colorPickerOk: function(selectedColorHex){
                 //this will be true when color picker live update is disabled and the color has been changed
                 if(this.colorReplaceColors[this.colorPickerColorIndex] !== selectedColorHex){
                     Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, selectedColorHex);
                 }
                 this.shouldShowColorPicker = false;
             },
-            colorPickerCanceled: function(previousColor){
+            colorPickerCanceled: function(previousColorHex){
                 if(this.hasColorPickerChangedTheColor){
-                    Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, previousColor);
+                    Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, previousColorHex);
                 }
                 this.shouldShowColorPicker = false;
             },
