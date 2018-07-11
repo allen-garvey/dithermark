@@ -4,9 +4,9 @@ PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
 #js source files
-JS_APP_SRC=$(shell find ./js_src/app -type f -name '*.js')
-JS_WORKER_SRC=$(shell find ./js_src/image_dithering_worker -type f -name '*.js')
-JS_SHARED_SRC=$(shell find ./js_src/shared -type f -name '*.js')
+JS_APP_SRC=$(shell find ./js_src/app -type f \( -name '*.js' -o -name '*.js.php' \))
+JS_WORKER_SRC=$(shell find ./js_src/image_dithering_worker -type f \( -name '*.js' -o -name '*.js.php' \))
+JS_SHARED_SRC=$(shell find ./js_src/shared -type f \( -name '*.js' -o -name '*.js.php' \))
 
 #php source
 PHP_MODELS=$(shell find ./inc/models -type f -name '*.php')

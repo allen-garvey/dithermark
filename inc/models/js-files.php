@@ -57,9 +57,9 @@
 
     function appJsFiles(): array{
         return array_merge(sharedJsFiles(), [
-            JS_APP_PATH.'constants.js',
+            JS_APP_PATH.'constants.js.php',
             JS_APP_PATH.'image-filters-model.js',
-            JS_APP_PATH.'color-quantization-modes.js',
+            JS_APP_PATH.'color-quantization-modes.js.php',
             JS_APP_PATH.'editor-themes.js',
             JS_APP_PATH.'canvas.js',
             JS_APP_PATH.'fs.js',
@@ -80,7 +80,7 @@
             JS_APP_PATH.'webgl-canvas-filters.js',
             JS_APP_PATH.'webgl-image-outline.js',
             JS_APP_PATH.'histogram.js',
-            JS_APP_PATH.'algorithm-model.js',
+            JS_APP_PATH.'algorithm-model.js.php',
         ], appVueComponents());
     }
     
@@ -95,7 +95,7 @@
             JS_WORKER_PATH.'error-prop-dither.js',
             JS_WORKER_PATH.'error-prop-color-dither.js',
             JS_WORKER_PATH.'ordered-dither.js',
-            JS_WORKER_PATH.'algorithm-model.js',
+            JS_WORKER_PATH.'algorithm-model.js.php',
             JS_WORKER_PATH.'worker-util.js',
             JS_WORKER_PATH.'histogram.js',
             JS_WORKER_PATH.'optimize-palette-util.js',
@@ -108,7 +108,7 @@
             JS_WORKER_PATH.'optimize-palette-octree.js',
             JS_WORKER_PATH.'optimize-palette-color-channel.js',
             JS_WORKER_PATH.'optimize-palette-k-means.js',
-            JS_WORKER_PATH.'color-quantization-modes.js',
+            JS_WORKER_PATH.'color-quantization-modes.js.php',
             JS_WORKER_PATH.'main.js'
         ]);
     }
