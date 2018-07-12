@@ -145,25 +145,6 @@ App.Canvas = (function(Polyfills){
         canvasObject.context.drawImage(image, 0, 0, scaledWidth, scaledHeight);
     }
     
-    //maximum allowed size is largest size in pixels image is allowed to be
-    function maxScalePercentageForImage(imageWidth, imageHeight, maximumAllowedSize){
-        const largestDimension = Math.max(imageWidth, imageHeight);
-        const largestPercentage = Math.ceil(maximumAllowedSize * 100 / largestDimension);
-        
-        //make sure the maximum percentage is at least 200
-        return Math.max(largestPercentage, 200);
-    }
-    
-    //minimum allowed size is smallest size in pixels image is allowed to be
-    function minScalePercentageForImage(imageWidth, imageHeight, minimumAllowedSize){
-        const smallestDimension = Math.min(imageWidth, imageHeight);
-        const smallestPercentage = Math.ceil(minimumAllowedSize * 100 / smallestDimension);
-        
-        //make sure at most 100 is returned
-        return Math.min(smallestPercentage, 100);
-    }
-
-    
     return {
         create: createCanvas,
         clear: clearCanvas,
@@ -175,8 +156,6 @@ App.Canvas = (function(Polyfills){
         createSharedImageBuffer,
         loadImage,
         loadPixels,
-        maxScalePercentageForImage,
-        minScalePercentageForImage,
         devicePixelRatio,
         areCanvasFiltersSupported,
         isToBlobSupported,

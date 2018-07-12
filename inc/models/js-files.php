@@ -29,6 +29,7 @@
         $ret[] = 'modal-prompt-component';
         $ret[] = 'color-input-component';
         $ret[] = 'color-picker-component';
+        $ret[] = 'zoom-bar-component';
         $ret[] = 'export-tab-component';
         $ret[] = 'open-tab-component';
         $ret[] = 'full-screen-mode-control-component';

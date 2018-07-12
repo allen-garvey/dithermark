@@ -97,8 +97,6 @@
                 isWebglSupported: false,
                 isWebglEnabled: false,
                 isWebglHighpFloatSupported: false,
-                zoom: 100,
-                zoomDisplay: 100, //this is so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed
                 /**
                  * Filters
                  */
@@ -166,20 +164,6 @@
             },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
-            },
-            zoomMin: function(){
-                if(!this.isImageLoaded){
-                    return 0;
-                }
-                const smallestDimension = Math.floor(Math.min(window.innerHeight, window.innerWidth) / 2 / Canvas.devicePixelRatio);
-                return Canvas.minScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, Math.min(100, smallestDimension));
-            },
-            zoomMax: function(){
-                if(!this.isImageLoaded){
-                    return 0;
-                }
-                const greatestDimension = Math.max(window.innerHeight, window.innerWidth) * 2 * Canvas.devicePixelRatio;
-                return Canvas.maxScalePercentageForImage(this.loadedImage.width, this.loadedImage.height, greatestDimension);
             },
             isImageLoaded: function(){
               return this.loadedImage != null;  
@@ -331,34 +315,6 @@
                     UserSettings.saveGlobalSettings(newValue);
                 }
             },
-            zoomDisplay: function(newValue){
-                //have to check if not equal to this.zoom, or will start infinite loop
-                if(newValue !== this.zoom && newValue >= this.zoomMin && newValue <= this.zoomMax){
-                    this.zoom = newValue;
-                }
-            },
-            zoom: function(newZoom, oldZoom){
-                if(newZoom === oldZoom){
-                    return;
-                }
-                let newZoomCleaned = Math.floor(newZoom);
-                if(isNaN(newZoomCleaned)){
-                    this.zoom = oldZoom;
-                    return;
-                }
-                if(newZoomCleaned < this.zoomMin){
-                    newZoomCleaned = this.zoomMin;
-                }
-                else if(newZoomCleaned > this.zoomMax){
-                    newZoomCleaned = this.zoomMax;
-                }
-                if(newZoomCleaned !== newZoom){
-                    this.zoom = newZoomCleaned;
-                    return;
-                }
-                this.zoomDisplay = this.zoom;
-                this.zoomImage();
-            },
             pixelateImageZoom: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imageFiltersBeforeDitherChanged();
@@ -486,7 +442,10 @@
                 originalImageCanvas.context.drawImage(originalImageCanvas.canvas, 0, 0);
                 //finish loading image
                 this.loadedImage = loadedImage;
-                this.zoomFit();
+                const zoomBar = this.$refs.zoomBar;
+                //can't use reactive property, since it will be updated after this method finishes, so have to set manually
+                zoomBar.image = loadedImage;
+                zoomBar.zoomFit();
                 this.imageFiltersBeforeDitherChanged(false);
                 tabsThatHaveSeenImageSet.clear();
                 tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
@@ -673,45 +632,16 @@
              * Zoom stuff
              */
             zoomImage: function(){
-                const scaleAmount = this.zoom / this.pixelateImageZoom;
+                const scaleAmount = this.$refs.zoomBar.zoom / this.pixelateImageZoom;
                 Canvas.copy(sourceCanvas, sourceCanvasOutput, scaleAmount);
                 Canvas.copy(this.transformedSourceCanvas, transformCanvasOutput, scaleAmount);
             },
-            resetZoom: function(){
-                this.zoom = 100;
-            },
-            //fit image onto screen
-            zoomFit: function(){
-                const image = this.loadedImage;
-                //if original image is show, image is technically twice as wide
-                const widthMultiplier = this.showOriginalImage ? 50 : 100;
-                //if controls are pinned, we need to subtract the width of controls
-                let windowWidth = window.innerWidth;
+            onDimensionsRequestedForZoomFit: function(callback){
                 const areControlsPinned = this.areControlsPinned();
-                
-                if(areControlsPinned){
-                    windowWidth -= this.$refs.controlsContainer.offsetWidth;
-                }
-                if(this.showOriginalImage){
-                    const margin = parseInt(getComputedStyle(this.$refs.sourceCanvasOutput).getPropertyValue('margin-right').replace(/[\D]/, ''))
-                    //2*margin is to give some horizontal padding on each side so edges are not cut off
-                    windowWidth -= 2 * margin;
-                }
-                else if(!areControlsPinned){
-                    //when controls are pinned single image fits fine, but needs a bit of extra room on mobile
-                    windowWidth -= 20;
-                }
-                let windowHeight = window.innerHeight;
-                //if zoom bar is pinned, we need to subtract height of zoom bar
-                const zoomBarContainer = this.$refs.zoomBarContainer;
-                if(getComputedStyle(zoomBarContainer).getPropertyValue('position') === 'fixed'){
-                    const zoomBarHeight = zoomBarContainer.offsetHeight;
-                    //add slightly more than zoomBarHeight so there is some padding
-                    windowHeight -= 1.6 * zoomBarHeight;
-                }
-                const widthFitPercentage = Math.floor(windowWidth / image.width * widthMultiplier);
-                const heightFitPercentage = Math.floor(windowHeight / image.height * 100);
-                this.zoom = Math.min(widthFitPercentage, heightFitPercentage);
+                const controlsContainerWidth = areControlsPinned ? this.$refs.controlsContainer.offsetWidth : 0;
+                const canvasMargin = this.showOriginalImage ? parseInt(getComputedStyle(this.$refs.sourceCanvasOutput).getPropertyValue('margin-right').replace(/[\D]/, '')) : 0;
+
+                callback(areControlsPinned, controlsContainerWidth, canvasMargin);
             },
             cyclePropertyList: VueMixins.cyclePropertyList,
             
