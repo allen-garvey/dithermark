@@ -51,6 +51,7 @@
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-smoothing.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-canvas-filters.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-image-outline-filters.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-image-edge-filters.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-yliluoma1.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-yliluoma2.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-stark-ordered-color-dither.php'); ?>

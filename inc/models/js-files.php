@@ -80,6 +80,7 @@
             JS_APP_PATH.'webgl-bilateral-filter.js',
             JS_APP_PATH.'webgl-canvas-filters.js',
             JS_APP_PATH.'webgl-image-outline.js',
+            JS_APP_PATH.'webgl-image-edge.js',
             JS_APP_PATH.'histogram.js',
             JS_APP_PATH.'algorithm-model.js.php',
         ], appVueComponents());

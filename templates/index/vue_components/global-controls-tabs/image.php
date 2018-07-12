@@ -94,23 +94,41 @@
         <legend>Outline</legend>
         <div class="spread-content">
             <div class="label-align">
-                <label for="image-outline-filter">Mode</label>
-                <select id="image-outline-filter" v-model.number="selectedOutlineColorMode">
+                <label for="image-outline-filter-type">Type</label>
+                <select id="image-outline-filter-type" v-model.number="selectedImageOutlineType">
+                    <option v-for="(value, index) in imageOutlineTypes" v-bind:value="index">{{value.title}}</option>
+                </select>
+            </div>
+            <?php IndexView::cyclePropertyList('selectedImageOutlineType', 'imageOutlineTypes', 'outline type'); ?>
+        </div>
+        <div class="spread-content" v-if="isImageOutlineFilterActive">
+            <div class="label-align">
+                <label for="image-outline-filter-color-mode">Color</label>
+                <select id="image-outline-filter-color-mode" v-model.number="selectedOutlineColorMode">
                     <option v-for="(value, index) in imageOutlineColorModes" v-bind:value="index">{{value.title}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedOutlineColorMode', 'imageOutlineColorModes', 'outline color mode'); ?>
         </div>
-        <div class="spread-content" v-if="isImageOutlineFilterActive">
+        <div class="spread-content" v-if="isImageEdgeFilterActive">
             <div class="label-align">
-                <label for="image-outline-filter">Radius</label>
-                <select id="image-outline-filter" v-model.number="selectedImageOutlineRadiusPercent">
+                <label for="image-edge-filter-strength">Strength</label>
+                <select id="image-edge-filter-strength" v-model.number="selectedImageOutlineStrength">
+                    <option v-for="(value, index) in imageOutlineEdgeStrengths" v-bind:value="index">{{value}}</option>
+                </select>
+            </div>
+            <?php IndexView::cyclePropertyList('selectedImageOutlineStrength', 'imageOutlineEdgeStrengths', 'edge strength'); ?>
+        </div>
+        <div class="spread-content" v-if="isImageContourFilterActive">
+            <div class="label-align">
+                <label for="image-contour-filter-radius">Radius</label>
+                <select id="image-contour-filter-radius" v-model.number="selectedImageOutlineRadiusPercent">
                     <option v-for="(value, index) in imageOutlineRadiusPercentages" v-bind:value="index">{{value}}</option>
                 </select>
             </div>
             <?php IndexView::cyclePropertyList('selectedImageOutlineRadiusPercent', 'imageOutlineRadiusPercentages', 'outline radius'); ?>
         </div>
-        <div class="spread-content" v-if="isImageOutlineFixedColor &amp;&amp; areOutlineBlendModesSupported">
+        <div class="spread-content" v-if="isImageOutlineFilterActive &amp;&amp; isImageOutlineFixedColor &amp;&amp; areOutlineBlendModesSupported">
             <div class="label-align">
                 <label for="image-outline-filter-blend-mode">Blend mode</label>
                 <select id="image-outline-filter-blend-mode" v-model.number="selectedOutlineFixedColorBlendMode">
@@ -119,7 +137,7 @@
             </div>
             <?php IndexView::cyclePropertyList('selectedOutlineFixedColorBlendMode', 'imageOutlineFixedColorBlendModes', 'blend mode'); ?>
         </div>
-        <div v-if="isImageOutlineFixedColor">
+        <div v-if="isImageOutlineFilterActive &amp;&amp; isImageOutlineFixedColor">
             <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="fixedOutlineColor" @input="colorPickerValueChanged" @ok="colorPickerDone" @cancel="colorPickerDone" />
             <div class="spread-content image-outline-color-input">
                 <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />

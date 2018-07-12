@@ -30,9 +30,20 @@ App.ImageFiltersModel = (function(ArrayUtil){
         }));
     }
 
-    function outlineColorModes(){
+    function outlineEdgeStrengths(){
+        return [0.2, 0.25, 0.3, 0.35, 0.4, 0.45];
+    }
+
+    function outlineFilterTypes(){
         return [
             {title: 'None', id: 0},
+            {title: 'Edge', id: 1},
+            {title: 'Contour', id: 2},
+        ];
+    }
+
+    function outlineColorModes(){
+        return [
             {title: 'Fixed', id: 1},
             {title: 'Palette (HSL)', id: 2},
             {title: 'Palette (RGB)', id: 3},
@@ -88,6 +99,8 @@ App.ImageFiltersModel = (function(ArrayUtil){
         //higher values are sharper, while lower values are blurrier, so it makes more sense to reverse them
         bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
         outlineRadiusPercentages,
+        outlineEdgeStrengths,
+        outlineFilterTypes,
         outlineColorModes,
         canvasBlendModes,
         canvasFilterValues,
