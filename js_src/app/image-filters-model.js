@@ -20,9 +20,14 @@ App.ImageFiltersModel = (function(ArrayUtil){
 
     function outlineRadiusPercentages(){
         const step = 0.25;
-        return ArrayUtil.create(120, (i)=>{
+        return ArrayUtil.create(48, (i)=>{
             return i * step + step;
-        });
+        }).concat(ArrayUtil.create(36, (i)=>{
+            return (i+1) * 0.5 + 12;
+        }))
+        .concat(ArrayUtil.create(10, (i)=>{
+            return (i+1) + 30;
+        }));
     }
 
     function outlineColorModes(){
