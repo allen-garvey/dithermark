@@ -8,7 +8,8 @@ App.WebGlImageOutline = (function(WebGl, Shader){
             customUniforms.push('u_outline_color');
         }
         else{
-            fragmentShaderText = Shader.shaderText('webgl-fragment-image-outline-filter1');
+            const shaderText = Shader.shaderText;
+            fragmentShaderText = shaderText('webgl-fragment-image-outline-filter1').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader'));
         }
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniforms);
         
@@ -25,7 +26,7 @@ App.WebGlImageOutline = (function(WebGl, Shader){
 
     function getOutline2ShaderText(distanceFuncIdPrefix=null){
         const shaderText = Shader.shaderText;
-        const shaderBase = shaderText('webgl-fragment-image-outline-filter2-base');
+        const shaderBase = shaderText('webgl-fragment-image-outline-filter2-base').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader'));
         //fixed outline color
         if(!distanceFuncIdPrefix){
             return shaderBase.replace('#{{customDeclaration}}', shaderText('webgl-fragment-image-outline-filter2-declaration-fixed')).replace('#{{customOutlineColor}}', shaderText('webgl-fragment-image-outline-filter2-color-fixed'));
