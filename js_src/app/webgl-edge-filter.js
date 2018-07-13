@@ -1,5 +1,5 @@
 
-App.WebGlImageEdge = (function(WebGl, Shader, ImageFiltersModel){
+App.WebGlEdgeFilter = (function(WebGl, Shader, ImageFiltersModel){
     function sharedUniforms(){
         return ['u_strength', 'u_image_dimensions']
     }
