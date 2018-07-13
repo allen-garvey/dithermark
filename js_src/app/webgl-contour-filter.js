@@ -1,5 +1,5 @@
 
-App.WebGlImageOutline = (function(WebGl, Shader, ImageFiltersModel){
+App.WebGlContourFilter = (function(WebGl, Shader, ImageFiltersModel){
     function createOutlineFunc(gl, filterNumber){
         const customUniforms = ['u_radius'];
         let fragmentShaderText;

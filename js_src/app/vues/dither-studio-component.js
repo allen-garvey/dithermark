@@ -1,4 +1,4 @@
-(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel, WebGlImageOutline, ColorPicker, WebGlImageEdge){
+(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel, WebGlContourFilter, ColorPicker, WebGlImageEdge){
     //webworker stuff
     let imageId = 0;
     let ditherWorkers;
@@ -643,15 +643,15 @@
                 //better to use source texture as input instead of dither results, because there will be less noise in image outline 
                 const inputTexture = sourceWebglTexture;
                 // const originTexture = ditherOutputWebglTexture;
-                WebGlImageOutline.outlineImage1(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, radiusPercent);
+                WebGlContourFilter.outlineImage1(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, radiusPercent);
                 const outline1OutputTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
                 
                 if(this.isImageOutlineFixedColor){
-                    WebGlImageOutline.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, ColorPicker.colorsToVecArray([this.fixedOutlineColor], 1));
+                    WebGlContourFilter.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, ColorPicker.colorsToVecArray([this.fixedOutlineColor], 1));
                 }
                 else{
                     const backgroundTexture = ditherOutputWebglTexture;
-                    WebGlImageOutline.outlineImage2Background(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedOutlineColorMode);
+                    WebGlContourFilter.outlineImage2Background(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedOutlineColorMode);
                     //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
                 }
                 transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
@@ -764,4 +764,4 @@
             },
         }
     });
-})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel, App.WebGlImageOutline, App.ColorPicker, App.WebGlImageEdge);
+})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel, App.WebGlContourFilter, App.ColorPicker, App.WebGlImageEdge);
