@@ -45,9 +45,9 @@ App.ImageFiltersModel = (function(ArrayUtil){
     function outlineColorModes(){
         return [
             {title: 'Fixed', id: 1},
-            {title: 'Palette (HSL)', id: 2},
-            {title: 'Palette (RGB)', id: 3},
-            {title: 'Palette (Complement)', id: 4},
+            {title: 'Palette (HSL)', id: 2, distanceFuncPrefix: 'hsl2'},
+            {title: 'Palette (RGB)', id: 3, distanceFuncPrefix: 'rgb'},
+            {title: 'Palette (Complement)', id: 4, distanceFuncPrefix: 'hsl2-complementary'},
         ];
     }
 
