@@ -1,5 +1,7 @@
 App.ColorPalettes = (function(ArrayUtil){
-    
+    /**
+     * Note that color hex codes must be in 6 digit format, and not 3 digit format to work properly
+     */
     function defaultPalettes(){
         return [
             {title: '---', isCustom: true},
