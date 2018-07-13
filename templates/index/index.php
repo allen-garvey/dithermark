@@ -40,21 +40,25 @@
                 <?php require(TEMPLATES_VUE_COMPONENTS_PATH."${componentName}.php"); ?>
             </script>
         <?php endforeach; ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'vertex-shaders.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'hsl-functions.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'pixel-distance-functions.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-shared-dither.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bw-dither.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-color-dither.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-bilateral-filter.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-smoothing.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-canvas-filters.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-image-outline-filters.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-image-edge-filters.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-yliluoma1.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-yliluoma2.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHADERS_PATH.'fragment-shaders-stark-ordered-color-dither.php'); ?>
+        <?php //vertex shaders ?>
+        <?php require(TEMPLATES_WEBGL_VERTEX_SHADERS_PATH.'vertex-shaders.php'); ?>
+        <?php //shared fragment shaders ?>
+        <?php require(TEMPLATES_WEBGL_SHARED_FRAGMENT_SHADERS_PATH.'hsl-functions.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHARED_FRAGMENT_SHADERS_PATH.'pixel-distance-functions.php'); ?>
+        <?php require(TEMPLATES_WEBGL_SHARED_FRAGMENT_SHADERS_PATH.'shared-dither.php'); ?>
+        <?php //dither fragment shaders ?>
+        <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>
+        <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'bw-dither.php'); ?>
+        <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'color-dither.php'); ?>
+        <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'yliluoma1.php'); ?>
+        <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'yliluoma2.php'); ?>
+        <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'stark-ordered-color-dither.php'); ?>
+        <?php //image filter fragment shaders shaders ?>
+        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'bilateral-filter.php'); ?>
+        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'smoothing.php'); ?>
+        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'canvas-filters.php'); ?>
+        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'image-outline-filters.php'); ?>
+        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'image-edge-filters.php'); ?>
         <script type="text/javascript" src="<?= JS_VUE_URL; ?>"></script>
         <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>
