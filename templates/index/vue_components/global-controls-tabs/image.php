@@ -112,7 +112,16 @@
         </div>
         <div class="spread-content" v-if="isImageEdgeFilterActive">
             <div class="label-align">
-                <label for="image-edge-filter-strength">Strength</label>
+                <label for="image-edge-filter-thickness">Thickness</label>
+                <select id="image-edge-filter-thickness" v-model.number="selectedImageOutlineEdgeThickness">
+                    <option v-for="(value, index) in imageOutlineEdgeThicknesses" v-bind:value="index">{{value}}</option>
+                </select>
+            </div>
+            <?php IndexView::cyclePropertyList('selectedImageOutlineEdgeThickness', 'imageOutlineEdgeThicknesses', 'edge thickness'); ?>
+        </div>
+        <div class="spread-content" v-if="isImageEdgeFilterActive">
+            <div class="label-align">
+                <label for="image-edge-filter-strength">Threshold</label>
                 <select id="image-edge-filter-strength" v-model.number="selectedImageOutlineStrength">
                     <option v-for="(value, index) in imageOutlineEdgeStrengths" v-bind:value="index">{{value}}</option>
                 </select>

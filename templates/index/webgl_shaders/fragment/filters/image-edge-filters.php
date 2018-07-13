@@ -25,6 +25,7 @@ THE SOFTWARE.
 */
 
 //@param u_strength (value from 0-1 that is then prepared by Math.pow(strength, 5) * 100,000.0)
+//#{{edgeThickness}} - floating point number between 1.0 and roughly 6.0
 ?>
 <script type="webgl/fragment-shader" id="webgl-fragment-image-edge-filter-base">
     precision mediump float;
@@ -45,12 +46,12 @@ THE SOFTWARE.
         float smallTotal = 0.0;
         vec3 bigAverage = vec3(0.0);
         vec3 smallAverage = vec3(0.0);
-        for (float x = -3.0; x <= 3.0; x += 1.0) {
-            for (float y = -3.0; y <= 3.0; y += 1.0) {
+        for (float x = -#{{edgeThickness}}; x <= #{{edgeThickness}}; x += 1.0) {
+            for (float y = -#{{edgeThickness}}; y <= #{{edgeThickness}}; y += 1.0) {
                 vec3 sample = texture2D(u_texture, v_texcoord + dx * x + dy * y).rgb;
                 bigAverage += sample;
                 bigTotal += 1.0;
-                if (abs(x) + abs(y) < 3.0) {
+                if (abs(x) + abs(y) < #{{edgeThickness}}) {
                     smallAverage += sample;
                     smallTotal += 1.0;
                 }

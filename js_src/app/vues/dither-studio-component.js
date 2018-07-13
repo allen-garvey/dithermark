@@ -119,6 +119,8 @@
                 selectedImageOutlineType: 0,
                 imageOutlineEdgeStrengths: ImageFiltersModel.outlineEdgeStrengths(),
                 selectedImageOutlineStrength: 2,
+                imageOutlineEdgeThicknesses: ImageFiltersModel.outlineEdgeThicknesses(),
+                selectedImageOutlineEdgeThickness: 1, //value of 2 is decent default
                 fixedOutlineColor: '#000000',
                 imageOutlineFixedColorBlendModes: ImageFiltersModel.canvasBlendModes(),
                 selectedOutlineFixedColorBlendMode: 0,
@@ -403,6 +405,12 @@
                     this.zoomImage();
                 }
             },
+            selectedImageOutlineEdgeThickness: function(newValue, oldValue){
+                if(newValue !== oldValue){
+                    this.imageOutlineFilterAction();
+                    this.zoomImage();
+                }
+            },
         },
         methods: {
             /*
@@ -657,11 +665,11 @@
                 const inputTexture = sourceWebglTexture;
                 
                 if(this.isImageOutlineFixedColor){
-                    WebGlImageEdge.edgeFixed(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, ColorPicker.colorsToVecArray([this.fixedOutlineColor], 1));
+                    WebGlImageEdge.edgeFixed(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, this.selectedImageOutlineEdgeThickness, ColorPicker.colorsToVecArray([this.fixedOutlineColor], 1));
                 }
                 else{
                     const backgroundTexture = ditherOutputWebglTexture;
-                    WebGlImageEdge.edgeBackground(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedOutlineColorMode);
+                    WebGlImageEdge.edgeBackground(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedImageOutlineEdgeThickness, this.selectedOutlineColorMode);
                     //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
                 }
             },

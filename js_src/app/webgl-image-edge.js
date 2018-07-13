@@ -8,9 +8,9 @@ App.WebGlImageEdge = (function(WebGl, Shader, ImageFiltersModel){
         return Math.pow(strength, 5) * 100000;
     }
 
-    function getFragmentShaderText(distanceFuncIdPrefix=null){
+    function getFragmentShaderText(edgeThickness, distanceFuncIdPrefix=null){
         const shaderText = Shader.shaderText;
-        const shaderBase = shaderText('webgl-fragment-image-edge-filter-base').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader'));
+        const shaderBase = shaderText('webgl-fragment-image-edge-filter-base').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader')).replace(/#\{\{edgeThickness\}\}/g, `${parseInt(edgeThickness)}.0`);
         //fixed outline color
         if(!distanceFuncIdPrefix){
             return shaderBase.replace('#{{customDeclaration}}', shaderText('webgl-fragment-image-edge-filter-declaration-fixed')).replace('#{{customOutlineColor}}', shaderText('webgl-fragment-image-edge-filter-color-fixed'));
@@ -21,8 +21,8 @@ App.WebGlImageEdge = (function(WebGl, Shader, ImageFiltersModel){
         return shaderBase.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customOutlineColor}}', customOutlineColor);
     }
 
-    function createImageEdgeFixedColorFunc(gl){
-        const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, getFragmentShaderText(), sharedUniforms().concat(['u_outline_color']));
+    function createImageEdgeFixedColorFunc(gl, edgeThickness){
+        const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, getFragmentShaderText(edgeThickness), sharedUniforms().concat(['u_outline_color']));
         
         return function(gl, tex, texWidth, texHeight, strength, outlineColorVec){
             drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations)=>{
@@ -35,8 +35,8 @@ App.WebGlImageEdge = (function(WebGl, Shader, ImageFiltersModel){
     }
 
     //distanceId is id prop from image-filters-model
-    function createEdgeBackgroundFunc(gl, distanceFuncIdPrefix){
-        const fragmentShaderText = getFragmentShaderText(distanceFuncIdPrefix);
+    function createEdgeBackgroundFunc(gl, edgeThickness, distanceFuncIdPrefix){
+        const fragmentShaderText = getFragmentShaderText(edgeThickness, distanceFuncIdPrefix);
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, sharedUniforms().concat(['u_colors_array_length', 'u_colors_array', 'u_background_texture']));
         
         return function(gl, tex, texWidth, texHeight, strength, colorsArray, backgroundTexture){
@@ -57,11 +57,12 @@ App.WebGlImageEdge = (function(WebGl, Shader, ImageFiltersModel){
 
     const cachedEdgeFuncs = {};
     const outlineColorModes = ImageFiltersModel.outlineColorModes();
+    const edgeThicknesses = ImageFiltersModel.outlineEdgeThicknesses();
 
-    function edgeFixed(gl, texture, imageWidth, imageHeight, strength, outlineColorVec){
-        const cacheIndex = outlineColorModes.length;
+    function edgeFixed(gl, texture, imageWidth, imageHeight, strength, outlineThicknessIndex, outlineColorVec){
+        const cacheIndex = -1 * outlineThicknessIndex - 1;
         if(!cachedEdgeFuncs[cacheIndex]){
-            cachedEdgeFuncs[cacheIndex] = createImageEdgeFixedColorFunc(gl);
+            cachedEdgeFuncs[cacheIndex] = createImageEdgeFixedColorFunc(gl, edgeThicknesses[outlineThicknessIndex]);
         }
         const outlineFunc = cachedEdgeFuncs[cacheIndex];
         // Tell WebGL how to convert from clip space to pixels
@@ -69,10 +70,10 @@ App.WebGlImageEdge = (function(WebGl, Shader, ImageFiltersModel){
         outlineFunc(gl, texture, imageWidth, imageHeight, prepareStrength(strength), outlineColorVec);
     }
 
-    function edgeBackground(gl, texture, imageWidth, imageHeight, strength, colorsArray, backgroundTexture, colorModeIndex){
-        const cacheIndex = colorModeIndex;
-        if(!cachedEdgeFuncs[cacheIndex]){
-            cachedEdgeFuncs[cacheIndex] = createEdgeBackgroundFunc(gl, outlineColorModes[colorModeIndex].distanceFuncPrefix);
+    function edgeBackground(gl, texture, imageWidth, imageHeight, strength, colorsArray, backgroundTexture, outlineThicknessIndex, colorModeIndex){
+        const cacheIndex = (Math.max(outlineColorModes.length, edgeThicknesses.length) + 1) * colorModeIndex + outlineThicknessIndex;
+        if(!cachedEdgeFuncs[cacheIndex]){;
+            cachedEdgeFuncs[cacheIndex] = createEdgeBackgroundFunc(gl, edgeThicknesses[outlineThicknessIndex], outlineColorModes[colorModeIndex].distanceFuncPrefix);
         }
         const outlineFunc = cachedEdgeFuncs[cacheIndex];
         // Tell WebGL how to convert from clip space to pixels

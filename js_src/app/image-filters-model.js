@@ -34,6 +34,12 @@ App.ImageFiltersModel = (function(ArrayUtil){
         return [0.2, 0.25, 0.3, 0.35, 0.4, 0.45];
     }
 
+    function outlineEdgeThicknesses(){
+        return ArrayUtil.create(10, (i)=>{
+            return i+1;
+        });
+    }
+
     function outlineFilterTypes(){
         return [
             {title: 'None', id: 0},
@@ -100,6 +106,7 @@ App.ImageFiltersModel = (function(ArrayUtil){
         bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
         outlineRadiusPercentages,
         outlineEdgeStrengths,
+        outlineEdgeThicknesses,
         outlineFilterTypes,
         outlineColorModes,
         canvasBlendModes,
