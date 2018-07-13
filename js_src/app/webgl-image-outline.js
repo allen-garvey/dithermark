@@ -61,7 +61,7 @@ App.WebGlImageOutline = (function(WebGl, Shader, ImageFiltersModel){
     const outlineColorModes = ImageFiltersModel.outlineColorModes();
 
     function outlineImageBase(gl, texture, imageWidth, imageHeight, filterNumber, radius, outlineColorVec=null){
-        const cacheIndex = outlineColorModes.length + filterNumber;
+        const cacheIndex = -1 * filterNumber;
         if(!cachedOutlineFuncs[cacheIndex]){
             cachedOutlineFuncs[cacheIndex] = createOutlineFunc(gl, filterNumber);
         }
