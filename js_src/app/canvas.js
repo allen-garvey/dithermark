@@ -26,11 +26,13 @@ App.Canvas = (function(Polyfills){
         };
     }
     
-    function createWebglCanvas(canvas){
+    //premultipliedAlpha is from https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
+    //used to fix semi-transparent pixels being weird colors
+    //can't use {premultipliedAlpha: false} since Safari has a bug when we try to merge webgl outline canvas with dither results when premultiplied alpha is false
+    //instead have to premultiply alpha when creating texture from image, as this should give the same results, and doesn't contain Safari bug
+    function createWebglCanvas(canvas=null){
         canvas = canvas || document.createElement('canvas');
-        //premultipliedAlpha is from https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
-        //used to fix semi-transparent pixels being weird colors
-        const gl = canvas.getContext('webgl', {premultipliedAlpha: false}) || canvas.getContext('experimental-webgl', {premultipliedAlpha: false});
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         let maxTextureSize = 0;
         let supportsHighIntPrecision = false;
         let supportsHighFloatPrecision = false;

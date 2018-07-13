@@ -77,6 +77,10 @@ App.WebGl = (function(m4){
         const texture = gl.createTexture();
         
         gl.bindTexture(gl.TEXTURE_2D, texture);
+        //https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
+        //have to do this to premultiply alpha when loading from image only, (not when creating texture from canvas or array)
+        //so semitransparent pixels are not weird colors. Can't set premultiplied alpha directly on webgl canvas because of Safari bug
+        gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, true);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, imageData);
     
         // let's assume all images are not a power of 2
