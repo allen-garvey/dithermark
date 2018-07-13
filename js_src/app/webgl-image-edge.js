@@ -10,14 +10,14 @@ App.WebGlImageEdge = (function(WebGl, Shader, ImageFiltersModel){
 
     function getFragmentShaderText(edgeThickness, distanceFuncIdPrefix=null){
         const shaderText = Shader.shaderText;
-        const shaderBase = shaderText('webgl-fragment-image-edge-filter-base').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader')).replace(/#\{\{edgeThickness\}\}/g, `${parseInt(edgeThickness)}.0`);
+        const shaderBase = shaderText('webgl-fragment-edge-filter-base').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader')).replace(/#\{\{edgeThickness\}\}/g, `${parseInt(edgeThickness)}.0`);
         //fixed outline color
         if(!distanceFuncIdPrefix){
-            return shaderBase.replace('#{{customDeclaration}}', shaderText('webgl-fragment-image-edge-filter-declaration-fixed')).replace('#{{customOutlineColor}}', shaderText('webgl-fragment-image-edge-filter-color-fixed'));
+            return shaderBase.replace('#{{customDeclaration}}', shaderText('webgl-fragment-edge-filter-declaration-fixed')).replace('#{{customOutlineColor}}', shaderText('webgl-fragment-edge-filter-color-fixed'));
         }
         //background outline color
-        const customDeclaration = shaderText('webgl-fragment-image-edge-filter-declaration-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText(`webgl-${distanceFuncIdPrefix}-distance`));
-        const customOutlineColor = shaderText('webgl-fragment-image-edge-filter-color-background');
+        const customDeclaration = shaderText('webgl-fragment-edge-filter-declaration-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText(`webgl-${distanceFuncIdPrefix}-distance`));
+        const customOutlineColor = shaderText('webgl-fragment-edge-filter-color-background');
         return shaderBase.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customOutlineColor}}', customOutlineColor);
     }
 
