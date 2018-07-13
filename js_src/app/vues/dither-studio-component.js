@@ -169,11 +169,8 @@
             selectedImageOutlineTypeId: function(){
                 return this.imageOutlineTypes[this.selectedImageOutlineType].id;
             },
-            selectedOutlineColorModeId: function(){
-                return this.imageOutlineColorModes[this.selectedOutlineColorMode].id;
-            },
             isImageOutlineFixedColor: function(){
-                return this.selectedOutlineColorModeId === 1;
+                return this.imageOutlineColorModes[this.selectedOutlineColorMode].id === 1;
             },
             areOutlineBlendModesSupported: function(){
                 return this.imageOutlineFixedColorBlendModes.length > 1;
@@ -664,7 +661,7 @@
                 }
                 else{
                     const backgroundTexture = ditherOutputWebglTexture;
-                    WebGlImageEdge.edgeBackground(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedOutlineColorModeId);
+                    WebGlImageEdge.edgeBackground(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedOutlineColorMode);
                     //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
                 }
             },
