@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 //@param u_radius radius in pixels (radiusPercentage / width)
 ?>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter1">
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter1">
     precision mediump float;
 
     uniform sampler2D u_texture;
@@ -69,7 +69,7 @@ THE SOFTWARE.
 <?php 
 //@param u_radius radius in pixels (radiusPercentage / height)
 ?>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-base">
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-base">
     precision mediump float;
 
     uniform sampler2D u_texture;
@@ -113,10 +113,10 @@ THE SOFTWARE.
         }
     }
 </script>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-declaration-fixed">
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-declaration-fixed">
     uniform vec3 u_outline_color;
 </script>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-declaration-background">
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-declaration-background">
     uniform sampler2D u_background_texture;
     uniform int u_colors_array_length;
     uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
@@ -147,9 +147,9 @@ THE SOFTWARE.
         return outlineColor;
     }
 </script>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-color-fixed">
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-color-fixed">
     vec4(u_outline_color, 1.0);
 </script>
-<script type="webgl/fragment-shader" id="webgl-fragment-image-outline-filter2-color-background">
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-color-background">
     vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);
 </script>

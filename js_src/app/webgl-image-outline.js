@@ -9,7 +9,7 @@ App.WebGlImageOutline = (function(WebGl, Shader, ImageFiltersModel){
         }
         else{
             const shaderText = Shader.shaderText;
-            fragmentShaderText = shaderText('webgl-fragment-image-outline-filter1').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader'));
+            fragmentShaderText = shaderText('webgl-fragment-contour-filter1').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader'));
         }
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, customUniforms);
         
@@ -26,14 +26,14 @@ App.WebGlImageOutline = (function(WebGl, Shader, ImageFiltersModel){
 
     function getOutline2ShaderText(distanceFuncIdPrefix=null){
         const shaderText = Shader.shaderText;
-        const shaderBase = shaderText('webgl-fragment-image-outline-filter2-base').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader'));
+        const shaderBase = shaderText('webgl-fragment-contour-filter2-base').replace('#{{transparencyCheck}}', shaderText('webgl-transparency-check-fshader'));
         //fixed outline color
         if(!distanceFuncIdPrefix){
-            return shaderBase.replace('#{{customDeclaration}}', shaderText('webgl-fragment-image-outline-filter2-declaration-fixed')).replace('#{{customOutlineColor}}', shaderText('webgl-fragment-image-outline-filter2-color-fixed'));
+            return shaderBase.replace('#{{customDeclaration}}', shaderText('webgl-fragment-contour-filter2-declaration-fixed')).replace('#{{customOutlineColor}}', shaderText('webgl-fragment-contour-filter2-color-fixed'));
         }
         //background outline color
-        const customDeclaration = shaderText('webgl-fragment-image-outline-filter2-declaration-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText(`webgl-${distanceFuncIdPrefix}-distance`));
-        const customOutlineColor = shaderText('webgl-fragment-image-outline-filter2-color-background');
+        const customDeclaration = shaderText('webgl-fragment-contour-filter2-declaration-background').replace('#{{lightnessFunction}}', Shader.shaderText('webgl-fragment-shader-lightness-function')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions')).replace('#{{distanceFunction}}', Shader.shaderText(`webgl-${distanceFuncIdPrefix}-distance`));
+        const customOutlineColor = shaderText('webgl-fragment-contour-filter2-color-background');
         return shaderBase.replace('#{{customDeclaration}}', customDeclaration).replace('#{{customOutlineColor}}', customOutlineColor);
     }
 
