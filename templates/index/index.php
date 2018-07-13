@@ -58,8 +58,8 @@
         <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'bilateral-filter.php'); ?>
         <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'smoothing.php'); ?>
         <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'canvas-filters.php'); ?>
-        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'image-outline-filters.php'); ?>
-        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'image-edge-filters.php'); ?>
+        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'contour-filters.php'); ?>
+        <?php require(TEMPLATES_WEBGL_FILTER_FRAGMENT_SHADERS_PATH.'edge-filters.php'); ?>
         <script type="text/javascript" src="<?= JS_VUE_URL; ?>"></script>
         <script type="text/javascript" src="<?= JS_APP_URL; ?>"></script>
     </body>
