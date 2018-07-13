@@ -1,4 +1,4 @@
-(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel, WebGlContourFilter, ColorPicker, WebGlEdgeFilter){
+(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel){
     //webworker stuff
     let imageId = 0;
     let ditherWorkers;
@@ -11,7 +11,6 @@
     let transformCanvasWebGl;
     let sourceCanvasOutput;
     let transformCanvasOutput;
-    let outlineFilterCanvas;
     
     let sourceWebglTexture;
     let ditherOutputWebglTexture;
@@ -51,17 +50,6 @@
                 };
                 this.bwDitherAlgorithms = this.bwDitherAlgorithms.map(removeUnsupportedWebGl);
                 this.colorDitherAlgorithms = this.colorDitherAlgorithms.map(removeUnsupportedWebGl);
-            }
-
-            //image outlines are webgl only, so no need to do this if webgl is not supported
-            if(this.isWebglSupported){
-                outlineFilterCanvas = Canvas.create();
-                //remove unsupported canvas blend modes
-                this.imageOutlineFixedColorBlendModes = this.imageOutlineFixedColorBlendModes.filter((blendMode)=>{
-                    return Canvas.isBlendModeSupported(outlineFilterCanvas, blendMode.value);
-                });
-                //reset to default blend mode
-                Canvas.resetBlendMode(outlineFilterCanvas);
             }
         },
         mounted: function(){
@@ -110,45 +98,32 @@
                 bilateralFilterValues: ImageFiltersModel.bilateralFilterValues,
                 selectedBilateralFilterValue: 0,
                 selectedBilateralFilterValueAfter: 0,
-                //image outline filter
-                selectedImageOutlineContourRadiusPercent: 25, //value of 6.5 is a decent default for both pixelated and not
-                imageOutlineContourRadiusPercentages: ImageFiltersModel.outlineContourRadiusPercentages(),
-                imageOutlineColorModes: ImageFiltersModel.outlineColorModes(),
-                selectedOutlineColorMode: 0,
-                imageOutlineTypes: ImageFiltersModel.outlineFilterTypes(),
-                selectedImageOutlineType: 0,
-                imageOutlineEdgeStrengths: ImageFiltersModel.outlineEdgeStrengths(),
-                selectedImageOutlineStrength: 2,
-                imageOutlineEdgeThicknesses: ImageFiltersModel.outlineEdgeThicknesses(),
-                selectedImageOutlineEdgeThickness: 1, //value of 2 is decent default
-                fixedOutlineColor: '#000000',
-                imageOutlineFixedColorBlendModes: ImageFiltersModel.canvasBlendModes(),
-                selectedOutlineFixedColorBlendMode: 0,
-                shouldShowColorPicker: false,
-                //selectedImageSaturationIndex and selectedImageContrastIndex use this array
+                //pre dither filters
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
                 selectedImageSaturationIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
                 selectedImageContrastIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
                 selectedImageBrightnessIndex: ImageFiltersModel.canvasFilterValuesDefaultIndex,
                 hueRotationValue: 0,
                 areCanvasFiltersSupported: false, //required for increasing image contrast and saturation
+                //user settings
                 showOriginalImage: true,
                 editorThemes: EditorThemes.get(),
                 currentEditorThemeIndex: null,
-                openImageErrorMessage: null,
-                showWebglWarningMessage: false,
                 //used so we know when component is done initializing,
                 //so we don't do any spurious saving of global setting changes
                 //done by initialization rather than user
                 finishedInitialization: false,
+                //error alerts
+                openImageErrorMessage: null,
+                showWebglWarningMessage: false,
             };
         },
         computed: {
             //the source canvas for transformed (dithered and filtered image)
             //before zoom
             transformedSourceCanvas: function(){
-                if(this.isImageOutlineFilterActive){
-                    return outlineFilterCanvas;
+                if(this.$refs.outlineFilterControls.isImageOutlineFilterActive){
+                    return this.$refs.outlineFilterControls.getCanvas();
                 }
                 return transformCanvas;
             },
@@ -158,24 +133,6 @@
             isImageOutlineFilterEnabled: function(){
                 //only enabled for color dither
                 return this.isImageLoaded && this.isWebglEnabled && this.activeDitherComponentId === 1;
-            },
-            isImageOutlineFilterActive: function(){
-                return this.isImageOutlineFilterEnabled && this.selectedImageOutlineTypeId !== 0;
-            },
-            isImageEdgeFilterActive: function(){
-                return this.isImageOutlineFilterActive && this.selectedImageOutlineTypeId === 1;
-            },
-            isImageContourFilterActive: function(){
-                return this.isImageOutlineFilterActive && this.selectedImageOutlineTypeId === 2;
-            },
-            selectedImageOutlineTypeId: function(){
-                return this.imageOutlineTypes[this.selectedImageOutlineType].id;
-            },
-            isImageOutlineFixedColor: function(){
-                return this.imageOutlineColorModes[this.selectedOutlineColorMode].id === 1;
-            },
-            areOutlineBlendModesSupported: function(){
-                return this.imageOutlineFixedColorBlendModes.length > 1;
             },
             isColorPickerLivePreviewEnabled: function(){
                 return this.isLivePreviewEnabled && this.isColorPickerLivePreviewEnabledSetting;
@@ -358,57 +315,6 @@
             selectedImageSmoothingRadiusAfter: function(newValue, oldValue){
                 if(this.isImageLoaded && newValue !== oldValue){
                     this.imageFiltersAfterDitherChanged();
-                }
-            },
-            /**
-             * Image outline filter stuff
-             */
-            //clear outline canvas when not active to free up memory
-            isImageOutlineFilterActive: function(newValue, oldValue){
-                if(!newValue && newValue !== oldValue && outlineFilterCanvas){
-                    Canvas.clear(outlineFilterCanvas);
-                }
-            },
-            selectedImageOutlineContourRadiusPercent: function(newValue, oldValue){
-                if(newValue !== oldValue){
-                    this.imageOutlineFilterAction();
-                    this.zoomImage();
-                }
-            },
-            selectedOutlineColorMode: function(newValue, oldValue){
-                if(newValue !== oldValue){
-                    this.imageOutlineFilterAction();
-                    this.zoomImage();
-                }
-            },
-            fixedOutlineColor: function(newValue, oldValue){
-                if(newValue !== oldValue){
-                    this.imageOutlineFilterAction();
-                    this.zoomImage();
-                }
-            },
-            selectedOutlineFixedColorBlendMode: function(newValue, oldValue){
-                if(newValue !== oldValue){
-                    this.imageOutlineFilterAction();
-                    this.zoomImage();
-                }
-            },
-            selectedImageOutlineType: function(newValue, oldValue){
-                if(newValue !== oldValue){
-                    this.imageOutlineFilterAction();
-                    this.zoomImage();
-                }
-            },
-            selectedImageOutlineStrength: function(newValue, oldValue){
-                if(newValue !== oldValue){
-                    this.imageOutlineFilterAction();
-                    this.zoomImage();
-                }
-            },
-            selectedImageOutlineEdgeThickness: function(newValue, oldValue){
-                if(newValue !== oldValue){
-                    this.imageOutlineFilterAction();
-                    this.zoomImage();
                 }
             },
         },
@@ -616,72 +522,16 @@
                     Canvas.copy(ditherOutputCanvas, transformCanvas);
                 }
                 //reset the outline, since it needs to be merged with transformCanvas
-                this.imageOutlineFilterAction();
+                this.$refs.outlineFilterControls.imageOutlineFilterAction();
                 this.zoomImage();
             },
-            imageOutlineFilterAction: function(){
-                if(!this.isImageOutlineFilterActive){
-                    return;
-                }
-                if(this.isImageContourFilterActive){
-                    this.imageContourFilterAction();
-                }
-                else{
-                    this.imageEdgeFilterAction();
-                }
-
-                //merge on top of transformCanvas
-                const blendMode = this.isImageOutlineFixedColor && this.areOutlineBlendModesSupported ? this.imageOutlineFixedColorBlendModes[this.selectedOutlineFixedColorBlendMode].value : null;
-                Canvas.copy(transformCanvas, outlineFilterCanvas);
-                Canvas.merge(transformCanvasWebGl, outlineFilterCanvas, blendMode);
+            onOutlineFilterDisplayRequested: function(callback){
+                callback(transformCanvas, transformCanvasWebGl);
             },
-            imageContourFilterAction: function(){
+            onResourcesForOutlineFilterRequested: function(callback){
                 const imageWidth = this.imageHeader.width;
                 const imageHeight = this.imageHeader.height;
-                const radiusPercent = this.imageOutlineContourRadiusPercentages[this.selectedImageOutlineContourRadiusPercent];
-                
-                //better to use source texture as input instead of dither results, because there will be less noise in image outline 
-                const inputTexture = sourceWebglTexture;
-                // const originTexture = ditherOutputWebglTexture;
-                WebGlContourFilter.outlineImage1(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, radiusPercent);
-                const outline1OutputTexture = WebGl.createAndLoadTextureFromCanvas(transformCanvasWebGl.gl, transformCanvasWebGl.canvas);
-                
-                if(this.isImageOutlineFixedColor){
-                    WebGlContourFilter.outlineImage2(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, ColorPicker.colorsToVecArray([this.fixedOutlineColor], 1));
-                }
-                else{
-                    const backgroundTexture = ditherOutputWebglTexture;
-                    WebGlContourFilter.outlineImage2Background(transformCanvasWebGl.gl, outline1OutputTexture, imageWidth, imageHeight, radiusPercent, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedOutlineColorMode);
-                    //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
-                }
-                transformCanvasWebGl.gl.deleteTexture(outline1OutputTexture);
-            },
-            imageEdgeFilterAction: function(){
-                const imageWidth = this.imageHeader.width;
-                const imageHeight = this.imageHeader.height;
-                const strength = this.imageOutlineEdgeStrengths[this.selectedImageOutlineStrength];
-                
-                //better to use source texture as input instead of dither results, because there will be less noise in image outline 
-                const inputTexture = sourceWebglTexture;
-                
-                if(this.isImageOutlineFixedColor){
-                    WebGlEdgeFilter.edgeFixed(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, this.selectedImageOutlineEdgeThickness, ColorPicker.colorsToVecArray([this.fixedOutlineColor], 1));
-                }
-                else{
-                    const backgroundTexture = ditherOutputWebglTexture;
-                    WebGlEdgeFilter.edgeBackground(transformCanvasWebGl.gl, inputTexture, imageWidth, imageHeight, strength, this.$refs.colorDitherSection.selectedColorsVec, backgroundTexture, this.selectedImageOutlineEdgeThickness, this.selectedOutlineColorMode);
-                    //don't delete ditherOutputTexture, since it is deleted automatically by filters after dither changed
-                }
-            },
-            /**
-             * Color picker function for outline filter fixed color
-             */
-            colorPickerValueChanged: function(colorHex){
-                this.fixedOutlineColor = colorHex;
-            },
-            colorPickerDone: function(colorHex){
-                this.fixedOutlineColor = colorHex;
-                this.shouldShowColorPicker = false;
+                callback(imageWidth, imageHeight, sourceWebglTexture, ditherOutputWebglTexture, transformCanvasWebGl, this.$refs.colorDitherSection.selectedColorsVec);
             },
             areControlsPinned: function(){
                 return getComputedStyle(this.$refs.controlsContainer).getPropertyValue('position') === 'fixed';
@@ -764,4 +614,4 @@
             },
         }
     });
-})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel, App.WebGlContourFilter, App.ColorPicker, App.WebGlEdgeFilter);
+})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel);
