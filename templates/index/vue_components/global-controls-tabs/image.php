@@ -131,11 +131,11 @@
         <div class="spread-content" v-if="isImageContourFilterActive">
             <div class="label-align">
                 <label for="image-contour-filter-radius">Radius</label>
-                <select id="image-contour-filter-radius" v-model.number="selectedImageOutlineRadiusPercent">
-                    <option v-for="(value, index) in imageOutlineRadiusPercentages" v-bind:value="index">{{value}}</option>
+                <select id="image-contour-filter-radius" v-model.number="selectedImageOutlineContourRadiusPercent">
+                    <option v-for="(value, index) in imageOutlineContourRadiusPercentages" v-bind:value="index">{{value}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageOutlineRadiusPercent', 'imageOutlineRadiusPercentages', 'outline radius'); ?>
+            <?php IndexView::cyclePropertyList('selectedImageOutlineContourRadiusPercent', 'imageOutlineContourRadiusPercentages', 'outline radius'); ?>
         </div>
         <div class="spread-content" v-if="isImageOutlineFilterActive &amp;&amp; isImageOutlineFixedColor &amp;&amp; areOutlineBlendModesSupported">
             <div class="label-align">

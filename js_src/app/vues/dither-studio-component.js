@@ -111,8 +111,8 @@
                 selectedBilateralFilterValue: 0,
                 selectedBilateralFilterValueAfter: 0,
                 //image outline filter
-                selectedImageOutlineRadiusPercent: 25, //value of 6.5 is a decent default for both pixelated and not
-                imageOutlineRadiusPercentages: ImageFiltersModel.outlineRadiusPercentages(),
+                selectedImageOutlineContourRadiusPercent: 25, //value of 6.5 is a decent default for both pixelated and not
+                imageOutlineContourRadiusPercentages: ImageFiltersModel.outlineContourRadiusPercentages(),
                 imageOutlineColorModes: ImageFiltersModel.outlineColorModes(),
                 selectedOutlineColorMode: 0,
                 imageOutlineTypes: ImageFiltersModel.outlineFilterTypes(),
@@ -369,7 +369,7 @@
                     Canvas.clear(outlineFilterCanvas);
                 }
             },
-            selectedImageOutlineRadiusPercent: function(newValue, oldValue){
+            selectedImageOutlineContourRadiusPercent: function(newValue, oldValue){
                 if(newValue !== oldValue){
                     this.imageOutlineFilterAction();
                     this.zoomImage();
@@ -638,7 +638,7 @@
             imageContourFilterAction: function(){
                 const imageWidth = this.imageHeader.width;
                 const imageHeight = this.imageHeader.height;
-                const radiusPercent = this.imageOutlineRadiusPercentages[this.selectedImageOutlineRadiusPercent];
+                const radiusPercent = this.imageOutlineContourRadiusPercentages[this.selectedImageOutlineContourRadiusPercent];
                 
                 //better to use source texture as input instead of dither results, because there will be less noise in image outline 
                 const inputTexture = sourceWebglTexture;

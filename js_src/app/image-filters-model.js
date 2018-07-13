@@ -18,7 +18,7 @@ App.ImageFiltersModel = (function(ArrayUtil){
         });
     }
 
-    function outlineRadiusPercentages(){
+    function outlineContourRadiusPercentages(){
         const step = 0.25;
         return ArrayUtil.create(48, (i)=>{
             return i * step + step;
@@ -104,7 +104,7 @@ App.ImageFiltersModel = (function(ArrayUtil){
         //-1 means filter disabled
         //higher values are sharper, while lower values are blurrier, so it makes more sense to reverse them
         bilateralFilterValues:  [-1, 60, 50, 40, 35, 30, 25, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 7, 5, 4, 3, 0],
-        outlineRadiusPercentages,
+        outlineContourRadiusPercentages,
         outlineEdgeStrengths,
         outlineEdgeThicknesses,
         outlineFilterTypes,
