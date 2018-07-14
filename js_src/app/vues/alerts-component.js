@@ -21,8 +21,8 @@
                     return d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
                 }
                 //I have no idea what units MAX_TEXTURE_SIZE is in, and no resource seems to explain this,
-                //but multiplying it by 2048 seems to get the maximum image dimensions webgl will dither 
-                const maxTextureDimensions = this.webglMaxTextureSize * 2048;
+                //but multiplying it by 1024 seems to get the maximum image dimensions webgl will dither 
+                const maxTextureDimensions = this.webglMaxTextureSize * 1024;
                 if(this.isImageLoaded && this.isWebglEnabled && this.loadedImage.height*this.loadedImage.width > maxTextureDimensions){
                     return `It appears that the image you just opened has larger total dimensions than your max WebGL texture size of ${formatInteger(maxTextureDimensions)} pixels. It is recommended you either: disable WebGL in settings (this will decrease performance), pixelate the image, or crop or resize the image in the image editor of you choice and reopen it.`;
                 }
