@@ -48,12 +48,6 @@ reset:
 	rm -f $(JS_WORKER_OUTPUT)
 	rm $(HTML_INDEX)
 
-#don't use variable with -rf, to guard against it becoming unset
-clean: reset
-	rm -r $(JS_APP_OUTPUT_RELEASE)
-	rm -r $(JS_WORKER_OUTPUT_RELEASE)
-	rm -rf ./public_html/styles
-
 #target specific variable
 release: PHP_BUILD_MODE=release
 release: $(HTML_INDEX) $(VUE_OUTPUT) $(CSS_OUTPUT) $(JS_WORKER_OUTPUT_RELEASE) $(JS_APP_OUTPUT_RELEASE)
