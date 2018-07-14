@@ -56,6 +56,11 @@
             const refs = this.$refs;
             sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
             transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
+
+            //have to set alertsContainer property here, since it does not exist yet in created hook
+            if(this.isWebglSupported){
+                this.$refs.alertsContainer.webglMaxTextureSize = transformCanvasWebGl.maxTextureSize;
+            }
             
             //load global settings
             const globalSettings = UserSettings.getGlobalSettings(this.areControlsPinned());
@@ -113,9 +118,6 @@
                 //so we don't do any spurious saving of global setting changes
                 //done by initialization rather than user
                 finishedInitialization: false,
-                //error alerts
-                openImageErrorMessage: null,
-                showWebglWarningMessage: false,
             };
         },
         computed: {
@@ -186,20 +188,6 @@
             },
             isImagePixelated: function(){
                 return this.pixelateImageZoom !== 100;
-            },
-            webglWarningMessage: function(){
-                //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
-                //for integers only
-                function formatInteger(d){
-                    return d.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-                }
-                //I have no idea what units MAX_TEXTURE_SIZE is in, and no resource seems to explain this,
-                //but multiplying it by 2048 seems to get the maximum image dimensions webgl will dither 
-                const maxTextureDimensions = transformCanvasWebGl.maxTextureSize * 2048;
-                if(this.isImageLoaded && this.isWebglEnabled && this.loadedImage.height*this.loadedImage.width > maxTextureDimensions){
-                    return `It appears that the image you just opened has larger total dimensions than your max WebGL texture size of ${formatInteger(maxTextureDimensions)} pixels. It is recommended you either: disable WebGL in settings (this will decrease performance), pixelate the image, or crop or resize the image in the image editor of you choice and then reopen it.`;
-                }
-                return '';
             },
             imageFiltersRaw: function(){
                 const filters = {};
@@ -353,7 +341,6 @@
                 callback(exportCanvas, this.loadedImage.unsplash);
             },
             loadImage: function(image, file){
-                this.openImageErrorMessage = null;
                 const loadedImage = {
                     width: image.width,
                     height: image.height,
@@ -362,8 +349,6 @@
                     fileType: file.type,
                     unsplash: file.unsplash || null,
                 };
-                //show webgl warning if any, until user closes it
-                this.showWebglWarningMessage = true;
                 this.$refs.exportTab.fileChanged(file.name);
                 
                 //resize large images if necessary
@@ -605,6 +590,12 @@
             },
             showModalPrompt: function(...modalPromptArgs){
                 this.$refs.modalPromptComponent.show(...modalPromptArgs);
+            },
+            /**
+             * Open tab
+             */
+            onOpenImageError: function(errorMessage){
+                this.$refs.alertsContainer.openImageErrorMessage = errorMessage;
             },
             /**
              * Image tab

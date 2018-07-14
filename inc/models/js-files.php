@@ -30,6 +30,7 @@
         $ret[] = 'color-input-component';
         $ret[] = 'color-picker-component';
         $ret[] = 'zoom-bar-component';
+        $ret[] = 'alerts-component';
         $ret[] = 'outline-filters-controls-component';
         $ret[] = 'export-tab-component';
         $ret[] = 'open-tab-component';

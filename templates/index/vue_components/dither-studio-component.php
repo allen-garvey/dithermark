@@ -1,19 +1,5 @@
 <div class="app-container">
-    <div class="alerts-container">
-        <div class="alert alert-danger" v-if="openImageErrorMessage">
-            <div @click="openImageErrorMessage=null" class="alert-close-button"></div>
-            <template v-if="typeof openImageErrorMessage === 'object'">
-                {{openImageErrorMessage.beforeUrl}} <a :href="openImageErrorMessage.url" class="alert-link">{{openImageErrorMessage.url}}</a> {{openImageErrorMessage.afterUrl}}
-            </template>
-            <template v-else>
-                {{openImageErrorMessage}}
-            </template>
-        </div>
-        <div class="alert alert-warning" v-if="showWebglWarningMessage &amp;&amp; webglWarningMessage">
-            <div @click="showWebglWarningMessage=false" class="alert-close-button"></div>
-            {{webglWarningMessage}}
-        </div>
-    </div>
+    <alerts ref="alertsContainer" :is-webgl-enabled="isWebglEnabled" :loaded-image="loadedImage" />
     <div class="hint-container" v-if="!isImageLoaded">Open an image to begin</div>
     <div class="controls">
         <div ref="controlsContainer" class="controls-container">

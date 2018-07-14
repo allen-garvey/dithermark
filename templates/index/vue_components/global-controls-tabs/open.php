@@ -1,1 +1,1 @@
-<open-tab :image-opened="loadImage" :open-image-error="(errorMessage)=>{openImageErrorMessage = errorMessage;}" :request-modal="showModalPrompt" />
+<open-tab :image-opened="loadImage" :open-image-error="onOpenImageError" :request-modal="showModalPrompt" />
