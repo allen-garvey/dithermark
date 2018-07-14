@@ -57,8 +57,6 @@ clean: reset
 #target specific variable
 release: PHP_BUILD_MODE=release
 release: $(HTML_INDEX) $(VUE_OUTPUT) $(CSS_OUTPUT) $(JS_WORKER_OUTPUT_RELEASE) $(JS_APP_OUTPUT_RELEASE)
-	rm -f $(JS_APP_OUTPUT)
-	rm -f $(JS_WORKER_OUTPUT)
 
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
