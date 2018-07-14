@@ -16,13 +16,12 @@
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 hsl1 = rgb2hsl(pixel1);
         vec3 hsl2 = rgb2hsl(pixel2);
-
         float hueDist = hue_distance(hsl1.x, hsl2.x);
 
         if(hsl1.y < 0.1){
             float fraction = hsl1.y / 0.1;
-            float lightnessDiff = hsl1.z - hsl2.z;
-            return 2.0 * fraction * hueDist * hueDist + (1.0 - fraction) * lightnessDiff * lightnessDiff;
+            vec2 hlDist = vec2(hueDist, hsl1.z - hsl2.z);
+            return dot(vec2(2.0 * fraction, (1.0 - fraction)), hlDist*hlDist);
         }
         return hueDist * hueDist;
     }
@@ -31,15 +30,13 @@
     float quick_distance(vec3 pixel1, vec3 pixel2){
         vec3 hsl1 = rgb2hsl(pixel1);
         vec3 hsl2 = rgb2hsl(pixel2);
-
-        float hueDist = hue_distance(hsl1.x, hsl2.x);
-        float lightnessDiff = hsl1.z - hsl2.z;
+        vec2 hlDist = vec2(hue_distance(hsl1.x, hsl2.x), hsl1.z - hsl2.z);
 
         if(hsl1.y < 0.3){
             float fraction = hsl1.y / 0.3;
-            return 2.0 * fraction * hueDist * hueDist + (1.0 - fraction) * lightnessDiff * lightnessDiff;
+            return dot(vec2(2.0 * fraction, (1.0 - fraction)), hlDist*hlDist);
         }
-        return 32.0 * hueDist * hueDist + lightnessDiff * lightnessDiff;
+        return dot(vec2(32.0, 1.0), hlDist*hlDist);
     }
 </script>
 <script type="webgl/fragment-shader-function" id="webgl-lightness-distance">
