@@ -53,11 +53,11 @@
         <div class="spread-content" v-if="isWebglEnabled">
             <div class="label-align">
                 <label for="denoise-before-dropdown">Denoise</label>
-                <select id="denoise-before-dropdown" v-model.number="selectedBilateralFilterValue">
+                <select id="denoise-before-dropdown" v-model.number="selectedBilateralFilterValueBefore">
                     <option v-for="(value, index) in bilateralFilterValues" v-bind:value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedBilateralFilterValue', 'bilateralFilterValues', 'bilateral filter amount'); ?>
+            <?php IndexView::cyclePropertyList('selectedBilateralFilterValueBefore', 'bilateralFilterValues', 'bilateral filter amount'); ?>
         </div>
         <div class="spread-content" v-if="isSmoothingEnabled">
             <div class="label-align">

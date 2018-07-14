@@ -101,7 +101,7 @@
                 selectedImageSmoothingRadiusAfter: 0,
                 //bilateral filter
                 bilateralFilterValues: ImageFiltersModel.bilateralFilterValues,
-                selectedBilateralFilterValue: 0,
+                selectedBilateralFilterValueBefore: 0,
                 selectedBilateralFilterValueAfter: 0,
                 //pre dither filters
                 canvasFilterValues: ImageFiltersModel.canvasFilterValues,
@@ -285,7 +285,7 @@
                     this.imageFiltersBeforeDitherChanged();
                 }
             },
-            selectedBilateralFilterValue: function(newValue, oldValue){
+            selectedBilateralFilterValueBefore: function(newValue, oldValue){
                 if(this.isImageLoaded && newValue !== oldValue){
                     this.imageFiltersBeforeDitherChanged();
                 }
@@ -393,7 +393,7 @@
                         this.applyWebGlCanvasFilters();
                     }
                     let hasImageBeenTransformed = false;
-                    hasImageBeenTransformed = this.bilateralFilterValueChanged() || hasImageBeenTransformed;
+                    hasImageBeenTransformed = this.bilateralFilterValueBeforeChanged() || hasImageBeenTransformed;
                     hasImageBeenTransformed = this.imageSmoothingBeforeChanged() || hasImageBeenTransformed;
 
                     if(hasImageBeenTransformed){
@@ -446,8 +446,8 @@
                     sourceCanvas.context.filter = 'hue-rotate(0deg)';
                 }
             },
-            bilateralFilterValueChanged: function(){
-                const filterExponent = this.bilateralFilterValues[this.selectedBilateralFilterValue];
+            bilateralFilterValueBeforeChanged: function(){
+                const filterExponent = this.bilateralFilterValues[this.selectedBilateralFilterValueBefore];
                 if(filterExponent < 0){
                     return false;
                 }
