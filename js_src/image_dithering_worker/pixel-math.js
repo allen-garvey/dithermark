@@ -47,7 +47,7 @@ App.PixelMath = (function(Pixel){
     function hueDistance(hue1, hue2){
         const dist1 = Math.abs(hue1 - hue2);
         //since hue is circular
-        return Math.min(dist1, 359 - dist1);
+        return Math.min(dist1, 360 - dist1);
     }
     
     //based on: https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion
