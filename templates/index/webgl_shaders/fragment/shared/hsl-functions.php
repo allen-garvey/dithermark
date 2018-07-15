@@ -33,7 +33,8 @@
     <?php //from: https://codeitdown.com/hsl-hsb-hsv-color/ ?>
     vec3 hsv2hsl(vec3 pixel){
         float l = 0.5 * pixel.b * (2.0 - pixel.g);
-        float s = pixel.g * pixel.b / (1.0 - abs(2.0 * l - 1.0));
+        <?php //so no division by 0 ?>
+        float s = l == 1.0 || l == 0.0 ? 0.0 : pixel.g * pixel.b / (1.0 - abs(2.0 * l - 1.0));
         return vec3(pixel.r, s, l);
     }
 
