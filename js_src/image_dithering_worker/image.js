@@ -62,7 +62,7 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
 
         let y = 0;
         let x = 0;
-        const pixel = Pixel.create(0, 0, 0);
+        const pixel = new Uint8ClampedArray(3);
         
         for(let i=0;i<pixels.length;i+=4){
             //nothing needs to be done for transparent pixels
@@ -74,9 +74,10 @@ App.Image = (function(Pixel, ColorDitherModeFunctions, DitherUtil, PixelMath){
 
                 const pixelAdjustmentValue = pixelAdjustmentFunc(x, y, pixel) * ditherRCoefficient;
                 if(pixelAdjustmentValue !== 0){
-                    pixel[Pixel.R_INDEX] = PixelMath.clamp(pixel[Pixel.R_INDEX] + pixelAdjustmentValue);
-                    pixel[Pixel.G_INDEX] = PixelMath.clamp(pixel[Pixel.G_INDEX] + pixelAdjustmentValue);
-                    pixel[Pixel.B_INDEX] = PixelMath.clamp(pixel[Pixel.B_INDEX] + pixelAdjustmentValue);
+                    //no need to clamp results, since Uint8ClampedArray does this automatically
+                    pixel[0] = pixel[0] + pixelAdjustmentValue;
+                    pixel[1] = pixel[1] + pixelAdjustmentValue;
+                    pixel[2] = pixel[2] + pixelAdjustmentValue;
                 }
                 const closestColor = colors[findClosestColorIndex(pixelValueFunc(pixel), colorValues, pixelDistanceFunc)];
                 //postscriptFunc is for hue-lightness dither
