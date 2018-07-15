@@ -20,10 +20,10 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     function distanceHue(item1, item2){
         const hueDist = PixelMath.hueDistance(item1[0], item2[0]) / 360;
 
-        if(item1[1] < 10){
-            const fraction = item1[1] / 10;
+        if(item1[1] < 7){
+            const fraction = item1[1] / 7;
             const lightnesstDist = (item1[2] - item2[2]) / 255;
-            return 2 * fraction * hueDist * hueDist + (1-fraction) * lightnesstDist * lightnesstDist;
+            return 4 * fraction * hueDist * hueDist + (1-fraction) * lightnesstDist * lightnesstDist;
         }
 
         return hueDist * hueDist;
