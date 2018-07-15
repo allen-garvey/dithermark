@@ -30,15 +30,24 @@
         return clamp(vec3(r, g, b), 0.0, 1.0);
     }
 
-    vec3 rgb2hsl(vec3 pixel){
-        float epsilon = 1.0e-10;
-        vec3 hcv = RGBtoHCV(pixel);
-        float l = hcv.z - hcv.y * 0.5;
-        float s = hcv.y / (1.0 - abs(l * 2.0 - 1.0) + epsilon);
-        return vec3(hcv.x, s, l);
+    <?php //from: https://stackoverflow.com/questions/2353211/hsl-to-rgb-color-conversion as using branchless version gives incorrect saturation results ?>
+    float pixelSaturation(vec3 pixel){
+        float maxValue = max(max(pixel.r, pixel.g), pixel.b);
+        float minValue = min(min(pixel.r, pixel.g), pixel.b);
+        if(maxValue == minValue){
+            return 0.0;
+        }
+        float c = (maxValue + minValue) / 2.0;
+        float diff = maxValue - minValue;
+        return c > 0.5 ? diff / (2.0 - diff) : diff / (maxValue + minValue);
     }
 
-    <?php //conversion does not work correctly for #000 or #fff, so added special case ?>
+    vec3 rgb2hsl(vec3 pixel){
+        vec3 hcv = RGBtoHCV(pixel);
+        float l = hcv.z - hcv.y * 0.5;
+        return vec3(hcv.x, pixelSaturation(pixel), l);
+    }
+
     vec3 hsl2rgb(vec3 pixel){
         vec3 rgb = HUEtoRGB(pixel.x);
         float c = (1.0 - abs(2.0 * pixel.z - 1.0)) * pixel.y;
