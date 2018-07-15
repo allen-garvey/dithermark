@@ -83,6 +83,14 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
         ];
     }
 
+    function incrementHl(hslValues, incrementValues){
+        return [
+            incrementHue(hslValues[0], incrementValues),
+            0,
+            PixelMath.clamp(hslValues[2] + incrementValues[2]),
+        ];
+    }
+
     function incrementLightness(lightnessValue, incrementValues){
         return PixelMath.clamp(lightnessValue + incrementValues[0]);
     }
@@ -103,6 +111,13 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
     function errorAmountHsl(expectedValue, actualValue, buffer){
         buffer[0] = Math.round(expectedValue[0] - actualValue[0]) % 360;
         buffer[1] = Math.round(expectedValue[1] - actualValue[1]) % 100;
+        buffer[2] = expectedValue[2] - actualValue[2];
+        return buffer;
+    }
+
+    function errorAmountHl(expectedValue, actualValue, buffer){
+        buffer[0] = Math.round(expectedValue[0] - actualValue[0]) % 360;
+        buffer[1] = 0;
         buffer[2] = expectedValue[2] - actualValue[2];
         return buffer;
     }
@@ -138,15 +153,15 @@ App.ColorDitherModeFunctions = (function(PixelMath, ColorDitherModes){
         pixelValue: pixelToHsl,
         distance: distanceHue,
         dimensions: 3, //need 3 dimensions because we are using hsl function
-        incrementValue: incrementHsl,
-        errorAmount: errorAmountHsl,
+        incrementValue: incrementHl,
+        errorAmount: errorAmountHl,
     };
     ret[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
         pixelValue: pixelToHsl,
         distance: distanceHueLightness,
         dimensions: 3, //need 3 dimensions because we are using hsl function
-        incrementValue: incrementHsl,
-        errorAmount: errorAmountHsl,
+        incrementValue: incrementHl,
+        errorAmount: errorAmountHl,
     };
     ret[ColorDitherModes.get('HSL_WEIGHTED').id] = {
         pixelValue: pixelToHsl,
