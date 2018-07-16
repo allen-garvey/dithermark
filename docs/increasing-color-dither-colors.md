@@ -1,0 +1,3 @@
+# Increasing Color Dither Colors
+
+To increase the number of colors for the color dither, edit the `COLOR_DITHER_MAX_COLORS` constant found in `inc/config.php`. Be aware that due to how the palette is implemented in WebGL code (as an array of uniforms instead of as a texture) at a certain point based on your browser/GPU, you will get an error saying something like `Too many uniforms`, and so will have to disable WebGL (on my particular machine, this happens somewhere between 196 and 256 colors). Also keep in mind that the Web Worker versions of the color dithers and some of the color quantization algorithms (such as k-means and median cut) get slower as the number of colors in the palette increases.
