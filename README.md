@@ -31,7 +31,7 @@ An interactive, in-browser demonstration of image dithering and color quantizati
 
 ## Other resources
 
-* Directions on how to other common tasks, such as creating a release build, setting up random images with Unsplash, and increasing the color count for color dithers can be found in the `docs` folder
+* Guides for other common tasks, such as: creating a release build, random images with Unsplash, and increasing the color count for color dithers can be found in the `docs` folder
 
 ## License
 
