@@ -1,10 +1,10 @@
 /**
  * The broad overview of how this algorithm works is to store the average of each pixel for each distinct hue
  * and each distinct lightness (lightness divided into buckets by the number of ouput palette colors), 
- * and then merge the values with the least number of pixels to get our palette.
- * Conceptually similar to octree, but much faster, since while the merging is slightly less effecient since it
- * involves nested loops O(n^2) actually reading the pixels is much faster and more efficient than octree.
- * Works particularly well at preserving gradients
+ * and then merge the values with the closest buckets by rgb or luma or least number of pixels to get our palette.
+ * Conceptually similar to octree (when reducing by pixel count) or k-means (when reducing by rgb or luma distance), but much faster, since while the merging is slightly less effecient since it
+ * involves nested loops O(n^2) actually reading the pixels is much faster and more efficient than octree, and only has to read the pixels once, unlike k-means, which has to re-read the pixels in each iteration of the loop.
+ * Seems to work particularly well at preserving gradients
  */
 App.OptimizeColorChannel = (function(PixelMath, Image){
 
@@ -87,11 +87,53 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         }
     }
 
-    function calculatePenalty(bucketIndexDistance){
+    function bucketIndexDistancePenaltyBuilder(shouldWrap, numDistinctValues){
+        if(shouldWrap){
+            return (smallerBucketKey, largerBucketKey, buffer)=>{ 
+                return bucketIndexDistancePenalty(Math.min(smallerBucketKey + numDistinctValues - largerBucketKey, largerBucketKey - smallerBucketKey)); };
+        }
+        return (smallerBucketKey, largerBucketKey, buffer)=>{ 
+            return bucketIndexDistancePenalty(largerBucketKey - smallerBucketKey); 
+        };
+    }
+
+    function bucketIndexDistancePenalty(bucketIndexDistance){
         return Math.log2(bucketIndexDistance + 1);
     }
 
-    function reduceChannelBuckets(channelStats, reducedBucketCount, shouldWrap=false){
+    function bucketPixelDistance(bucketIndex1, bucketIndex2, buffer, redMultiplier=1, greenMultiplier=1, blueMultiplier=1){
+        const bucket1Offset = bucketIndex1 * 4;
+        const bucket2Offset = bucketIndex2 * 4;
+        const bucket1Count = buffer[bucket1Offset + 3];
+        const bucket2Count = buffer[bucket2Offset + 3];
+        
+        const redDistance = (buffer[bucket1Offset] / bucket1Count) - (buffer[bucket2Offset] / bucket2Count);
+        const greenDistance = (buffer[bucket1Offset+1] / bucket1Count) - (buffer[bucket2Offset+1] / bucket2Count);
+        const blueDistance = (buffer[bucket1Offset+2] / bucket1Count) - (buffer[bucket2Offset+2] / bucket2Count);
+
+        return redDistance * redDistance * redMultiplier + greenDistance * greenDistance * greenMultiplier + blueDistance * blueDistance * blueMultiplier;
+    }
+
+    function rgbDistancePenalty(bucketIndex1, bucketIndex2, buffer){
+        return bucketPixelDistance(bucketIndex1, bucketIndex2, buffer);
+    }
+
+    function lumaDistancePenalty(bucketIndex1, bucketIndex2, buffer){
+        return bucketPixelDistance(bucketIndex1, bucketIndex2, buffer, 0.299, 0.587, 0.114);
+    }
+
+    function getPenaltyFunc(penaltyFuncId, shouldWrap, numDistinctValues){
+        switch(penaltyFuncId){
+            case 1:
+                return rgbDistancePenalty;
+            case 2:
+                return lumaDistancePenalty;
+            default:
+                return bucketIndexDistancePenaltyBuilder(shouldWrap, numDistinctValues);
+        }
+    }
+
+    function reduceChannelBuckets(channelStats, reducedBucketCount, penaltyFuncId, shouldWrap=false){
         if(reducedBucketCount <= 0){
             channelStats.bucketIndexSet.clear();
             return;
@@ -101,8 +143,7 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
         //and improves memory adjacency
         const channelBuffer = channelStats.buffer;
         const numDistinctValues = channelBuffer.length / 4;
-
-        const penaltyDistanceFunc = shouldWrap ? (smallerBucketKey, largerBucketKey)=>{ return calculatePenalty(Math.min(smallerBucketKey + numDistinctValues - largerBucketKey, largerBucketKey - smallerBucketKey)); } : (smallerBucketKey, largerBucketKey)=>{ return calculatePenalty(largerBucketKey - smallerBucketKey); };
+        const penaltyDistanceFunc = getPenaltyFunc(penaltyFuncId, shouldWrap, numDistinctValues);
 
         const bucketCounts = new Float32Array(channelBuffer.length / 4);
         for(let i=3,bucketIndex=0;i<channelBuffer.length;i+=4,bucketIndex++){
@@ -120,7 +161,7 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
                 const bucketKey1 = bucketKeys[j];
                 const bucketKey2 = bucketKeys[j+1];
                 //penalize buckets that are far away from each other
-                const penalty = penaltyDistanceFunc(bucketKey1, bucketKey2);
+                const penalty = penaltyDistanceFunc(bucketKey1, bucketKey2, channelBuffer);
                 const combinedValue = (bucketCounts[bucketKey1] + bucketCounts[bucketKey2]) * penalty;
                 if(combinedValue < leastCombinedValue){
                     leastCombinedValue = combinedValue;
@@ -131,7 +172,7 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             if(shouldWrap){
                 const bucketKey1 = bucketKeys[lastKeyIndex];
                 const bucketKey2 = bucketKeys[0];
-                const penalty = penaltyDistanceFunc(bucketKey2, bucketKey1);
+                const penalty = penaltyDistanceFunc(bucketKey2, bucketKey1, channelBuffer);
                 const wrappedCombinedValue = (bucketCounts[bucketKey1] + bucketCounts[bucketKey2]) * penalty;
                 if(wrappedCombinedValue < leastCombinedValue){
                     leastCombinedValue = wrappedCombinedValue;
@@ -213,9 +254,10 @@ App.OptimizeColorChannel = (function(PixelMath, Image){
             const hueFraction = hueChannel.count / (hueChannel.count + (lightnessChannel.count / (colorQuantization.greyMix * Math.sqrt(100 * baseLightnessFraction))) * (1 - Math.log2(numColors) / numColors));
 
             const lightnessBucketCount = Math.floor(numColorsAdjusted * (1-hueFraction));
-            reduceChannelBuckets(lightnessChannel, lightnessBucketCount);
+            const penaltyFuncId = colorQuantization.penaltyFuncId;
+            reduceChannelBuckets(lightnessChannel, lightnessBucketCount, penaltyFuncId);
             //have to recalculate lightness bucket count, since it might have had less buckets than required
-            reduceChannelBuckets(hueChannel, numColorsAdjusted - lightnessChannel.bucketIndexSet.size, true);
+            reduceChannelBuckets(hueChannel, numColorsAdjusted - lightnessChannel.bucketIndexSet.size, penaltyFuncId, true);
         }
 
         loadPaletteBuffer(lightnessChannel, paletteBuffer, 2);
