@@ -18,7 +18,7 @@ uniform float u_saturation;
 uniform float u_brightness;
 uniform float u_hue_rotation;
 
-#{{hslFunctions}}
+#{{hsvFunctions}}
 <?php //hue rotates around, so we subtract 1.0 so hue is always in range 0.0 - 1.0 ?>
 float hue_rotate(float pixelHue, float hueRotation){
     return mod(pixelHue + hueRotation, 1.0);

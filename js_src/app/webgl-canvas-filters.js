@@ -4,7 +4,7 @@
  */
 App.WebGlCanvasFilters = (function(WebGl, Shader){
     function createFilterFunc(gl){
-        const fragmentShaderText = Shader.shaderText('webgl-fragment-canvas-filters').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader')).replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions'));
+        const fragmentShaderText = Shader.shaderText('webgl-fragment-canvas-filters').replace('#{{transparencyCheck}}', Shader.shaderText('webgl-transparency-check-fshader')).replace('#{{hsvFunctions}}', Shader.shaderText('webgl-hsv-functions'));
         const drawFunc = WebGl.createDrawImageFunc(gl, Shader.vertexShaderText, fragmentShaderText, ['u_contrast', 'u_saturation', 'u_brightness', 'u_hue_rotation']);
         
         return function(gl, tex, texWidth, texHeight, contrastPercentage, saturationPercentage, brightnessPercentage, hueRotation){
