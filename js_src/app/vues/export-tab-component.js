@@ -9,7 +9,7 @@
         props: ['save-requested', 'is-image-pixelated'],
         created: function(){
             saveImageCanvas = Canvas.create();
-            this.shouldShowFileName = Canvas.isToBlobSupported(saveImageCanvas.canvas);
+            this.shouldShowFileName = Fs.isDirectDownloadSupported(saveImageCanvas.canvas);
         },
         data: function(){
             return {

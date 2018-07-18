@@ -130,7 +130,11 @@ App.Fs = (function(Canvas){
     function processSaveImageBlob(blob, callback){
         const objectUrl = URL.createObjectURL(blob); 
         callback(objectUrl);
-        URL.revokeObjectURL(objectUrl);
+        //add timeout before revoking for iOS
+        //https://stackoverflow.com/questions/30694453/blob-createobjecturl-download-not-working-in-firefox-but-works-when-debugging
+        setTimeout(()=>{
+            URL.revokeObjectURL(objectUrl);
+        }, 0);
     }
 
     //based on: https://stackoverflow.com/questions/45197097/cant-save-canvas-as-image-on-edge-browser
@@ -147,7 +151,7 @@ App.Fs = (function(Canvas){
     }
 
     function saveImage(canvas, fileType, callback){
-        if(Canvas.isToBlobSupported(canvas)){
+        if(isDirectDownloadSupported(canvas)){
             canvas.toBlob((blob)=>{
                 processSaveImageBlob(blob, callback);
             }, fileType, 1);
@@ -157,11 +161,27 @@ App.Fs = (function(Canvas){
             canvasToBlobPolyfill(canvas, fileType, callback);
         }
     }
+
+    //needed because using blob urls for some reason fails on iOS
+    //I've already spent far too much time trying to get this to work, so if anyone feels like fixing this, be my guest
+    //from: https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
+    //will be false positive on IE11 or if user agent is spoofed, but is not a big deal,
+    //since IE11 is not supported anyway, and if someone is spoofing the user agent they will
+    //just get the export fallback, which should work anyway, it just won't be a nice as directly downloading
+    function isRunningOniOS(){
+        const iOsRegex = /iP(ad|hone|od)/;
+        return iOsRegex.test(navigator.userAgent) || (navigator.platform && iOsRegex.test(navigator.platform));
+    }
+
+    function isDirectDownloadSupported(canvas){
+        return Canvas.isToBlobSupported(canvas) && !isRunningOniOS();
+    }
     
     return {
         openImageFile,
         openImageUrl,
         saveImage,
+        isDirectDownloadSupported,
         messageForOpenImageUrlError,
     };
     
