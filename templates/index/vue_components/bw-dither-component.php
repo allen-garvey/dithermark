@@ -4,13 +4,13 @@
         <canvas ref="histogramCanvas" class="histogram-canvas" width="<?= HISTOGRAM_BW_WIDTH; ?>" height="<?= HISTOGRAM_HEIGHT; ?>" title="Lightness histogram"></canvas>
     </div>
     <div class="transform-button-container">
-        <button class="btn btn-success btn-sm" v-on:click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Dither</button>
+        <button class="btn btn-success btn-sm" @click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Dither</button>
     </div>
     <div class="spread-content">
         <label>Algorithm
             <select v-model="selectedDitherAlgorithmIndex">
-                <optgroup v-for="ditherGroup in ditherGroups" v-bind:label="ditherGroup.title">
-                    <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" v-bind:value="ditherGroup.start + index">{{ ditherAlgorithm.title }}</option>
+                <optgroup v-for="ditherGroup in ditherGroups" :label="ditherGroup.title">
+                    <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" :value="ditherGroup.start + index">{{ ditherAlgorithm.title }}</option>
                 </optgroup>
             </select>
         </label>
@@ -19,8 +19,8 @@
     <div class="spread-content threshold-container">
         <label>
             Threshold
-            <input type="range" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold" list="threshold-tickmarks"/>
-            <input type="number" v-bind:min="thresholdMin" v-bind:max="thresholdMax" v-model.number="threshold"/>
+            <input type="range" :min="thresholdMin" :max="thresholdMax" v-model.number="threshold" list="threshold-tickmarks"/>
+            <input type="number" :min="thresholdMin" :max="thresholdMax" v-model.number="threshold"/>
             <datalist id="threshold-tickmarks">
                 <option value="0"/>
                 <option value="63"/>

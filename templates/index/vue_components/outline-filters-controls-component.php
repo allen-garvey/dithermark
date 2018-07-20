@@ -4,7 +4,7 @@
         <div class="label-align">
             <label for="image-outline-filter-type">Type</label>
             <select id="image-outline-filter-type" v-model.number="selectedImageOutlineType">
-                <option v-for="(value, index) in imageOutlineTypes" v-bind:value="index">{{value.title}}</option>
+                <option v-for="(value, index) in imageOutlineTypes" :value="index">{{value.title}}</option>
             </select>
         </div>
         <?php IndexView::cyclePropertyList('selectedImageOutlineType', 'imageOutlineTypes', 'outline type'); ?>
@@ -13,7 +13,7 @@
         <div class="label-align">
             <label for="image-outline-filter-color-mode">Color</label>
             <select id="image-outline-filter-color-mode" v-model.number="selectedOutlineColorMode">
-                <option v-for="(value, index) in imageOutlineColorModes" v-bind:value="index">{{value.title}}</option>
+                <option v-for="(value, index) in imageOutlineColorModes" :value="index">{{value.title}}</option>
             </select>
         </div>
         <?php IndexView::cyclePropertyList('selectedOutlineColorMode', 'imageOutlineColorModes', 'outline color mode'); ?>
@@ -22,7 +22,7 @@
         <div class="label-align">
             <label for="image-edge-filter-thickness">Thickness</label>
             <select id="image-edge-filter-thickness" v-model.number="selectedImageOutlineEdgeThickness">
-                <option v-for="(value, index) in imageOutlineEdgeThicknesses" v-bind:value="index">{{value}}</option>
+                <option v-for="(value, index) in imageOutlineEdgeThicknesses" :value="index">{{value}}</option>
             </select>
         </div>
         <?php IndexView::cyclePropertyList('selectedImageOutlineEdgeThickness', 'imageOutlineEdgeThicknesses', 'edge thickness'); ?>
@@ -31,7 +31,7 @@
         <div class="label-align">
             <label for="image-edge-filter-strength">Threshold</label>
             <select id="image-edge-filter-strength" v-model.number="selectedImageOutlineStrength">
-                <option v-for="(value, index) in imageOutlineEdgeStrengths" v-bind:value="index">{{value}}</option>
+                <option v-for="(value, index) in imageOutlineEdgeStrengths" :value="index">{{value}}</option>
             </select>
         </div>
         <?php IndexView::cyclePropertyList('selectedImageOutlineStrength', 'imageOutlineEdgeStrengths', 'edge strength'); ?>
@@ -40,7 +40,7 @@
         <div class="label-align">
             <label for="image-contour-filter-radius">Radius</label>
             <select id="image-contour-filter-radius" v-model.number="selectedImageOutlineContourRadiusPercent">
-                <option v-for="(value, index) in imageOutlineContourRadiusPercentages" v-bind:value="index">{{value}}</option>
+                <option v-for="(value, index) in imageOutlineContourRadiusPercentages" :value="index">{{value}}</option>
             </select>
         </div>
         <?php IndexView::cyclePropertyList('selectedImageOutlineContourRadiusPercent', 'imageOutlineContourRadiusPercentages', 'outline radius'); ?>
@@ -49,7 +49,7 @@
         <div class="label-align">
             <label for="image-outline-filter-blend-mode">Blend mode</label>
             <select id="image-outline-filter-blend-mode" v-model.number="selectedOutlineFixedColorBlendMode">
-                <option v-for="(mode, index) in imageOutlineFixedColorBlendModes" v-bind:value="index">{{mode.title}}</option>
+                <option v-for="(mode, index) in imageOutlineFixedColorBlendModes" :value="index">{{mode.title}}</option>
             </select>
         </div>
         <?php IndexView::cyclePropertyList('selectedOutlineFixedColorBlendMode', 'imageOutlineFixedColorBlendModes', 'blend mode'); ?>

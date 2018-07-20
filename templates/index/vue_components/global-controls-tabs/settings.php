@@ -5,7 +5,7 @@
             <label>Theme
                 <select v-model.number="currentEditorThemeIndex">
                     <template v-for="(theme, index) in editorThemes">
-                        <option v-bind:value="index">{{theme.name}}</option>
+                        <option :value="index">{{theme.name}}</option>
                     </template>
                 </select>
             </label>
