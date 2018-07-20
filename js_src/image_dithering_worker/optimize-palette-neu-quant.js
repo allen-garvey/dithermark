@@ -239,7 +239,11 @@ App.OptimizePaletteNeuQuant = (function(){
         function learn(pixels, samplefac) {
             //these calculations were done supposing pixels had no alpha, so divide by 4 * 3 to get length of pixels without alpha
             const pixelLength = pixels.length;
-            const alphadec = 30 + ((samplefac - 1) / 3);
+            //originally was divided by 3, but not sure if we should be 
+            //dividing by 4 now that we are using rgb instead of rgba
+            //however, with samplefac 10 with colors less than 256, divide by 4 gives better results
+            //compared to dividing by 3, which gives duller, less saturated result
+            const alphadec = 30 + ((samplefac - 1) / 4);
             const samplepixels = pixelLength / (4 * samplefac);
             let delta = ~~(samplepixels / ncycles);
             let alpha = initalpha;
