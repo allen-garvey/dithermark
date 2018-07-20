@@ -355,6 +355,7 @@ App.OptimizePaletteNeuQuant = (function(){
             learn(pixels, samplefac, progressCallback);
             unbiasnet();
             inxbuild();
+            return getColormap();
         };
 
         /*
@@ -365,7 +366,7 @@ App.OptimizePaletteNeuQuant = (function(){
             > [r, g, b, r, g, b, r, g, b, ..]
             >
         */
-        this.getColormap = function(){
+        function getColormap(){
             const map = new Uint8Array(netsize*3);
             const index = [];
 
@@ -380,7 +381,7 @@ App.OptimizePaletteNeuQuant = (function(){
                 map[k++] = network[j][2];
             }
             return map;
-        };
+        }
     }
 
     //while rgb and luma distance look similar at high number of colors,
@@ -453,8 +454,7 @@ App.OptimizePaletteNeuQuant = (function(){
     
     function neuQuant(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         const quantizer = new NeuQuant();
-        quantizer.buildColormap(pixels, colorQuantization.sample, progressCallback);
-        let palette = quantizer.getColormap();
+        let palette = quantizer.buildColormap(pixels, colorQuantization.sample, progressCallback);
         if(numColors < netsize){
             palette = reducePaletteSize(palette, numColors);
         }
