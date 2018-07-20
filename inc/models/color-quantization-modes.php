@@ -36,6 +36,10 @@ class ColorQuantizationMode {
 
 function colorQuantizationModesBase(): array{
     return [
+        'NeuQuant',
+        new ColorQuantizationMode('NeuQuant (High)', 'NeuQuant.neuQuant', ['sample' => 1]),
+        new ColorQuantizationMode('NeuQuant (Medium)', 'NeuQuant.neuQuant', ['sample' => 10]),
+        new ColorQuantizationMode('NeuQuant (Low)', 'NeuQuant.neuQuant', ['sample' => 30]),
         'Random',
         new ColorQuantizationMode('Random palette', 'Random.random', [], false),
         'Uniform',

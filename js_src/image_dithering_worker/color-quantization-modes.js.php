@@ -1,4 +1,4 @@
-App.ColorQuantizationModes = (function(Popularity, MedianCut, RgbQuant, Perceptual, Octree, KMeans, Random, ColorChannel, Uniform){
+App.ColorQuantizationModes = (function(Popularity, MedianCut, RgbQuant, Perceptual, Octree, KMeans, Random, ColorChannel, Uniform, NeuQuant){
     return [
         <?php foreach(colorQuantizationModesWorker() as $quantizationMode): ?>
             {
@@ -8,4 +8,4 @@ App.ColorQuantizationModes = (function(Popularity, MedianCut, RgbQuant, Perceptu
             },
         <?php endforeach; ?>
     ];
-})(App.OptimizePalettePopularity, App.OptimizePaletteMedianCut, App.OptimizePaletteRgbQuant, App.OptimizePalettePerceptual, App.OptimizePaletteOctree, App.OptimizePaletteKMeans, App.OptimizePaletteRandom, App.OptimizePaletteColorChannel, App.OptimizePaletteUniform);
+})(App.OptimizePalettePopularity, App.OptimizePaletteMedianCut, App.OptimizePaletteRgbQuant, App.OptimizePalettePerceptual, App.OptimizePaletteOctree, App.OptimizePaletteKMeans, App.OptimizePaletteRandom, App.OptimizePaletteColorChannel, App.OptimizePaletteUniform, App.OptimizePaletteNeuQuant);
