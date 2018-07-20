@@ -357,12 +357,83 @@ App.OptimizePaletteNeuQuant = (function(){
             return map;
         };
     }
+
+    //while rgb and luma distance look similar at high number of colors,
+    //when the number of colors is low luma distance has much better results
+    function lumaDistance(r1, g1, b1, r2, g2, b2){
+        const redDistance = r1 - r2;
+        const greenDistance = g1 - g2;
+        const blueDistance = b1 - b2;
+
+        return redDistance * redDistance * 0.299 + greenDistance * greenDistance * 0.587 + blueDistance * blueDistance * 0.114;
+    }
+
+    //palette reduction suggestion from: https://scientificgems.wordpress.com/stuff/neuquant-fast-high-quality-image-quantization/
+    //find the most similar colors and discard one
+    function reducePaletteSize(palette, numColors){
+        const paletteLength = palette.length;
+        const numColorsToCut = paletteLength / 3 - numColors;
+
+        const colorIndexSet = new Set();
+        for(let i=0;i<paletteLength;i+=3){
+            colorIndexSet.add(i);
+        }
+
+        for(let i=0;i<numColorsToCut;i++){
+            const colorIndexes = [...colorIndexSet.keys()];
+            const colorIndexesLength = colorIndexes.length;
+            let shortestDistance = Infinity;
+            //shortestIndex1 only needed if we are reducing by averaging 2 closest indexes, instead of just discarding second
+            // let shortestIndex1 = -1;
+            let shortestIndex2 = -1;
+
+            for(let j=0;j<colorIndexesLength-1;j++){
+                const color1Index = colorIndexes[j];
+                const color1Red = palette[color1Index];
+                const color1Green = palette[color1Index+1];
+                const color1Blue = palette[color1Index+2];
+                for(let k=j+1;k<colorIndexesLength;k++){
+                    const color2Index = colorIndexes[k];
+                    const color2Red = palette[color2Index];
+                    const color2Green = palette[color2Index+1];
+                    const color2Blue = palette[color2Index+2];
+
+                    const distance = lumaDistance(color1Red, color1Green, color1Blue, color2Red, color2Green, color2Blue);
+                    if(distance < shortestDistance){
+                        shortestDistance = distance;
+                        // shortestIndex1 = color1Index;
+                        shortestIndex2 = color2Index;
+
+                        if(distance === 0){
+                            break;
+                        }
+                    }
+                }
+                if(shortestDistance === 0){
+                    break;
+                }
+            }
+            colorIndexSet.delete(shortestIndex2);
+        }
+
+        const reducedPalette = new Uint8Array(numColors * 3);
+        let reducedPaletteIndex = 0;
+        for(let colorIndex of colorIndexSet.keys()){
+            reducedPalette[reducedPaletteIndex++] = palette[colorIndex];
+            reducedPalette[reducedPaletteIndex++] = palette[colorIndex+1];
+            reducedPalette[reducedPaletteIndex++] = palette[colorIndex+2];
+        }
+        return reducedPalette;
+    }
     
     function neuQuant(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         const quantizer = new NeuQuant();
         quantizer.buildColormap(pixels, colorQuantization.sample);
-        const palette = quantizer.getColormap();
-        return palette.subarray(0, numColors*3);
+        let palette = quantizer.getColormap();
+        if(numColors < netsize){
+            palette = reducePaletteSize(palette, numColors);
+        }
+        return palette;
     }
     
     return {
