@@ -23,7 +23,7 @@
  * https://github.com/jnordberg/gif.js/blob/master/src/TypedNeuQuant.js
  */
 App.OptimizePaletteNeuQuant = (function(){
-    const netsize = 256; // number of colors used
+    const netsize = 256; // number of colors returned - need to reduce this if palette size is less than this
     
     function NeuQuant() {
         /**
@@ -57,15 +57,6 @@ App.OptimizePaletteNeuQuant = (function(){
         const radbias = (1 << radbiasshift);
         const alpharadbshift = (alphabiasshift + radbiasshift);
         const alpharadbias = (1 << alpharadbshift);
-
-        // four primes near 500 - assume no image has a length so large that it is
-        // divisible by all four primes
-        const prime1 = 499;
-        const prime2 = 491;
-        const prime3 = 487;
-        const prime4 = 503;
-        const minpicturebytes = (3 * prime4);
-        
         
         
         /**
@@ -262,29 +253,45 @@ App.OptimizePaletteNeuQuant = (function(){
                 radpower[i] = alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
             }
             
+            const DEFAULT_STEP = 4;
+            let step = DEFAULT_STEP;
 
-            let step = 4;
-            if(pixelLength < minpicturebytes){
-                samplefac = 1;
-            } 
-            else if((pixelLength % prime1) !== 0){
-                step *= prime1;
-            } 
-            else if ((pixelLength % prime2) !== 0){
-                step *= prime2;
-            } 
-            else if((pixelLength % prime3) !== 0){
-                step *= prime3;
-            } 
-            else{
-                step *= prime4;
+            // four primes near 500 - assume no image has a length so large that it is
+            // divisible by all four primes
+            const prime1 = 499;
+            const prime2 = 491;
+            const prime3 = 487;
+            const prime4 = 503;
+            const minpicturebytes = (4 * prime4);
+            if(pixelLength >= minpicturebytes){
+                if((pixelLength % prime1) !== 0){
+                    step *= prime1;
+                } 
+                else if ((pixelLength % prime2) !== 0){
+                    step *= prime2;
+                } 
+                else if((pixelLength % prime3) !== 0){
+                    step *= prime3;
+                } 
+                else{
+                    step *= prime4;
+                }
             }
             
             let pixelIndex = 0; // current pixel
             let i = 0;
-            while (i < samplepixels){
+            let hasTransparentPixels = false;
+            while(i < samplepixels){
                 //skip transparent pixels
                 if(pixels[pixelIndex+3] === 0){
+                    hasTransparentPixels = true;
+                    pixelIndex += step;
+
+                    //to avoid infinite loops
+                    if(pixelIndex >= pixelLength){
+                        pixelIndex = 0;
+                        step = DEFAULT_STEP;
+                    }
                     continue;
                 }
                 const b = (pixels[pixelIndex] & 0xff) << netbiasshift;
@@ -310,7 +317,15 @@ App.OptimizePaletteNeuQuant = (function(){
                     }
                 }
                 pixelIndex += step;
-                pixelIndex = pixelIndex >= pixelLength ? 0 : pixelIndex;
+                if(pixelIndex >= pixelLength){
+                    pixelIndex = 0;
+                    //if we get past the end of pixels array, and there are transparent pixels reset step to every pixel,
+                    //so we don't get caught in a potentially infinite loop if there are transparent pixels
+                    //don't do this unless we have to, since this leads to worse results
+                    if(hasTransparentPixels){
+                        step = DEFAULT_STEP;
+                    }
+                }
             }
         }
 
