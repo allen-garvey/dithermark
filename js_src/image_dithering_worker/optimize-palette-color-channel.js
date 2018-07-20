@@ -6,7 +6,7 @@
  * involves nested loops O(n^2) actually reading the pixels is much faster and more efficient than octree, and only has to read the pixels once, unlike k-means, which has to re-read the pixels in each iteration of the loop.
  * Seems to work particularly well at preserving gradients
  */
-App.OptimizeColorChannel = (function(PixelMath, Image){
+App.OptimizePaletteColorChannel = (function(PixelMath, Image){
 
     function ChannelStats(statsBuffer, count){
         this.buffer = statsBuffer;
