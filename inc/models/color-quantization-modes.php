@@ -36,10 +36,6 @@ class ColorQuantizationMode {
 
 function colorQuantizationModesBase(): array{
     return [
-        'NeuQuant',
-        new ColorQuantizationMode('NeuQuant (High)', 'NeuQuant.neuQuant', ['sample' => 1]),
-        new ColorQuantizationMode('NeuQuant (Medium)', 'NeuQuant.neuQuant', ['sample' => 10]),
-        new ColorQuantizationMode('NeuQuant (Low)', 'NeuQuant.neuQuant', ['sample' => 30]),
         'Random',
         new ColorQuantizationMode('Random palette', 'Random.random', [], false),
         'Uniform',
@@ -76,6 +72,10 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('RGB Quant (Wide, RGB)', 'RgbQuant.rgbQuant', ['method' => 2]),
         new ColorQuantizationMode('RGB Quant (Narrow, Luma)', 'RgbQuant.rgbQuant', ['colorDist' => 'manhattan','method' => 1]),
         new ColorQuantizationMode('RGB Quant (Narrow, RGB)', 'RgbQuant.rgbQuant', ['method' => 1]),
+        'NeuQuant',
+        new ColorQuantizationMode('NeuQuant (High)', 'NeuQuant.neuQuant', ['sample' => 1]),
+        new ColorQuantizationMode('NeuQuant (Medium)', 'NeuQuant.neuQuant', ['sample' => 10]),
+        new ColorQuantizationMode('NeuQuant (Low)', 'NeuQuant.neuQuant', ['sample' => 30]),
         'K Means',
         new colorQuantizationMode('K Means (RGB)', 'KMeans.kMeans'),
         new colorQuantizationMode('K Means (Luma)', 'KMeans.kMeans', ['distanceLuma' => true]),
