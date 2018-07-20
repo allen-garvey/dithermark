@@ -236,7 +236,7 @@ App.OptimizePaletteNeuQuant = (function(){
             "Main Learning Loop"
             Note that you will get infinite loop if image that is completely transparent is used
         */
-        function learn(pixels, samplefac) {
+        function learn(pixels, samplefac, progressCallback) {
             //these calculations were done supposing pixels had no alpha, so divide by 4 * 3 to get length of pixels without alpha
             const pixelLength = pixels.length;
             //originally was divided by 3, but not sure if we should be 
@@ -285,6 +285,8 @@ App.OptimizePaletteNeuQuant = (function(){
             let pixelIndex = 0; // current pixel
             let i = 0;
             let hasTransparentPixels = false;
+            let hasUsedProgressCallback = samplefac > 5;
+            const halfDone = Math.floor(samplepixels / 2);
             while(i < samplepixels){
                 //skip transparent pixels
                 if(pixels[pixelIndex+3] === 0){
@@ -329,6 +331,10 @@ App.OptimizePaletteNeuQuant = (function(){
                     if(hasTransparentPixels){
                         step = DEFAULT_STEP;
                     }
+                    if(!hasUsedProgressCallback && i >= halfDone){
+                        hasUsedProgressCallback = true;
+                        progressCallback(50);
+                    }
                 }
             }
         }
@@ -344,9 +350,9 @@ App.OptimizePaletteNeuQuant = (function(){
             pixels - array of pixels in RGBA format; e.g. [r, g, b, a, r, g, b, a]
             samplefac - sampling factor 1 to 30 where lower is better quality
         */
-        this.buildColormap = function(pixels, samplefac){
+        this.buildColormap = function(pixels, samplefac, progressCallback){
             init();
-            learn(pixels, samplefac);
+            learn(pixels, samplefac, progressCallback);
             unbiasnet();
             inxbuild();
         };
@@ -447,7 +453,7 @@ App.OptimizePaletteNeuQuant = (function(){
     
     function neuQuant(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         const quantizer = new NeuQuant();
-        quantizer.buildColormap(pixels, colorQuantization.sample);
+        quantizer.buildColormap(pixels, colorQuantization.sample, progressCallback);
         let palette = quantizer.getColormap();
         if(numColors < netsize){
             palette = reducePaletteSize(palette, numColors);
