@@ -23,55 +23,54 @@
  * https://github.com/jnordberg/gif.js/blob/master/src/TypedNeuQuant.js
  */
 App.OptimizePaletteNeuQuant = (function(){
-    
-    const ncycles = 100; // number of learning cycles
     const netsize = 256; // number of colors used
-    const maxnetpos = netsize - 1;
+    
+    function NeuQuant() {
+        /**
+         * Constants
+         */
+        const ncycles = 100; // number of learning cycles
+        const maxnetpos = netsize - 1;
 
-    // defs for freq and bias
-    const netbiasshift = 4; // bias for colour values
-    const intbiasshift = 16; // bias for fractions
-    const intbias = (1 << intbiasshift);
-    const gammashift = 10;
-    const betashift = 10;
-    const beta = (intbias >> betashift); /* beta = 1/1024 */
-    const betagamma = (intbias << (gammashift - betashift));
+        // defs for freq and bias
+        const netbiasshift = 4; // bias for colour values
+        const intbiasshift = 16; // bias for fractions
+        const intbias = (1 << intbiasshift);
+        const gammashift = 10;
+        const betashift = 10;
+        const beta = (intbias >> betashift); /* beta = 1/1024 */
+        const betagamma = (intbias << (gammashift - betashift));
 
-    // defs for decreasing radius factor
-    const initrad = (netsize >> 3); // for 256 cols, radius starts
-    const radiusbiasshift = 6; // at 32.0 biased by 6 bits
-    const radiusbias = (1 << radiusbiasshift);
-    const initradius = (initrad * radiusbias); //and decreases by a
-    const radiusdec = 30; // factor of 1/30 each cycle
+        // defs for decreasing radius factor
+        const initrad = (netsize >> 3); // for 256 cols, radius starts
+        const radiusbiasshift = 6; // at 32.0 biased by 6 bits
+        const radiusbias = (1 << radiusbiasshift);
+        const initradius = (initrad * radiusbias); //and decreases by a
+        const radiusdec = 30; // factor of 1/30 each cycle
 
-    // defs for decreasing alpha factor
-    const alphabiasshift = 10; // alpha starts at 1.0
-    const initalpha = (1 << alphabiasshift);
+        // defs for decreasing alpha factor
+        const alphabiasshift = 10; // alpha starts at 1.0
+        const initalpha = (1 << alphabiasshift);
 
-    /* radbias and alpharadbias used for radpower calculation */
-    const radbiasshift = 8;
-    const radbias = (1 << radbiasshift);
-    const alpharadbshift = (alphabiasshift + radbiasshift);
-    const alpharadbias = (1 << alpharadbshift);
+        /* radbias and alpharadbias used for radpower calculation */
+        const radbiasshift = 8;
+        const radbias = (1 << radbiasshift);
+        const alpharadbshift = (alphabiasshift + radbiasshift);
+        const alpharadbias = (1 << alpharadbshift);
 
-    // four primes near 500 - assume no image has a length so large that it is
-    // divisible by all four primes
-    const prime1 = 499;
-    const prime2 = 491;
-    const prime3 = 487;
-    const prime4 = 503;
-    const minpicturebytes = (3 * prime4);
-
-    /*
-    Constructor: NeuQuant
-    Arguments:
-    pixels - array of pixels in RGB format
-    samplefac - sampling factor 1 to 30 where lower is better quality
-    >
-    > pixels = [r, g, b, r, g, b, r, g, b, ..]
-    >
-    */
-    function NeuQuant(pixels, samplefac) {
+        // four primes near 500 - assume no image has a length so large that it is
+        // divisible by all four primes
+        const prime1 = 499;
+        const prime2 = 491;
+        const prime3 = 487;
+        const prime4 = 503;
+        const minpicturebytes = (3 * prime4);
+        
+        
+        
+        /**
+         * Variables initialized by init
+         */
         let network; // int[netsize][4]
         let netindex; // for network lookup - really 256
 
@@ -244,11 +243,13 @@ App.OptimizePaletteNeuQuant = (function(){
         /*
             Private Method: learn
             "Main Learning Loop"
+            Note that you will get infinite loop if image that is completely transparent is used
         */
-        function learn() {
-            const lengthcount = pixels.length;
+        function learn(pixels, samplefac) {
+            //these calculations were done supposing pixels had no alpha, so divide by 4 * 3 to get length of pixels without alpha
+            const pixelRgbLength = pixels.length / 4 * 3;
             const alphadec = 30 + ((samplefac - 1) / 3);
-            const samplepixels = lengthcount / (3 * samplefac);
+            const samplepixels = pixelRgbLength / (3 * samplefac);
             let delta = ~~(samplepixels / ncycles);
             let alpha = initalpha;
             let radius = initradius;
@@ -263,36 +264,39 @@ App.OptimizePaletteNeuQuant = (function(){
             
 
             let step;
-            if(lengthcount < minpicturebytes){
+            if(pixelRgbLength < minpicturebytes){
                 samplefac = 1;
                 step = 3;
             } 
-            else if ((lengthcount % prime1) !== 0) {
+            else if ((pixelRgbLength % prime1) !== 0) {
                 step = 3 * prime1;
             } 
-            else if ((lengthcount % prime2) !== 0) {
+            else if ((pixelRgbLength % prime2) !== 0) {
                 step = 3 * prime2;
             } 
-            else if ((lengthcount % prime3) !== 0)  {
+            else if ((pixelRgbLength % prime3) !== 0)  {
                 step = 3 * prime3;
             } 
             else {
                 step = 3 * prime4;
             }
             
-            let pix = 0; // current pixel
+            let pixelIndex = 0; // current pixel
             let i = 0;
-            while (i < samplepixels) {
-                const b = (pixels[pix] & 0xff) << netbiasshift;
-                const g = (pixels[pix + 1] & 0xff) << netbiasshift;
-                const r = (pixels[pix + 2] & 0xff) << netbiasshift;
+            while (i < samplepixels){
+                //skip transparent pixels
+                if(pixels[pixelIndex+3] === 0){
+                    continue;
+                }
+                const b = (pixels[pixelIndex] & 0xff) << netbiasshift;
+                const g = (pixels[pixelIndex + 1] & 0xff) << netbiasshift;
+                const r = (pixels[pixelIndex + 2] & 0xff) << netbiasshift;
                 const j = contest(b, g, r);
 
                 altersingle(alpha, j, b, g, r);
-                if (rad !== 0) alterneigh(rad, j, b, g, r); // alter neighbours
-
-                pix += step;
-                if (pix >= lengthcount) pix -= lengthcount;
+                if (rad !== 0){
+                    alterneigh(rad, j, b, g, r); // alter neighbours
+                }
 
                 i++;
                 delta = delta === 0 ? 1 : delta;
@@ -306,6 +310,8 @@ App.OptimizePaletteNeuQuant = (function(){
                         radpower[j] = alpha * (((rad * rad - j * j) * radbias) / (rad * rad));
                     }
                 }
+                pixelIndex += step;
+                pixelIndex = pixelIndex >= pixelRgbLength ? 0 : pixelIndex;
             }
         }
 
@@ -315,10 +321,14 @@ App.OptimizePaletteNeuQuant = (function(){
             2. trains it
             3. removes misconceptions
             4. builds colorindex
+            
+            Arguments:
+            pixels - array of pixels in RGBA format; e.g. [r, g, b, a, r, g, b, a]
+            samplefac - sampling factor 1 to 30 where lower is better quality
         */
-        this.buildColormap = function(){
+        this.buildColormap = function(pixels, samplefac){
             init();
-            learn();
+            learn(pixels, samplefac);
             unbiasnet();
             inxbuild();
         };
@@ -331,7 +341,7 @@ App.OptimizePaletteNeuQuant = (function(){
             > [r, g, b, r, g, b, r, g, b, ..]
             >
         */
-        this.getColormap = function() {
+        this.getColormap = function(){
             const map = new Uint8Array(netsize*3);
             const index = [];
 
@@ -341,17 +351,17 @@ App.OptimizePaletteNeuQuant = (function(){
 
             for(let i = 0, k=0; i < netsize; i++){
                 const j = index[i];
-                map[k++] = (network[j][0]);
-                map[k++] = (network[j][1]);
-                map[k++] = (network[j][2]);
+                map[k++] = network[j][0];
+                map[k++] = network[j][1];
+                map[k++] = network[j][2];
             }
             return map;
         };
     }
     
     function neuQuant(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
-        const quantizer = new NeuQuant(pixels, colorQuantization.sample);
-        quantizer.buildColormap();
+        const quantizer = new NeuQuant();
+        quantizer.buildColormap(pixels, colorQuantization.sample);
         const palette = quantizer.getColormap();
         return palette.subarray(0, numColors*3);
     }
