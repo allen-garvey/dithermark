@@ -247,9 +247,9 @@ App.OptimizePaletteNeuQuant = (function(){
         */
         function learn(pixels, samplefac) {
             //these calculations were done supposing pixels had no alpha, so divide by 4 * 3 to get length of pixels without alpha
-            const pixelRgbLength = pixels.length / 4 * 3;
+            const pixelLength = pixels.length;
             const alphadec = 30 + ((samplefac - 1) / 3);
-            const samplepixels = pixelRgbLength / (3 * samplefac);
+            const samplepixels = pixelLength / (4 * samplefac);
             let delta = ~~(samplepixels / ncycles);
             let alpha = initalpha;
             let radius = initradius;
@@ -263,22 +263,21 @@ App.OptimizePaletteNeuQuant = (function(){
             }
             
 
-            let step;
-            if(pixelRgbLength < minpicturebytes){
+            let step = 4;
+            if(pixelLength < minpicturebytes){
                 samplefac = 1;
-                step = 3;
             } 
-            else if ((pixelRgbLength % prime1) !== 0) {
-                step = 3 * prime1;
+            else if((pixelLength % prime1) !== 0){
+                step *= prime1;
             } 
-            else if ((pixelRgbLength % prime2) !== 0) {
-                step = 3 * prime2;
+            else if ((pixelLength % prime2) !== 0){
+                step *= prime2;
             } 
-            else if ((pixelRgbLength % prime3) !== 0)  {
-                step = 3 * prime3;
+            else if((pixelLength % prime3) !== 0){
+                step *= prime3;
             } 
-            else {
-                step = 3 * prime4;
+            else{
+                step *= prime4;
             }
             
             let pixelIndex = 0; // current pixel
@@ -311,7 +310,7 @@ App.OptimizePaletteNeuQuant = (function(){
                     }
                 }
                 pixelIndex += step;
-                pixelIndex = pixelIndex >= pixelRgbLength ? 0 : pixelIndex;
+                pixelIndex = pixelIndex >= pixelLength ? 0 : pixelIndex;
             }
         }
 
