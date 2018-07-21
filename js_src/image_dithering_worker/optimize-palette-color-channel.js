@@ -132,6 +132,17 @@ App.OptimizePaletteColorChannel = (function(PixelMath, Image){
                 return bucketIndexDistancePenaltyBuilder(shouldWrap, numDistinctValues);
         }
     }
+    //returns maximum possible distance for each penalty
+    function getMaximumPenalty(penaltyFuncId, shouldWrap, numDistinctValues){
+        switch(penaltyFuncId){
+            case 1:
+                return 255 * 255 * 3;
+            case 2:
+                return 255 * 255;
+            default:
+                return shouldWrap ? Math.floor(numDistinctValues / 2) : numDistinctValues;
+        }
+    }
 
     function reduceChannelBuckets(channelStats, reducedBucketCount, penaltyFuncId, shouldWrap=false){
         if(reducedBucketCount <= 0){
@@ -144,6 +155,7 @@ App.OptimizePaletteColorChannel = (function(PixelMath, Image){
         const channelBuffer = channelStats.buffer;
         const numDistinctValues = channelBuffer.length / 4;
         const penaltyDistanceFunc = getPenaltyFunc(penaltyFuncId, shouldWrap, numDistinctValues);
+        const maximumPenalty = getMaximumPenalty(penaltyFuncId, shouldWrap, numDistinctValues);
 
         const bucketCounts = new Float32Array(channelBuffer.length / 4);
         for(let i=3,bucketIndex=0;i<channelBuffer.length;i+=4,bucketIndex++){
@@ -155,6 +167,7 @@ App.OptimizePaletteColorChannel = (function(PixelMath, Image){
             const bucketKeys = [...bucketIndexSet.keys()];
             const lastKeyIndex = bucketKeys.length - 1;
             let leastCombinedValue = Infinity;
+            let leastPenalty = 0;
             let keyToMergeStartIndex = -1;
             
             for(let j=0;j<lastKeyIndex;j++){
@@ -165,6 +178,7 @@ App.OptimizePaletteColorChannel = (function(PixelMath, Image){
                 const combinedValue = (bucketCounts[bucketKey1] + bucketCounts[bucketKey2]) * penalty;
                 if(combinedValue < leastCombinedValue){
                     leastCombinedValue = combinedValue;
+                    leastPenalty = penalty;
                     keyToMergeStartIndex = j;
                 }
             }
@@ -179,20 +193,41 @@ App.OptimizePaletteColorChannel = (function(PixelMath, Image){
                     keyToMergeStartIndex = lastKeyIndex;
                 }
             }
-            const keyToDelete = keyToMergeStartIndex === lastKeyIndex ? bucketKeys[0] : bucketKeys[keyToMergeStartIndex + 1];
-
-            //reduce by combining values of keyToDelet with leastCombinedStartIndex
-            const bucketKeyToMergeTo = bucketKeys[keyToMergeStartIndex]; 
-            const bufferStartIndex = bucketKeyToMergeTo * 4;
-            const bufferMergeIndex = keyToDelete * 4;
-
-            for(let j=0;j<4;j++){
-                channelBuffer[bufferStartIndex + j] += channelBuffer[bufferMergeIndex + j]; 
+            
+            //remove one key by either deleting key with lowest pixel count, or merging keys by averaging values
+            const firstKey = bucketKeys[keyToMergeStartIndex];
+            const secondKey = keyToMergeStartIndex === lastKeyIndex ? bucketKeys[0] : bucketKeys[keyToMergeStartIndex + 1];
+            //delete key with lowest pixel count
+            //use this for color hues, since that avoids them from getting grey by merging
+            if(shouldWrap){
+                let keyToDelete = secondKey;
+                //use fraction because the closer the two keys are, the more pixels will be drawn to remaining key (in theory)
+                const fraction = 1 - (leastPenalty / maximumPenalty);
+                if(bucketCounts[secondKey] > bucketCounts[firstKey]){
+                    keyToDelete = firstKey;
+                    bucketCounts[secondKey] += bucketCounts[firstKey] * fraction;
+                }
+                else{
+                    bucketCounts[firstKey] += bucketCounts[secondKey] * fraction;
+                }
+                bucketIndexSet.delete(keyToDelete);
             }
-            //update color counts
-            bucketCounts[bucketKeyToMergeTo] += bucketCounts[keyToDelete];
+            //merge two keys by averaging values
+            //merge grey keys, since that makes them more grey anyway
+            else{
+                const keyToDelete = secondKey;
+                const bufferStartIndex = firstKey * 4;
+                const bufferMergeIndex = keyToDelete * 4;
 
-            bucketIndexSet.delete(keyToDelete);
+                for(let j=0;j<4;j++){
+                    channelBuffer[bufferStartIndex + j] += channelBuffer[bufferMergeIndex + j]; 
+                }
+                //update color counts
+                bucketCounts[firstKey] += bucketCounts[keyToDelete];
+
+                bucketIndexSet.delete(keyToDelete);
+            }
+            
         }
     }
 
