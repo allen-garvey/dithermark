@@ -23,14 +23,16 @@
  * https://github.com/jnordberg/gif.js/blob/master/src/TypedNeuQuant.js
  */
 App.OptimizePaletteNeuQuant = (function(ArrayUtil){
-    const netsize = 256; // number of colors returned - need to reduce this if palette size is less than this
+    // networkSize is number of colors returned - need to reduce this if palette size is less than this
+    //reducing to 64 when numColors is <= 64 is 2-4 times faster but generally looks worse
+    //reducing to 128 when numColors is <= 128 is 1.5-2 times faster and sometimes looks better, but generally worse
     
-    function NeuQuant() {
+    function NeuQuant(networkSize){
         /**
          * Constants
          */
         const ncycles = 100; // number of learning cycles
-        const maxnetpos = netsize - 1;
+        const maxnetpos = networkSize - 1;
 
         // defs for freq and bias
         const netbiasshift = 4; // bias for colour values
@@ -42,7 +44,7 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
         const betagamma = (intbias << (gammashift - betashift));
 
         // defs for decreasing radius factor
-        const initrad = (netsize >> 3); // for 256 cols, radius starts
+        const initrad = (networkSize >> 3); // for 256 cols, radius starts
         const radiusbiasshift = 6; // at 32.0 biased by 6 bits
         const radiusbias = (1 << radiusbiasshift);
         const initradius = (initrad * radiusbias); //and decreases by a
@@ -77,14 +79,14 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
         function init(){
             network = [];
             netindex = new Int32Array(256);
-            bias = new Int32Array(netsize);
-            freq = new Int32Array(netsize);
-            radpower = new Int32Array(netsize >> 3);
+            bias = new Int32Array(networkSize);
+            freq = new Int32Array(networkSize);
+            radpower = new Int32Array(networkSize >> 3);
 
-            for(let i = 0; i < netsize; i++){
-                const v = (i << (netbiasshift + 8)) / netsize;
+            for(let i = 0; i < networkSize; i++){
+                const v = (i << (netbiasshift + 8)) / networkSize;
                 network[i] = new Float64Array([v, v, v, 0]);
-                freq[i] = intbias / netsize;
+                freq[i] = intbias / networkSize;
                 bias[i] = 0;
             }
         }
@@ -94,7 +96,7 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
             unbiases network to give byte values 0..255 and record position i to prepare for sort
         */
         function unbiasnet(){
-            for(let i = 0; i < netsize; i++){
+            for(let i = 0; i < networkSize; i++){
                 network[i][0] >>= netbiasshift;
                 network[i][1] >>= netbiasshift;
                 network[i][2] >>= netbiasshift;
@@ -118,7 +120,7 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
         */
         function alterneigh(radius, i, b, g, r) {
             const lo = Math.abs(i - radius);
-            const hi = Math.min(i + radius, netsize);
+            const hi = Math.min(i + radius, networkSize);
 
             let j = i + 1;
             let k = i - 1;
@@ -160,7 +162,7 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
             let bestpos = -1;
             let bestbiaspos = bestpos;
 
-            for(let i = 0; i < netsize; i++){
+            for(let i = 0; i < networkSize; i++){
                 const n = network[i];
 
                 const dist = Math.abs(n[0] - b) + Math.abs(n[1] - g) + Math.abs(n[2] - r);
@@ -193,12 +195,12 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
         function inxbuild() {
             let previouscol = 0;
             let startpos = 0;
-            for (let i = 0; i < netsize; i++) {
+            for (let i = 0; i < networkSize; i++) {
                 const p = network[i];
                 let smallpos = i;
                 let smallval = p[1]; // index on g
                 // find smallest in i..netsize-1
-                for (let j = i + 1; j < netsize; j++) {
+                for (let j = i + 1; j < networkSize; j++) {
                     const q = network[j];
                     if (q[1] < smallval) { // index on g
                         smallpos = j;
@@ -367,14 +369,14 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
             >
         */
         function getColormap(){
-            const map = new Uint8Array(netsize*3);
+            const map = new Uint8Array(networkSize*3);
             const index = [];
 
-            for(let i = 0; i < netsize; i++){
+            for(let i = 0; i < networkSize; i++){
                 index[network[i][3]] = i;
             }
 
-            for(let i = 0, k=0; i < netsize; i++){
+            for(let i = 0, k=0; i < networkSize; i++){
                 const j = index[i];
                 map[k++] = network[j][0];
                 map[k++] = network[j][1];
@@ -414,6 +416,8 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
             let shortestIndex1 = -1;
             let shortestIndex2 = -1;
 
+            //technically this has a bug, in that not all the distances are calculated
+            //(e.g. the last index total distance will always be 0), but somehow fixing this causes the results to be worse for images with wide ranges of color (most images), though slightly better on images with a reduced color palette
             for(let j=0;j<colorIndexesLength-1;j++){
                 const color1Index = colorIndexes[j];
                 const color1Red = palette[color1Index];
@@ -460,10 +464,19 @@ App.OptimizePaletteNeuQuant = (function(ArrayUtil){
         return reducedPalette;
     }
 
+    function getNetworkSize(numColors, startingSize){
+        let currentSize = startingSize;
+        while(currentSize < numColors){
+            currentSize *= 2;
+        }
+        return currentSize;
+    }
+
     function neuQuant(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
-        const quantizer = new NeuQuant();
+        const networkSize = getNetworkSize(numColors, colorQuantization.networkSize || 256);
+        const quantizer = new NeuQuant(networkSize);
         let palette = quantizer.buildColormap(pixels, colorQuantization.sample, progressCallback);
-        if(numColors < netsize){
+        if(numColors < networkSize){
             palette = reducePaletteSize(palette, numColors);
         }
         return palette;
