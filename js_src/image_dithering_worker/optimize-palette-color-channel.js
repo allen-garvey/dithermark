@@ -199,7 +199,7 @@ App.OptimizePaletteColorChannel = (function(PixelMath, Image){
             const secondKey = keyToMergeStartIndex === lastKeyIndex ? bucketKeys[0] : bucketKeys[keyToMergeStartIndex + 1];
             //delete key with lowest pixel count
             //use this for color hues, since that avoids them from getting grey by merging
-            if(shouldWrap){
+            if(shouldWrap && penaltyFuncId !== 0){
                 let keyToDelete = secondKey;
                 //use fraction because the closer the two keys are, the more pixels will be drawn to remaining key (in theory)
                 const fraction = 1 - (leastPenalty / maximumPenalty);
