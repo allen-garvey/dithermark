@@ -67,6 +67,7 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
     function kMeans(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
         //artiquant 2 balanced used instead of artiquant 3 balanced since it is slightly faster
         //with negligible loss is quality
+        //using neuquant with sample 30 and networkSize 64 (super low) is 2x faster by itself, but when used with k-means ends up taking nearly exactly the same time, and the quality is sometimes better, but mostly not
         const paletteBuffer = OptimizePalettePerceptual.medianCut(pixels, numColors, {'hueMix': 1.6}, imageWidth, imageHeight);
         const palette = bufferToPixelArray(paletteBuffer);
         const colorDitherModeKey = colorQuantization.distanceLuma ? 'LUMA' : 'RGB';
@@ -77,6 +78,7 @@ App.OptimizePaletteKMeans = (function(ColorDitherModes, ColorDitherModeFunctions
         progressCallback(10);
 
         //generally converges in at most 59 iterations, and usually around 20
+        //if it needs to go longer than 64, that generally doesn't result in noticeable improvement anyway
         const maximumIterations = 64;
         const halfway = Math.floor(maximumIterations / 2);
         const pixelBuffer = new Uint8ClampedArray(3);
