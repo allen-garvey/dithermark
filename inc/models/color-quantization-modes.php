@@ -78,6 +78,7 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('NeuQuant (Medium)', 'NeuQuant.neuQuant', ['sample' => 10]),
         new ColorQuantizationMode('NeuQuant (Medium alt)', 'NeuQuant.neuQuant', ['sample' => 10, 'networkSize' => 128]),
         new ColorQuantizationMode('NeuQuant (Low)', 'NeuQuant.neuQuant', ['sample' => 30]),
+        new ColorQuantizationMode('NeuQuant (Low alt)', 'NeuQuant.neuQuant', ['sample' => 30, 'networkSize' => 128]),
         'K Means',
         new colorQuantizationMode('K Means (RGB)', 'KMeans.kMeans'),
         new colorQuantizationMode('K Means (Luma)', 'KMeans.kMeans', ['distanceLuma' => true]),
