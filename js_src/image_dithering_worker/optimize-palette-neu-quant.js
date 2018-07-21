@@ -22,7 +22,7 @@
  * (based on JavaScript port 2012 by Johan Nordberg)
  * https://github.com/jnordberg/gif.js/blob/master/src/TypedNeuQuant.js
  */
-App.OptimizePaletteNeuQuant = (function(){
+App.OptimizePaletteNeuQuant = (function(ArrayUtil){
     const netsize = 256; // number of colors returned - need to reduce this if palette size is less than this
     
     function NeuQuant() {
@@ -397,20 +397,21 @@ App.OptimizePaletteNeuQuant = (function(){
     //palette reduction suggestion from: https://scientificgems.wordpress.com/stuff/neuquant-fast-high-quality-image-quantization/
     //find the most similar colors and discard one
     function reducePaletteSize(palette, numColors){
-        const paletteLength = palette.length;
-        const numColorsToCut = paletteLength / 3 - numColors;
+        const numPaletteColors = palette.length / 3;
+        const numColorsToCut = numPaletteColors - numColors;
 
-        const colorIndexSet = new Set();
-        for(let i=0;i<paletteLength;i+=3){
-            colorIndexSet.add(i);
-        }
+        const colorIndexes = ArrayUtil.create(numPaletteColors, (i)=>{
+            return i * 3;
+        }, Uint16Array);
+        let colorIndexesLength = colorIndexes.length;
+        //keep track of color total distances, so when culling colors, we keep the color that has the greatest total
+        //distance from everything, as it will be the most unique
+        const colorTotalDistances = new Float32Array(colorIndexesLength);
 
         for(let i=0;i<numColorsToCut;i++){
-            const colorIndexes = [...colorIndexSet.keys()];
-            const colorIndexesLength = colorIndexes.length;
             let shortestDistance = Infinity;
             //shortestIndex1 only needed if we are reducing by averaging 2 closest indexes, instead of just discarding second
-            // let shortestIndex1 = -1;
+            let shortestIndex1 = -1;
             let shortestIndex2 = -1;
 
             for(let j=0;j<colorIndexesLength-1;j++){
@@ -418,6 +419,7 @@ App.OptimizePaletteNeuQuant = (function(){
                 const color1Red = palette[color1Index];
                 const color1Green = palette[color1Index+1];
                 const color1Blue = palette[color1Index+2];
+                let totalDistance = 0;
                 for(let k=j+1;k<colorIndexesLength;k++){
                     const color2Index = colorIndexes[k];
                     const color2Red = palette[color2Index];
@@ -425,33 +427,39 @@ App.OptimizePaletteNeuQuant = (function(){
                     const color2Blue = palette[color2Index+2];
 
                     const distance = lumaDistance(color1Red, color1Green, color1Blue, color2Red, color2Green, color2Blue);
+                    totalDistance += distance;
                     if(distance < shortestDistance){
                         shortestDistance = distance;
-                        // shortestIndex1 = color1Index;
-                        shortestIndex2 = color2Index;
+                        shortestIndex1 = j;
+                        shortestIndex2 = k;
 
                         if(distance === 0){
                             break;
                         }
                     }
                 }
+                colorTotalDistances[j] = totalDistance;
                 if(shortestDistance === 0){
                     break;
                 }
             }
-            colorIndexSet.delete(shortestIndex2);
+            //delete the index with shortest distance, as it is less unique
+            const keyToDelete = shortestDistance > 0 && colorTotalDistances[shortestIndex2] > colorTotalDistances[shortestIndex1] ? shortestIndex1 : shortestIndex2;
+            //delete key by swapping the last value with value at the index to be deleted
+            colorIndexesLength--;
+            colorIndexes[keyToDelete] = colorIndexes[colorIndexesLength];
+            //don't need to swap colorTotalDistances, since we reset it at each iteration of the loop
         }
-
         const reducedPalette = new Uint8Array(numColors * 3);
-        let reducedPaletteIndex = 0;
-        for(let colorIndex of colorIndexSet.keys()){
+        for(let i=0,reducedPaletteIndex=0;i<colorIndexesLength;i++){
+            let colorIndex = colorIndexes[i];
+            reducedPalette[reducedPaletteIndex++] = palette[colorIndex++];
+            reducedPalette[reducedPaletteIndex++] = palette[colorIndex++];
             reducedPalette[reducedPaletteIndex++] = palette[colorIndex];
-            reducedPalette[reducedPaletteIndex++] = palette[colorIndex+1];
-            reducedPalette[reducedPaletteIndex++] = palette[colorIndex+2];
         }
         return reducedPalette;
     }
-    
+
     function neuQuant(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
         const quantizer = new NeuQuant();
         let palette = quantizer.buildColormap(pixels, colorQuantization.sample, progressCallback);
@@ -460,8 +468,8 @@ App.OptimizePaletteNeuQuant = (function(){
         }
         return palette;
     }
-    
+
     return {
        neuQuant,
     };
-})();
+})(App.ArrayUtil);
