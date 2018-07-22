@@ -26,6 +26,7 @@
     "vue": "^2.5.9"
   },
   "devDependencies": {
+    "dithermark-vue-color": "^1.0.0",
     "google-closure-compiler-js": "^20180506.0.0",
     "gulp": "^3.9.1",
     "gulp-sass": "^3.2.1",

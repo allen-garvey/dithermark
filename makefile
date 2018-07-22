@@ -31,8 +31,8 @@ VUE_SRC=node_modules/vue/dist/vue.min.js
 VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
 
 #vue color picker
-VUE_COLOR_PICKER_DIR=./lib/dithermark-vue-color
-VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/dist/vue-color.min.js
+VUE_COLOR_PICKER_DIR=node_modules/dithermark-vue-color/dist
+VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/vue-color.min.js
 
 #css
 SASS_SRC=$(shell find ./sass -type f -name '*.scss')
