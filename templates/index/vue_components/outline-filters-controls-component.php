@@ -45,7 +45,7 @@
         </div>
         <?php IndexView::cyclePropertyList('selectedImageOutlineContourRadiusPercent', 'imageOutlineContourRadiusPercentages', 'outline radius'); ?>
     </div>
-    <div class="spread-content" v-if="isImageOutlineFilterActive &amp;&amp; isImageOutlineFixedColor &amp;&amp; areOutlineBlendModesSupported">
+    <div class="spread-content" v-if="isImageOutlineFilterActive &amp;&amp; areOutlineBlendModesSupported">
         <div class="label-align">
             <label for="image-outline-filter-blend-mode">Blend mode</label>
             <select id="image-outline-filter-blend-mode" v-model.number="selectedOutlineFixedColorBlendMode">

@@ -133,7 +133,7 @@
                 }
 
                 //merge on top of transformCanvas
-                const blendMode = this.isImageOutlineFixedColor && this.areOutlineBlendModesSupported ? this.imageOutlineFixedColorBlendModes[this.selectedOutlineFixedColorBlendMode].value : null;
+                const blendMode = this.areOutlineBlendModesSupported ? this.imageOutlineFixedColorBlendModes[this.selectedOutlineFixedColorBlendMode].value : null;
                 const outlineOpacity = this.outlineOpacities[this.selectedOutlineOpacity];
                 
                 this.requestOutlineDisplay((transformCanvas, transformCanvasWebGl)=>{
