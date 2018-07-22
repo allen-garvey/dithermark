@@ -57,6 +57,10 @@ App.ImageFiltersModel = (function(ArrayUtil){
         ];
     }
 
+    function outlineOpacities(){
+        return [1, 0.9, 0.8, 0.70, 0.6, 0.5, 0.4, 0.3, 0.2, 0.1];
+    }
+
     //used for blending fixed outline color with dithered output
     //values from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
     //all values might not be supported, so have to be tested first
@@ -109,6 +113,7 @@ App.ImageFiltersModel = (function(ArrayUtil){
         outlineEdgeThicknesses,
         outlineFilterTypes,
         outlineColorModes,
+        outlineOpacities,
         canvasBlendModes,
         canvasFilterValues,
         canvasFilterValuesDefaultIndex: canvasFilterValues.indexOf(100),

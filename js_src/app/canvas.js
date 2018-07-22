@@ -97,8 +97,9 @@ App.Canvas = (function(Polyfills){
     //since it would might clear them
     //globalCompositeOperation from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
     //otherwise known as blend mode
-    function mergeCanvases(canvasLayer1, canvasLayer0, globalCompositeOperation=null){
+    function mergeCanvases(canvasLayer1, canvasLayer0, secondLayerOpacity=1, globalCompositeOperation=null){
         const context = canvasLayer0.context;
+        context.globalAlpha = secondLayerOpacity;
         if(globalCompositeOperation){
             context.globalCompositeOperation = globalCompositeOperation;
             context.drawImage(canvasLayer1.canvas, 0, 0);
@@ -108,6 +109,8 @@ App.Canvas = (function(Polyfills){
         else{
             context.drawImage(canvasLayer1.canvas, 0, 0);
         }
+        //reset alpha
+        context.globalAlpha = 1;
     }
 
     //returns canvas blend mode to default value

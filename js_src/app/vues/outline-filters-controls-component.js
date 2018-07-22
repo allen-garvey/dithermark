@@ -12,6 +12,8 @@
                 selectedOutlineColorMode: 0,
                 imageOutlineTypes: ImageFiltersModel.outlineFilterTypes(),
                 selectedImageOutlineType: 0,
+                outlineOpacities: ImageFiltersModel.outlineOpacities(),
+                selectedOutlineOpacity: 0,
                 imageOutlineEdgeStrengths: ImageFiltersModel.outlineEdgeStrengths(),
                 selectedImageOutlineStrength: 2,
                 imageOutlineEdgeThicknesses: ImageFiltersModel.outlineEdgeThicknesses(),
@@ -98,6 +100,12 @@
                     this.displayImage();
                 }
             },
+            selectedOutlineOpacity: function(newValue, oldValue){
+                if(newValue !== oldValue){
+                    this.imageOutlineFilterAction();
+                    this.displayImage();
+                }
+            },
         },
         methods: {
             cyclePropertyList: VueMixins.cyclePropertyList,
@@ -126,10 +134,11 @@
 
                 //merge on top of transformCanvas
                 const blendMode = this.isImageOutlineFixedColor && this.areOutlineBlendModesSupported ? this.imageOutlineFixedColorBlendModes[this.selectedOutlineFixedColorBlendMode].value : null;
+                const outlineOpacity = this.outlineOpacities[this.selectedOutlineOpacity];
                 
                 this.requestOutlineDisplay((transformCanvas, transformCanvasWebGl)=>{
                     Canvas.copy(transformCanvas, outlineFilterCanvas);
-                    Canvas.merge(transformCanvasWebGl, outlineFilterCanvas, blendMode);
+                    Canvas.merge(transformCanvasWebGl, outlineFilterCanvas, outlineOpacity, blendMode);
                 });
             },
             imageContourFilterAction: function(){

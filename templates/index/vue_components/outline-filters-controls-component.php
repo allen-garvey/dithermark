@@ -54,6 +54,15 @@
         </div>
         <?php IndexView::cyclePropertyList('selectedOutlineFixedColorBlendMode', 'imageOutlineFixedColorBlendModes', 'blend mode'); ?>
     </div>
+    <div class="spread-content" v-if="isImageOutlineFilterActive">
+        <div class="label-align">
+            <label for="image-outline-filter-opacity">Opacity</label>
+            <select id="image-outline-filter-opacity" v-model.number="selectedOutlineOpacity">
+                <option v-for="(value, index) in outlineOpacities" :value="index">{{Math.round(value * 100)}}%</option>
+            </select>
+        </div>
+        <?php IndexView::cyclePropertyList('selectedOutlineOpacity', 'outlineOpacities', 'outline opacity'); ?>
+    </div>
     <div v-if="isImageOutlineFilterActive &amp;&amp; isImageOutlineFixedColor">
         <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="fixedOutlineColor" @input="colorPickerValueChanged" @ok="colorPickerDone" @cancel="colorPickerDone" />
         <div class="spread-content image-outline-color-input">
