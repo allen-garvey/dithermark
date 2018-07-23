@@ -36,8 +36,7 @@ VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/vue-color.min.js
 
 #css
 SASS_SRC=$(shell find ./sass -type f -name '*.scss')
-CSS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/styles
-CSS_OUTPUT=$(CSS_OUTPUT_DIR)/style.css
+CSS_OUTPUT=$(PUBLIC_HTML_DIR)/styles/style.css
 
 
 all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX)
@@ -69,9 +68,12 @@ $(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(J
 
 $(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_WORKER_TEMPLATE)
 	php $(JS_WORKER_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_WORKER_OUTPUT)
-	
+
+#have to touch CSS_OUTPUT, because gulp uses src modified time, instead of the time now
+#https://github.com/gulpjs/gulp/issues/1461
 $(CSS_OUTPUT): $(SASS_SRC)
 	npm run gulp
+	touch $(CSS_OUTPUT)
 
 $(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG) $(PHP_VIEWS)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
