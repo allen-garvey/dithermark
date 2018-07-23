@@ -256,9 +256,6 @@ App.BayerMatrix = (function(){
         return new Uint8Array([
              1, 2,
              2, 1,
- 
-             
-             
         ]);
     }
     
