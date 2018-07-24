@@ -29,7 +29,7 @@ App.Fs = (function(Canvas){
     function openImageFile(e, imageLoadFunc, errFunc) {
         const files = e.target.files;
         if(files.length < 1){
-            return errFunc('No files selected');;
+            return errFunc('No files selected');
         }
         const file = files[0];
         if(!file.type.startsWith('image/')){
