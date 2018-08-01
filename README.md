@@ -10,7 +10,7 @@ An interactive, in-browser demonstration of image dithering and color quantizati
 ## Dependencies for building
 
 * POSIX compatible operating system
-* GNU Make
+* make
 * PHP >= 7.0 (with `cli` extension)
 * Node >= 6.11
 * npm
