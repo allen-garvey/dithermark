@@ -4,14 +4,14 @@ PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
 #js source files
-JS_APP_SRC=$(shell find ./js_src/app -type f \( -name '*.js' -o -name '*.js.php' \))
-JS_WORKER_SRC=$(shell find ./js_src/image_dithering_worker -type f \( -name '*.js' -o -name '*.js.php' \))
-JS_SHARED_SRC=$(shell find ./js_src/shared -type f \( -name '*.js' -o -name '*.js.php' \))
+JS_APP_SRC != find ./js_src/app -type f \( -name '*.js' -o -name '*.js.php' \)
+JS_WORKER_SRC != find ./js_src/image_dithering_worker -type f \( -name '*.js' -o -name '*.js.php' \)
+JS_SHARED_SRC != find ./js_src/shared -type f \( -name '*.js' -o -name '*.js.php' \)
 
 #php source
-PHP_MODELS=$(shell find ./inc/models -type f -name '*.php')
-PHP_VIEWS=$(shell find ./inc/views -type f -name '*.php')
-PHP_TEMPLATES=$(shell find ./templates/index -type f -name '*.php')
+PHP_MODELS != find ./inc/models -type f -name '*.php'
+PHP_VIEWS != find ./inc/views -type f -name '*.php'
+PHP_TEMPLATES != find ./templates/index -type f -name '*.php'
 PHP_CONFIG=inc/config.php
 
 #JS source php builders
@@ -35,7 +35,7 @@ VUE_COLOR_PICKER_DIR=node_modules/dithermark-vue-color/dist
 VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/vue-color.min.js
 
 #css
-SASS_SRC=$(shell find ./sass -type f -name '*.scss')
+SASS_SRC != find ./sass -type f -name '*.scss'
 CSS_OUTPUT=$(PUBLIC_HTML_DIR)/styles/style.css
 
 
