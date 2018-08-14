@@ -1,4 +1,4 @@
-(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, Polyfills, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, ColorQuantizationModes, Palettes, UserSettings){
+(function(Vue, Canvas, Timer, Histogram, WorkerUtil, AlgorithmModel, WorkerHeaders, ColorPicker, ColorDitherModes, Constants, ColorQuantizationModes, Palettes, UserSettings){
     //canvas stuff
     let histogramCanvas;
 
@@ -377,4 +377,4 @@
     });
     
     
-})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.Polyfills, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.ColorQuantizationModes, App.ColorPalettes, App.UserSettings);
+})(window.Vue, App.Canvas, App.Timer, App.Histogram, App.WorkerUtil, App.AlgorithmModel, App.WorkerHeaders, App.ColorPicker, App.ColorDitherModes, App.Constants, App.ColorQuantizationModes, App.ColorPalettes, App.UserSettings);
