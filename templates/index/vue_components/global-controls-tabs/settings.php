@@ -9,7 +9,7 @@
                     </template>
                 </select>
             </label>
-            <?php IndexView::cyclePropertyList('currentEditorThemeIndex', 'editorThemes', 'theme'); ?>
+            <cycle-property-list model-name="theme" v-model="currentEditorThemeIndex" :array-length="editorThemes.length" />
         </div>
         <full-screen-mode-control/>
     </fieldset>

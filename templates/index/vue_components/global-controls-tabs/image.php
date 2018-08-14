@@ -13,7 +13,7 @@
                     <option v-for="(pixelateZoom, index) in pixelateImageZooms" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedPixelateImageZoom', 'pixelateImageZooms', 'pixelation value'); ?>
+            <cycle-property-list model-name="pixelation value" v-model="selectedPixelateImageZoom" :array-length="pixelateImageZooms.length" />
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <div class="label-align">
@@ -22,7 +22,7 @@
                     <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageBrightnessIndex', 'canvasFilterValues', 'brightness percentage'); ?>
+            <cycle-property-list model-name="brightness percentage" v-model="selectedImageBrightnessIndex" :array-length="canvasFilterValues.length" />
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <div class="label-align">
@@ -31,7 +31,7 @@
                     <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageContrastIndex', 'canvasFilterValues', 'contrast percentage'); ?>
+            <cycle-property-list model-name="contrast percentage" v-model="selectedImageContrastIndex" :array-length="canvasFilterValues.length" />
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <div class="label-align">
@@ -40,7 +40,7 @@
                     <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageSaturationIndex', 'canvasFilterValues', 'saturation percentage'); ?>
+            <cycle-property-list model-name="saturation percentage" v-model="selectedImageSaturationIndex" :array-length="canvasFilterValues.length" />
         </div>
         <div class="spread-content" v-if="areCanvasFiltersEnabled">
             <label for="hue-rotation-range">Hue rotation</label>
@@ -57,7 +57,7 @@
                     <option v-for="(value, index) in bilateralFilterValues" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedBilateralFilterValueBefore', 'bilateralFilterValues', 'bilateral filter amount'); ?>
+            <cycle-property-list model-name="bilateral filter amount" v-model="selectedBilateralFilterValueBefore" :array-length="bilateralFilterValues.length" />
         </div>
         <div class="spread-content" v-if="isSmoothingEnabled">
             <div class="label-align">
@@ -66,7 +66,7 @@
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusBefore', 'imageSmoothingValues', 'smoothing value'); ?>
+            <cycle-property-list model-name="smoothing value" v-model="selectedImageSmoothingRadiusBefore" :array-length="imageSmoothingValues.length" />
         </div>
     </fieldset>
     <fieldset v-if="isWebglEnabled">
@@ -78,7 +78,7 @@
                     <option v-for="(value, index) in bilateralFilterValues" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedBilateralFilterValueAfter', 'bilateralFilterValues', 'bilateral filter amount'); ?>
+            <cycle-property-list model-name="bilateral filter amount" v-model="selectedBilateralFilterValueAfter" :array-length="bilateralFilterValues.length" />
         </div>
         <div class="spread-content" v-if="isSmoothingEnabled">
             <div class="label-align">
@@ -87,7 +87,7 @@
                     <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
                 </select>
             </div>
-            <?php IndexView::cyclePropertyList('selectedImageSmoothingRadiusAfter', 'imageSmoothingValues', 'smoothing value'); ?>
+            <cycle-property-list model-name="smoothing value" v-model="selectedImageSmoothingRadiusAfter" :array-length="imageSmoothingValues.length" />
         </div>
     </fieldset>
     <outline-filter-controls ref="outlineFilterControls" :display-image="zoomImage" :is-image-outline-filter-enabled="isImageOutlineFilterEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" :request-outline-display="onOutlineFilterDisplayRequested" :request-resources-for-outline="onResourcesForOutlineFilterRequested" />

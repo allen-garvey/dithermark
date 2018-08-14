@@ -3,7 +3,6 @@
         require_once('inc'.DIRECTORY_SEPARATOR.'config.php');
     }
     require_once(MODELS_PATH.'js-files.php');
-    require_once(VIEWS_PATH.'index-view.php');
 ?>
 
 <!DOCTYPE html>

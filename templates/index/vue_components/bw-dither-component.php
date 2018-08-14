@@ -14,7 +14,7 @@
                 </optgroup>
             </select>
         </label>
-        <?php IndexView::cyclePropertyList('selectedDitherAlgorithmIndex', 'ditherAlgorithms', 'algorithm'); ?>
+        <cycle-property-list model-name="algorithm" v-model="selectedDitherAlgorithmIndex" :array-length="ditherAlgorithms.length" />
     </div>
     <div class="spread-content threshold-container">
         <label>

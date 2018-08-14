@@ -1,4 +1,4 @@
-(function(Vue, Canvas, ImageFiltersModel, WebGlContourFilter, ColorPicker, WebGlEdgeFilter, WebGl, VueMixins){
+(function(Vue, Canvas, ImageFiltersModel, WebGlContourFilter, ColorPicker, WebGlEdgeFilter, WebGl){
     let outlineFilterCanvas;
 
     Vue.component('outline-filter-controls', {
@@ -108,7 +108,6 @@
             },
         },
         methods: {
-            cyclePropertyList: VueMixins.cyclePropertyList,
             getCanvas: function(){
                 return outlineFilterCanvas;
             },
@@ -191,4 +190,4 @@
             },
         },
     });
-})(window.Vue, App.Canvas, App.ImageFiltersModel, App.WebGlContourFilter, App.ColorPicker, App.WebGlEdgeFilter, App.WebGl, App.VueMixins);
+})(window.Vue, App.Canvas, App.ImageFiltersModel, App.WebGlContourFilter, App.ColorPicker, App.WebGlEdgeFilter, App.WebGl);

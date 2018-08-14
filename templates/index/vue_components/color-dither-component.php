@@ -13,7 +13,7 @@
                     </optgroup>
             </select>
         </label>
-        <?php IndexView::cyclePropertyList('selectedDitherAlgorithmIndex', 'ditherAlgorithms', 'algorithm'); ?>
+        <cycle-property-list model-name="algorithm" v-model="selectedDitherAlgorithmIndex" :array-length="ditherAlgorithms.length" />
     </div>
     <div class="spread-content">
         <label>Color comparison
@@ -23,7 +23,7 @@
                 </template>
             </select>
         </label>
-        <?php IndexView::cyclePropertyList('selectedColorDitherModeIndex', 'colorDitherModes', 'color mode'); ?>
+        <cycle-property-list model-name="color mode" v-model="selectedColorDitherModeIndex" :array-length="colorDitherModes.length" />
     </div>
     <div class="spread-content">
         <label>Color palette
@@ -39,7 +39,7 @@
                 </optgroup>
             </select>
         </label>
-        <?php IndexView::cyclePropertyList('selectedPaletteIndex', 'palettes', 'color palette', 1); ?>
+        <cycle-property-list model-name="color palette" v-model="selectedPaletteIndex" :array-length="palettes.length" :array-start-index.number="1" />
     </div>
     <div class="color-dither-number-of-colors-container">
         <label for="color_dither_num_colors_input">Color count</label>
@@ -81,7 +81,7 @@
                     </optgroup>
                 </select>
             </label>
-            <?php IndexView::cyclePropertyList('selectedColorQuantizationModeIndex', 'colorQuantizationModes', 'optimize palette algorithm'); ?>
+            <cycle-property-list model-name="optimize palette algorithm" v-model="selectedColorQuantizationModeIndex" :array-length="colorQuantizationModes.length" />
             <div class="optimize-palette-pending">{{selectedColorQuantizationPendingMessage}}</div>
             <button class="btn btn-primary btn-sm" @click="optimizePalette" :disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
         </div>

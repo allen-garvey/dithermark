@@ -1,4 +1,4 @@
-(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, VueMixins, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel){
+(function(Vue, Canvas, WorkerUtil, WebGl, WorkerHeaders, Constants, EditorThemes, UserSettings, AlgorithmModel, WebGlSmoothing, WebGlBilateralFilter, WebGlCanvasFilters, ImageFiltersModel){
     //webworker stuff
     let imageId = 0;
     let ditherWorkers;
@@ -536,8 +536,6 @@
 
                 callback(areControlsPinned, controlsContainerWidth, canvasMargin);
             },
-            cyclePropertyList: VueMixins.cyclePropertyList,
-            
             //webworker stuff
             workerMessageReceivedDispatcher: function(e){
                 const messageData = e.data;
@@ -605,4 +603,4 @@
             },
         }
     });
-})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.VueMixins, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel);
+})(window.Vue, App.Canvas, App.WorkerUtil, App.WebGl, App.WorkerHeaders, App.Constants, App.EditorThemes, App.UserSettings, App.AlgorithmModel, App.WebGlSmoothing, App.WebGlBilateralFilter, App.WebGlCanvasFilters, App.ImageFiltersModel);
