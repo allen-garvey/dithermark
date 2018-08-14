@@ -10,7 +10,7 @@ JS_SHARED_SRC != find ./js_src/shared -type f \( -name '*.js' -o -name '*.js.php
 
 #php source
 PHP_MODELS != find ./inc/models -type f -name '*.php'
-PHP_VIEWS != find ./inc/views -type f -name '*.php'
+PHP_JS_FILES_LIST=./inc/models/js-files.php
 PHP_TEMPLATES != find ./templates/index -type f -name '*.php'
 PHP_CONFIG=inc/config.php
 
@@ -75,5 +75,5 @@ $(CSS_OUTPUT): $(SASS_SRC)
 	npm run gulp
 	touch $(CSS_OUTPUT)
 
-$(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG) $(PHP_VIEWS)
+$(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG) $(PHP_JS_FILES_LIST)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
