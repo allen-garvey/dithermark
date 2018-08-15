@@ -48,6 +48,8 @@ function colorQuantizationModesBase(): array{
         new ColorQuantizationMode('Hue wheel 4', 'Perceptual.monochrome', ['hueCount' => 4]),
         new ColorQuantizationMode('Hue wheel 5', 'Perceptual.monochrome', ['hueCount' => 5]),
         new ColorQuantizationMode('Hue wheel 6', 'Perceptual.monochrome', ['hueCount' => 6]),
+        new ColorQuantizationMode('Hue wheel 7', 'Perceptual.monochrome', ['hueCount' => 7]),
+        new ColorQuantizationMode('Hue wheel 8', 'Perceptual.monochrome', ['hueCount' => 8]),
         new ColorQuantizationMode('Hue wheel k', 'Perceptual.monochrome', ['hueCount' => -1]),
         'ChannelsQ',
         new ColorQuantizationMode('ChannelsQ (Balanced)', 'ColorChannel.colorChannel', ['greyMix' => 4, 'penaltyFuncId'=> 2]),
