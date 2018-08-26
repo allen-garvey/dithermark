@@ -36,3 +36,4 @@ scripts/*.json
 scripts/optimize-palette-notes.js
 public_html/api/unsplash.json
 lib/*
+/js_src/generated_output/*
