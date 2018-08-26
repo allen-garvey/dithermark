@@ -76,6 +76,7 @@
             define('JS_DITHER_WORKER_URL', JS_URL_BASE.'worker.js');
         }
     }
+    define('JS_BUNDLE_URL', JS_URL_BASE.'bundle.js');
     define('JS_VUE_URL', JS_URL_BASE.'vue.min.js');
     
     /*

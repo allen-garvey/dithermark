@@ -90,5 +90,5 @@
             <cycle-property-list model-name="smoothing value" v-model="selectedImageSmoothingRadiusAfter" :array-length="imageSmoothingValues.length" />
         </div>
     </fieldset>
-    <outline-filter-controls ref="outlineFilterControls" :display-image="zoomImage" :is-image-outline-filter-enabled="isImageOutlineFilterEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" :request-outline-display="onOutlineFilterDisplayRequested" :request-resources-for-outline="onResourcesForOutlineFilterRequested" />
+    <outline-filters-controls ref="outlineFilterControls" :display-image="zoomImage" :is-image-outline-filter-enabled="isImageOutlineFilterEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" :request-outline-display="onOutlineFilterDisplayRequested" :request-resources-for-outline="onResourcesForOutlineFilterRequested" />
 </div>

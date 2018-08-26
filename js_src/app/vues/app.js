@@ -1,5 +1,9 @@
-(function(Vue){
-    new Vue({
-        el: '#app',
-    });
-})(window.Vue);
+import Vue from 'vue';
+import DitherStudio from './dither-studio-component.js';
+
+new Vue({
+    el: '#app',
+    components: {
+        DitherStudio,
+    },
+});

@@ -1,8 +1,9 @@
-(function(Vue){
-    Vue.component('alerts', {
+
+export default {
+        name: 'alerts',
         template: document.getElementById('alerts-component'),
         props: ['is-webgl-enabled', 'loaded-image'],
-        data: function(){
+        data(){
             return {
                 showOpenImageErrorMessage: false,
                 openImageErrorMessage: null,
@@ -11,10 +12,10 @@
             };
         },
         computed: {
-            isImageLoaded: function(){
+            isImageLoaded(){
                 return this.loadedImage != null;
             },
-            webglWarningMessage: function(){
+            webglWarningMessage(){
                 //based on: https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
                 //for integers only
                 function formatInteger(d){
@@ -30,16 +31,15 @@
             },
         },
         watch: {
-            loadedImage: function(){
+            loadedImage(){
                 //everytime loadedImageChanges, reset webgl alert
                 this.showWebglWarningMessage = true;
                 //hide open image error message, since if image is opened,
                 //there must not have been an error
                 this.showOpenImageErrorMessage = false;
             },
-            openImageErrorMessage: function(){
+            openImageErrorMessage(){
                 this.showOpenImageErrorMessage = true;
             },
         },
-    });
-})(window.Vue);
+    };

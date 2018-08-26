@@ -24,221 +24,225 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-App.OptimizePaletteOctree = (function(ArrayUtil, Util, PixelMath){
-    const MAX_DEPTH = 8;
-    const MAX_CHILDREN = 8;
 
-    /**
-     * Octree Node Class
-     */
-    function OctreeNode(level, parent){
-        this.color = new Float32Array(3);
-        this.pixelCount = 0;
-        this.children = new Array(MAX_CHILDREN);
-        if(level < MAX_DEPTH - 1){
-            parent.addLevelNode(level, this);
-        }
+import ArrayUtil from '../shared/array-util.js';
+import PixelMath from '../shared/pixel-math.js';
+import Util from './optimize-palette-util.js';
+
+
+const MAX_DEPTH = 8;
+const MAX_CHILDREN = 8;
+
+/**
+ * Octree Node Class
+ */
+function OctreeNode(level, parent){
+    this.color = new Float32Array(3);
+    this.pixelCount = 0;
+    this.children = new Array(MAX_CHILDREN);
+    if(level < MAX_DEPTH - 1){
+        parent.addLevelNode(level, this);
     }
+}
 
-    OctreeNode.prototype.isLeaf = function(){
-        return this.pixelCount > 0;
-    };
+OctreeNode.prototype.isLeaf = function(){
+    return this.pixelCount > 0;
+};
 
-    OctreeNode.prototype.getLeafNodes = function(){
-        let ret = [];
-        this.children.forEach((node)=>{
-            if(node.isLeaf()){
-                ret.push(node);
-            }
-            else{
-                ret = ret.concat(node.getLeafNodes());
-            }
+OctreeNode.prototype.getLeafNodes = function(){
+    let ret = [];
+    this.children.forEach((node)=>{
+        if(node.isLeaf()){
+            ret.push(node);
+        }
+        else{
+            ret = ret.concat(node.getLeafNodes());
+        }
+    });
+    return ret;
+};
+
+OctreeNode.prototype.getNodesPixelCount = function(){
+    return this.children.reduce((sum, node)=>{
+        return sum + node.pixelCount;
+    }, this.pixelCount);
+};
+
+OctreeNode.prototype.addColor = function(color32, level, parent){
+    if(level >= MAX_DEPTH){
+        this.color[0] += PixelMath.color32Red(color32);
+        this.color[1] += PixelMath.color32Green(color32);
+        this.color[2] += PixelMath.color32Blue(color32);
+        this.pixelCount++;
+        return;
+    }
+    const index = this.getColorIndexForLevel(color32, level);
+    if(!this.children[index]){
+        this.children[index] = new OctreeNode(level, parent);
+    }
+    this.children[index].addColor(color32, level+1, parent);
+};
+
+OctreeNode.prototype.getColorIndexForLevel = function(color32, level){
+    let index = 0;
+    const mask = 128 >> level;
+    if(PixelMath.color32Red(color32) & mask){
+        index = 4;
+    }
+    if(PixelMath.color32Green(color32) & mask){
+        index |= 2;
+    }
+    if(PixelMath.color32Blue(color32) & mask){
+        index |= 1;
+    }
+    
+    return index;
+};
+OctreeNode.prototype.removeLeaves = function(){
+    let result = 0;
+
+    this.children.forEach((node)=>{
+        node.color.forEach((value, i)=>{
+            this.color[i] += value;
         });
-        return ret;
-    };
+        this.pixelCount += node.pixelCount;
+        result++;
+    });
 
-    OctreeNode.prototype.getNodesPixelCount = function(){
-        return this.children.reduce((sum, node)=>{
-            return sum + node.pixelCount;
-        }, this.pixelCount);
-    };
+    return result - 1;
+};
 
-    OctreeNode.prototype.addColor = function(color32, level, parent){
-        if(level >= MAX_DEPTH){
-            this.color[0] += PixelMath.color32Red(color32);
-            this.color[1] += PixelMath.color32Green(color32);
-            this.color[2] += PixelMath.color32Blue(color32);
-            this.pixelCount++;
-            return;
-        }
-        const index = this.getColorIndexForLevel(color32, level);
-        if(!this.children[index]){
-            this.children[index] = new OctreeNode(level, parent);
-        }
-        this.children[index].addColor(color32, level+1, parent);
-    };
+OctreeNode.prototype.getColor = function(){
+    const ret = new Uint8ClampedArray(3);
+    this.color.forEach((value, i)=>{
+        ret[i] = value / this.pixelCount;
+    });
+    return ret;
+};
 
-    OctreeNode.prototype.getColorIndexForLevel = function(color32, level){
-        let index = 0;
-        const mask = 128 >> level;
-        if(PixelMath.color32Red(color32) & mask){
-            index = 4;
-        }
-        if(PixelMath.color32Green(color32) & mask){
-            index |= 2;
-        }
-        if(PixelMath.color32Blue(color32) & mask){
-            index |= 1;
-        }
-        
-        return index;
-    };
-    OctreeNode.prototype.removeLeaves = function(){
-        let result = 0;
 
-        this.children.forEach((node)=>{
-            node.color.forEach((value, i)=>{
-                this.color[i] += value;
+/**
+ * Octree Quantizer Class
+ */
+function OctreeQuantizer(){
+    this.levels = ArrayUtil.create(MAX_DEPTH, ()=>{ return [];});
+    this.root = new OctreeNode(0, this);
+}
+OctreeQuantizer.prototype.getLeaves = function(){
+    //TODO check that this is correct
+    return this.root.getLeafNodes();
+};
+
+OctreeQuantizer.prototype.addLevelNode = function(level, node){
+    this.levels[level].push(node);
+};
+
+OctreeQuantizer.prototype.addColor = function(color){
+    this.root.addColor(color, 0, this);
+};
+
+//Make color palette with `colorCount` colors maximum
+OctreeQuantizer.prototype.makePalette = function(colorCount, sortFunc){
+    let leafCount = this.getLeaves().length;
+
+    // reduce nodes
+    // up to 8 leaves can be reduced here and the palette will have
+    // only 248 colors (in worst case) instead of expected 256 colors
+    for(let levelIndex=MAX_DEPTH-1;levelIndex>=0;levelIndex--){
+        if(leafCount <= colorCount){
+            break;
+        }
+        const level = this.levels[levelIndex];
+        if(!level){
+            continue;
+        }
+        const nodesOrder = level.map((node, i)=>{
+            let pixelCount = 0;
+            let childCount = 0;
+
+            node.children.forEach((child)=>{
+                childCount++;
+                pixelCount += child.pixelCount;
             });
-            this.pixelCount += node.pixelCount;
-            result++;
-        });
 
-        return result - 1;
-    };
-
-    OctreeNode.prototype.getColor = function(){
-        const ret = new Uint8ClampedArray(3);
-        this.color.forEach((value, i)=>{
-            ret[i] = value / this.pixelCount;
-        });
-        return ret;
-    };
-
-
-    /**
-     * Octree Quantizer Class
-     */
-    function OctreeQuantizer(){
-        this.levels = ArrayUtil.create(MAX_DEPTH, ()=>{ return [];});
-        this.root = new OctreeNode(0, this);
-    }
-    OctreeQuantizer.prototype.getLeaves = function(){
-        //TODO check that this is correct
-        return this.root.getLeafNodes();
-    };
-
-    OctreeQuantizer.prototype.addLevelNode = function(level, node){
-        this.levels[level].push(node);
-    };
-
-    OctreeQuantizer.prototype.addColor = function(color){
-        this.root.addColor(color, 0, this);
-    };
-
-    //Make color palette with `colorCount` colors maximum
-    OctreeQuantizer.prototype.makePalette = function(colorCount, sortFunc){
-        let leafCount = this.getLeaves().length;
-
-        // reduce nodes
-        // up to 8 leaves can be reduced here and the palette will have
-        // only 248 colors (in worst case) instead of expected 256 colors
-        for(let levelIndex=MAX_DEPTH-1;levelIndex>=0;levelIndex--){
+            return {
+                index: i,
+                pixels: pixelCount,
+                children: childCount,
+            };
+        }).sort(sortFunc);
+        for(let i=0;i<nodesOrder.length;i++){
+            const node = level[nodesOrder[i].index];
+            leafCount -= node.removeLeaves();
             if(leafCount <= colorCount){
                 break;
             }
-            const level = this.levels[levelIndex];
-            if(!level){
+        }
+        this.levels[levelIndex] = [];
+    }
+    //build palette
+    const palette = [];
+    const leaves = this.getLeaves();
+    for(let i=0;i<leaves.length;i++){
+        const node = leaves[i];
+        if(node.isLeaf()){
+            palette.push(node.getColor());
+        }
+        if(palette.length >= colorCount){
+            break;
+        }
+    }
+    return palette;
+};
+
+//prioritize colors that are frequent - many shades of frequent colors
+//non frequent colors will be culled
+function sortPrioritizeMajority2(a, b){
+    //b.pixels - a.pixels is not a typo, as this returns better results for most photos than the reverse
+    return a.children - b.children || b.pixels - a.pixels;
+}
+
+//prioritize colors that are infrequent - fewer shades of frequent colors
+//non frequent colors will still exist
+function sortPrioritizeMinority2(a, b){
+    return b.children - a.children || b.pixels - a.pixels;
+}
+
+//prioritize colors that are frequent - many shades of frequent colors
+//non frequent colors will be culled
+function sortPrioritizeMajority(a, b){
+    return a.pixels - b.pixels || a.children - b.children;
+}
+
+//prioritize colors that are infrequent - fewer shades of frequent colors
+//non frequent colors will still exist
+function sortPrioritizeMinority(a, b){
+    return b.pixels - a.pixels || b.children - a.children;
+}
+
+function octree(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
+    const pixelArray = new Uint32Array(pixels.buffer);
+    const octreeQuantizer = new OctreeQuantizer();
+    const half = Math.floor(pixelArray.length / 2);
+    //split for loop in half for the sake of progress callback
+    for(let i=0;i<2;i++){
+        const length = i === 0 ? half : pixelArray.length;
+        for(let j=i*half;j<length;j++){
+            const color32 = pixelArray[j];
+            //ignore transparent pixels
+            if(PixelMath.color32Alpha(color32) === 0){
                 continue;
             }
-            const nodesOrder = level.map((node, i)=>{
-                let pixelCount = 0;
-                let childCount = 0;
-
-                node.children.forEach((child)=>{
-                    childCount++;
-                    pixelCount += child.pixelCount;
-                });
-
-                return {
-                    index: i,
-                    pixels: pixelCount,
-                    children: childCount,
-                };
-            }).sort(sortFunc);
-            for(let i=0;i<nodesOrder.length;i++){
-                const node = level[nodesOrder[i].index];
-                leafCount -= node.removeLeaves();
-                if(leafCount <= colorCount){
-                    break;
-                }
-            }
-            this.levels[levelIndex] = [];
+            octreeQuantizer.addColor(color32);
         }
-        //build palette
-        const palette = [];
-        const leaves = this.getLeaves();
-        for(let i=0;i<leaves.length;i++){
-            const node = leaves[i];
-            if(node.isLeaf()){
-                palette.push(node.getColor());
-            }
-            if(palette.length >= colorCount){
-                break;
-            }
-        }
-        return palette;
-    };
-
-    //prioritize colors that are frequent - many shades of frequent colors
-    //non frequent colors will be culled
-    function sortPrioritizeMajority2(a, b){
-        //b.pixels - a.pixels is not a typo, as this returns better results for most photos than the reverse
-        return a.children - b.children || b.pixels - a.pixels;
+        progressCallback((i+1)*40);
     }
-
-    //prioritize colors that are infrequent - fewer shades of frequent colors
-    //non frequent colors will still exist
-    function sortPrioritizeMinority2(a, b){
-        return b.children - a.children || b.pixels - a.pixels;
-    }
-
-    //prioritize colors that are frequent - many shades of frequent colors
-    //non frequent colors will be culled
-    function sortPrioritizeMajority(a, b){
-        return a.pixels - b.pixels || a.children - b.children;
-    }
-
-    //prioritize colors that are infrequent - fewer shades of frequent colors
-    //non frequent colors will still exist
-    function sortPrioritizeMinority(a, b){
-        return b.pixels - a.pixels || b.children - a.children;
-    }
-
-    function octree(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback){
-        const pixelArray = new Uint32Array(pixels.buffer);
-        const octreeQuantizer = new OctreeQuantizer();
-        const half = Math.floor(pixelArray.length / 2);
-        //split for loop in half for the sake of progress callback
-        for(let i=0;i<2;i++){
-            const length = i === 0 ? half : pixelArray.length;
-            for(let j=i*half;j<length;j++){
-                const color32 = pixelArray[j];
-                //ignore transparent pixels
-                if(PixelMath.color32Alpha(color32) === 0){
-                    continue;
-                }
-                octreeQuantizer.addColor(color32);
-            }
-            progressCallback((i+1)*40);
-        }
-        const sortFuncs = [sortPrioritizeMinority, sortPrioritizeMinority2, sortPrioritizeMajority, sortPrioritizeMajority2];
-        const palette = octreeQuantizer.makePalette(numColors, sortFuncs[colorQuantization.sort]);
-        return Util.pixelArrayToBuffer(palette, numColors);
-    }
+    const sortFuncs = [sortPrioritizeMinority, sortPrioritizeMinority2, sortPrioritizeMajority, sortPrioritizeMajority2];
+    const palette = octreeQuantizer.makePalette(numColors, sortFuncs[colorQuantization.sort]);
+    return Util.pixelArrayToBuffer(palette, numColors);
+}
 
 
-    return {
-        octree
-    };
-})(App.ArrayUtil, App.OptimizePaletteUtil, App.PixelMath);
+export default {
+    octree
+};

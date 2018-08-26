@@ -10,6 +10,9 @@
     "gulp:release": "gulp release",
     "gulp:minifyApp": "gulp minifyApp",
     "gulp:minifyWorker": "gulp minifyWorker",
+    "webpack:dev": "webpack --config webpack.config.js",
+    "webpack:prod": "webpack --config webpack.production.config.js",
+    "webpack:watch": "webpack --config webpack.watch.config.js",
     "start": "http-server public_html -c-1 -p 3000"
   },
   "repository": {
@@ -24,11 +27,14 @@
   "homepage": "https://github.com/allen-garvey/dithermark#readme",
   "dependencies": {},
   "devDependencies": {
-    "vue": "2.5.17",
     "dithermark-vue-color": "1.1.0",
     "google-closure-compiler-js": "20180610.0.0",
     "gulp": "4.0.0",
     "gulp-sass": "4.0.1",
-    "http-server": "^0.11.1"
+    "http-server": "^0.11.1",
+    "vue": "2.5.17",
+    "webpack": "^4.17.1",
+    "webpack-cli": "^3.1.0",
+    "worker-loader": "^2.0.0"
   }
 }
