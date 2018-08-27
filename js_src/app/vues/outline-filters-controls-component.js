@@ -7,7 +7,7 @@ import WebGl from '../webgl.js';
 
 import CyclePropertyList from './cycle-property-list-component.js';
 import ColorPickerComponent from './color-picker-component.js';
-import ColorInput from './color-input-component.js';
+import ColorInput from './color-input-component.vue';
 
 
 let outlineFilterCanvas;

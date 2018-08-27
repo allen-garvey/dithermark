@@ -11,7 +11,6 @@ function vueComponentsWithTemplates(): array{
     $ret[] = 'cycle-property-list-component';
     $ret[] = 'unsplash-attribution-component';
     $ret[] = 'modal-prompt-component';
-    $ret[] = 'color-input-component';
     $ret[] = 'color-picker-component';
     $ret[] = 'outline-filters-controls-component';
     $ret[] = 'export-tab-component';
