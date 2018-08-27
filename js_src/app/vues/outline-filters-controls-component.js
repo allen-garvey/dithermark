@@ -5,7 +5,7 @@ import ColorPicker from '../color-picker.js';
 import WebGlEdgeFilter from '../webgl-edge-filter.js';
 import WebGl from '../webgl.js';
 
-import CyclePropertyList from './cycle-property-list-component.js';
+import CyclePropertyList from './cycle-property-list-component.vue';
 import ColorPickerComponent from './color-picker-component.js';
 import ColorInput from './color-input-component.vue';
 

@@ -12,7 +12,7 @@ import WorkerHeaders from '../../shared/worker-headers.js';
 import ColorPicker from '../color-picker.js';
 import WorkerUtil from '../worker-util.js';
 
-import CyclePropertyList from './cycle-property-list-component.js';
+import CyclePropertyList from './cycle-property-list-component.vue';
 import ColorPickerComponent from './color-picker-component.js';
 import ColorInput from './color-input-component.vue';
 import PrintPaletteButton from './print-palette-button-component.vue';

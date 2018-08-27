@@ -5,7 +5,6 @@ function vueComponentsWithTemplates(): array{
     if(ENABLE_TEXTURE_COMBINE){
         $ret[] = 'texture-combine-component';
     }
-    $ret[] = 'cycle-property-list-component';
     $ret[] = 'modal-prompt-component';
     $ret[] = 'color-picker-component';
     $ret[] = 'outline-filters-controls-component';

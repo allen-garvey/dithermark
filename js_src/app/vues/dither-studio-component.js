@@ -11,7 +11,7 @@ import WebGlBilateralFilter from '../webgl-bilateral-filter.js';
 import WebGlCanvasFilters from '../webgl-canvas-filters.js';
 import ImageFiltersModel from '../image-filters-model.js';
 
-import CyclePropertyList from './cycle-property-list-component.js';
+import CyclePropertyList from './cycle-property-list-component.vue';
 import Alerts from './alerts-component.vue';
 import ExportTab from './export-tab-component.js';
 import FullScreenModeControl from './full-screen-mode-control-component.js';

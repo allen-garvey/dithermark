@@ -1,10 +1,26 @@
+<template>
+    <div>
+        <button class="cycle-property-list-button btn btn-default btn-xs" :title="previousButtonTitle" @click="previousButtonClicked">&lt;</button>
+        <button class="cycle-property-list-button btn btn-default btn-xs" :title="nextButtonTitle" @click="nextButtonClicked">&gt;</button>
+    </div>
+</template>
+
+<script>
 export default {
     name: 'cycle-property-list', 
-    template: document.getElementById('cycle-property-list-component'),
     props: {
-        value: [Number],
-        modelName: [String],
-        arrayLength: [Number],
+        value: {
+            type: Number, 
+            // required: true //when app first starts, will be null for some values
+        },
+        modelName: {
+            type: String, 
+            required: true
+        },
+        arrayLength: {
+            type: Number, 
+            required: true
+        },
         arrayStartIndex: {
             type: Number,
             default: 0,
@@ -35,3 +51,4 @@ export default {
         },
     },
 };
+</script>
