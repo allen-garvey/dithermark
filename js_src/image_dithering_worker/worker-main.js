@@ -27,7 +27,7 @@ function histogramAction(imageId, messageHeader){
         histogramBuffer = WorkerUtil.createHistogramBuffer(256, messageTypeId, imageId);
         Histogram.createBwHistogram(pixels, histogramBuffer.array);   
     }
-    postMessage(histogramBuffer.buffer);
+    self.postMessage(histogramBuffer.buffer);
 }
 
 function bwDitherAction(imageId, messageHeader){
@@ -45,7 +45,7 @@ function bwDitherAction(imageId, messageHeader){
         selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
     });
     
-    postMessage(pixelBufferCopy.buffer);
+    self.postMessage(pixelBufferCopy.buffer);
 }
 
 function colorDitherAction(imageId, messageHeader){
@@ -63,12 +63,12 @@ function colorDitherAction(imageId, messageHeader){
         selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, colorDitherModeId, colors); 
         });
 
-    postMessage(pixelBufferCopy.buffer);
+    self.postMessage(pixelBufferCopy.buffer);
 }
 
 function createOptimizePaletteProgressCallback(imageId, colorQuantizationModeId, numColors, messageHeader){
     return (percentage)=>{
-        postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(imageId, colorQuantizationModeId, numColors, percentage));
+        self.postMessage(WorkerUtil.createOptimizePaletteProgressBuffer(imageId, colorQuantizationModeId, numColors, percentage));
     };
 }
 
@@ -87,10 +87,10 @@ function optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight){
         paletteBuffer = quantizationFunction(pixels, numColors, colorQuantization, imageWidth, imageHeight, progressCallback); 
     });
     
-    postMessage(WorkerUtil.createOptimizePaletteBuffer(imageId, paletteBuffer, messageTypeId, colorQuantizationId));
+    self.postMessage(WorkerUtil.createOptimizePaletteBuffer(imageId, paletteBuffer, messageTypeId, colorQuantizationId));
 }
 
-onmessage = (e)=>{
+self.onmessage = (e)=>{
     const messageData = e.data;
     
     //previous message was load image header, so load image
