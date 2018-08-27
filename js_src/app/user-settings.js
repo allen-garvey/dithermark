@@ -2,7 +2,7 @@
 
 import ColorPalettes from './color-palettes.js';
 
-
+const localStorage = window.localStorage;
 const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
 const USER_GLOBAL_SETTINGS_KEY = 'user-global-settings';
 
