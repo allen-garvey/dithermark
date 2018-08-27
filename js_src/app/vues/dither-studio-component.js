@@ -15,7 +15,7 @@ import CyclePropertyList from './cycle-property-list-component.vue';
 import Alerts from './alerts-component.vue';
 import ExportTab from './export-tab-component.js';
 import FullScreenModeControl from './full-screen-mode-control-component.js';
-import OpenTab from './open-tab-component.js';
+import OpenTab from './open-tab-component.vue';
 import OutlineFiltersControls from './outline-filters-controls-component.js';
 import UnsplashAttribution from './unsplash-attribution-component.vue';
 import ZoomBar from './zoom-bar-component.vue';
