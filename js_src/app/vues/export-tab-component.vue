@@ -1,3 +1,40 @@
+<template>
+    <div class="controls-tab-container">
+        <!-- //for some reason, using v-if here breaks saveImageFileType -->
+        <div v-show="shouldShowFileName">
+            <label>File name
+                <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" /><span>{{saveImageFileExtension}}</span>
+            </label>
+        </div>
+        <div>
+            <label class="radio-super-label">File type</label>
+            <label>png
+                <input type="radio" v-model="saveImageFileType" value="image/png" />
+            </label>
+            <label>jpeg
+                <input type="radio" v-model="saveImageFileType" value="image/jpeg" />
+            </label>
+        </div>
+        <div v-if="isImagePixelated">
+            <label class="radio-super-label">Size</label>
+            <label>Upsampled
+                <input type="radio" v-model.number="shouldUpsample" value="1" />
+            </label>
+            <label>Actual
+                <input type="radio" v-model.number="shouldUpsample" value="0" />
+            </label>
+        </div>
+        <div>
+            <button class="btn btn-success" @click="saveImage" :disabled="isCurrentlySavingImage" title="Save image to downloads folder">Save</button>
+        </div>
+        <div v-if="!shouldShowFileName" class="hint">
+            Image will open in a new tab. Right click / long press on the image to save
+        </div>
+    </div>
+</template>
+
+
+<script>
 import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js'
 import Fs from '../fs.js';
@@ -8,8 +45,16 @@ let saveImageLink;
 
 export default{
     name: 'export-tab',
-    template: document.getElementById('export-tab-component'),
-    props: ['save-requested', 'is-image-pixelated'],
+    props: {
+        saveRequested: {
+            type: Function,
+            required: true,
+        },
+        isImagePixelated: {
+            type: Boolean,
+            required: true,
+        },
+    },
     created(){
         saveImageCanvas = Canvas.create();
         this.shouldShowFileName = Fs.isDirectDownloadSupported(saveImageCanvas.canvas);
@@ -80,3 +125,4 @@ export default{
         },
     },
 };
+</script>
