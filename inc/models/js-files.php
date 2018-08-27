@@ -2,9 +2,6 @@
     
 function vueComponentsWithTemplates(): array{
     $ret = [];
-    if(ENABLE_PRINT_COLOR_PALETTE_BUTTON){
-        $ret[] = 'print-palette-button-component';
-    }
     if(ENABLE_TEXTURE_COMBINE){
         $ret[] = 'texture-combine-component';
     }
