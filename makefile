@@ -19,6 +19,8 @@ JS_APP_TEMPLATE=templates/app.js.php
 JS_WORKER_TEMPLATE=templates/worker.js.php
 
 #JS output files
+JS_WEBPACK_CONFIG=webpack.config.js
+JS_WEBPACK_RELEASE_CONFIG=webpack.production.config.js
 JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
 JS_BUNDLE_OUTPUT=$(JS_OUTPUT_DIR)/bundle.js
 JS_BUNDLE_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/bundle.min.js
@@ -87,10 +89,10 @@ $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT): $(JS_GENERATED_WORKER_CO
 
 ###### JS
 
-$(JS_BUNDLE_OUTPUT): $(JS_SRC)
+$(JS_BUNDLE_OUTPUT): $(JS_SRC) $(JS_WEBPACK_CONFIG)
 	npm run webpack:dev 
 
-$(JS_BUNDLE_OUTPUT_RELEASE): $(JS_SRC)
+$(JS_BUNDLE_OUTPUT_RELEASE): $(JS_SRC) $(JS_WEBPACK_RELEASE_CONFIG)
 	npm run webpack:prod
 
 #have to touch CSS_OUTPUT, because gulp uses src modified time, instead of the time now
