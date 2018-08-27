@@ -4,9 +4,7 @@ PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
 #js source files
-JS_APP_SRC != find ./js_src/app -type f \( -name '*.js' -o -name '*.js.php' \)
-JS_WORKER_SRC != find ./js_src/image_dithering_worker -type f \( -name '*.js' -o -name '*.js.php' \)
-JS_SHARED_SRC != find ./js_src/shared -type f \( -name '*.js' -o -name '*.js.php' \)
+JS_SRC != find ./js_src/app -type f -name '*.js'
 
 #php source
 PHP_MODELS != find ./inc/models -type f -name '*.php'
@@ -22,11 +20,8 @@ JS_WORKER_TEMPLATE=templates/worker.js.php
 
 #JS output files
 JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
-JS_APP_OUTPUT=$(JS_OUTPUT_DIR)/app.js
-JS_WORKER_OUTPUT=$(JS_OUTPUT_DIR)/worker.js
-#JS release output files
-JS_APP_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/app.min.js
-JS_WORKER_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/worker.min.js
+JS_BUNDLE_OUTPUT=$(JS_OUTPUT_DIR)/bundle.js
+JS_BUNDLE_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/bundle.min.js
 
 
 #JS generated modules
@@ -48,15 +43,6 @@ JS_GENERATED_WORKER_ALGORITHM_MODEL_OUTPUT=$(JS_GENERATED_OUTPUT_DIR)/worker/alg
 JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_SRC=$(JS_GENERATED_SRC_DIR)/worker/color-quantization-modes.js.php
 JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT=$(JS_GENERATED_OUTPUT_DIR)/worker/color-quantization-modes.js
 
-
-#VUE js files
-VUE_SRC=node_modules/vue/dist/vue.min.js
-VUE_OUTPUT=$(JS_OUTPUT_DIR)/vue.min.js
-
-#vue color picker
-VUE_COLOR_PICKER_DIR=node_modules/dithermark-vue-color/dist
-VUE_COLOR_PICKER_COMPILED=$(VUE_COLOR_PICKER_DIR)/vue-color.min.js
-
 #css
 SASS_SRC != find ./sass -type f -name '*.scss'
 CSS_OUTPUT=$(PUBLIC_HTML_DIR)/styles/style.css
@@ -64,12 +50,10 @@ CSS_OUTPUT=$(PUBLIC_HTML_DIR)/styles/style.css
 
 # all: $(JS_APP_OUTPUT) $(CSS_OUTPUT) $(VUE_OUTPUT) $(JS_WORKER_OUTPUT) $(HTML_INDEX) $(JS_GENERATED_APP_CONSTANTS_OUTPUT) $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_APP_COLOR_QUANTIZATION_MODES_OUTPUT) $(JS_GENERATED_WORKER_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT)
 
-all: $(CSS_OUTPUT) $(VUE_OUTPUT) $(HTML_INDEX) $(JS_GENERATED_APP_CONSTANTS_OUTPUT) $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_APP_COLOR_QUANTIZATION_MODES_OUTPUT) $(JS_GENERATED_WORKER_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT)
+all: $(CSS_OUTPUT) $(JS_BUNDLE_OUTPUT) $(HTML_INDEX) $(JS_GENERATED_APP_CONSTANTS_OUTPUT) $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_APP_COLOR_QUANTIZATION_MODES_OUTPUT) $(JS_GENERATED_WORKER_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT)
 
 #used when changing between PHP_BUILD_MODES
 reset:
-	rm -f $(JS_APP_OUTPUT)
-	rm -f $(JS_WORKER_OUTPUT)
 	rm $(HTML_INDEX)
 	rm -f $(JS_GENERATED_APP_CONSTANTS_OUTPUT) 
 	rm -f $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT) 
@@ -79,7 +63,7 @@ reset:
 
 #target specific variable
 release: PHP_BUILD_MODE=release
-release: $(HTML_INDEX) $(VUE_OUTPUT) $(CSS_OUTPUT) $(JS_WORKER_OUTPUT_RELEASE) $(JS_APP_OUTPUT_RELEASE)
+release: $(HTML_INDEX) $(CSS_OUTPUT) $(JS_BUNDLE_OUTPUT_RELEASE)
 
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
@@ -103,20 +87,11 @@ $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT): $(JS_GENERATED_WORKER_CO
 
 ###### JS
 
-$(JS_WORKER_OUTPUT_RELEASE): $(JS_WORKER_OUTPUT)
-	npm run gulp:minifyWorker
+$(JS_BUNDLE_OUTPUT): $(JS_SRC)
+	npm run webpack:dev 
 
-$(JS_APP_OUTPUT_RELEASE): $(JS_APP_OUTPUT)
-	npm run gulp:minifyApp
-
-$(VUE_OUTPUT): $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED)
-	cat $(VUE_SRC) $(VUE_COLOR_PICKER_COMPILED) > $(VUE_OUTPUT) 
-
-$(JS_APP_OUTPUT): $(JS_APP_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_APP_TEMPLATE)
-	php $(JS_APP_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_APP_OUTPUT)
-
-$(JS_WORKER_OUTPUT): $(JS_WORKER_SRC) $(JS_SHARED_SRC) $(PHP_CONFIG) $(PHP_MODELS) $(JS_WORKER_TEMPLATE)
-	php $(JS_WORKER_TEMPLATE) $(PHP_BUILD_MODE) > $(JS_WORKER_OUTPUT)
+$(JS_BUNDLE_OUTPUT_RELEASE): $(JS_SRC)
+	npm run webpack:prod
 
 #have to touch CSS_OUTPUT, because gulp uses src modified time, instead of the time now
 #https://github.com/gulpjs/gulp/issues/1461
