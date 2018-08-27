@@ -21,7 +21,7 @@ import UnsplashAttribution from './unsplash-attribution-component.vue';
 import ZoomBar from './zoom-bar-component.vue';
 import ModalPrompt from './modal-prompt-component.vue';
 import BwDitherSection from './bw-dither-component.vue';
-import ColorDitherSection from './color-dither-component.js';
+import ColorDitherSection from './color-dither-component.vue';
 
 
 //webworker stuff

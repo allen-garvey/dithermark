@@ -1,3 +1,95 @@
+<template>
+    <div class="dither-controls-container controls-panel">
+        <div class="histogram-container color-histogram-container" :style="{width: histogramColorWidth, height: histogramHeight}">
+            <canvas ref="histogramCanvas" :width="histogramColorWidth" :height="histogramHeight" title="Hue histogram"></canvas>
+        </div>
+        <div class="transform-button-container">
+            <button class="btn btn-success btn-sm"  @click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Dither</button>
+        </div>
+        <div class="spread-content">
+            <label>Algorithm
+                <select v-model="selectedDitherAlgorithmIndex">
+                        <optgroup v-for="(ditherGroup, groupIndex) in ditherGroups" :label="ditherGroup.title" :key="groupIndex">
+                            <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" :value="ditherGroup.start + index" :key="index">{{ ditherAlgorithm.title }}</option>
+                        </optgroup>
+                </select>
+            </label>
+            <cycle-property-list model-name="algorithm" v-model="selectedDitherAlgorithmIndex" :array-length="ditherAlgorithms.length" />
+        </div>
+        <div class="spread-content">
+            <label>Color comparison
+                <select v-model="selectedColorDitherModeIndex">
+                    <template v-for="(colorDitherMode, index) in colorDitherModes">
+                        <option :value="index" :key="index">{{colorDitherMode.title}}</option>
+                    </template>
+                </select>
+            </label>
+            <cycle-property-list model-name="color mode" v-model="selectedColorDitherModeIndex" :array-length="colorDitherModes.length" />
+        </div>
+        <div class="spread-content">
+            <label>Color palette
+                <select v-model="selectedPaletteIndex">
+                    <optgroup label="Scratch" v-if="palettes.length > 0">
+                        <option value="0">{{palettes[0].title}}</option>
+                    </optgroup>
+                    <optgroup label="Default palettes">
+                        <option v-for="(palette, index) in palettes.slice(1, defaultPalettesLength)" :value="index+1" :key="index">{{palette.title}}</option>
+                    </optgroup>
+                    <optgroup label="Saved palettes" v-if="palettes.length - defaultPalettesLength > 0">
+                        <option v-for="(palette, index) in palettes.slice(defaultPalettesLength)" :value="index+defaultPalettesLength" :key="index">{{palette.title}}</option>
+                    </optgroup>
+                </select>
+            </label>
+            <cycle-property-list model-name="color palette" v-model="selectedPaletteIndex" :array-length="palettes.length" :array-start-index.number="1" />
+        </div>
+        <div class="color-dither-number-of-colors-container">
+            <label for="color_dither_num_colors_input">Color count</label>
+                <input type="range" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" list="color_dither_num_colors_tickmarks" id="color_dither_num_colors_input" />
+            <datalist id="color_dither_num_colors_tickmarks">
+                <template v-for="n in (numColorsMax - numColorsMin + 1)">
+                    <option :value="n + numColorsMin - 1" :key="n + numColorsMin - 1"></option>
+                </template>
+            </datalist>
+            <input type="number" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" />
+        </div>
+        <fieldset>
+            <legend>Color palette</legend>
+            <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
+            <div class="colors-list-container" @dragover="handleColorDragover">
+                <template v-for="(color, i) in colors">
+                    <color-input id-prefix="color" :on-click="createColorInputClicked(i)" :is-selected="shouldShowColorPicker &amp;&amp; colorPickerColorIndex===i" :color-index.number="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" 
+                    :key="i" />
+                </template>
+            </div>
+            <div class="spread-content palette-buttons-container">
+                <div>
+                    <print-palette-button :colors="colors" />
+                    <button class="btn btn-danger btn-sm" v-show="currentPalette.isSaved" @click="deletePalette">Delete</button>
+                </div>
+                <!-- these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both -->
+                <button class="btn btn-primary btn-sm" v-show="currentPalette.isCustom" @click="savePalette">Save</button>
+                <button class="btn btn-default btn-sm" v-show="currentPalette.isSaved" @click="showRenamePalette">Rename</button>
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend>Optimize palette</legend>
+            <div class="spread-content optimize-palette-controls-container">
+                <label>Algorithm
+                    <select v-model="selectedColorQuantizationModeIndex">
+                        <optgroup v-for="(colorQuantizationGroup, groupIndex) in colorQuantizationGroups" :label="colorQuantizationGroup.title" :key="groupIndex">
+                            <option v-for="(colorQuantizationMode, index) in colorQuantizationModes.slice(colorQuantizationGroup.start, colorQuantizationGroup.start + colorQuantizationGroup.length)" :value="colorQuantizationGroup.start + index" :key="index">{{ colorQuantizationMode.title }}</option>
+                        </optgroup>
+                    </select>
+                </label>
+                <cycle-property-list model-name="optimize palette algorithm" v-model="selectedColorQuantizationModeIndex" :array-length="colorQuantizationModes.length" />
+                <div class="optimize-palette-pending">{{selectedColorQuantizationPendingMessage}}</div>
+                <button class="btn btn-primary btn-sm" @click="optimizePalette" :disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
+            </div>
+        </fieldset>
+    </div>
+</template>
+
+<script>
 import Vue from 'vue';
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import Constants from '../../generated_output/app/constants.js'
@@ -30,8 +122,32 @@ function optimizePaletteMemorizationKey(numColors, modeId){
 
 export default {
     name: 'color-dither-section',
-    template: document.getElementById('color-dither-component'),
-    props: ['isWebglEnabled', 'isLivePreviewEnabled', 'isColorPickerLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
+    props: {                                                                                                                                
+        isWebglEnabled: {                                                                                                                   
+            type: Boolean,                                                                                                                 
+            required: true,                                                                                                                
+        },                                                                                                                                 
+        isLivePreviewEnabled: {                                                                                                             
+            type: Boolean,                                                                                                                 
+            required: true,                                                                                                                 
+        },
+        isColorPickerLivePreviewEnabled: {
+            type: Boolean,
+            required: true,
+        },
+        requestCanvases: {
+            type: Function,
+            required: true,
+        },
+        requestDisplayTransformedImage: {
+            type: Function,
+            required: true,
+        },
+        ditherAlgorithms: {
+            type: Array,
+            required: true,
+        },
+    },
     components: {
         CyclePropertyList,
         'color-picker': ColorPickerComponent,
@@ -77,6 +193,9 @@ export default {
             colorPickerColorIndex: 0,
             hasColorPickerChangedTheColor: false,
             selectedPaletteIndexBeforeColorPickerOpened: 0,
+            //histogram
+            histogramColorWidth: Constants.histogramColorWidth+'px',
+            histogramHeight: Constants.histogramHeight+'px',
         };
     },
     computed: {
@@ -401,3 +520,4 @@ export default {
         },
     }
 };
+</script>
