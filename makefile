@@ -8,8 +8,6 @@ JS_SRC != find ./js_src -type f \( -name '*.js' -o -name '*.vue' \)
 PACKAGE_JSON=package.json
 
 #php source
-PHP_MODELS != find ./inc/models -type f -name '*.php'
-PHP_JS_FILES_LIST=./inc/models/js-files.php
 PHP_TEMPLATES != find ./templates/index -type f -name '*.php'
 PHP_CONFIG=inc/config.php
 PHP_DITHER_ALGORITHM_MODEL=inc/models/algorithm-model.php
@@ -99,5 +97,5 @@ $(CSS_OUTPUT): $(SASS_SRC)
 	npm run gulp
 	touch $(CSS_OUTPUT)
 
-$(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG) $(PHP_JS_FILES_LIST)
+$(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)

@@ -2,7 +2,6 @@
     if(!defined('IS_FASTCGI') || !IS_FASTCGI){
         require_once('inc'.DIRECTORY_SEPARATOR.'config.php');
     }
-    require_once(MODELS_PATH.'js-files.php');
 ?>
 
 <!DOCTYPE html>
@@ -32,11 +31,6 @@
                 <div id="app"></div>
             </main>
         </div>
-        <?php foreach(vueComponentsWithTemplates() as $componentName): ?>
-            <script type="vue/template" id="<?= $componentName; ?>">
-                <?php require(TEMPLATES_VUE_COMPONENTS_PATH."${componentName}.php"); ?>
-            </script>
-        <?php endforeach; ?>
         <?php //vertex shaders ?>
         <?php require(TEMPLATES_WEBGL_VERTEX_SHADERS_PATH.'vertex-shaders.php'); ?>
         <?php //shared fragment shaders ?>
