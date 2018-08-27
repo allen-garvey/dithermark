@@ -8,7 +8,7 @@
     }
 
     //get build mode from command-line arguments
-    if(!empty($argv) && count($argv) > 1 && $argv[1] === 'release'){
+    if(!IS_FASTCGI && !empty($argv) && count($argv) > 1 && $argv[1] === 'release'){
         define('BUILD_MODE_RELEASE', true);
     }
     else{
@@ -62,22 +62,13 @@
     define('APP_SUPPORT_SITE_URL_BASE', '//dithermark.com/');
     define('APP_SUPPORT_SITE_FAQ_PAGE_URL', APP_SUPPORT_SITE_URL_BASE.'faq');
 
-    if(IS_FASTCGI){
-        define('JS_APP_URL', JS_URL_BASE.'app.php');
-        define('JS_DITHER_WORKER_URL', JS_URL_BASE.'worker.php');
+
+    if(BUILD_MODE_RELEASE){
+        define('JS_BUNDLE_URL', JS_URL_BASE.'bundle.min.js');
     }
     else{
-        if(BUILD_MODE_RELEASE){
-            define('JS_APP_URL', JS_URL_BASE.'app.min.js');
-            define('JS_DITHER_WORKER_URL', JS_URL_BASE.'worker.min.js');
-        }
-        else{
-            define('JS_APP_URL', JS_URL_BASE.'app.js');
-            define('JS_DITHER_WORKER_URL', JS_URL_BASE.'worker.js');
-        }
+        define('JS_BUNDLE_URL', JS_URL_BASE.'bundle.js');
     }
-    define('JS_BUNDLE_URL', JS_URL_BASE.'bundle.js');
-    define('JS_VUE_URL', JS_URL_BASE.'vue.min.js');
     
     /*
     * JS application constants
