@@ -35,8 +35,8 @@
             <legend>Color substitution</legend>
             <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
             <div class="bw-color-replace-container">
-                <color-input label="Black" id-prefix="bw" :is-selected="shouldShowColorPicker &amp;&amp; colorPickerColorIndex===0" :on-click="createColorInputClicked(0)" :color-value="colorReplaceColors[0]" color-index.number="0" />
-                <color-input label="White" id-prefix="bw" :is-selected="shouldShowColorPicker &amp;&amp; colorPickerColorIndex===1" :on-click="createColorInputClicked(1)" :color-value="colorReplaceColors[1]" color-index.number="1" />
+                <color-input label="Black" id-prefix="bw" :is-selected="shouldShowColorPicker && colorPickerColorIndex===0" :on-click="createColorInputClicked(0)" :color-value="colorReplaceColors[0]" color-index.number="0" />
+                <color-input label="White" id-prefix="bw" :is-selected="shouldShowColorPicker && colorPickerColorIndex===1" :on-click="createColorInputClicked(1)" :color-value="colorReplaceColors[1]" color-index.number="1" />
                 <button class="btn btn-default btn-sm" @click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
             </div>
         </fieldset>
