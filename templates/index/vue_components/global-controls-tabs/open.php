@@ -1,1 +1,0 @@
-<open-tab :image-opened="loadImage" :open-image-error="onOpenImageError" :request-modal="showModalPrompt" />

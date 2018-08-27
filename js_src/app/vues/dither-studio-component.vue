@@ -1,3 +1,214 @@
+<template>
+    <div class="app-container">
+        <alerts ref="alertsContainer" :is-webgl-enabled="isWebglEnabled" :loaded-image="loadedImage" />
+        <div class="hint-container" v-if="!isImageLoaded">Open an image to begin</div>
+        <div class="controls">
+            <div ref="controlsContainer" class="controls-container">
+                <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
+                    <div class="tabs-container">
+                        <template v-for="(tab, index) in globalControlsTabs">
+                            <div class="tab" :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)">{{tab.name}}</div>
+                        </template>
+                    </div>
+                    <!-- Global controls tabs bodies -->
+                    <!-- Open tab -->
+                    <div v-show="activeControlsTab === 0">
+                        <open-tab :image-opened="loadImage" :open-image-error="onOpenImageError" :request-modal="showModalPrompt" />
+                    </div>
+                    <!-- Image tab -->
+                    <div v-show="activeControlsTab === 1">
+                        <div class="controls-tab-container">
+                            <div class="spread-content">
+                                <label>Show source image
+                                    <input type="checkbox" v-model="showOriginalImage"/>
+                                </label>
+                            </div>
+                            <fieldset>
+                                <legend>Filters <small>(pre dither)</small></legend>
+                                <div class="spread-content">
+                                    <div class="label-align">
+                                        <label for="pixelate-dropdown">Pixelate</label>
+                                        <select id="pixelate-dropdown" v-model.number="selectedPixelateImageZoom">
+                                            <option v-for="(pixelateZoom, index) in pixelateImageZooms" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="pixelation value" v-model="selectedPixelateImageZoom" :array-length="pixelateImageZooms.length" />
+                                </div>
+                                <div class="spread-content" v-if="areCanvasFiltersEnabled">
+                                    <div class="label-align">
+                                        <label for="brightness-dropdown">Brightness</label>
+                                        <select id="brightness-dropdown" v-model.number="selectedImageBrightnessIndex">
+                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="brightness percentage" v-model="selectedImageBrightnessIndex" :array-length="canvasFilterValues.length" />
+                                </div>
+                                <div class="spread-content" v-if="areCanvasFiltersEnabled">
+                                    <div class="label-align">
+                                        <label for="contrast-dropdown">Contrast</label>
+                                        <select id="contrast-dropdown" v-model.number="selectedImageContrastIndex">
+                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="contrast percentage" v-model="selectedImageContrastIndex" :array-length="canvasFilterValues.length" />
+                                </div>
+                                <div class="spread-content" v-if="areCanvasFiltersEnabled">
+                                    <div class="label-align">
+                                        <label for="saturation-dropdown">Saturation</label>
+                                        <select id="saturation-dropdown" v-model.number="selectedImageSaturationIndex">
+                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="saturation percentage" v-model="selectedImageSaturationIndex" :array-length="canvasFilterValues.length" />
+                                </div>
+                                <div class="spread-content" v-if="areCanvasFiltersEnabled">
+                                    <label for="hue-rotation-range">Hue rotation</label>
+                                    <input id="hue-rotation-range" type="range" list="hue-rotation-tickmarks" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
+                                    <input type="number" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
+                                    <datalist id="hue-rotation-tickmarks">
+                                        <option v-for="i in 12" :value="(i-1)*30"/>
+                                    </datalist>
+                                </div>
+                                <div class="spread-content" v-if="isWebglEnabled">
+                                    <div class="label-align">
+                                        <label for="denoise-before-dropdown">Denoise</label>
+                                        <select id="denoise-before-dropdown" v-model.number="selectedBilateralFilterValueBefore">
+                                            <option v-for="(value, index) in bilateralFilterValues" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="bilateral filter amount" v-model="selectedBilateralFilterValueBefore" :array-length="bilateralFilterValues.length" />
+                                </div>
+                                <div class="spread-content" v-if="isSmoothingEnabled">
+                                    <div class="label-align">
+                                        <label for="smoothing-before-dropdown">Smooth</label>
+                                        <select id="smoothing-before-dropdown" v-model.number="selectedImageSmoothingRadiusBefore">
+                                            <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="smoothing value" v-model="selectedImageSmoothingRadiusBefore" :array-length="imageSmoothingValues.length" />
+                                </div>
+                            </fieldset>
+                            <fieldset v-if="isWebglEnabled">
+                                <legend>Filters <small>(post dither)</small></legend>
+                                <div class="spread-content">
+                                    <div class="label-align">
+                                        <label for="denoise-after-dropdown">Denoise</label>
+                                        <select id="denoise-after-dropdown" v-model.number="selectedBilateralFilterValueAfter">
+                                            <option v-for="(value, index) in bilateralFilterValues" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="bilateral filter amount" v-model="selectedBilateralFilterValueAfter" :array-length="bilateralFilterValues.length" />
+                                </div>
+                                <div class="spread-content" v-if="isSmoothingEnabled">
+                                    <div class="label-align">
+                                        <label for="smoothing-after-dropdown">Smooth</label>
+                                        <select id="smoothing-after-dropdown" v-model.number="selectedImageSmoothingRadiusAfter">
+                                            <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
+                                        </select>
+                                    </div>
+                                    <cycle-property-list model-name="smoothing value" v-model="selectedImageSmoothingRadiusAfter" :array-length="imageSmoothingValues.length" />
+                                </div>
+                            </fieldset>
+                            <outline-filters-controls ref="outlineFilterControls" :display-image="zoomImage" :is-image-outline-filter-enabled="isImageOutlineFilterEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" :request-outline-display="onOutlineFilterDisplayRequested" :request-resources-for-outline="onResourcesForOutlineFilterRequested" />
+                        </div>
+                    </div>
+                    <!-- Settings tab -->
+                    <div v-show="activeControlsTab === 2">
+                        <div class="controls-tab-container">
+                            <fieldset>
+                                <legend>Appearance</legend>
+                                <div class="spread-content">
+                                    <label>Theme
+                                        <select v-model.number="currentEditorThemeIndex">
+                                            <template v-for="(theme, index) in editorThemes">
+                                                <option :value="index">{{theme.name}}</option>
+                                            </template>
+                                        </select>
+                                    </label>
+                                    <cycle-property-list model-name="theme" v-model="currentEditorThemeIndex" :array-length="editorThemes.length" />
+                                </div>
+                                <full-screen-mode-control/>
+                            </fieldset>
+                            <fieldset>
+                                <legend>Performance</legend>
+                                <div class="spread-content">
+                                    <label>Live update
+                                        <input type="checkbox" v-model="isLivePreviewEnabled" title="Immediately transform image when controls change"/>
+                                    </label>
+                                    <label v-if="isLivePreviewEnabled">Color picker live update
+                                        <input type="checkbox" v-model="isColorPickerLivePreviewEnabledSetting" title="Update colors immediately when selected in color picker"/>
+                                    </label>
+                                    <label>Shrink large images
+                                        <input type="checkbox" v-model="automaticallyResizeLargeImages" title="Automatically shrink large images when opening them"/>
+                                    </label>
+                                    <label v-if="isWebglSupported">Use WebGL
+                                        <input type="checkbox" v-model="isWebglEnabled" title="Use WebGL to speed up performance when possible"/>
+                                    </label>
+                                </div>
+                            </fieldset>
+                            <div v-if="!isLivePreviewEnabled" class="hint">
+                                To update the image output, use the &#8220;Dither&#8221; button
+                            </div>
+                            <div v-if="isLivePreviewEnabled && !isColorPickerLivePreviewEnabledSetting" class="hint">
+                                Colors won&#8217;t update until you press the color picker OK button
+                            </div>
+                            <div v-if="!automaticallyResizeLargeImages" class="hint">
+                                Opening very large images can result in poor performance or browser crashes
+                            </div>
+                            <div v-if="isWebglSupported && !isWebglEnabled" class="hint">
+                                With WebGL is disabled some image filters will not be available, and the Yliluoma 1 and Yliluoma 2 dithers will be very slow
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Export tab -->
+                    <div v-show="activeControlsTab === 3">
+                        <export-tab ref="exportTab" :save-requested="onSaveRequested" :is-image-pixelated="isImagePixelated" />
+                    </div>
+                </div>
+                <div class="super-dither-controls-container" v-show="isImageLoaded">
+                    <div class="tabs-container">
+                        <div class="tab" :class="{active: activeDitherComponentId === bwDitherComponentId}" @click="loadDitherTab(bwDitherComponentId)">BW Dither</div>
+                        <div class="tab" :class="{active: activeDitherComponentId === colorDitherComponentId}" @click="loadDitherTab(colorDitherComponentId)">Color Dither</div>
+                    </div>
+                    <div v-show="activeDitherComponentId === bwDitherComponentId">
+                        <bw-dither-section ref="bwDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(bwDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(bwDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" :dither-algorithms="bwDitherAlgorithms" />  
+                    </div>
+                    <div v-show="activeDitherComponentId === colorDitherComponentId">
+                        <color-dither-section ref="colorDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(colorDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(colorDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" @request-modal-prompt="showModalPrompt" :dither-algorithms="colorDitherAlgorithms" />
+                    </div>
+                </div>
+            </div>
+            <zoom-bar ref="zoomBar" v-show="isImageLoaded" :show-original-image="showOriginalImage" :zoom-changed="zoomImage" :request-dimensions-for-zoom-fit="onDimensionsRequestedForZoomFit" />
+        </div>
+        <!-- //if unsplash-attribution component is not in extra div, it breaks dithering for some reason -->
+        <div ref="unsplashAttributionContainer">
+            <unsplash-attribution v-if="loadedImage && loadedImage.unsplash" :unsplash-info="loadedImage.unsplash" />
+        </div>
+        <div class="image-canvas-supercontainer" v-show="isImageLoaded" :class="{'show-original': showOriginalImage}">
+            <div class="image-canvas-container">
+                <canvas ref="sourceCanvasOutput" class="source-output-canvas" v-show="showOriginalImage"></canvas>
+                <canvas ref="transformCanvasOutput"></canvas>
+            </div>
+        </div>
+        <modal-prompt ref="modalPromptComponent" />
+    </div>
+</template>
+
+<script>
+/*
+******************** Canvas Layers ******************************************
+*  saveImageCanvas: used when saving image, so pixelated images are scaled correctly 
+*  originalImageCanvas: original non-pixelated image loaded by user 
+*  sourceCanvas: pixelated-image used as source to dithers 
+*  transformCanvas: output from dither 
+*  outlineFilterCanvas: saves merged output of image outline filter and transform canvas; used instead of transform canvas when outline filter is active 
+*  transformCanvasWebgl: output from webgl, copied to transformCanvas because otherwise chrome will freak out when we change tabs 
+*  ditherOutputCanvas: saves output from dither, before post dither filters 
+* sourceCanvasOutput: original image as displayed to the user, after zoomed and pixelated 
+* transformCanvasOutput: output from dither as shown to user, after zoom 
+*/
+
+
 import Constants from '../../generated_output/app/constants.js'
 import AlgorithmModel from '../../generated_output/app/algorithm-model.js';
 import UserSettings from '../user-settings.js'
@@ -46,7 +257,6 @@ const tabsThatHaveSeenImageSet = new Set();
 
 export default {
     name: 'dither-studio',
-    template: document.getElementById('dither-studio-component'),
     components: {
         CyclePropertyList,
         Alerts,
@@ -642,3 +852,4 @@ export default {
         },
     }
 };
+</script>
