@@ -120,8 +120,8 @@
                                 <div class="spread-content">
                                     <label>Theme
                                         <select v-model.number="currentEditorThemeIndex">
-                                            <template v-for="(theme, index) in editorThemes" :key="index">
-                                                <option :value="index">{{theme.name}}</option>
+                                            <template v-for="(theme, index) in editorThemes">
+                                                <option :value="index" :key="index">{{theme.name}}</option>
                                             </template>
                                         </select>
                                     </label>
