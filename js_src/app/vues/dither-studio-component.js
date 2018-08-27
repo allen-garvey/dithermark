@@ -12,7 +12,7 @@ import WebGlCanvasFilters from '../webgl-canvas-filters.js';
 import ImageFiltersModel from '../image-filters-model.js';
 
 import CyclePropertyList from './cycle-property-list-component.js';
-import Alerts from './alerts-component.js';
+import Alerts from './alerts-component.vue';
 import ExportTab from './export-tab-component.js';
 import FullScreenModeControl from './full-screen-mode-control-component.js';
 import OpenTab from './open-tab-component.js';
