@@ -61,7 +61,7 @@ import WorkerUtil from '../worker-util.js';
 import CyclePropertyList from './cycle-property-list-component.vue';
 import ColorPickerComponent from './color-picker-component.vue';
 import ColorInput from './color-input-component.vue';
-import TextureCombineComponent from './texture-combine-component.vue';
+import TextureCombineComponent from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 
 
 //used for creating BW texture for webgl color replace

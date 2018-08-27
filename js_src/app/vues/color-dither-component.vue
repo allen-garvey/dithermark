@@ -107,7 +107,7 @@ import WorkerUtil from '../worker-util.js';
 import CyclePropertyList from './cycle-property-list-component.vue';
 import ColorPickerComponent from './color-picker-component.vue';
 import ColorInput from './color-input-component.vue';
-import PrintPaletteButton from './print-palette-button-component.vue';
+import PrintPaletteButton from 'print-palette-button'; //resolved in webpack config so not included in production builds
 
 
 //canvas stuff
