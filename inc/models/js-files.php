@@ -13,7 +13,6 @@ function vueComponentsWithTemplates(): array{
     $ret[] = 'modal-prompt-component';
     $ret[] = 'color-input-component';
     $ret[] = 'color-picker-component';
-    $ret[] = 'zoom-bar-component';
     $ret[] = 'outline-filters-controls-component';
     $ret[] = 'export-tab-component';
     $ret[] = 'open-tab-component';
