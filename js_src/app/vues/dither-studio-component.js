@@ -16,7 +16,7 @@ import Alerts from './alerts-component.vue';
 import ExportTab from './export-tab-component.vue';
 import FullScreenModeControl from './full-screen-mode-control-component.vue';
 import OpenTab from './open-tab-component.vue';
-import OutlineFiltersControls from './outline-filters-controls-component.js';
+import OutlineFiltersControls from './outline-filters-controls-component.vue';
 import UnsplashAttribution from './unsplash-attribution-component.vue';
 import ZoomBar from './zoom-bar-component.vue';
 import ModalPrompt from './modal-prompt-component.vue';
