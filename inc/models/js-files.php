@@ -2,9 +2,6 @@
     
 function vueComponentsWithTemplates(): array{
     $ret = [];
-    if(ENABLE_TEXTURE_COMBINE){
-        $ret[] = 'texture-combine-component';
-    }
     $ret[] = 'modal-prompt-component';
     $ret[] = 'color-picker-component';
     $ret[] = 'outline-filters-controls-component';

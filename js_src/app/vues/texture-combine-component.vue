@@ -1,10 +1,39 @@
+<template>
+    <div>
+        <button class="btn btn-default btn-sm" @click="saveTexture">Save texture</button>
+        <button class="btn btn-default btn-sm" v-show="savedTextures.length >= 3" @click="combineDitherTextures">Combine textures</button>
+    </div>
+</template>
+
+
+<script>
 import WebGl from '../webgl.js';
 import WebGlBwDither from '../webgl-bw-dither.js';
 
 export default{
     name: 'texture-combine',
-    template: document.getElementById('texture-combine-component'),
-    props: ['loadedImage', 'requestCanvases', 'requestDisplayTransformedImage', 'colorReplaceBlackPixel', 'colorReplaceWhitePixel'],
+    props: {
+        loadedImage: {
+            // type: Object, //might be null
+            required: true,
+        },
+        requestCanvases: {
+            type: Function,
+            required: true,
+        },
+        requestDisplayTransformedImage: {
+            type: Function,
+            required: true,
+        },
+        colorReplaceBlackPixel: {
+            type: Uint8ClampedArray,
+            required: true,
+        },
+        colorReplaceWhitePixel: {
+            type: Uint8ClampedArray,
+            required: true,
+        },
+    },
     data(){
         return {
             savedTextures: [],
@@ -36,3 +65,4 @@ export default{
         },
     }
 };
+</script>
