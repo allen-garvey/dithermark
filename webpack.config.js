@@ -10,7 +10,6 @@ module.exports = {
     },
     resolve: {
         alias: {
-            'vue': path.resolve(__dirname, 'node_modules/vue/dist/vue.js'),
             'app-performance-timer': path.resolve(__dirname, 'js_src/shared/timer.js'),
         }
     },
