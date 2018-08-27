@@ -1,7 +1,6 @@
 <template>
     <div class="controls-tab-container">
-        <!-- //for some reason, using v-if here breaks saveImageFileType -->
-        <div v-show="shouldShowFileName">
+        <div v-if="shouldShowFileName">
             <label>File name
                 <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" /><span>{{saveImageFileExtension}}</span>
             </label>
