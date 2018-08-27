@@ -1,4 +1,11 @@
+<template>
+    <div v-if="isFullScreenModeSupported">
+        <button class="btn btn-default btn-sm" @click="toggleFullScreenMode">{{isFullScreen ? 'Exit fullscreen' : 'Fullscreen mode'}}</button>
+    </div>
+</template>
 
+
+<script>
 const fullScreenPrefixes = Object.freeze({
     WEBKIT: Object.freeze({
         isEnabled: 'webkitFullscreenEnabled',
@@ -30,7 +37,6 @@ function getFullScreenPrefix(){
 
 export default{
     name: 'full-screen-mode-control',
-    template: document.getElementById('full-screen-mode-control-component'),
     created(){
         fullScreenPrefix = getFullScreenPrefix();
         if(fullScreenPrefix != null){
@@ -76,3 +82,4 @@ export default{
         },
     },
 };
+</script>

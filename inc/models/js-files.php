@@ -5,7 +5,6 @@ function vueComponentsWithTemplates(): array{
     $ret[] = 'modal-prompt-component';
     $ret[] = 'color-picker-component';
     $ret[] = 'outline-filters-controls-component';
-    $ret[] = 'full-screen-mode-control-component';
     $ret[] = 'bw-dither-component';
     $ret[] = 'color-dither-component';
     $ret[] = 'dither-studio-component';
