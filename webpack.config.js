@@ -1,5 +1,5 @@
 const path = require('path');
-// const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
     mode: "development",
@@ -16,10 +16,10 @@ module.exports = {
     },
     module: {
         rules: [
-            // {
-            //     test: /\.vue$/,
-            //     loader: 'vue-loader'
-            // },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader'
+            },
             {
                 test: /worker-main\.js$/,
                 loader: 'worker-loader',
@@ -31,6 +31,6 @@ module.exports = {
         ]
     },
     plugins: [
-        // new VueLoaderPlugin()
+        new VueLoaderPlugin()
     ],
 };
