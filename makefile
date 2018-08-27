@@ -5,6 +5,7 @@ HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
 #js source files
 JS_SRC != find ./js_src -type f \( -name '*.js' -o -name '*.vue' \)
+PACKAGE_JSON=package.json
 
 #php source
 PHP_MODELS != find ./inc/models -type f -name '*.php'
@@ -86,10 +87,10 @@ $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT): $(JS_GENERATED_WORKER_CO
 
 ###### JS
 
-$(JS_BUNDLE_OUTPUT): $(JS_SRC) $(JS_WEBPACK_CONFIG) $(JS_GENERATED_OUTPUT)
+$(JS_BUNDLE_OUTPUT): $(JS_SRC) $(JS_WEBPACK_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON)
 	npm run webpack:dev 
 
-$(JS_BUNDLE_OUTPUT_RELEASE): $(JS_SRC) $(JS_WEBPACK_RELEASE_CONFIG) $(JS_GENERATED_OUTPUT)
+$(JS_BUNDLE_OUTPUT_RELEASE): $(JS_SRC) $(JS_WEBPACK_RELEASE_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON)
 	npm run webpack:prod
 
 #have to touch CSS_OUTPUT, because gulp uses src modified time, instead of the time now
