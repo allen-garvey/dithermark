@@ -10,7 +10,7 @@ import WebGlBwDither from '../webgl-bw-dither.js';
 import WorkerUtil from '../worker-util.js';
 
 import CyclePropertyList from './cycle-property-list-component.vue';
-import ColorPickerComponent from './color-picker-component.js';
+import ColorPickerComponent from './color-picker-component.vue';
 import ColorInput from './color-input-component.vue';
 import TextureCombineComponent from './texture-combine-component.vue';
 

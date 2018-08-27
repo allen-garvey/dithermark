@@ -1,10 +1,28 @@
+<template>
+    <div v-scroll-into-view>
+        <div ref="colorPickerContainer" class="color-picker-container">
+            <photoshop-picker :value="selectedColor" :should-live-update="shouldLiveUpdate" @input="bubbleEvent('input', $event)" @ok="bubbleEvent('ok', $event)" @cancel="bubbleEvent('cancel', $event)" />
+        </div>
+        <div class="color-picker-overlay" @click="getAttention"></div>
+    </div>
+</template>
+
+<script>
 import VueColor from 'dithermark-vue-color';
 import ScrollIntoViewDirective from './scroll-into-view-directive.js';
 
 export default {
     name: 'color-picker',
-    template: document.getElementById('color-picker-component'),
-    props: ['selectedColor', 'shouldLiveUpdate'],
+    props: {
+        selectedColor: {
+            type: String,
+            required: true,
+        },
+        shouldLiveUpdate: {
+            type: Boolean,
+            required: true,
+        },
+    },
     components: {
         'photoshop-picker': VueColor.VueColor.Photoshop,
     },
@@ -29,3 +47,4 @@ export default {
         },
     },
 };
+</script>
