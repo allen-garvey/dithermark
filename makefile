@@ -4,7 +4,7 @@ PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
 #js source files
-JS_SRC != find ./js_src -type f -name '*.js'
+JS_SRC != find ./js_src -type f \( -name '*.js' -o -name '*.vue' \)
 
 #php source
 PHP_MODELS != find ./inc/models -type f -name '*.php'
