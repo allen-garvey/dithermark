@@ -1,3 +1,12 @@
+<template>
+    <div class="unsplash-attribution-container">
+        <p>
+            <a :href="photoUrl" target="_blank" rel="noopener noreferrer">Photo</a> by <a :href="authorUrl" target="_blank" rel="noopener noreferrer">{{authorName}}</a> on <a :href="unsplashUrl" target="_blank" rel="noopener noreferrer">Unsplash</a>
+        </p>
+    </div>
+</template>
+
+<script>
 //used to fulfill guidelines from:
 //https://medium.com/unsplash/unsplash-api-guidelines-attribution-4d433941d777
 
@@ -6,8 +15,12 @@ import Constants from '../../generated_output/app/constants.js';
 
 export default{
     name: 'unsplash-attribution',
-    template: document.getElementById('unsplash-attribution-component'),
-    props: ['unsplashInfo'],
+    props: {
+        unsplashInfo: {
+            type: Object,
+            required: true,
+        },
+    },
     computed: {
         unsplashQueryParam(){
             return `?utm_source=${Constants.unsplashReferralAppName}&utm_medium=referral`;
@@ -26,3 +39,4 @@ export default{
         },
     }
 };
+</script>

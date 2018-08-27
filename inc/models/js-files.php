@@ -9,7 +9,6 @@ function vueComponentsWithTemplates(): array{
         $ret[] = 'texture-combine-component';
     }
     $ret[] = 'cycle-property-list-component';
-    $ret[] = 'unsplash-attribution-component';
     $ret[] = 'modal-prompt-component';
     $ret[] = 'color-picker-component';
     $ret[] = 'outline-filters-controls-component';

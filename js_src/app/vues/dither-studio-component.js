@@ -17,7 +17,7 @@ import ExportTab from './export-tab-component.js';
 import FullScreenModeControl from './full-screen-mode-control-component.js';
 import OpenTab from './open-tab-component.js';
 import OutlineFiltersControls from './outline-filters-controls-component.js';
-import UnsplashAttribution from './unsplash-attribution-component.js';
+import UnsplashAttribution from './unsplash-attribution-component.vue';
 import ZoomBar from './zoom-bar-component.vue';
 import ModalPrompt from './modal-prompt-component.js';
 import BwDitherSection from './bw-dither-component.js';
