@@ -1,5 +1,54 @@
+<template>
+    <div class="dither-controls-container controls-panel">
+        <div class="histogram-container" :style="{width: histogramBwWidth, height: histogramHeight}">
+            <canvas ref="histogramCanvasIndicator" class="histogram-canvas-indicator" :width="histogramBwWidth" :height="histogramHeight" title="Lightness histogram"></canvas>
+            <canvas ref="histogramCanvas" class="histogram-canvas" :width="histogramBwWidth" :height="histogramHeight" title="Lightness histogram"></canvas>
+        </div>
+        <div class="transform-button-container">
+            <button class="btn btn-success btn-sm" @click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Dither</button>
+        </div>
+        <div class="spread-content">
+            <label>Algorithm
+                <select v-model="selectedDitherAlgorithmIndex">
+                    <optgroup v-for="(ditherGroup, outerIndex) in ditherGroups" :label="ditherGroup.title" :key="outerIndex">
+                        <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" :value="ditherGroup.start + index" :key="index">{{ ditherAlgorithm.title }}</option>
+                    </optgroup>
+                </select>
+            </label>
+            <cycle-property-list model-name="algorithm" v-model="selectedDitherAlgorithmIndex" :array-length="ditherAlgorithms.length" />
+        </div>
+        <div class="spread-content threshold-container">
+            <label>
+                Threshold
+                <input type="range" :min="thresholdMin" :max="thresholdMax" v-model.number="threshold" list="threshold-tickmarks"/>
+                <input type="number" :min="thresholdMin" :max="thresholdMax" v-model.number="threshold"/>
+                <datalist id="threshold-tickmarks">
+                    <option value="0"/>
+                    <option value="63"/>
+                    <option value="127"/>
+                    <option value="191"/>
+                    <option value="255"/>
+                </datalist>
+            </label>
+        </div>
+        <fieldset>
+            <legend>Color substitution</legend>
+            <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
+            <div class="bw-color-replace-container">
+                <color-input label="Black" id-prefix="bw" :is-selected="shouldShowColorPicker &amp;&amp; colorPickerColorIndex===0" :on-click="createColorInputClicked(0)" :color-value="colorReplaceColors[0]" color-index.number="0" />
+                <color-input label="White" id-prefix="bw" :is-selected="shouldShowColorPicker &amp;&amp; colorPickerColorIndex===1" :on-click="createColorInputClicked(1)" :color-value="colorReplaceColors[1]" color-index.number="1" />
+                <button class="btn btn-default btn-sm" @click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
+            </div>
+        </fieldset>
+            <texture-combine ref="textureCombineComponent" :loaded-image="loadedImage" :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"/>
+    </div>
+</template>
+
+
+<script>
 import Vue from 'vue';
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
+import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js';
 import Histogram from '../histogram.js';
 import WebGl from '../webgl.js';
@@ -25,8 +74,32 @@ let histogramCanvasIndicator;
 
 export default {
     name: 'bw-dither-section',
-    template: document.getElementById('bw-dither-component'),
-    props: ['isWebglEnabled', 'isLivePreviewEnabled', 'isColorPickerLivePreviewEnabled', 'requestCanvases', 'requestDisplayTransformedImage', 'ditherAlgorithms'],
+    props: {                                                                                                                                
+        isWebglEnabled: {                                                                                                                   
+            type: Boolean,                                                                                                                 
+            required: true,                                                                                                                
+        },                                                                                                                                 
+        isLivePreviewEnabled: {                                                                                                             
+            type: Boolean,                                                                                                                 
+            required: true,                                                                                                                 
+        },
+        isColorPickerLivePreviewEnabled: {
+            type: Boolean,
+            required: true,
+        },
+        requestCanvases: {
+            type: Function,
+            required: true,
+        },
+        requestDisplayTransformedImage: {
+            type: Function,
+            required: true,
+        },
+        ditherAlgorithms: {
+            type: Array,
+            required: true,
+        },
+    },
     components: {
         CyclePropertyList,
         'color-picker': ColorPickerComponent,
@@ -55,6 +128,9 @@ export default {
             shouldShowColorPicker: false,
             colorPickerColorIndex: 0,
             hasColorPickerChangedTheColor: false,
+            //histogram
+            histogramBwWidth: Constants.histogramBwWidth+'px',
+            histogramHeight: Constants.histogramHeight+'px',
         };
     },
     computed: {
@@ -286,3 +362,4 @@ export default {
         },
     }
 };
+</script>
