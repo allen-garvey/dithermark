@@ -3,7 +3,7 @@ const path = require('path');
 
 module.exports = {
     mode: "development",
-    entry: './js_src/app/vues/app.js',
+    entry: './js_src/index.js',
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, 'public_html/js')
