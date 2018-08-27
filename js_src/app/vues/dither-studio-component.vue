@@ -7,7 +7,7 @@
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
                     <div class="tabs-container">
                         <template v-for="(tab, index) in globalControlsTabs">
-                            <div class="tab" :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)">{{tab.name}}</div>
+                            <div class="tab" :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)" :key="index">{{tab.name}}</div>
                         </template>
                     </div>
                     <!-- Global controls tabs bodies -->
@@ -29,7 +29,7 @@
                                     <div class="label-align">
                                         <label for="pixelate-dropdown">Pixelate</label>
                                         <select id="pixelate-dropdown" v-model.number="selectedPixelateImageZoom">
-                                            <option v-for="(pixelateZoom, index) in pixelateImageZooms" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
+                                            <option v-for="(pixelateZoom, index) in pixelateImageZooms" :value="index" :key="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="pixelation value" v-model="selectedPixelateImageZoom" :array-length="pixelateImageZooms.length" />
@@ -38,7 +38,7 @@
                                     <div class="label-align">
                                         <label for="brightness-dropdown">Brightness</label>
                                         <select id="brightness-dropdown" v-model.number="selectedImageBrightnessIndex">
-                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
+                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index" :key="index">{{`${percentage}%`}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="brightness percentage" v-model="selectedImageBrightnessIndex" :array-length="canvasFilterValues.length" />
@@ -47,7 +47,7 @@
                                     <div class="label-align">
                                         <label for="contrast-dropdown">Contrast</label>
                                         <select id="contrast-dropdown" v-model.number="selectedImageContrastIndex">
-                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
+                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index" :key="index">{{`${percentage}%`}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="contrast percentage" v-model="selectedImageContrastIndex" :array-length="canvasFilterValues.length" />
@@ -56,7 +56,7 @@
                                     <div class="label-align">
                                         <label for="saturation-dropdown">Saturation</label>
                                         <select id="saturation-dropdown" v-model.number="selectedImageSaturationIndex">
-                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index">{{`${percentage}%`}}</option>
+                                            <option v-for="(percentage, index) in canvasFilterValues" :value="index" :key="index">{{`${percentage}%`}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="saturation percentage" v-model="selectedImageSaturationIndex" :array-length="canvasFilterValues.length" />
@@ -66,14 +66,14 @@
                                     <input id="hue-rotation-range" type="range" list="hue-rotation-tickmarks" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
                                     <input type="number" v-model.number="hueRotationValue" step="1" min="0" max="359"/>
                                     <datalist id="hue-rotation-tickmarks">
-                                        <option v-for="i in 12" :value="(i-1)*30"/>
+                                        <option v-for="i in 12" :value="(i-1)*30"  :key="i"/>
                                     </datalist>
                                 </div>
                                 <div class="spread-content" v-if="isWebglEnabled">
                                     <div class="label-align">
                                         <label for="denoise-before-dropdown">Denoise</label>
                                         <select id="denoise-before-dropdown" v-model.number="selectedBilateralFilterValueBefore">
-                                            <option v-for="(value, index) in bilateralFilterValues" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
+                                            <option v-for="(value, index) in bilateralFilterValues" :value="index" :key="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="bilateral filter amount" v-model="selectedBilateralFilterValueBefore" :array-length="bilateralFilterValues.length" />
@@ -82,7 +82,7 @@
                                     <div class="label-align">
                                         <label for="smoothing-before-dropdown">Smooth</label>
                                         <select id="smoothing-before-dropdown" v-model.number="selectedImageSmoothingRadiusBefore">
-                                            <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
+                                            <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index" :key="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="smoothing value" v-model="selectedImageSmoothingRadiusBefore" :array-length="imageSmoothingValues.length" />
@@ -94,7 +94,7 @@
                                     <div class="label-align">
                                         <label for="denoise-after-dropdown">Denoise</label>
                                         <select id="denoise-after-dropdown" v-model.number="selectedBilateralFilterValueAfter">
-                                            <option v-for="(value, index) in bilateralFilterValues" :value="index">{{imageFilterSteppedDropdownOption(index)}}</option>
+                                            <option v-for="(value, index) in bilateralFilterValues" :value="index" :key="index">{{imageFilterSteppedDropdownOption(index)}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="bilateral filter amount" v-model="selectedBilateralFilterValueAfter" :array-length="bilateralFilterValues.length" />
@@ -103,7 +103,7 @@
                                     <div class="label-align">
                                         <label for="smoothing-after-dropdown">Smooth</label>
                                         <select id="smoothing-after-dropdown" v-model.number="selectedImageSmoothingRadiusAfter">
-                                            <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
+                                            <option v-for="(smoothingValue, index) in imageSmoothingValues" :value="index" :key="index">{{imageFilterSteppedDropdownOption(smoothingValue)}}</option>
                                         </select>
                                     </div>
                                     <cycle-property-list model-name="smoothing value" v-model="selectedImageSmoothingRadiusAfter" :array-length="imageSmoothingValues.length" />
@@ -120,7 +120,7 @@
                                 <div class="spread-content">
                                     <label>Theme
                                         <select v-model.number="currentEditorThemeIndex">
-                                            <template v-for="(theme, index) in editorThemes">
+                                            <template v-for="(theme, index) in editorThemes" :key="index">
                                                 <option :value="index">{{theme.name}}</option>
                                             </template>
                                         </select>
