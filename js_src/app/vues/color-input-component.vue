@@ -12,7 +12,6 @@
 
 import ColorPicker from '../color-picker.js';
 import PixelMath from '../../shared/pixel-math.js';
-import { Script } from 'vm';
 
 
 export default {
