@@ -81,9 +81,9 @@ import ColorPicker from '../color-picker.js';
 import WebGlEdgeFilter from '../webgl-edge-filter.js';
 import WebGl from '../webgl.js';
 
-import CyclePropertyList from './cycle-property-list-component.vue';
-import ColorPickerComponent from './color-picker-component.vue';
-import ColorInput from './color-input-component.vue';
+import CyclePropertyList from './cycle-property-list.vue';
+import ColorPickerComponent from './color-picker.vue';
+import ColorInput from './color-input.vue';
 
 
 let outlineFilterCanvas;

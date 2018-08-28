@@ -58,9 +58,9 @@ import ColorPicker from '../color-picker.js';
 import WebGlBwDither from '../webgl-bw-dither.js';
 import WorkerUtil from '../worker-util.js';
 
-import CyclePropertyList from './cycle-property-list-component.vue';
-import ColorPickerComponent from './color-picker-component.vue';
-import ColorInput from './color-input-component.vue';
+import CyclePropertyList from './cycle-property-list.vue';
+import ColorPickerComponent from './color-picker.vue';
+import ColorInput from './color-input.vue';
 import TextureCombineComponent from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 
 

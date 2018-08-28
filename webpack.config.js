@@ -11,8 +11,8 @@ module.exports = {
     resolve: {
         alias: {
             'app-performance-timer': path.resolve(__dirname, 'js_src/shared/timer.js'),
-            'print-palette-button': path.resolve(__dirname, 'js_src/app/vues/print-palette-button-component.vue'),
-            'texture-combine-component': path.resolve(__dirname, 'js_src/app/vues/texture-combine-component.vue'),
+            'print-palette-button': path.resolve(__dirname, 'js_src/app/vues/print-palette-button.vue'),
+            'texture-combine-component': path.resolve(__dirname, 'js_src/app/vues/texture-combine.vue'),
         }
     },
     module: {
