@@ -18,8 +18,8 @@ JS_APP_TEMPLATE=templates/app.js.php
 JS_WORKER_TEMPLATE=templates/worker.js.php
 
 #JS output files
-JS_WEBPACK_CONFIG=webpack.config.js
-JS_WEBPACK_RELEASE_CONFIG=webpack.production.config.js
+JS_WEBPACK_CONFIG=build/webpack.config.js
+JS_WEBPACK_RELEASE_CONFIG=build/webpack.production.config.js
 JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
 JS_BUNDLE_OUTPUT=$(JS_OUTPUT_DIR)/bundle.js
 JS_BUNDLE_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/bundle.min.js

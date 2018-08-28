@@ -5,11 +5,11 @@
   "main": "public_html/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gulp": "gulp",
-    "gulp:watch": "gulp watch",
-    "webpack:dev": "webpack --config webpack.config.js",
-    "webpack:prod": "webpack --config webpack.production.config.js",
-    "webpack:watch": "webpack --config webpack.watch.config.js",
+    "gulp": "gulp --gulpfile build/gulpfile.js",
+    "gulp:watch": "gulp watch --gulpfile build/gulpfile.js",
+    "webpack:dev": "webpack --config build/webpack.config.js",
+    "webpack:prod": "webpack --config build/webpack.production.config.js",
+    "webpack:watch": "webpack --config build/webpack.watch.config.js",
     "start": "http-server public_html -c-1 -p 3000"
   },
   "repository": {
