@@ -11,7 +11,7 @@
 //color picker component for color dither color list
 
 import ColorPicker from '../color-picker.js';
-import PixelMath from '../../shared/pixel-math.js';
+import {lightness} from '../../shared/pixel-math-lite.js';
 
 
 export default {
@@ -62,8 +62,8 @@ export default {
         },
         //so text is visible on light color backgrounds
         textColor(){
-            const lightness = PixelMath.lightness(ColorPicker.pixelFromHex(this.colorValue));
-            if(lightness >= 127){
+            const colorLightness = lightness(ColorPicker.pixelFromHex(this.colorValue));
+            if(colorLightness >= 127){
                 return '#000';
             }
             return '#fff';

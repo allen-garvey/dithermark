@@ -1,17 +1,10 @@
 import Pixel from './pixel.js';
+import {lightness} from './pixel-math-lite.js';
 
 const R_INDEX = Pixel.R_INDEX;
 const G_INDEX = Pixel.G_INDEX;
 const B_INDEX = Pixel.B_INDEX;
 const A_INDEX = Pixel.A_INDEX;
-
-//copied into color-picker-component for now, so if you change it here,
-//change it there
-function pixelLightness(pixel){
-    const max = Math.max(pixel[0], pixel[1], pixel[2]);
-    const min = Math.min(pixel[0], pixel[1], pixel[2]);
-    return Math.floor((max + min) / 2.0);
-}
 
 function pixelLuma(pixel){
     return Math.round(pixel[R_INDEX] * 0.299 + pixel[G_INDEX] * 0.587 + pixel[B_INDEX] * 0.114);
@@ -176,7 +169,7 @@ function color32Alpha(color32){
 
 
 export default {
-    lightness: pixelLightness,
+    lightness,
     hue: pixelHue,
     luma: pixelLuma,
     hueDistance,
