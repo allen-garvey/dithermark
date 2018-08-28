@@ -2,7 +2,10 @@
   "name": "dithermark",
   "version": "1.0.0",
   "description": "Web application to interactively demonstrate image dithering algorithms",
-  "main": "public_html/index.html",
+  "main": "js_src/index.js",
+  "sideEffects": [
+    "./js_src/app/vues/*.vue"
+  ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "gulp": "gulp --gulpfile build/gulpfile.js",
