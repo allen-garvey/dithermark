@@ -9,7 +9,7 @@
 
 <script>
 import VueColor from 'dithermark-vue-color';
-import ScrollIntoViewDirective from './scroll-into-view-directive.js';
+import ScrollIntoViewDirective from './directives/scroll-into-view.js';
 
 export default {
     name: 'color-picker',

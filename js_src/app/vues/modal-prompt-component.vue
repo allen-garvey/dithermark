@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import FocusDirective from './focus-directive.js';
+import FocusDirective from './directives/focus.js';
 
 
 export default{
