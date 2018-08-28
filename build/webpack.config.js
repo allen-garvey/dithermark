@@ -29,6 +29,21 @@ module.exports = {
                     fallback: false,
                 },
             },
+            //we need the style loaders for dithermark-vue-color
+            //while if we used the pre-compiled module we wouldn't need to do this,
+            //however, that adds roughly 100k to bundle, (I'm assuming due to duplicate vue includes)
+            //so I think this is worth it
+            {
+                test: /\.css$/,
+                use: [
+                  {
+                    loader: 'vue-style-loader'
+                  },
+                  {
+                    loader: 'css-loader'
+                  }
+                ]
+            },
         ]
     },
     plugins: [
