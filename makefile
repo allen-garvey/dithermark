@@ -1,33 +1,15 @@
 PHP_BUILD_MODE=debug
 
+# HTML
 PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
 
-#js source files
-JS_SRC != find ./js_src -type f \( -name '*.js' -o -name '*.vue' \)
-PACKAGE_JSON=package.json
 
 #php source
 PHP_TEMPLATES != find ./templates/index -type f -name '*.php'
 PHP_CONFIG=inc/config.php
 PHP_DITHER_ALGORITHM_MODEL=inc/models/algorithm-model.php
 PHP_COLOR_QUANTIZATION_MODES=inc/models/color-quantization-modes.php
-
-#sass/css
-SASS_SRC != find ./sass -type f -name '*.scss'
-CSS_OUTPUT=$(PUBLIC_HTML_DIR)/styles/style.css
-
-#JS source php builders
-JS_APP_TEMPLATE=templates/app.js.php
-JS_WORKER_TEMPLATE=templates/worker.js.php
-
-#JS output files
-JS_WEBPACK_CONFIG=build/webpack.config.js
-JS_WEBPACK_RELEASE_CONFIG=build/webpack.production.config.js
-JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
-
-WEBPACK_BUNDLE_OUTPUT=$(JS_OUTPUT_DIR)/bundle.js $(CSS_OUTPUT)
-WEBPACK_BUNDLE_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/bundle.min.js $(CSS_OUTPUT)
 
 
 #JS generated modules
@@ -55,7 +37,11 @@ JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT=$(JS_GENERATED_OUTPUT_WORKER
 JS_GENERATED_OUTPUT=$(JS_GENERATED_APP_CONSTANTS_OUTPUT) $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_APP_COLOR_QUANTIZATION_MODES_OUTPUT) $(JS_GENERATED_WORKER_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT)
 
 
-all: $(WEBPACK_BUNDLE_OUTPUT) $(HTML_INDEX)
+# running webpack each time the recipe is run is technically inefficient,
+# but it's the only way to not have make warnings without the dev and production css output file names being different
+# also, we avoid the edge case where make won't trigger rebuild if packages in node_modules are updated by running webpack each time
+all: $(JS_GENERATED_OUTPUT) $(HTML_INDEX)
+	npm run webpack:dev
 
 install:
 	npm install
@@ -67,9 +53,10 @@ reset:
 	rm $(HTML_INDEX)
 	rm -f $(JS_GENERATED_OUTPUT)
 
-#target specific variable
+#see comment for all: about running webpack each time recipe is called
 release: PHP_BUILD_MODE=release
-release: $(HTML_INDEX) $(WEBPACK_BUNDLE_OUTPUT_RELEASE)
+release: $(HTML_INDEX) $(JS_GENERATED_OUTPUT)
+	npm run webpack:prod
 
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
@@ -91,13 +78,7 @@ $(JS_GENERATED_WORKER_ALGORITHM_MODEL_OUTPUT): $(JS_GENERATED_WORKER_ALGORITHM_M
 $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT): $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_SRC) $(PHP_CONFIG) $(PHP_COLOR_QUANTIZATION_MODES)
 	php $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_SRC) > $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT)
 
-###### JS
-
-$(WEBPACK_BUNDLE_OUTPUT): $(JS_SRC) $(JS_WEBPACK_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON) $(SASS_SRC)
-	npm run webpack:dev 
-
-$(WEBPACK_BUNDLE_OUTPUT_RELEASE): $(JS_SRC) $(JS_WEBPACK_RELEASE_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON) $(SASS_SRC)
-	npm run webpack:prod
+####### HTML
 
 $(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
