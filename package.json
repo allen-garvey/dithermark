@@ -8,8 +8,6 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "gulp": "gulp --gulpfile build/gulpfile.js",
-    "gulp:watch": "gulp watch --gulpfile build/gulpfile.js",
     "webpack:dev": "webpack --config build/webpack.config.js",
     "webpack:prod": "webpack --config build/webpack.production.config.js",
     "webpack:watch": "webpack --config build/webpack.watch.config.js",
@@ -29,8 +27,6 @@
   "devDependencies": {
     "css-loader": "^1.0.0",
     "dithermark-vue-color": "1.2.0",
-    "gulp": "4.0.0",
-    "gulp-sass": "4.0.1",
     "http-server": "^0.11.1",
     "mini-css-extract-plugin": "^0.4.2",
     "node-sass": "^4.9.3",
