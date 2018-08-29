@@ -13,6 +13,10 @@ PHP_CONFIG=inc/config.php
 PHP_DITHER_ALGORITHM_MODEL=inc/models/algorithm-model.php
 PHP_COLOR_QUANTIZATION_MODES=inc/models/color-quantization-modes.php
 
+#sass/css
+SASS_SRC != find ./sass -type f -name '*.scss'
+CSS_OUTPUT=$(PUBLIC_HTML_DIR)/styles/style.css
+
 #JS source php builders
 JS_APP_TEMPLATE=templates/app.js.php
 JS_WORKER_TEMPLATE=templates/worker.js.php
@@ -21,8 +25,9 @@ JS_WORKER_TEMPLATE=templates/worker.js.php
 JS_WEBPACK_CONFIG=build/webpack.config.js
 JS_WEBPACK_RELEASE_CONFIG=build/webpack.production.config.js
 JS_OUTPUT_DIR=$(PUBLIC_HTML_DIR)/js
-JS_BUNDLE_OUTPUT=$(JS_OUTPUT_DIR)/bundle.js
-JS_BUNDLE_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/bundle.min.js
+
+WEBPACK_BUNDLE_OUTPUT=$(JS_OUTPUT_DIR)/bundle.js $(CSS_OUTPUT)
+WEBPACK_BUNDLE_OUTPUT_RELEASE=$(JS_OUTPUT_DIR)/bundle.min.js $(CSS_OUTPUT)
 
 
 #JS generated modules
@@ -49,12 +54,8 @@ JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT=$(JS_GENERATED_OUTPUT_WORKER
 #list of all generated js output files
 JS_GENERATED_OUTPUT=$(JS_GENERATED_APP_CONSTANTS_OUTPUT) $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_APP_COLOR_QUANTIZATION_MODES_OUTPUT) $(JS_GENERATED_WORKER_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT)
 
-#css
-SASS_SRC != find ./sass -type f -name '*.scss'
-CSS_OUTPUT=$(PUBLIC_HTML_DIR)/styles/style.css
 
-
-all: $(CSS_OUTPUT) $(JS_BUNDLE_OUTPUT) $(HTML_INDEX)
+all: $(WEBPACK_BUNDLE_OUTPUT) $(HTML_INDEX)
 
 install:
 	npm install
@@ -68,7 +69,7 @@ reset:
 
 #target specific variable
 release: PHP_BUILD_MODE=release
-release: $(HTML_INDEX) $(CSS_OUTPUT) $(JS_BUNDLE_OUTPUT_RELEASE)
+release: $(HTML_INDEX) $(WEBPACK_BUNDLE_OUTPUT_RELEASE)
 
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
@@ -92,17 +93,11 @@ $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT): $(JS_GENERATED_WORKER_CO
 
 ###### JS
 
-$(JS_BUNDLE_OUTPUT): $(JS_SRC) $(JS_WEBPACK_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON)
+$(WEBPACK_BUNDLE_OUTPUT): $(JS_SRC) $(JS_WEBPACK_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON) $(SASS_SRC)
 	npm run webpack:dev 
 
-$(JS_BUNDLE_OUTPUT_RELEASE): $(JS_SRC) $(JS_WEBPACK_RELEASE_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON)
+$(WEBPACK_BUNDLE_OUTPUT_RELEASE): $(JS_SRC) $(JS_WEBPACK_RELEASE_CONFIG) $(JS_GENERATED_OUTPUT) $(PACKAGE_JSON) $(SASS_SRC)
 	npm run webpack:prod
-
-#have to touch CSS_OUTPUT, because gulp uses src modified time, instead of the time now
-#https://github.com/gulpjs/gulp/issues/1461
-$(CSS_OUTPUT): $(SASS_SRC)
-	npm run gulp
-	touch $(CSS_OUTPUT)
 
 $(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
