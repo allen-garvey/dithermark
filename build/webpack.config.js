@@ -1,9 +1,10 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-    mode: "development",
-    entry: `${__dirname}/../js_src/index.js`,
+    mode: 'development',
+    entry: [`${__dirname}/../js_src/index.js`, `${__dirname}/../sass/style.scss`,],
     output: {
         filename: 'bundle.js',
         path: path.resolve(__dirname, '../public_html/js')
@@ -29,24 +30,33 @@ module.exports = {
                     fallback: false,
                 },
             },
-            //we need the style loaders for dithermark-vue-color
-            //while if we used the pre-compiled module we wouldn't need to do this,
-            //however, that adds roughly 100k to bundle, (I'm assuming due to duplicate vue includes)
-            //so I think this is worth it
+            //besides the sass files, also extracts css from dithermark-vue-color
             {
-                test: /\.css$/,
+                test: /\.s?css$/,
                 use: [
-                  {
-                    loader: 'vue-style-loader'
-                  },
-                  {
-                    loader: 'css-loader'
-                  }
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: {
+                            minimize: true,
+                        },
+                    },
+                    {
+                        loader: 'sass-loader',
+                        options: {
+                            outputStyle: 'compressed',
+                        },
+                    },
                 ]
             },
         ]
     },
     plugins: [
-        new VueLoaderPlugin()
+        new VueLoaderPlugin(),
+        new MiniCssExtractPlugin({
+            filename: '../styles/style.css',
+        }),
     ],
 };

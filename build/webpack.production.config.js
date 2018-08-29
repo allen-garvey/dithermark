@@ -1,5 +1,6 @@
 const path = require('path');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const config = require('./webpack.config.js');
 
 config.mode = 'production';
@@ -24,7 +25,9 @@ config.optimization = {
                 warn: true,
                 mangle: true,
             },  
-        }),  
+        }),
+        //while the sass is already minified, we need this plugin so css extracted from dithermark-vue-color is minified too
+        new OptimizeCSSAssetsPlugin,
     ],
 };
 
