@@ -4,8 +4,7 @@ FROM alpine:3.8
 
 #########install needed packages
 RUN apk update
-#need openrc for rc-service https://github.com/gliderlabs/docker-alpine/issues/183
-RUN apk add make git nodejs npm nginx php7 php7-fpm php7-json php7-ctype openrc
+RUN apk add make git nodejs npm nginx php7 php7-fpm php7-json php7-ctype
 
 #########configure user for nginx
 RUN adduser -D -g 'www' www
@@ -17,14 +16,6 @@ RUN chown -R www:www /www
 WORKDIR /etc/nginx/
 RUN mv nginx.conf nginx.conf.original
 COPY nginx.conf .
-
-#########start nginx and php-fpm (already started)
-# RUN rc-service nginx start
-# RUN rc-service php-fpm7 start
-
-#########start nginx and php-fpm on system start
-RUN rc-update add nginx default
-RUN rc-update add php-fpm7 default
 
 #########setup project directories
 RUN mkdir -p /home/dithermark/Sites
@@ -39,3 +30,9 @@ RUN make
 
 #########expose server port
 EXPOSE 80
+
+#########startup script to start nginx and php-fpm
+WORKDIR /bin
+COPY start.sh .
+RUN chmod +x start.sh
+CMD ["start.sh"]
