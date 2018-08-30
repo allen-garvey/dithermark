@@ -1,0 +1,10 @@
+.DS_Store
+.directory
+Thumbs.db
+.fuse_hidden
+.fuse_hidden*
+*.sublime-project
+*.sublime-workspace
+**/.sass-cache/*
+.sass-cache
+.sass-cache/*
