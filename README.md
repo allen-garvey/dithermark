@@ -11,7 +11,7 @@ An interactive, in-browser demonstration of image dithering and color quantizati
 
 * POSIX compatible operating system
 * make
-* PHP >= 7.0 (with `cli` extension)
+* PHP >= 7.0 (with `cli`, `json` and `ctype` extensions)
 * Node >= 6.11
 * npm
 
