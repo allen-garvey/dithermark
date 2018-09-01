@@ -1,7 +1,7 @@
-import Image from './image.js';
-import Pixel from '../shared/pixel.js';
-import PixelMath from '../shared/pixel-math.js';
-import DitherUtil from '../shared/dither-util.js';
+import Image from '../image.js';
+import Pixel from '../../shared/pixel.js';
+import PixelMath from '../../shared/pixel-math.js';
+import DitherUtil from '../../shared/dither-util.js';
     
 /**
 * BW Dither stuff

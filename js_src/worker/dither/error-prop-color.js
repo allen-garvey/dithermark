@@ -1,5 +1,5 @@
-import Image from './image.js';
-import ColorDitherModeFunctions from './color-dither-mode-functions.js';
+import Image from '../image.js';
+import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
 import ErrorPropModel from './error-prop-model.js';
 
 

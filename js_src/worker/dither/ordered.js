@@ -1,10 +1,10 @@
-import Image from './image.js';
-import Pixel from '../shared/pixel.js';
-import PixelMath from '../shared/pixel-math.js';
-import DitherUtil from '../shared/dither-util.js';
-import ColorDitherModeFunctions from './color-dither-mode-functions.js';
-import ArrayUtil from '../shared/array-util.js';
-import Bayer from '../shared/bayer-matrix.js';
+import Image from '../image.js';
+import Pixel from '../../shared/pixel.js';
+import PixelMath from '../../shared/pixel-math.js';
+import DitherUtil from '../../shared/dither-util.js';
+import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
+import ArrayUtil from '../../shared/array-util.js';
+import Bayer from '../../shared/bayer-matrix.js';
 
     
 function createMatrix(dimensions, data){

@@ -1,6 +1,6 @@
-import Image from './image.js';
-import Pixel from '../shared/pixel.js';
-import PixelMath from '../shared/pixel-math.js';
+import Image from '../image.js';
+import Pixel from '../../shared/pixel.js';
+import PixelMath from '../../shared/pixel-math.js';
 import ErrorPropModel from './error-prop-model.js';
 
 
