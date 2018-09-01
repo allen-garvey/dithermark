@@ -23,6 +23,14 @@ This project uses `make` for building and generally makes assumptions that file 
 * (If you run into any errors at this point, first check that you have all the needed dependencies for the project. Then type `make reset` and `make` again, and see if that fixes your problem).
 * Type `npm start` to start a local development server, after which you should be able to view the site at [localhost:3000](http://localhost:3000)
 
+## Creating release build
+
+To create a release build (JavaScript is minified and logging and debugging features are disabled or removed)
+
+* Type `make reset`
+* Type `make release`
+* To reset everything, so you can create a debug build again, type `make reset` and `make`
+
 ## Errors with building older versions
 
 * If for some reason you are trying to build a very old version of this project (before `dithermark-vue-color` was added as an `npm` dependency) you might get a `make` error about `vue-color` missing. See `vue-color-missing-error.md` in the `docs` directory on how to fix this.
