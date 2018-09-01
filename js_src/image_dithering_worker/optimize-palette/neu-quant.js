@@ -23,7 +23,7 @@
  * https://github.com/jnordberg/gif.js/blob/master/src/TypedNeuQuant.js
  */
 
-import ArrayUtil from '../shared/array-util.js';
+import ArrayUtil from '../../shared/array-util.js';
 
 
 // networkSize is number of colors returned - need to reduce this if palette size is less than this

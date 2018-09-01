@@ -2,9 +2,9 @@
  * Perceptual median cut and perceptual uniform color quantization algorithms
  */
 
-import Image from './image.js';
-import ArrayUtil from '../shared/array-util.js';
-import PixelMath from '../shared/pixel-math.js';
+import Image from '../image.js';
+import ArrayUtil from '../../shared/array-util.js';
+import PixelMath from '../../shared/pixel-math.js';
 
     
 function createPopularityMap(pixels, numDistinctValues, pixelValueFunc){

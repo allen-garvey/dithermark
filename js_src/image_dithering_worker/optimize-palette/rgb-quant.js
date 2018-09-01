@@ -16,7 +16,7 @@
 //     colorDist: "euclidean",  // method used to determine color distance, can also be "manhattan"
 // };
 
-import PixelMath from '../shared/pixel-math.js';
+import PixelMath from '../../shared/pixel-math.js';
 import Util from './optimize-palette-util.js';
 
 

@@ -2,7 +2,7 @@
  * Color quantization vanilla median cut algorithm
 */
 
-import PixelMath from '../shared/pixel-math.js';
+import PixelMath from '../../shared/pixel-math.js';
 import Util from './optimize-palette-util.js';
 
 

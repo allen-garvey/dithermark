@@ -1,8 +1,8 @@
 
-import ColorDitherModes from '../shared/color-dither-modes.js';
-import ColorDitherModeFunctions from './color-dither-mode-functions.js';
-import OptimizePalettePerceptual from './optimize-palette-perceptual';
-import PixelMath from '../shared/pixel-math.js';
+import ColorDitherModes from '../../shared/color-dither-modes.js';
+import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
+import OptimizePalettePerceptual from './perceptual';
+import PixelMath from '../../shared/pixel-math.js';
 import Util from './optimize-palette-util.js';
 
 

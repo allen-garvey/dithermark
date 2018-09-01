@@ -2,8 +2,8 @@
  * Shared functions used by optimize palette algorithms
 */
 
-import ArrayUtil from '../shared/array-util.js';
-import PixelMath from '../shared/pixel-math.js';
+import ArrayUtil from '../../shared/array-util.js';
+import PixelMath from '../../shared/pixel-math.js';
 
 
 //turns JavaScript array of pixels into a single Uint8Array

@@ -2,7 +2,7 @@
  * Random palette color quantization
  */
 
-import ArrayUtil from '../shared/array-util.js';
+import ArrayUtil from '../../shared/array-util.js';
 
 
 function randomPalette(_pixels, numColors, _colorQuantization, _imageWidth, _imageHeight){

@@ -7,8 +7,8 @@
  * Seems to work particularly well at preserving gradients
  */
 
-import Image from './image.js';
-import PixelMath from '../shared/pixel-math.js';
+import Image from '../image.js';
+import PixelMath from '../../shared/pixel-math.js';
 
 
 function ChannelStats(statsBuffer, count){

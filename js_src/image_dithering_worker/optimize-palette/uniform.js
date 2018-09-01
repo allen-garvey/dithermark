@@ -2,9 +2,9 @@
  * Uniform palette color quantization
  */
 
-import ArrayUtil from '../shared/array-util.js';
-import PixelMath from '../shared/pixel-math.js';
-import Perceptual from './optimize-palette-perceptual.js';
+import ArrayUtil from '../../shared/array-util.js';
+import PixelMath from '../../shared/pixel-math.js';
+import Perceptual from './perceptual.js';
 
 
 function generateSaturations(numColors){

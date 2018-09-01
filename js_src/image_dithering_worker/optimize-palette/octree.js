@@ -25,8 +25,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import ArrayUtil from '../shared/array-util.js';
-import PixelMath from '../shared/pixel-math.js';
+import ArrayUtil from '../../shared/array-util.js';
+import PixelMath from '../../shared/pixel-math.js';
 import Util from './optimize-palette-util.js';
 
 
