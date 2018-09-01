@@ -1,4 +1,4 @@
-# Running using docker
+# Running using Docker
 
 This guide will show you how to run the project locally using Docker
 
