@@ -7,10 +7,10 @@
 * Generated output: from <?= __FILE__."\n"; ?>
 */
 
-import Threshold from '../../image_dithering_worker/threshold.js';
-import OrderedDither from '../../image_dithering_worker/ordered-dither.js';
-import ErrorPropDither from '../../image_dithering_worker/error-prop-dither.js';
-import ErrorPropColorDither from '../../image_dithering_worker/error-prop-color-dither.js';
+import Threshold from '../../worker/threshold.js';
+import OrderedDither from '../../worker/ordered-dither.js';
+import ErrorPropDither from '../../worker/error-prop-dither.js';
+import ErrorPropColorDither from '../../worker/error-prop-color-dither.js';
 
 function ditherAlgorithms(){
     return {

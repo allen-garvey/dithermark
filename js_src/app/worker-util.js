@@ -4,7 +4,7 @@ import ColorPicker from './color-picker.js';
 import ArrayUtil from '../shared/array-util.js';
 
 //worker-loader https://github.com/webpack-contrib/worker-loader
-import DitherWorker from '../image_dithering_worker/worker-main.js'; //resolved to worker-loader in webpack config
+import DitherWorker from '../worker/worker-main.js'; //resolved to worker-loader in webpack config
 
 
 function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
