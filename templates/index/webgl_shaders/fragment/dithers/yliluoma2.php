@@ -3,6 +3,7 @@
      * Yliluoma's ordered dithering
      * from: https://bisqwit.iki.fi/story/howto/dither/jy/
      * based on: Yliluoma's ordered dithering algorithm 2
+     * Joel Yliluoma considers this algorithm released in the public domain
      */
 ?>
 <script type="webgl/fragment-shader" id="webgl-yliluoma2-color-fshader">

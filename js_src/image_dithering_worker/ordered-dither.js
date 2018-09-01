@@ -168,10 +168,9 @@ function createStarkColorOrderedDither(dimensions, bayerFuncName){
 /**
  * Yliluoma's ordered dithering
  * from: https://bisqwit.iki.fi/story/howto/dither/jy/
+ * adaptation of Yliluoma's ordered dithering algorithm 1
+ * Joel Yliluoma considers this algorithm released in the public domain
  */
-//
-//adaptation of: Yliluoma's ordered dithering algorithm 1
-//
 function yliluoma1EvaluateMixingError(pixelValue, mixValue, color1Value, color2Value, ratioFraction, pixelDistanceFunc){
     return pixelDistanceFunc(pixelValue, mixValue) + pixelDistanceFunc(color1Value, color2Value) * 0.1 * (Math.abs(ratioFraction - 0.5) + 0.5);
 }
@@ -243,9 +242,10 @@ function createYliluoma1ColorDither(dimensions, bayerFuncName){
     };
 }
 
-//
-//adaptation of: Yliluoma's ordered dithering algorithm 2
-//
+/*
+* adaptation of: Yliluoma's ordered dithering algorithm 2
+* Joel Yliluoma considers this algorithm released in the public domain
+*/
 function yliluoma2DeviseMixingPlan(pixel, colors, paletteValues, planBuffer, pixelValueFunc, pixelDistanceFunc){
     const colorsLength = colors.length;
     const pixelValue = pixelValueFunc(pixel);
