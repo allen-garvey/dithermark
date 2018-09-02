@@ -331,6 +331,7 @@ function createYliluoma2ColorDither(dimensions, bayerFuncName){
 /**
  * Hue lightness ordered dither stuff
  * based on: http://alex-charlton.com/posts/Dithering_on_the_GPU/
+ * Alex Charlton considers this algorithm released in the public domain
 */
 
 function lightnessStep(l){

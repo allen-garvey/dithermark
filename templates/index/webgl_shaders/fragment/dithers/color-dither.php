@@ -58,7 +58,9 @@
 <script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-declaration-fshader">
     <?php //ordered dither declaration gets concatenated here ?>
     
-    <?php //based on: http://alex-charlton.com/posts/Dithering_on_the_GPU/ ?>
+    <?php //based on: http://alex-charlton.com/posts/Dithering_on_the_GPU/
+        //Alex Charlton considers this algorithm released in the public domain
+     ?>
     float lightnessStep(float l){
         float lightnessSteps = 4.0;
         <?php //Quantize the lightness to one of `lightnessSteps` values ?>
