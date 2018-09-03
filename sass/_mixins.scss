@@ -15,3 +15,7 @@
         @content;
     }
 }
+
+@mixin background_color_transition{
+    transition: background-color 0.7s;
+}

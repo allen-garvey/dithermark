@@ -3,6 +3,7 @@
 //when variables are unset
 
 body{
+    @include background_color_transition;
     --main-bg-color: white;
     --pinned-controls-bg-color: white;
     --main-text-color: black;

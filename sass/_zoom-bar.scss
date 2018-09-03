@@ -2,6 +2,7 @@
 * zoom container
 */
 .zoom-bar-container{
+    @include background_color_transition;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
