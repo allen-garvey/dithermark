@@ -40,9 +40,9 @@ body{
 .editor-dark{
     //tint of magenta #FF00FF
     color: #f0eff0;
-    background-color: #333;
-    --main-bg-color: #333;
-    --pinned-controls-bg-color: #444; //this is intentionally different from the background color, so controls are slightly lighter
+    background-color: #444;
+    --main-bg-color: #444;
+    --pinned-controls-bg-color: #555; //this is intentionally different from the background color, so controls are slightly lighter
     --main-text-color: #f0eff0;
     --main-text-color-rgb: 240, 239, 240;
     --disabled-text-color: #666;
