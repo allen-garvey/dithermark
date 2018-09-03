@@ -20,6 +20,7 @@
 @include pinned_controls_mq{
     .image-canvas-supercontainer{
         overflow-x: initial;
+        max-width: none;
     }
     
     .image-canvas-container{
