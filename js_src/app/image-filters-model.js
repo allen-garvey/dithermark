@@ -54,10 +54,12 @@ function outlineFilterTypes(){
 function outlineColorModes(){
     return [
         {title: 'Fixed', id: 1},
-        {title: 'Palette (HSL)', id: 2, distanceFuncPrefix: 'hsl2'},
-        {title: 'Palette (RGB)', id: 3, distanceFuncPrefix: 'rgb'},
-        {title: 'Palette (Luma)', id: 4, distanceFuncPrefix: 'luma'},
-        {title: 'Palette (Complement)', id: 5, distanceFuncPrefix: 'hsl2-complementary'},
+        {title: 'Palette (Hue)', id: 2, distanceFuncPrefix: 'hue'},
+        {title: 'Palette (Hue & Lightness)', id: 3, distanceFuncPrefix: 'hue-lightness'},
+        {title: 'Palette (HSL)', id: 4, distanceFuncPrefix: 'hsl2'},
+        {title: 'Palette (RGB)', id: 5, distanceFuncPrefix: 'rgb'},
+        {title: 'Palette (Luma)', id: 6, distanceFuncPrefix: 'luma'},
+        {title: 'Palette (Complement)', id: 7, distanceFuncPrefix: 'hsl2-complementary'},
     ];
 }
 
