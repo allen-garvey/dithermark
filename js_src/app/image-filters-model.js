@@ -57,9 +57,10 @@ function outlineColorModes(){
         {title: 'Palette (Hue)', id: 2, distanceFuncPrefix: 'hue'},
         {title: 'Palette (Hue & Lightness)', id: 3, distanceFuncPrefix: 'hue-lightness'},
         {title: 'Palette (HSL)', id: 4, distanceFuncPrefix: 'hsl2'},
-        {title: 'Palette (RGB)', id: 5, distanceFuncPrefix: 'rgb'},
-        {title: 'Palette (Luma)', id: 6, distanceFuncPrefix: 'luma'},
-        {title: 'Palette (Complement)', id: 7, distanceFuncPrefix: 'hsl2-complementary'},
+        {title: 'Palette (Lightness)', id: 5, distanceFuncPrefix: 'lightness'},
+        {title: 'Palette (RGB)', id: 6, distanceFuncPrefix: 'rgb'},
+        {title: 'Palette (Luma)', id: 7, distanceFuncPrefix: 'luma'},
+        {title: 'Palette (Complement)', id: 8, distanceFuncPrefix: 'hsl2-complementary'},
     ];
 }
 
