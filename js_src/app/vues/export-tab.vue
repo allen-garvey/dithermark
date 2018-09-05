@@ -42,6 +42,18 @@ import Fs from '../fs.js';
 let saveImageCanvas;
 let saveImageLink;
 
+
+function createSaveImageLink(){
+    const link = document.createElement('a');
+    //firefox needs the link attached to the body in order for downloads to work
+    //so display none in order to hide it
+    //https://stackoverflow.com/questions/38869328/unable-to-download-a-blob-file-with-firefox-but-it-works-in-chrome
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    return link;
+}
+
+
 export default{
     name: 'export-tab',
     props: {
@@ -104,7 +116,7 @@ export default{
                 Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl=null)=>{
                     //objectUrl will be null if we are using toBlob polyfill, which opens image in new tab
                     if(objectUrl){
-                        saveImageLink = saveImageLink || document.createElement('a');
+                        saveImageLink = saveImageLink || createSaveImageLink();
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
                         saveImageLink.click();
