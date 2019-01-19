@@ -58,6 +58,10 @@
     define('UNSPLASH_RANDOM_IMAGES_JSON', 'unsplash.json');
     define('UNSPLASH_API_URL', API_URL.UNSPLASH_RANDOM_IMAGES_JSON);
     define('UNSPLASH_DOWNLOAD_URL', API_URL.'unsplash-download.php');
+    //load UNSPLASH_DOWNLOAD_URL_PRODUCTION if file exists
+    if(BUILD_MODE_RELEASE && file_exists(INC_PATH.'unsplash-api-secret.php')){
+        require_once(INC_PATH.'unsplash-api-secret.php');
+    }
 
     define('APP_SUPPORT_SITE_URL_BASE', '//dithermark.com/');
     define('APP_SUPPORT_SITE_FAQ_PAGE_URL', APP_SUPPORT_SITE_URL_BASE.'faq');
