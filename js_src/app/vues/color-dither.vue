@@ -463,11 +463,11 @@ export default {
             if(colorIndex === undefined){
                 return;
             }
-            let swapIndex = colorIndex;
+            const swapIndex = colorIndex;
 
             if(this.draggedIndex != swapIndex){
-                let colorsCopy = this.colorsShadow.slice();
-                let draggedColor = colorsCopy.splice(this.draggedIndex, 1)[0];
+                const colorsCopy = this.colorsShadow.slice();
+                const draggedColor = colorsCopy.splice(this.draggedIndex, 1)[0];
                 colorsCopy.splice(swapIndex, 0, draggedColor);
                 this.colorsShadow = colorsCopy;
                 this.draggedIndex = swapIndex;
