@@ -50,7 +50,7 @@ install:
 
 #used when changing between PHP_BUILD_MODES
 reset:
-	rm $(HTML_INDEX)
+	rm -f $(HTML_INDEX)
 	rm -f $(JS_GENERATED_OUTPUT)
 
 #see comment for all: about running webpack each time recipe is called
