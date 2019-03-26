@@ -11,7 +11,7 @@
     "webpack:dev": "webpack --config build/webpack.config.js",
     "webpack:prod": "webpack --config build/webpack.production.config.js",
     "webpack:watch": "webpack --config build/webpack.watch.config.js",
-    "start": "http-server public_html -c-1 -p 3000"
+    "start": "webpack-dev-server --config build/webpack.config.js --open"
   },
   "repository": {
     "type": "git",
@@ -27,7 +27,6 @@
   "devDependencies": {
     "css-loader": "^2.1.1",
     "dithermark-vue-color": "1.2.0",
-    "http-server": "^0.11.1",
     "mini-css-extract-plugin": "^0.5.0",
     "node-sass": "^4.11.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
@@ -38,6 +37,7 @@
     "vue-template-compiler": "2.6.10",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
+    "webpack-dev-server": "^3.2.1",
     "worker-loader": "^2.0.0"
   }
 }
