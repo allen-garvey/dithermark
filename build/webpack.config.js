@@ -7,7 +7,7 @@ module.exports = {
     entry: [`${__dirname}/../js_src/index.js`, `${__dirname}/../sass/style.scss`,],
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, '../public_html/js')
+        path: path.resolve(__dirname, '../public_html/assets')
     },
     resolve: {
         alias: {
@@ -15,6 +15,11 @@ module.exports = {
             'print-palette-button': path.resolve(__dirname, '../js_src/app/vues/print-palette-button.vue'),
             'texture-combine-component': path.resolve(__dirname, '../js_src/app/vues/texture-combine.vue'),
         }
+    },
+    devServer: {
+        contentBase: path.join(__dirname, '../public_html'),
+        publicPath: 'http://localhost:3000/assets/',
+        port: 3000,
     },
     module: {
         rules: [
@@ -53,7 +58,7 @@ module.exports = {
     plugins: [
         new VueLoaderPlugin(),
         new MiniCssExtractPlugin({
-            filename: '../styles/style.css',
+            filename: '../assets/style.css',
         }),
     ],
 };

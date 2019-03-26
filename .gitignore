@@ -28,12 +28,13 @@ Thumbs.db
 *.zip
 public_html/js/*.js
 public_html/styles/*
+public_html/assets/*
 public_html/index.html
+public_html/api/unsplash.json
 *.rb
 sass/lib/*
 inc/unsplash-api-secret.php
 scripts/*.json
 scripts/optimize-palette-notes.js
-public_html/api/unsplash.json
 lib/*
 /js_src/generated_output/*
