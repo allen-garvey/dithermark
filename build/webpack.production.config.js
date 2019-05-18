@@ -1,5 +1,5 @@
 const path = require('path');
-const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const config = require('./webpack.config.js');
 
@@ -13,18 +13,10 @@ config.resolve.alias['texture-combine-component'] = path.resolve(__dirname, '../
 
 config.optimization = {
     minimizer: [  
-        new UglifyJsPlugin({  
+        //since we are overrided minimizer for OptimizeCSSAssetsPlugin we need to manually add terser
+        new TerserPlugin({
+            cache: true,
             parallel: true,
-            cache: true,  
-            uglifyOptions: {  
-                compress: {  
-                    ecma: 8,
-                    warnings: true,
-                },
-                ecma: 8,
-                warn: true,
-                mangle: true,
-            },  
         }),
         //while the sass is already minified, we need this plugin so css extracted from dithermark-vue-color is minified too
         new OptimizeCSSAssetsPlugin,
