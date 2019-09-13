@@ -3,18 +3,10 @@
  * if changing public functions, make sure to update timer-dummy.js for release builds
 */
 
-let timeInMilliseconds;
-if(performance){
-    timeInMilliseconds = ()=> {return performance.now();};
-}
-else{
-    timeInMilliseconds = ()=> {return Date.now();};
-}
-
 function timeFunctionBase(functionToTime, done){
-    const start = timeInMilliseconds();
+    const start = performance.now();
     functionToTime();
-    const end = timeInMilliseconds();
+    const end = performance.now();
     const seconds = (end - start) / 1000;
     done(seconds);
 }
