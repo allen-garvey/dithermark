@@ -165,7 +165,7 @@ function saveImage(canvas, fileType, callback){
 }
 
 //needed because using blob urls for some reason fails on iOS
-//I've already spent far too much time trying to get this to work, so if anyone feels like fixing this, be my guest
+//mentioned in: https://github.com/eligrey/FileSaver.js/issues/375
 //from: https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
 //will be false positive on IE11 or if user agent is spoofed, but is not a big deal,
 //since IE11 is not supported anyway, and if someone is spoofing the user agent they will
