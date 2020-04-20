@@ -25,7 +25,7 @@
   "homepage": "https://github.com/allen-garvey/dithermark#readme",
   "dependencies": {},
   "devDependencies": {
-    "css-loader": "^3.4.2",
+    "css-loader": "^3.5.2",
     "dithermark-vue-color": "1.2.0",
     "mini-css-extract-plugin": "^0.9.0",
     "node-sass": "^4.13.1",
@@ -33,9 +33,9 @@
     "sass-loader": "^8.0.2",
     "terser-webpack-plugin": "^2.3.5",
     "vue": "2.6.11",
-    "vue-loader": "15.9.0",
+    "vue-loader": "15.9.1",
     "vue-template-compiler": "2.6.11",
-    "webpack": "^4.42.0",
+    "webpack": "^4.42.1",
     "webpack-cli": "^3.3.11",
     "webpack-dev-server": "^3.10.3",
     "worker-loader": "^2.0.0"
