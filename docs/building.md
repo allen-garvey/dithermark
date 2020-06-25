@@ -15,7 +15,7 @@ This project uses `make` for building and generally makes assumptions that file 
 * POSIX compatible operating system (Linux, Unix, macOs)
 * make
 * PHP >= 7.0 (with `cli`, `json` and `ctype` extensions)
-* Node >= 6.11
+* Node >= 10.13
 * npm
 
 ## Getting Started
