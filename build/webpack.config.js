@@ -31,8 +31,7 @@ module.exports = {
                 test: /worker-main\.js$/,
                 loader: 'worker-loader',
                 options: { 
-                    inline: true, 
-                    fallback: false,
+                    inline: 'no-fallback',
                 },
             },
             //besides the sass files, also extracts css from dithermark-vue-color
