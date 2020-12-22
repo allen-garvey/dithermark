@@ -1,4 +1,4 @@
-FROM alpine:3.8
+FROM alpine:3.12
 
 # nginx with php-fpm config from https://wiki.alpinelinux.org/wiki/Nginx_with_PHP
 
