@@ -20,6 +20,7 @@ module.exports = {
         contentBase: path.join(__dirname, '../public_html'),
         publicPath: 'http://localhost:3000/assets/',
         port: 3000,
+        open: true,
     },
     module: {
         rules: [
