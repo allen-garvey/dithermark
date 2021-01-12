@@ -19,9 +19,7 @@
         <div class="spread-content">
             <label>Color comparison
                 <select v-model="selectedColorDitherModeIndex">
-                    <template v-for="(colorDitherMode, index) in colorDitherModes">
-                        <option :value="index" :key="index">{{colorDitherMode.title}}</option>
-                    </template>
+                    <option v-for="(colorDitherMode, index) in colorDitherModes" :value="index" :key="index">{{colorDitherMode.title}}</option>
                 </select>
             </label>
             <cycle-property-list model-name="color mode" v-model="selectedColorDitherModeIndex" :array-length="colorDitherModes.length" />
@@ -46,8 +44,8 @@
             <label for="color_dither_num_colors_input">Color count</label>
                 <input type="range" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" list="color_dither_num_colors_tickmarks" id="color_dither_num_colors_input" />
             <datalist id="color_dither_num_colors_tickmarks">
-                <template v-for="n in (numColorsMax - numColorsMin + 1)">
-                    <option :value="n + numColorsMin - 1" :key="n + numColorsMin - 1"></option>
+                <template v-for="n in (numColorsMax - numColorsMin + 1)" :key="n + numColorsMin - 1">
+                    <option :value="n + numColorsMin - 1"></option>
                 </template>
             </datalist>
             <input type="number" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" />
@@ -56,9 +54,9 @@
             <legend>Color palette</legend>
             <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
             <div class="colors-list-container" @dragover="handleColorDragover">
-                <template v-for="(color, i) in colors">
+                <template v-for="(color, i) in colors" :key="i">
                     <color-input id-prefix="color" :on-click="createColorInputClicked(i)" :is-selected="shouldShowColorPicker && colorPickerColorIndex===i" :color-index.number="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" 
-                    :key="i" />
+                    />
                 </template>
             </div>
             <div class="spread-content palette-buttons-container">

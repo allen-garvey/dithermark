@@ -6,8 +6,8 @@
             <div ref="controlsContainer" class="controls-container">
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
                     <div class="tabs-container">
-                        <template v-for="(tab, index) in globalControlsTabs">
-                            <div class="tab" :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)" :key="index">{{tab.name}}</div>
+                        <template v-for="(tab, index) in globalControlsTabs" :key="index">
+                            <div class="tab" :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)">{{tab.name}}</div>
                         </template>
                     </div>
                     <!-- Global controls tabs bodies -->
@@ -120,8 +120,8 @@
                                 <div class="spread-content">
                                     <label>Theme
                                         <select v-model.number="currentEditorThemeIndex">
-                                            <template v-for="(theme, index) in editorThemes">
-                                                <option :value="index" :key="index">{{theme.name}}</option>
+                                            <template v-for="(theme, index) in editorThemes" :key="index">
+                                                <option :value="index">{{theme.name}}</option>
                                             </template>
                                         </select>
                                     </label>
