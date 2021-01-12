@@ -90,7 +90,6 @@
 </template>
 
 <script>
-import Vue from 'vue';
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import Constants from '../../generated_output/app/constants.js'
 import AlgorithmModel from '../../generated_output/app/algorithm-model.js';
@@ -365,8 +364,7 @@ export default {
                     const key = optimizePaletteMemorizationKey(messageBody[1], messageBody[0]);
                     //check to make sure still pending and not done first, to avoid race condition
                     if(this.isOptimizePaletteKeyPending(key)){
-                        //have to use Vue.set for object keys
-                        Vue.set(this.pendingColorQuantizations, key, messageBody[2]);
+                        this.pendingColorQuantizations[key] = messageBody[2];
                     }
                     break;
                 //histogram
@@ -384,8 +382,7 @@ export default {
             if(shouldCache){
                 optimizedPalettes[key] = colorsHexArray;
             }
-            //have to use Vue.set for object keys
-            Vue.set(this.pendingColorQuantizations, key, false);
+            this.pendingColorQuantizations[key] = false;
             //avoids race conditions when color quantization mode or number of colors is changed before results return
             const currentKey = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
             if(key === currentKey){
@@ -415,8 +412,7 @@ export default {
                 this.changePaletteToOptimizePaletteResult(optimizedPalettes[key].slice());
                 return;
             }
-            //have to use Vue.set for object keys
-            Vue.set(this.pendingColorQuantizations, key, 0);
+            this.pendingColorQuantizations[key] = 0;
             this.$emit('request-worker', (worker)=>{
                 worker.postMessage(WorkerUtil.optimizePaletteHeader(this.numColors, this.selectedColorQuantizationModeIndex));
             });
@@ -498,12 +494,12 @@ export default {
         },
         colorPickerValueChanged(colorHex){
             this.hasColorPickerChangedTheColor = true;
-            Vue.set(this.colorsShadow, this.colorPickerColorIndex, colorHex);
+            this.colorsShadow[this.colorPickerColorIndex] = colorHex;
         },
         colorPickerOk(selectedColorHex){
             //this will be true when color picker live update is disabled and the color has been changed
             if(this.colorsShadow[this.colorPickerColorIndex] !== selectedColorHex){
-                Vue.set(this.colorsShadow, this.colorPickerColorIndex, selectedColorHex);
+                this.colorsShadow[this.colorPickerColorIndex] = selectedColorHex;
             }
             this.shouldShowColorPicker = false;
         },
@@ -514,7 +510,7 @@ export default {
             }
             //if we were already on custom, but color was changed, we need to reset it as well
             else if(this.hasColorPickerChangedTheColor){
-                Vue.set(this.colorsShadow, this.colorPickerColorIndex, previousColorHex);
+                this.colorsShadow[this.colorPickerColorIndex] = previousColorHex;
             }
             this.shouldShowColorPicker = false;
         },

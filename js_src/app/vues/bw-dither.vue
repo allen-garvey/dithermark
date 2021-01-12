@@ -46,7 +46,6 @@
 
 
 <script>
-import Vue from 'vue';
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js';
@@ -345,18 +344,18 @@ export default {
         },
         colorPickerValueChanged(colorHex){
             this.hasColorPickerChangedTheColor = true,
-            Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, colorHex);
+            this.colorReplaceColors[this.colorPickerColorIndex] = colorHex;
         },
         colorPickerOk(selectedColorHex){
             //this will be true when color picker live update is disabled and the color has been changed
             if(this.colorReplaceColors[this.colorPickerColorIndex] !== selectedColorHex){
-                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, selectedColorHex);
+                this.colorReplaceColors[this.colorPickerColorIndex] = selectedColorHex;
             }
             this.shouldShowColorPicker = false;
         },
         colorPickerCanceled(previousColorHex){
             if(this.hasColorPickerChangedTheColor){
-                Vue.set(this.colorReplaceColors, this.colorPickerColorIndex, previousColorHex);
+                this.colorReplaceColors[this.colorPickerColorIndex] = previousColorHex;
             }
             this.shouldShowColorPicker = false;
         },
