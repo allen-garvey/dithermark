@@ -15,7 +15,6 @@ config.optimization = {
     minimizer: [  
         //since we are overrided minimizer for OptimizeCSSAssetsPlugin we need to manually add terser
         new TerserPlugin({
-            cache: true,
             parallel: true,
         }),
         //while the sass is already minified, we need this plugin so css extracted from dithermark-vue-color is minified too
