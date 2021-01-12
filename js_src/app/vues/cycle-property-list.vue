@@ -9,7 +9,7 @@
 export default {
     name: 'cycle-property-list', 
     props: {
-        value: {
+        modelValue: {
             type: Number, 
             // required: true //when app first starts, will be null for some values
         },
@@ -36,18 +36,18 @@ export default {
     },
     methods: {
         previousButtonClicked(){
-            let newValue = this.value - 1;
+            let newValue = this.modelValue - 1;
             if(newValue < this.arrayStartIndex){
                 newValue = this.arrayLength - 1;
             }
-            this.$emit('input', newValue);
+            this.$emit('update:modelValue', newValue);
         },
         nextButtonClicked(){
-            let newValue = this.value + 1;
+            let newValue = this.modelValue + 1;
             if(newValue >= this.arrayLength){
                 newValue = this.arrayStartIndex;
             }
-            this.$emit('input', newValue);
+            this.$emit('update:modelValue', newValue);
         },
     },
 };
