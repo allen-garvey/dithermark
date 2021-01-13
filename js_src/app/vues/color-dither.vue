@@ -290,9 +290,12 @@ export default {
                 this.ditherImageWithSelectedAlgorithm();
             }
         },
-        colorsShadow(newValue){
-            if(this.draggedIndex === null){
-                this.colors = this.colorsShadow.slice();   
+        colorsShadow: {
+            deep: true,
+            handler(newValue){
+                if(this.draggedIndex === null){
+                    this.colors = this.colorsShadow.slice();   
+                }
             }
         },
         colors(newValue, oldValue){
