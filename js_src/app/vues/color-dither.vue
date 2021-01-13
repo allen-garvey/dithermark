@@ -44,9 +44,12 @@
             <label for="color_dither_num_colors_input">Color count</label>
                 <input type="range" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" list="color_dither_num_colors_tickmarks" id="color_dither_num_colors_input" />
             <datalist id="color_dither_num_colors_tickmarks">
-                <template v-for="n in (numColorsMax - numColorsMin + 1)" :key="n + numColorsMin - 1">
-                    <option :value="n + numColorsMin - 1"></option>
-                </template>
+                <option 
+                    v-for="n in (numColorsMax - numColorsMin + 1)" 
+                    :key="n + numColorsMin - 1"
+                    :value="n + numColorsMin - 1"
+                >
+                </option>
             </datalist>
             <input type="number" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" />
         </div>
