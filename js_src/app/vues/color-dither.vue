@@ -504,7 +504,6 @@ export default {
             }
         },
         colorPickerValueChanged(colorHex){
-            console.log('color picker value changed');
             this.hasColorPickerChangedTheColor = true;
             this.colorsShadow[this.colorPickerColorIndex] = colorHex;
         },
