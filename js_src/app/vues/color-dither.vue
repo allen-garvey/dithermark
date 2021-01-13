@@ -54,10 +54,16 @@
             <legend>Color palette</legend>
             <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
             <div class="colors-list-container" @dragover="handleColorDragover">
-                <template v-for="(color, i) in colors" :key="i">
-                    <color-input id-prefix="color" :on-click="createColorInputClicked(i)" :is-selected="shouldShowColorPicker && colorPickerColorIndex===i" :color-index.number="i" :color-value="colorsShadow[i]" :is-disabled="i >= numColors" :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" 
-                    />
-                </template>
+                <color-input
+                    v-for="(color, i) in colors" 
+                    :key="i"
+                    id-prefix="color" 
+                    :on-click="createColorInputClicked(i)" :is-selected="shouldShowColorPicker && colorPickerColorIndex===i" 
+                    :color-index.number="i" 
+                    :color-value="colorsShadow[i]" 
+                    :is-disabled="i >= numColors" 
+                    :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" 
+                />
             </div>
             <div class="spread-content palette-buttons-container">
                 <div>
