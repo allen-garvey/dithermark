@@ -55,7 +55,11 @@
         </div>
         <fieldset>
             <legend>Color palette</legend>
-            <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" @input="colorPickerValueChanged" @ok="colorPickerOk" @cancel="colorPickerCanceled" />
+            <color-picker 
+                v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" 
+                @update:modelValue="colorPickerValueChanged" 
+                @ok="colorPickerOk" 
+                @cancel="colorPickerCanceled" />
             <div class="colors-list-container" @dragover="handleColorDragover">
                 <color-input
                     v-for="(color, i) in colors" 
@@ -500,6 +504,7 @@ export default {
             }
         },
         colorPickerValueChanged(colorHex){
+            console.log('color picker value changed');
             this.hasColorPickerChangedTheColor = true;
             this.colorsShadow[this.colorPickerColorIndex] = colorHex;
         },
