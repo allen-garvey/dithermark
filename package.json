@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/allen-garvey/dithermark#readme",
   "dependencies": {
-    "dithermark-vue-color": "2.1.0",
+    "dithermark-vue-color": "2.2.0",
     "vue": "3.0.5"
   },
   "devDependencies": {
