@@ -1,5 +1,6 @@
 <?php
-    require_once('inc/unsplash-api-secret.php');
+    require_once('inc/config.php');
+    require_once(INC_PATH.'unsplash-api-secret.php');
 
     function getRandomPhotosJson(): array{
         $unsplashApiUrl = 'https://api.unsplash.com/photos/random?featured=true&count=30&client_id='.UNSPLASH_ACCESS_KEY;
