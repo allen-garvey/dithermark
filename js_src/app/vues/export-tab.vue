@@ -103,7 +103,7 @@ export default{
     },
     methods: {
         fileChanged(fileName){
-            this.saveImageFileName = fileName.replace(/\.(png|bmp|jpg|jpeg)$/i, '');
+            this.saveImageFileName = fileName.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
         },
         //downloads image
         //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
