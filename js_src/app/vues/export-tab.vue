@@ -13,6 +13,9 @@
             <label>jpeg
                 <input type="radio" v-model="saveImageFileType" value="image/jpeg" />
             </label>
+            <label>webp
+                <input type="radio" v-model="saveImageFileType" value="image/webp" />
+            </label>
         </div>
         <div v-if="isImagePixelated">
             <label class="radio-super-label">Size</label>
@@ -83,10 +86,14 @@ export default{
     },
     computed: {
         saveImageFileExtension(){
-            if(this.saveImageFileType === 'image/jpeg'){
-                return '.jpg';
+            switch(this.saveImageFileType){
+                case 'image/jpeg':
+                    return '.jpg';
+                case 'image/webp':
+                    return '.webp';
+                default:
+                    return '.png';
             }
-            return '.png';
         },
     },
     watch: {
