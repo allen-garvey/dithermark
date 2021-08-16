@@ -11,7 +11,7 @@ class HttpRequestError extends Error{
         this.statusCode = statusCode;
         this.statusMessage = statusMessage;
         this.url = url;
-        }
+    }
 }
 
 class UnsupportedFileTypeError extends Error{
@@ -19,13 +19,13 @@ class UnsupportedFileTypeError extends Error{
         super(message);
         this.url = url;
         this.fileType = fileType;
-        }
+    }
 }
 
 class FetchError extends Error{
     constructor(message) {
         super(message);
-        }
+    }
 }
 
 function openImageFile(e, imageLoadFunc, errFunc) {
