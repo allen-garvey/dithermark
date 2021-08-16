@@ -2,19 +2,13 @@
     <div class="controls-tab-container">
         <div v-if="shouldShowFileName">
             <label>File name
-                <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" /><span>{{saveImageFileExtension}}</span>
+                <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" /><span>{{saveImageFileType.extension}}</span>
             </label>
         </div>
         <div>
             <label class="radio-super-label">File type</label>
-            <label>png
-                <input type="radio" v-model="saveImageFileType" value="image/png" />
-            </label>
-            <label>jpeg
-                <input type="radio" v-model="saveImageFileType" value="image/jpeg" />
-            </label>
-            <label>webp
-                <input type="radio" v-model="saveImageFileType" value="image/webp" />
+            <label v-for="(fileType, i) of saveImageFileTypes" :key="fileType.mime">{{ fileType.label }}
+                <input type="radio" v-model="saveImageFileTypeIndex" :value="i" />
             </label>
         </div>
         <div v-if="isImagePixelated">
@@ -76,7 +70,7 @@ export default{
     data(){
         return {
             saveImageFileName: '',
-            saveImageFileType: 'image/png',
+            saveImageFileTypeIndex: 0,
             isCurrentlySavingImage: false,
             shouldShowFileName: true,
             //should be boolean, but v-model only supports numbers
@@ -85,15 +79,27 @@ export default{
         };
     },
     computed: {
-        saveImageFileExtension(){
-            switch(this.saveImageFileType){
-                case 'image/jpeg':
-                    return '.jpg';
-                case 'image/webp':
-                    return '.webp';
-                default:
-                    return '.png';
-            }
+        saveImageFileTypes(){
+            return [
+                {
+                    label: 'png',
+                    mime: 'image/png',
+                    extension: '.png',
+                },
+                {
+                    label: 'jpeg',
+                    mime: 'image/jpeg',
+                    extension: '.jpg',
+                },
+                {
+                    label: 'webp',
+                    mime: 'image/webp',
+                    extension: '.webp',
+                },
+            ];
+        },
+        saveImageFileType(){
+            return this.saveImageFileTypes[this.saveImageFileTypeIndex];
         },
     },
     watch: {
@@ -120,12 +126,12 @@ export default{
             }
             this.isCurrentlySavingImage = true;
             this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
-                Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType, (objectUrl=null)=>{
+                Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl=null)=>{
                     //objectUrl will be null if we are using toBlob polyfill, which opens image in new tab
                     if(objectUrl){
                         saveImageLink = saveImageLink || createSaveImageLink();
                         saveImageLink.href = objectUrl;
-                        saveImageLink.download = this.saveImageFileName + this.saveImageFileExtension;
+                        saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
                         saveImageLink.click();
                     }
 
