@@ -17,8 +17,12 @@ module.exports = {
         }
     },
     devServer: {
-        contentBase: path.join(__dirname, '../public_html'),
-        publicPath: 'http://localhost:3000/assets/',
+        static: {
+            directory: path.join(__dirname, '../public_html'),
+        },
+        devMiddleware: {
+            publicPath: 'http://localhost:3000/assets/',
+        },
         port: 3000,
         open: true,
     },
