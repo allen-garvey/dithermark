@@ -11,7 +11,7 @@
     "webpack:dev": "webpack --config build/webpack.config.js",
     "webpack:prod": "webpack --config build/webpack.production.config.js",
     "webpack:watch": "webpack --config build/webpack.watch.config.js",
-    "start": "webpack serve --config build/webpack.config.js"
+    "start": "php -S localhost:3000 -t public_html"
   },
   "repository": {
     "type": "git",
