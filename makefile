@@ -43,10 +43,12 @@ JS_GENERATED_OUTPUT=$(JS_GENERATED_APP_CONSTANTS_OUTPUT) $(JS_GENERATED_APP_ALGO
 all: $(JS_GENERATED_OUTPUT) $(HTML_INDEX)
 	npm run webpack:dev
 
-install:
-	npm install
+setup:
 	mkdir -p $(JS_GENERATED_OUTPUT_APP_DIR)
 	mkdir -p $(JS_GENERATED_OUTPUT_WORKER_DIR)
+
+install: setup
+	npm install
 
 #used when changing between PHP_BUILD_MODES
 reset:
