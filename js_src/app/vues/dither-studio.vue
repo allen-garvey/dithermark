@@ -1,5 +1,8 @@
 <template>
-    <div class="app-container">
+    <div 
+        class="app-container"
+        :class="{[$style.imageLoaded]: isImageLoaded}"
+    >
         <alerts ref="alertsContainer" :is-webgl-enabled="isWebglEnabled" :loaded-image="loadedImage" />
         <hint-container 
             :image-opened="loadImage" 
@@ -197,6 +200,12 @@
         <modal-prompt ref="modalPromptComponent" />
     </div>
 </template>
+
+<style lang="scss" module>
+    .imageLoaded {
+        padding-bottom: 154px;
+    }
+</style>
 
 <script>
 /*

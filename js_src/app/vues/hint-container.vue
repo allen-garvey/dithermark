@@ -1,7 +1,6 @@
 <template>
     <div 
-        class="hint-container"
-        :class="{[$style.dragHover]: isDraggedOver}"
+        :class="{[$style.hintContainer]: true, [$style.dragHover]: isDraggedOver}"
         @drop.prevent="fileDropped($event)"
         @dragover.prevent="() => {}"
         @dragenter.prevent="onDragEnter"
@@ -14,6 +13,26 @@
 <style lang="scss" module>
     .dragHover {
         background-color: #ffc2ff;
+    }
+
+    .hintContainer{
+        color: var(--hint-text-color);
+        font-size: 1.25em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 3em;
+        //have to have min-width since app-container
+        //needs to be display: inline-block for stick alerts to work
+        //-22px for width of vertical scrollbar
+        min-width: calc(100vw - 22px);
+    }
+
+    @include pinned_controls_mq{
+        .hintContainer{
+            font-size: 3.15em;
+            min-height: 90vh;
+        }
     }
 </style>
 
