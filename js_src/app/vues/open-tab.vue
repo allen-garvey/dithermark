@@ -47,7 +47,7 @@ export default {
                 fileInput.type = 'file';
                 
                 fileInput.addEventListener('change', (e)=>{
-                    Fs.openImageFile(e, this.imageOpened, this.openImageError);
+                    Fs.openImageFile(e.target.files[0], this.imageOpened, this.openImageError);
                     fileInput.value = null;
                 }, false);
             }

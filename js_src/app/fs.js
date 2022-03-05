@@ -28,14 +28,14 @@ class FetchError extends Error{
     }
 }
 
-function openImageFile(e, imageLoadFunc, errFunc) {
-    const files = e.target.files;
-    if(files.length < 1){
+function openImageFile(file, imageLoadFunc, errFunc) {
+    if(!file){
         return errFunc('No files selected');
     }
-    const file = files[0];
+
     if(!file.type.startsWith('image/')){
-        return errFunc(`${file.name} appears to be of type ${file.type} rather than an image`);
+        const fileType = file.type || 'folder';
+        return errFunc(`${file.name} appears to be of type ${fileType} rather than an image`);
     }
     imageElement.onload = ()=> {
         imageLoadFunc(imageElement, file);
