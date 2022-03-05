@@ -41,7 +41,7 @@ module.exports = {
             },
             //besides the sass files, also extracts css from dithermark-vue-color
             {
-                test: /\.s?css$/,
+                test: /\.css$/,
                 use: [
                     {
                         loader: MiniCssExtractPlugin.loader,
@@ -53,6 +53,43 @@ module.exports = {
                         loader: 'sass-loader',
                     },
                 ]
+            },
+            {
+                test: /\.scss$/,
+                oneOf: [
+                    // this matches `<style module>`
+                    {
+                        resourceQuery: /module/,
+                        use: [
+                            'vue-style-loader',
+                            {
+                                loader: 'css-loader',
+                                options: {
+                                    esModule: false,
+                                    modules: {
+                                        localIdentName: '[local]_[hash:base64:8]',
+                                    },
+                                }
+                            },
+                            {
+                                loader: 'sass-loader',
+                            },
+                        ]
+                    },
+                    {
+                        use: [
+                            'vue-style-loader',
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                                options: {
+                                    esModule: false,
+                                },
+                            },
+                            'css-loader',
+                            'sass-loader',
+                        ]
+                    },
+                ],
             },
         ]
     },
