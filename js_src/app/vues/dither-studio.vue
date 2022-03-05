@@ -1,7 +1,11 @@
 <template>
     <div class="app-container">
         <alerts ref="alertsContainer" :is-webgl-enabled="isWebglEnabled" :loaded-image="loadedImage" />
-        <div class="hint-container" v-if="!isImageLoaded">Open an image to begin</div>
+        <hint-container 
+            :image-opened="loadImage" 
+            :open-image-error="onOpenImageError"
+            v-if="!isImageLoaded"
+        />
         <div class="controls">
             <div ref="controlsContainer" class="controls-container">
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
@@ -223,6 +227,7 @@ import WebGlCanvasFilters from '../webgl-canvas-filters.js';
 import ImageFiltersModel from '../image-filters-model.js';
 
 import CyclePropertyList from './cycle-property-list.vue';
+import HintContainer from './hint-container.vue';
 import Alerts from './alerts.vue';
 import ExportTab from './export-tab.vue';
 import FullScreenModeControl from './full-screen-mode-control.vue';
@@ -259,6 +264,7 @@ export default {
     name: 'dither-studio',
     components: {
         CyclePropertyList,
+        HintContainer,
         Alerts,
         ExportTab,
         FullScreenModeControl,
