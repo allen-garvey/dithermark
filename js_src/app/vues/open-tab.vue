@@ -3,6 +3,12 @@
         <fieldset>
             <legend>Device</legend>
             <button class="btn btn-primary" @click="openDeviceImage" title="Open local image file">Image file</button>
+            <input 
+                type="file"
+                @change.prevent="onFileInputChange($event)"
+                ref="fileInput" 
+                v-show="false" 
+            />
         </fieldset>
         <fieldset>
             <legend>Web</legend>
@@ -15,9 +21,6 @@
 <script>
 import Fs from '../fs.js';
 import RandomImage from '../random-image.js';
-
-
-let fileInput;
 
 export default { 
     name: 'open-tab',
@@ -42,16 +45,13 @@ export default {
     },
     methods: {
         openDeviceImage(){
-            if(!fileInput){
-                fileInput = document.createElement('input');
-                fileInput.type = 'file';
-                
-                fileInput.addEventListener('change', (e)=>{
-                    Fs.openImageFile(e.target.files[0], this.imageOpened, this.openImageError);
-                    fileInput.value = null;
-                }, false);
-            }
-            fileInput.click();
+            this.$refs.fileInput.click();
+        },
+        onFileInputChange($event){
+            const fileInput = $event.target;
+
+            Fs.openImageFile(fileInput.files[0], this.imageOpened, this.openImageError);
+            fileInput.value = '';
         },
         openImageFromUrlFailed(error, imageUrl){
             this.openImageError(Fs.messageForOpenImageUrlError(error, imageUrl));
