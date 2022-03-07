@@ -41,7 +41,7 @@ JS_GENERATED_OUTPUT=$(JS_GENERATED_APP_CONSTANTS_OUTPUT) $(JS_GENERATED_APP_ALGO
 # but it's the only way to not have make warnings without the dev and production css output file names being different
 # also, we avoid the edge case where make won't trigger rebuild if packages in node_modules are updated by running webpack each time
 all: $(JS_GENERATED_OUTPUT) $(HTML_INDEX)
-	npm run webpack:dev
+	npm run build
 
 setup:
 	mkdir -p $(JS_GENERATED_OUTPUT_APP_DIR)
@@ -58,7 +58,7 @@ reset:
 #see comment for all: about running webpack each time recipe is called
 release: PHP_BUILD_MODE=release
 release: $(HTML_INDEX) $(JS_GENERATED_OUTPUT)
-	npm run webpack:prod
+	npm run deploy
 
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json

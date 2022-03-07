@@ -8,9 +8,9 @@
   ],
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack:dev": "webpack --config build/webpack.config.js",
-    "webpack:prod": "webpack --config build/webpack.production.config.js",
-    "webpack:watch": "webpack --config build/webpack.watch.config.js",
+    "build": "webpack --config build/webpack.config.js",
+    "deploy": "webpack --config build/webpack.production.config.js",
+    "watch": "webpack --config build/webpack.watch.config.js",
     "start": "php -S localhost:3000 -t public_html"
   },
   "repository": {

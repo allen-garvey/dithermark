@@ -1,6 +1,6 @@
 # Fastcgi setup
 
-Dithermark can be run using PHP over fastcgi. Fastcgi is required if you are using the Unsplash random images feature, as it requires a PHP api endpoint when downloading images.  Another bonus of doing this is that when editing files in the `templates` directory, you can simply save the file and reload the browser to see your changes, without having to run `make` (this is especially helpful if you are doing heavy editing of the WebGL shaders). In combination with using `npm run webpack:watch` to live reload Sass and JavaScript file changes, this means you only need to run `make` in the following situations: at initial project setup, when editing files in the `inc` or `js_generated` directories, and when creating a release build.
+Dithermark can be run using PHP over fastcgi. Fastcgi is required if you are using the Unsplash random images feature, as it requires a PHP api endpoint when downloading images.  Another bonus of doing this is that when editing files in the `templates` directory, you can simply save the file and reload the browser to see your changes, without having to run `make` (this is especially helpful if you are doing heavy editing of the WebGL shaders). In combination with using `npm run watch` to live reload Sass and JavaScript file changes, this means you only need to run `make` in the following situations: at initial project setup, when editing files in the `inc` or `js_generated` directories, and when creating a release build.
 
 ## Dependencies
 
