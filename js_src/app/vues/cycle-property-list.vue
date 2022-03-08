@@ -1,13 +1,24 @@
 <template>
-    <div>
-        <button class="cycle-property-list-button btn btn-default btn-xs" :title="previousButtonTitle" @click="previousButtonClicked">&lt;</button>
-        <button class="cycle-property-list-button btn btn-default btn-xs" :title="nextButtonTitle" @click="nextButtonClicked">&gt;</button>
+    <div class="btn-group" role="group">
+        <button 
+            class="cycle-property-list-button btn btn-default btn-xs" 
+            :title="previousButtonTitle" 
+            @click="previousButtonClicked"
+        >
+            &lt;
+        </button>
+        <button 
+            class="cycle-property-list-button btn btn-default btn-xs" 
+            :title="nextButtonTitle" 
+            @click="nextButtonClicked"
+        >
+            &gt;
+        </button>
     </div>
 </template>
 
 <script>
 export default {
-    name: 'cycle-property-list', 
     props: {
         modelValue: {
             type: Number, 
