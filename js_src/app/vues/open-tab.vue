@@ -20,6 +20,7 @@
             <legend>Web</legend>
             <button 
                 class="btn btn-default" 
+                :class="$style.webButton"
                 @click="showOpenImageUrlPrompt" 
                 :disabled="isCurrentlyLoadingImageUrl" 
                 title="Open image from Url"
@@ -37,6 +38,12 @@
         </fieldset>    
     </div>
 </template>
+
+<style lang="scss" module>
+    .webButton {
+        margin-right: 0.5rem;
+    }
+</style>
 
 <script>
 import Fs from '../fs.js';
