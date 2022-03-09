@@ -180,8 +180,20 @@
                 </div>
                 <div class="super-dither-controls-container" v-show="isImageLoaded">
                     <div class="tabs-container">
-                        <div class="tab" :class="{active: activeDitherComponentId === bwDitherComponentId}" @click="loadDitherTab(bwDitherComponentId)">BW Dither</div>
-                        <div class="tab" :class="{active: activeDitherComponentId === colorDitherComponentId}" @click="loadDitherTab(colorDitherComponentId)">Color Dither</div>
+                        <button 
+                            class="tab" 
+                            :class="{active: activeDitherComponentId === bwDitherComponentId}" @click="loadDitherTab(bwDitherComponentId)"
+                            :disabled="activeDitherComponentId === bwDitherComponentId"
+                        >
+                            BW Dither
+                        </button>
+                        <button 
+                            class="tab" 
+                            :class="{active: activeDitherComponentId === colorDitherComponentId}" @click="loadDitherTab(colorDitherComponentId)"
+                            :disabled="activeDitherComponentId === colorDitherComponentId"
+                        >
+                            Color Dither
+                        </button>
                     </div>
                     <div v-show="activeDitherComponentId === bwDitherComponentId">
                         <bw-dither-section ref="bwDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(bwDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(bwDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" :dither-algorithms="bwDitherAlgorithms" />  
