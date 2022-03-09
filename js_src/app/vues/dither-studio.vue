@@ -13,9 +13,15 @@
             <div ref="controlsContainer" class="controls-container">
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
                     <div class="tabs-container">
-                        <template v-for="(tab, index) in globalControlsTabs" :key="index">
-                            <div class="tab" :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)">{{tab.name}}</div>
-                        </template>
+                        <button 
+                            v-for="(tab, index) in globalControlsTabs" 
+                            :key="index"
+                            class="tab" 
+                            :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)"
+                            :disabled="tab.isDisabled || activeControlsTab === index"
+                        >
+                            {{tab.name}}
+                        </button>
                     </div>
                     <!-- Global controls tabs bodies -->
                     <!-- Open tab -->
