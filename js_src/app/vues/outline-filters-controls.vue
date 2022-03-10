@@ -125,7 +125,7 @@ export default {
             imageOutlineTypes: ImageFiltersModel.outlineFilterTypes(),
             selectedImageOutlineType: 0,
             outlineOpacities: ImageFiltersModel.outlineOpacities(),
-            selectedOutlineOpacity: 0,
+            selectedOutlineOpacity: ImageFiltersModel.outlineOpacities().length - 1,
             imageOutlineEdgeStrengths: ImageFiltersModel.outlineEdgeStrengths(),
             selectedImageOutlineStrength: 2,
             imageOutlineEdgeThicknesses: ImageFiltersModel.outlineEdgeThicknesses(),

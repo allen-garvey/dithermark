@@ -65,7 +65,7 @@ function outlineColorModes(){
 }
 
 function outlineOpacities(){
-    return [1, 0.75, 0.6, 0.5, 0.4, 0.3, 0.25, 0.2, 0.15, 0.1, 0.05, 0.03];
+    return [0.03, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.4, 0.5, 0.6, 0.75, 1];
 }
 
 //used for blending fixed outline color with dithered output
