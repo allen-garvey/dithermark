@@ -159,15 +159,8 @@ export default {
     },
     watch: {
         isImageOutlineFilterActive(newValue, oldValue){
-            if(newValue === oldValue){
-                return;
-            }
-            //create outlineFilterCanvas, if it's the first time we are using it
-            if(newValue && !outlineFilterCanvas){
-                this.initializeOutlineFilterCanvas();
-            }
             //clear outline canvas when not active to free up memory
-            else if(!newValue && outlineFilterCanvas){
+            if(!newValue && outlineFilterCanvas){
                 Canvas.clear(outlineFilterCanvas);
             }
         },
@@ -242,6 +235,9 @@ export default {
             }
             else{
                 this.imageEdgeFilterAction();
+            }
+            if(!outlineFilterCanvas){
+                this.initializeOutlineFilterCanvas();
             }
 
             //merge on top of transformCanvas
