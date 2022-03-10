@@ -288,7 +288,6 @@ let ditherOutputWebglTexture;
 const tabsThatHaveSeenImageSet = new Set();
 
 export default {
-    name: 'dither-studio',
     components: {
         CyclePropertyList,
         HintContainer,

@@ -51,8 +51,7 @@ function createSaveImageLink(){
 }
 
 
-export default{
-    name: 'export-tab',
+export default {
     props: {
         saveRequested: {
             type: Function,

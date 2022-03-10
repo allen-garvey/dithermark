@@ -36,8 +36,7 @@
         return Math.min(smallestPercentage, 100);
     }
 
-    export default{
-        name: 'zoom-bar',
+    export default {
         props: ['show-original-image', 'zoom-changed', 'request-dimensions-for-zoom-fit'],
         data(){
             return {

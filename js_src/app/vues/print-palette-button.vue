@@ -9,7 +9,6 @@
 
 <script>
 export default {
-    name: 'print-palette-button',
     props: {
         colors: {
             type: Array,

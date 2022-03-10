@@ -15,7 +15,6 @@ import {lightness} from '../../shared/pixel-math-lite.js';
 
 
 export default {
-    name: 'color-input',
     props: {
         colorIndex: {
             type: Number,

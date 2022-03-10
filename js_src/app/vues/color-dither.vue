@@ -131,7 +131,6 @@ function optimizePaletteMemorizationKey(numColors, modeId){
 }
 
 export default {
-    name: 'color-dither-section',
     props: {                                                                                                                                
         isWebglEnabled: {                                                                                                                   
             type: Boolean,                                                                                                                 

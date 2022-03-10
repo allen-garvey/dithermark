@@ -12,9 +12,7 @@
 
 import Constants from '../../generated_output/app/constants.js';
 
-
-export default{
-    name: 'unsplash-attribution',
+export default {
     props: {
         unsplashInfo: {
             type: Object,

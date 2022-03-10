@@ -77,7 +77,6 @@ let histogramCanvas;
 let histogramCanvasIndicator;
 
 export default {
-    name: 'bw-dither-section',
     props: {                                                                                                                                
         isWebglEnabled: {                                                                                                                   
             type: Boolean,                                                                                                                 

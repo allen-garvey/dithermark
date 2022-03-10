@@ -3,7 +3,5 @@
 </template>
 <script>
 //this is an empty component for components that should not appear in release builds (print palette button, texture combine component)
-export default {
-    name: 'dummy'
-};
+export default {};
 </script>

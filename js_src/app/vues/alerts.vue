@@ -18,7 +18,6 @@
 
 <script>
 export default {
-    name: 'alerts',
     props: {
         isWebglEnabled: {
             type: Boolean,

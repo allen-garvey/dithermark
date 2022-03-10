@@ -18,8 +18,7 @@
 import FocusDirective from './directives/focus.js';
 
 
-export default{
-    name: 'modal-prompt', 
+export default {
     directives: {
         'focus': FocusDirective,
     },

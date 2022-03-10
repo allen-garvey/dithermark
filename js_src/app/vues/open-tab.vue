@@ -50,7 +50,6 @@ import Fs from '../fs.js';
 import RandomImage from '../random-image.js';
 
 export default { 
-    name: 'open-tab',
     props: {
         imageOpened: {
             type: Function,

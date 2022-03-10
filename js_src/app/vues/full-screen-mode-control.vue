@@ -35,8 +35,7 @@ function getFullScreenPrefix(){
     return null;
 }
 
-export default{
-    name: 'full-screen-mode-control',
+export default {
     created(){
         fullScreenPrefix = getFullScreenPrefix();
         if(fullScreenPrefix != null){

@@ -89,7 +89,6 @@ import ColorInput from './color-input.vue';
 let outlineFilterCanvas;
 
 export default {
-    name: 'outline-filters-controls',
     props: {
         isImageOutlineFilterEnabled: {
             type: Boolean,

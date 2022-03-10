@@ -10,8 +10,7 @@
 import WebGl from '../webgl.js';
 import WebGlBwDither from '../webgl-bw-dither.js';
 
-export default{
-    name: 'texture-combine',
+export default {
     props: {
         loadedImage: {
             // type: Object, //might be null
