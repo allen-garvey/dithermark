@@ -1,18 +1,106 @@
 <template>
-    <div class="zoom-bar-container">
-        <div class="zoom-bar-controls">
+    <div :class="$style.zoomContainer">
+        <div :class="$style.controls">
             <label for="zoom-bar-range">Zoom</label>
-            <input id="zoom-bar-range" type="range" :min="zoomMin" :max="zoomMax" v-model.number="zoom"/>
-            <input type="number" :min="zoomMin" :max="zoomMax" v-model.number="zoomDisplay" @keyup.enter="zoom = zoomDisplay"/>
+            <input 
+                id="zoom-bar-range" 
+                type="range" 
+                :min="zoomMin" 
+                :max="zoomMax" 
+                v-model.number="zoom"
+            />
+            <input 
+                type="number" 
+                :min="zoomMin" 
+                :max="zoomMax" 
+                v-model.number="zoomDisplay" 
+                @keyup.enter="zoom = zoomDisplay"
+            />
         </div>
-        <div class="zoom-bar-button-container">
-            <button class="btn btn-default btn-sm zoom-bar-fit-button" @click="zoomFit" title="Fit image on screen">Fit</button>
-            <button class="btn btn-default btn-sm" v-show="zoom !== 100" @click="resetZoom" title="Reset zoom to 100%">Full</button>
+        <div :class="$style.buttonContainer">
+            <button 
+                class="btn btn-default btn-sm" 
+                :class="$style.zoomFitButton"
+                @click="zoomFit" 
+                title="Fit image on screen"
+            >
+                Fit
+            </button>
+            <button 
+                class="btn btn-default btn-sm" 
+                v-show="zoom !== 100" 
+                @click="resetZoom" 
+                title="Reset zoom to 100%"
+            >
+                Full
+            </button>
         </div>
     </div>
 </template>
 
+<style lang="scss" module>
+    .zoomContainer{
+        @include background_color_transition;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: flex-end;
+        padding: 4px $global_horizontal_padding;
+    }
 
+    .controls{
+        display: flex;
+        align-items: flex-end;
+        flex-basis: 100%;
+        margin-bottom: 12px;
+        //max width required for Microsoft Edge at small screen sizes, otherwise it keeps expanding
+        max-width: calc(100vw - #{$chrome_fullscreen_horizontal_scrollbar_height});
+        input[type="range"]{
+            flex-basis: calc(100% - 138px);
+            vertical-align: bottom;
+        }
+        label{
+            align-self: center;
+        }
+    }
+
+    .zoomFitButton{
+        margin-right: 16px;
+    }
+
+    .buttonContainer{
+        display: flex;
+        justify-content: space-between;
+        width: $zoom_bar_button_container_width;
+    }
+
+    @include pinned_controls_mq{
+        .zoomContainer{
+            font-size: 12px;
+            position: fixed;
+            z-index: 10;
+            bottom: 0;
+            left: 0;
+            background-color: var(--pinned-controls-bg-color);
+            box-sizing: border-box;
+            border-top: $controls_border;
+            //-1 pixel so it hides border
+            width: calc(100% - #{$pinned_dither_controls_width});
+
+            @media all and (display-mode: fullscreen) {
+                bottom: $chrome_fullscreen_horizontal_scrollbar_height;
+            }
+        }
+        .controls{
+            // align-items: baseline;
+            flex-basis: calc(100% - #{$zoom_bar_button_container_width});
+            margin-bottom: 0;
+        }
+        .zoomFitButton{
+            margin-right: 0;
+        }
+    }
+</style>
 
 <script>
     import Canvas from '../canvas.js';
@@ -37,7 +125,20 @@
     }
 
     export default {
-        props: ['show-original-image', 'zoom-changed', 'request-dimensions-for-zoom-fit'],
+        props: {
+            showOriginalImage: {
+                type: Boolean,
+                required: true,
+            },
+            zoomChanged: {
+                type: Function,
+                required: true,
+            },
+            requestDimensionsForZoomFit: {
+                type: Function,
+                required: true,
+            },
+        },
         data(){
             return {
                 //has to be static property instead of prop from dither-studio component, because it will not be updated
