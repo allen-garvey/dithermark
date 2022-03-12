@@ -148,16 +148,16 @@
                             <fieldset>
                                 <legend>Performance</legend>
                                 <div class="spread-content">
-                                    <label>Live update
+                                    <label title="Immediately transform image when controls change">Live update
                                         <input type="checkbox" v-model="isLivePreviewEnabled" title="Immediately transform image when controls change"/>
                                     </label>
-                                    <label v-if="isLivePreviewEnabled">Color picker live update
+                                    <label v-if="isLivePreviewEnabled" title="Update colors immediately when selected in color picker">Color picker live update
                                         <input type="checkbox" v-model="isColorPickerLivePreviewEnabledSetting" title="Update colors immediately when selected in color picker"/>
                                     </label>
-                                    <label>Shrink large images
+                                    <label title="Automatically shrink large images when opening them">Shrink large images
                                         <input type="checkbox" v-model="automaticallyResizeLargeImages" title="Automatically shrink large images when opening them"/>
                                     </label>
-                                    <label v-if="isWebglSupported">Use WebGL
+                                    <label v-if="isWebglSupported" title="Use WebGL to speed up performance when possible">Use WebGL
                                         <input type="checkbox" v-model="isWebglEnabled" title="Use WebGL to speed up performance when possible"/>
                                     </label>
                                 </div>
