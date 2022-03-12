@@ -25,9 +25,12 @@
                     </div>
                     <!-- Global controls tabs bodies -->
                     <!-- Open tab -->
-                    <div v-show="activeControlsTab === 0">
-                        <open-tab :image-opened="loadImage" :open-image-error="onOpenImageError" :request-modal="showModalPrompt" />
-                    </div>
+                    <open-tab 
+                        :image-opened="loadImage" 
+                        :open-image-error="onOpenImageError" 
+                        :request-modal="showModalPrompt" 
+                        v-show="activeControlsTab === 0"
+                    />
                     <!-- Image tab -->
                     <div v-show="activeControlsTab === 1">
                         <div class="controls-tab-container">
