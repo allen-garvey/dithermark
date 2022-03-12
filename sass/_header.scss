@@ -4,7 +4,7 @@
     position: sticky;
     left: 0;
 
-    .full-screen-mode &{
+    @media all and (display-mode: fullscreen) {
         display: inline-block;
     }
 }

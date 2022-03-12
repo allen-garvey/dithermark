@@ -5,19 +5,12 @@ html, body{
 html, body, h1, h2, h3, h4, h5, h6{
     margin: 0;
 }
-body.full-screen-mode{
-    width: 100%;
-    height: 100%;
-    overflow: scroll;
-}
-//so page width expands as canvases expand, so position sticky continues to work
-//as things are zoomed in
-.total-page{
-    display: inline-block;
-}
-//for firefox full screen mode so that unsplash attribution remains sticky
-.full-screen-mode #app{
-    display: inline-block;
+body{
+    @media all and (display-mode: fullscreen) {
+        width: 100%;
+        height: 100%;
+        overflow: scroll;
+    }
 }
 //need this for scrolling to work in firefox full screen mode
 //for full list of browser prefixes, see
@@ -26,6 +19,19 @@ body:-moz-full-screen .total-page{
     width: 100vw;
     height: 100vh;
     overflow: scroll;
+}
+
+//so page width expands as canvases expand, so position sticky continues to work
+//as things are zoomed in
+.total-page{
+    display: inline-block;
+}
+
+#app{
+    //for firefox full screen mode so that unsplash attribution remains sticky
+    @media all and (display-mode: fullscreen) {
+        display: inline-block;
+    }
 }
 
 .hidden, [v-cloak], datalist{

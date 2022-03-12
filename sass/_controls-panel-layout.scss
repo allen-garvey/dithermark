@@ -48,15 +48,6 @@
 		box-sizing: border-box;
 		width: $pinned_dither_controls_width;
 		padding: 0;
-
-		//otherwise will overlap chrome scrollbars
-        .full-screen-mode &{
-            bottom: $chrome_fullscreen_horizontal_scrollbar_height;
-        }
-        //firefox takes into account scrollbars and doesn't overlap them
-        .full-screen-mode:-moz-full-screen &{
-            bottom: 0;
-        }
 	}
 
 	.super-dither-controls-container, .global-controls-panel{
@@ -81,5 +72,16 @@
 	.palette-buttons-container{
 		//reduce upper margin from color inputs
 		margin-top: -8px;
+	}
+}
+
+//otherwise will overlap chrome scrollbars
+@media all and (display-mode: fullscreen) {
+	.controls-container {
+		bottom: $chrome_fullscreen_horizontal_scrollbar_height;
+
+		body:-moz-full-screen & {
+			bottom: 0;
+		}
 	}
 }

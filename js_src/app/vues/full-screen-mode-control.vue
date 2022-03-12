@@ -49,18 +49,6 @@ export default {
             isFullScreenModeSupported: false,
         };
     },
-    watch: {
-        isFullScreen(newValue){
-            const classList = document.body.classList;
-            const className = 'full-screen-mode';
-            if(newValue){
-                classList.add(className);
-            }
-            else{
-                classList.remove(className);
-            }
-        },
-    },
     methods: {
         fullScreenModeChanged(e){
             this.isFullScreen = document[fullScreenPrefixes[fullScreenPrefix].isCurrentlyFullScreen];
