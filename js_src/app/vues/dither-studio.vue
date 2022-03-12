@@ -174,9 +174,12 @@
                         </div>
                     </div>
                     <!-- Export tab -->
-                    <div v-show="activeControlsTab === 3">
-                        <export-tab ref="exportTab" :save-requested="onSaveRequested" :is-image-pixelated="isImagePixelated" />
-                    </div>
+                    <export-tab 
+                        :source-file-name="exportFileNameSource"
+                        :save-requested="onSaveRequested" 
+                        :is-image-pixelated="isImagePixelated"
+                        v-show="activeControlsTab === 3"
+                    />
                 </div>
                 <div class="super-dither-controls-container" v-show="isImageLoaded">
                     <div class="tabs-container">
@@ -371,6 +374,7 @@ export default {
             isWebglSupported: false,
             isWebglEnabled: false,
             isWebglHighpFloatSupported: false,
+            exportFileNameSource: '',
             /**
              * Filters
              */
@@ -630,7 +634,7 @@ export default {
                 fileType: file.type,
                 unsplash: file.unsplash || null,
             };
-            this.$refs.exportTab.fileChanged(file.name);
+            this.exportFileNameSource = file.name;
             
             //resize large images if necessary
             const largeImageDimensionThreshold = 1200;

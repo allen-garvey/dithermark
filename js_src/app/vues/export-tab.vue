@@ -61,6 +61,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        sourceFileName: {
+            type: String,
+            required: true,
+        },
     },
     created(){
         saveImageCanvas = Canvas.create();
@@ -102,6 +106,9 @@ export default {
         },
     },
     watch: {
+        sourceFileName(newValue){
+            this.saveImageFileName = newValue.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
+        },
         saveImageFileName(newValue, oldValue){
             if(newValue === oldValue){
                 return;
@@ -114,9 +121,6 @@ export default {
         },
     },
     methods: {
-        fileChanged(fileName){
-            this.saveImageFileName = fileName.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
-        },
         //downloads image
         //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
         saveImage(){
