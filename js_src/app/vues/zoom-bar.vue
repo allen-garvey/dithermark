@@ -86,10 +86,6 @@
             border-top: $controls_border;
             //-1 pixel so it hides border
             width: calc(100% - #{$pinned_dither_controls_width});
-
-            @media all and (display-mode: fullscreen) {
-                bottom: $chrome_fullscreen_horizontal_scrollbar_height;
-            }
         }
         .controls{
             // align-items: baseline;
@@ -98,6 +94,16 @@
         }
         .zoomFitButton{
             margin-right: 0;
+        }
+    }
+
+    @media all and (display-mode: fullscreen) {
+        .zoomContainer {
+            bottom: $chrome_fullscreen_horizontal_scrollbar_height;
+             
+            body:-moz-full-screen & {
+                bottom: 0;
+            }
         }
     }
 </style>
