@@ -95,7 +95,7 @@ export default {
                     extension: '.jpg',
                 },
                 {
-                    label: 'webp',
+                    label: 'webp (lossless)',
                     mime: 'image/webp',
                     extension: '.webp',
                 },
