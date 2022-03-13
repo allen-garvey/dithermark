@@ -185,4 +185,5 @@ export default {
     saveImage,
     isDirectDownloadSupported,
     messageForOpenImageUrlError,
+    isRunningOniOS,
 };

@@ -83,7 +83,7 @@ export default {
     },
     computed: {
         saveImageFileTypes(){
-            return [
+            const types = [
                 {
                     label: 'png',
                     mime: 'image/png',
@@ -94,12 +94,20 @@ export default {
                     mime: 'image/jpeg',
                     extension: '.jpg',
                 },
-                {
-                    label: 'webp (lossless)',
-                    mime: 'image/webp',
-                    extension: '.webp',
-                },
             ];
+
+            // https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp
+            if(!Fs.isRunningOniOS()){
+                types.push(
+                    {
+                        label: 'webp (lossless)',
+                        mime: 'image/webp',
+                        extension: '.webp',
+                    }
+                );
+            }
+
+            return types;
         },
         saveImageFileType(){
             return this.saveImageFileTypes[this.saveImageFileTypeIndex];
