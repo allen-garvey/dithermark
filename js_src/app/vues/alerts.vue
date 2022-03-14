@@ -1,7 +1,9 @@
 <template>
     <div :class="$style.alertsContainer">
         <div :class="[$style.alert, $style.danger]" v-if="showOpenImageErrorMessage && openImageErrorMessage">
-            <div @click="showOpenImageErrorMessage=false" :class="$style.closeButton"></div>
+            <div :class="$style.closeButtonContainer">
+                <button @click="showOpenImageErrorMessage=false" :class="$style.closeButton">×</button>
+            </div>
             <template v-if="typeof openImageErrorMessage === 'object'">
                 {{openImageErrorMessage.beforeUrl}} <a :href="openImageErrorMessage.url" :class="$style.link">{{openImageErrorMessage.url}}</a> {{openImageErrorMessage.afterUrl}}
             </template>
@@ -10,7 +12,9 @@
             </template>
         </div>
         <div :class="[$style.alert, $style.warning]" v-if="showWebglWarningMessage && webglWarningMessage">
-            <div @click="showWebglWarningMessage=false" :class="$style.closeButton"></div>
+            <div :class="$style.closeButtonContainer">
+                <button @click="showWebglWarningMessage=false" :class="$style.closeButton">×</button>
+            </div>
             {{webglWarningMessage}}
         </div>
     </div>
@@ -30,22 +34,31 @@
     display: inline-block;
     word-break: break-word;
 }
+
 @include pinned_controls_mq{
     .alertsContainer{
         top: 0;
         max-width: calc(100vw - #{$pinned_dither_controls_width});
     }
 }
-.closeButton:after{
-    //multiplication sign
-    content: '\00d7';
-    display: block;
-    text-align: right;
-    cursor: pointer;
+
+.closeButtonContainer {
+    display: flex;
+    justify-content: flex-end;
 }
-.closeButton:hover:after{
-    font-weight: bold;
+
+.closeButton{
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-size: 1.5rem;
+    
+    &:hover {
+        cursor: pointer;
+        font-weight: bold;
+    }
 }
+
 .alert{
     display: inline-block;
     padding: 0.75em 1.25em;
@@ -62,6 +75,7 @@
         color: $danger_link_color;
     }
 }
+
 .warning{
     color: $warning_text_color;
     border-color: $warning_border_color;
