@@ -3,7 +3,7 @@
 
 export default{
     name: 'focus',
-    inserted(el){
+    mounted(el){
         el.focus();
     }
 };
