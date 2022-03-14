@@ -6,13 +6,13 @@
             </label>
         </div>
         <div>
-            <label class="radio-super-label">File type</label>
+            <label :class="$style.radioSuperLabel">File type</label>
             <label v-for="(fileType, i) of saveImageFileTypes" :key="fileType.mime">{{ fileType.label }}
                 <input type="radio" v-model="saveImageFileTypeIndex" :value="i" />
             </label>
         </div>
         <div v-if="isImagePixelated">
-            <label class="radio-super-label">Size</label>
+            <label :class="$style.radioSuperLabel">Size</label>
             <label>Upsampled
                 <input type="radio" v-model.number="shouldUpsample" value="1" />
             </label>
@@ -29,6 +29,15 @@
     </div>
 </template>
 
+<style lang="scss" module>
+
+.radioSuperLabel{
+    margin-right: 30px;
+    min-width: 4em;
+    display: inline-block;
+}
+
+</style>
 
 <script>
 import Constants from '../../generated_output/app/constants.js';
