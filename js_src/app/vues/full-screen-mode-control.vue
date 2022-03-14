@@ -6,29 +6,27 @@
 
 
 <script>
-const fullScreenPrefixes = Object.freeze({
-    STANDARD: Object.freeze({
+const fullScreenConfigs = [
+    {
         isEnabled: 'fullscreenEnabled',
         isCurrentlyFullScreen: 'fullscreenElement',
         change: 'onfullscreenchange',
         request: 'requestFullscreen',
         exit: 'exitFullscreen',
-    }),
-    WEBKIT: Object.freeze({
+    },
+    {
         isEnabled: 'webkitFullscreenEnabled',
         isCurrentlyFullScreen: 'webkitFullscreenElement',
         change: 'onwebkitfullscreenchange',
         request: 'webkitRequestFullscreen',
         exit: 'webkitExitFullscreen',
-    }),
-});
+    },
+];
 
-let fullScreenPrefix = null;
-
-function getFullScreenPrefix(){
-    for(let key in fullScreenPrefixes){
-        if(document[fullScreenPrefixes[key].isEnabled]){
-            return key;
+function getFullScreenConfig(){
+    for(let config of fullScreenConfigs){
+        if(document[config.isEnabled]){
+            return config;
         }
     }
 
@@ -37,21 +35,25 @@ function getFullScreenPrefix(){
 
 export default {
     created(){
-        fullScreenPrefix = getFullScreenPrefix();
-        if(fullScreenPrefix != null){
-            this.isFullScreenModeSupported = true;
-            document[fullScreenPrefixes[fullScreenPrefix].change] = this.fullScreenModeChanged;
+        this.fullScreenConfig = getFullScreenConfig();
+        if(this.fullScreenConfig){
+            document[this.fullScreenConfig.change] = this.fullScreenModeChanged;
         }
     },
     data(){
         return {
             isFullScreen: false,
-            isFullScreenModeSupported: false,
+            fullScreenConfig: null,
         };
+    },
+    computed: {
+        isFullScreenModeSupported(){
+            return !!this.fullScreenConfig;
+        },
     },
     methods: {
         fullScreenModeChanged(e){
-            this.isFullScreen = document[fullScreenPrefixes[fullScreenPrefix].isCurrentlyFullScreen];
+            this.isFullScreen = document[this.fullScreenConfig.isCurrentlyFullScreen];
         },
         toggleFullScreenMode(){
             if(this.isFullScreen){
@@ -62,10 +64,10 @@ export default {
             }
         },
         activateFullScreenMode(){
-            document.body[fullScreenPrefixes[fullScreenPrefix].request]();
+            document.body[this.fullScreenConfig.request]();
         },
         deactivateFullScreenMode(){
-            document[fullScreenPrefixes[fullScreenPrefix].exit]();
+            document[this.fullScreenConfig.exit]();
         },
     },
 };
