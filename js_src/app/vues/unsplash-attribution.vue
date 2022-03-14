@@ -1,10 +1,22 @@
 <template>
-    <div class="unsplash-attribution-container">
+    <div :class="$style.unsplashAttribution">
         <p>
             <a :href="photoUrl" target="_blank" rel="noopener noreferrer">Photo</a> by <a :href="authorUrl" target="_blank" rel="noopener noreferrer">{{authorName}}</a> on <a :href="unsplashUrl" target="_blank" rel="noopener noreferrer">Unsplash</a>
         </p>
     </div>
 </template>
+
+<style lang="scss" module>
+
+.unsplashAttribution{
+    position: -webkit-sticky;
+    position: sticky;
+    left: $global_horizontal_padding;
+    //so position sticky works
+    display: inline-block;
+}
+
+</style>
 
 <script>
 //used to fulfill guidelines from:
