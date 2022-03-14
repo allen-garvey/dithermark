@@ -1,20 +1,74 @@
 <template>
-    <div class="alerts-container">
-        <div class="alert alert-danger" v-if="showOpenImageErrorMessage && openImageErrorMessage">
-            <div @click="showOpenImageErrorMessage=false" class="alert-close-button"></div>
+    <div :class="$style.alertsContainer">
+        <div :class="[$style.alert, $style.danger]" v-if="showOpenImageErrorMessage && openImageErrorMessage">
+            <div @click="showOpenImageErrorMessage=false" :class="$style.closeButton"></div>
             <template v-if="typeof openImageErrorMessage === 'object'">
-                {{openImageErrorMessage.beforeUrl}} <a :href="openImageErrorMessage.url" class="alert-link">{{openImageErrorMessage.url}}</a> {{openImageErrorMessage.afterUrl}}
+                {{openImageErrorMessage.beforeUrl}} <a :href="openImageErrorMessage.url" :class="$style.link">{{openImageErrorMessage.url}}</a> {{openImageErrorMessage.afterUrl}}
             </template>
             <template v-else>
                 {{openImageErrorMessage}}
             </template>
         </div>
-        <div class="alert alert-warning" v-if="showWebglWarningMessage && webglWarningMessage">
-            <div @click="showWebglWarningMessage=false" class="alert-close-button"></div>
+        <div :class="[$style.alert, $style.warning]" v-if="showWebglWarningMessage && webglWarningMessage">
+            <div @click="showWebglWarningMessage=false" :class="$style.closeButton"></div>
             {{webglWarningMessage}}
         </div>
     </div>
 </template>
+
+<style lang="scss" module>
+// alerts based on bootstrap alerts
+
+.alertsContainer{
+    max-width: 100vw;
+    position: -webkit-sticky;
+    position: sticky;
+    //so displayed above unsplash attribution
+    z-index: 1;
+    left: 0;
+    //so position sticky works
+    display: inline-block;
+    word-break: break-word;
+}
+@include pinned_controls_mq{
+    .alertsContainer{
+        top: 0;
+        max-width: calc(100vw - #{$pinned_dither_controls_width});
+    }
+}
+.closeButton:after{
+    //multiplication sign
+    content: '\00d7';
+    display: block;
+    text-align: right;
+    cursor: pointer;
+}
+.closeButton:hover:after{
+    font-weight: bold;
+}
+.alert{
+    display: inline-block;
+    padding: 0.75em 1.25em;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.danger{
+    color: $danger_text_color;
+    border-color: $danger_border_color;
+    background-color: $danger_background_color;
+
+    .link{
+        color: $danger_link_color;
+    }
+}
+.warning{
+    color: $warning_text_color;
+    border-color: $warning_border_color;
+    background-color: $warning_background_color;
+}
+
+</style>
 
 <script>
 export default {
