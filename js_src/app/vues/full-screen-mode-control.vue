@@ -7,19 +7,19 @@
 
 <script>
 const fullScreenPrefixes = Object.freeze({
+    STANDARD: Object.freeze({
+        isEnabled: 'fullscreenEnabled',
+        isCurrentlyFullScreen: 'fullscreenElement',
+        change: 'onfullscreenchange',
+        request: 'requestFullscreen',
+        exit: 'exitFullscreen',
+    }),
     WEBKIT: Object.freeze({
         isEnabled: 'webkitFullscreenEnabled',
         isCurrentlyFullScreen: 'webkitFullscreenElement',
         change: 'onwebkitfullscreenchange',
         request: 'webkitRequestFullscreen',
         exit: 'webkitExitFullscreen',
-    }),
-    MOZ: Object.freeze({
-        isEnabled: 'mozFullScreenEnabled',
-        isCurrentlyFullScreen: 'mozFullScreenElement',
-        change: 'onmozfullscreenchange',
-        request: 'mozRequestFullScreen',
-        exit: 'mozCancelFullScreen',
     }),
 });
 
