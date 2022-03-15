@@ -1,14 +1,16 @@
 <template>
     <div class="btn-group" role="group">
         <button 
-            class="cycle-property-list-button btn btn-default btn-xs" 
+            class="btn btn-default btn-xs" 
+            :class="$style.cyclePropertyButton"
             :title="previousButtonTitle" 
             @click="previousButtonClicked"
         >
             &lt;
         </button>
         <button 
-            class="cycle-property-list-button btn btn-default btn-xs" 
+            class="btn btn-default btn-xs" 
+            :class="$style.cyclePropertyButton"
             :title="nextButtonTitle" 
             @click="nextButtonClicked"
         >
@@ -16,6 +18,15 @@
         </button>
     </div>
 </template>
+
+<style lang="scss" module>
+
+.cyclePropertyButton{
+    min-width: 60px;
+    height: 28px;
+}
+
+</style>
 
 <script>
 export default {
