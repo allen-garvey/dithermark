@@ -12,12 +12,12 @@
         <div class="controls">
             <div ref="controlsContainer" class="controls-container">
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
-                    <div class="tabs-container">
+                    <div :class="$style.tabsContainer">
                         <button 
                             v-for="(tab, index) in globalControlsTabs" 
                             :key="index"
-                            class="tab" 
-                            :class="{active: activeControlsTab === index, disabled: tab.isDisabled}" @click="setActiveControlsTab(index, tab.isDisabled)"
+                            :class="{[$style.tab]: true, [$style.active]: activeControlsTab === index, [$style.disabled]: tab.isDisabled}" 
+                            @click="setActiveControlsTab(index, tab.isDisabled)"
                             :disabled="tab.isDisabled || activeControlsTab === index"
                         >
                             {{tab.name}}
@@ -185,17 +185,17 @@
                     />
                 </div>
                 <div class="super-dither-controls-container" v-show="isImageLoaded">
-                    <div class="tabs-container">
+                    <div :class="$style.tabsContainer">
                         <button 
-                            class="tab" 
-                            :class="{active: activeDitherComponentId === bwDitherComponentId}" @click="loadDitherTab(bwDitherComponentId)"
+                            :class="{[$style.tab]: true, [$style.active]: activeDitherComponentId === bwDitherComponentId}" 
+                            @click="loadDitherTab(bwDitherComponentId)"
                             :disabled="activeDitherComponentId === bwDitherComponentId"
                         >
                             BW Dither
                         </button>
                         <button 
-                            class="tab" 
-                            :class="{active: activeDitherComponentId === colorDitherComponentId}" @click="loadDitherTab(colorDitherComponentId)"
+                            :class="{[$style.tab]: true, [$style.active]: activeDitherComponentId === colorDitherComponentId}" 
+                            @click="loadDitherTab(colorDitherComponentId)"
                             :disabled="activeDitherComponentId === colorDitherComponentId"
                         >
                             Color Dither
@@ -228,6 +228,52 @@
 <style lang="scss" module>
     .imageLoaded {
         padding-bottom: 154px;
+    }
+
+    // Tabs
+    // based on bootstrap v4 tabs
+    // https://getbootstrap.com/docs/4.0/components/navs/
+    .tabsContainer{
+        display: flex;
+        border-bottom: 1px solid var(--border-color);
+        margin-bottom: 24px;
+        
+        .tab{
+            // reset button element styles
+            background-color: transparent;
+            font-size: 1rem;
+            color: var(--main-text-color);
+            // tab styles
+            cursor: pointer;
+            padding: 1em 0.75em 0.75em;
+            border: 1px solid transparent;
+            border-top-left-radius: 6px;
+            border-top-right-radius: 6px;
+            margin-bottom: -1px; //to hide bottom border under active tab
+            
+            &.active{
+                cursor: auto;
+                border-color: var(--border-color);
+                border-bottom-color: var(--main-bg-color);
+            }
+            // separate class from disabled property, since if tab is active disabled attribute is added
+            // since you can't click on it, but doesn't have disabled class
+            &.disabled{
+                cursor: not-allowed;
+                color: var(--disabled-text-color);
+            }
+        }
+    }
+
+    @include pinned_controls_mq{
+        .tabsContainer{
+            .tab{
+                &.active{
+                    border-color: var(--pinned-controls-border-color);
+                    border-bottom-color: var(--pinned-controls-bg-color);
+                }
+            }
+        }
     }
 </style>
 
