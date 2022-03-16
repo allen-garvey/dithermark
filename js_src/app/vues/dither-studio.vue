@@ -209,12 +209,11 @@
         <div ref="unsplashAttributionContainer">
             <unsplash-attribution v-if="loadedImage && loadedImage.unsplash" :unsplash-info="loadedImage.unsplash" />
         </div>
-        <div class="image-canvas-supercontainer" v-show="isImageLoaded" :class="{'show-original': showOriginalImage}">
-            <div class="image-canvas-container">
-                <canvas ref="sourceCanvasOutput" class="source-output-canvas" v-show="showOriginalImage"></canvas>
-                <canvas ref="transformCanvasOutput"></canvas>
-            </div>
-        </div>
+        <image-canvas-supercontainer
+            :showOriginalImage="showOriginalImage" 
+            v-show="isImageLoaded"
+            ref="imageCanvasSupercontainer"
+        />
         <modal-prompt ref="modalPromptComponent" />
     </div>
 </template>
@@ -266,6 +265,7 @@ import ModalPrompt from './modal-prompt.vue';
 import BwDitherSection from './bw-dither.vue';
 import ColorDitherSection from './color-dither.vue';
 import GlobalControlsTabs from './global-controls-tabs.vue';
+import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
 
 
 //webworker stuff
@@ -303,6 +303,7 @@ export default {
         BwDitherSection,
         ColorDitherSection,
         GlobalControlsTabs,
+        ImageCanvasSupercontainer,
     },
     created(){
         WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
@@ -337,8 +338,8 @@ export default {
     },
     mounted(){
         const refs = this.$refs;
-        sourceCanvasOutput = Canvas.create(refs.sourceCanvasOutput);
-        transformCanvasOutput = Canvas.create(refs.transformCanvasOutput);
+        sourceCanvasOutput = Canvas.create(refs.imageCanvasSupercontainer.sourceCanvasOutput);
+        transformCanvasOutput = Canvas.create(refs.imageCanvasSupercontainer.transformCanvasOutput);
 
         //have to set alertsContainer property here, since it does not exist yet in created hook
         if(this.isWebglSupported){
@@ -802,7 +803,7 @@ export default {
         onDimensionsRequestedForZoomFit(callback){
             const areControlsPinned = this.areControlsPinned();
             const controlsContainerWidth = areControlsPinned ? this.$refs.controlsContainer.offsetWidth : 0;
-            const canvasMargin = this.showOriginalImage ? parseInt(getComputedStyle(this.$refs.sourceCanvasOutput).getPropertyValue('margin-right').replace(/[\D]/, '')) : 0;
+            const canvasMargin = this.showOriginalImage ? parseInt(getComputedStyle(this.$refs.imageCanvasSupercontainer.sourceCanvasOutput).getPropertyValue('margin-right').replace(/[\D]/, '')) : 0;
 
             callback(areControlsPinned, controlsContainerWidth, canvasMargin);
         },
