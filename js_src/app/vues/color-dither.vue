@@ -56,10 +56,12 @@
         <fieldset>
             <legend>Color palette</legend>
             <color-picker 
-                v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" 
+                v-if="shouldShowColorPicker" 
+                :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" 
                 @update:modelValue="colorPickerValueChanged" 
                 @ok="colorPickerOk" 
-                @cancel="colorPickerCanceled" />
+                @cancel="colorPickerCanceled" 
+            />
             <div class="colors-list-container" @dragover="handleColorDragover">
                 <color-input
                     v-for="(color, i) in colors" 
@@ -72,15 +74,13 @@
                     :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" 
                 />
             </div>
-            <div class="spread-content palette-buttons-container">
-                <div>
-                    <print-palette-button :colors="colors" />
-                    <button class="btn btn-danger btn-sm" v-show="currentPalette.isSaved" @click="deletePalette">Delete</button>
-                </div>
-                <!-- these buttons mutaually exclusive and should never show at the same time- they are XOR (either or none, but not both -->
-                <button class="btn btn-primary btn-sm" v-show="currentPalette.isCustom" @click="savePalette">Save</button>
-                <button class="btn btn-default btn-sm" v-show="currentPalette.isSaved" @click="showRenamePalette">Rename</button>
-            </div>
+            <palette-buttons 
+                :colors="colors"
+                :current-palette="currentPalette"
+                :savePalette="savePalette"
+                :delete-palette="deletePalette"
+                :show-rename-palette="showRenamePalette"
+            />
         </fieldset>
         <fieldset>
             <legend>Optimize palette</legend>
@@ -117,7 +117,7 @@ import WorkerUtil from '../worker-util.js';
 import CyclePropertyList from './cycle-property-list.vue';
 import ColorPickerComponent from './color-picker.vue';
 import ColorInput from './color-input.vue';
-import PrintPaletteButton from 'print-palette-button'; //resolved in webpack config so not included in production builds
+import PaletteButtons from './palette-buttons.vue';
 
 
 //canvas stuff
@@ -161,7 +161,7 @@ export default {
         CyclePropertyList,
         'color-picker': ColorPickerComponent,
         ColorInput,
-        PrintPaletteButton,
+        PaletteButtons,
     },
     created(){
         //select first non-custom palette
