@@ -2,7 +2,7 @@
     <div :class="$style.tabsContainer">
         <button 
             v-for="(tab, index) in globalControlsTabs" 
-            :key="index"
+            :key="tab.name"
             :class="{[$style.tab]: true, [$style.active]: activeControlsTab === index, [$style.disabled]: tab.isDisabled}" 
             @click="setActiveControlsTab(index, tab.isDisabled)"
             :disabled="tab.isDisabled || activeControlsTab === index"
