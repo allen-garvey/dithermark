@@ -3,9 +3,10 @@
         <div class="histogram-container color-histogram-container" :style="{width: histogramColorWidth, height: histogramHeight}">
             <canvas ref="histogramCanvas" :width="histogramColorWidth" :height="histogramHeight" title="Hue histogram"></canvas>
         </div>
-        <div class="transform-button-container">
-            <button class="btn btn-success btn-sm"  @click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Dither</button>
-        </div>
+        <dither-button 
+            :on-click="ditherImageWithSelectedAlgorithm"
+            v-if="!isLivePreviewEnabled"
+        />
         <div class="spread-content">
             <label>Algorithm
                 <select v-model="selectedDitherAlgorithmIndex">
@@ -109,6 +110,7 @@ import ColorPickerComponent from './color-picker.vue';
 import ColorInput from './color-input.vue';
 import PaletteButtons from './palette-buttons.vue';
 import ColorCountInput from './color-count-input.vue';
+import DitherButton from './dither-button.vue';
 
 
 //canvas stuff
@@ -154,6 +156,7 @@ export default {
         ColorInput,
         PaletteButtons,
         ColorCountInput,
+        DitherButton,
     },
     created(){
         //select first non-custom palette

@@ -4,9 +4,10 @@
             <canvas ref="histogramCanvasIndicator" class="histogram-canvas-indicator" :width="histogramBwWidth" :height="histogramHeight" title="Lightness histogram"></canvas>
             <canvas ref="histogramCanvas" class="histogram-canvas" :width="histogramBwWidth" :height="histogramHeight" title="Lightness histogram"></canvas>
         </div>
-        <div class="transform-button-container">
-            <button class="btn btn-success btn-sm" @click="ditherImageWithSelectedAlgorithm" v-show="!isLivePreviewEnabled">Dither</button>
-        </div>
+        <dither-button 
+            :on-click="ditherImageWithSelectedAlgorithm"
+            v-if="!isLivePreviewEnabled"
+        />
         <div class="spread-content">
             <label>Algorithm
                 <select v-model="selectedDitherAlgorithmIndex">
@@ -65,6 +66,7 @@ import WorkerUtil from '../worker-util.js';
 import CyclePropertyList from './cycle-property-list.vue';
 import ColorPickerComponent from './color-picker.vue';
 import ColorInput from './color-input.vue';
+import DitherButton from './dither-button.vue';
 import TextureCombineComponent from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 
 
@@ -108,6 +110,7 @@ export default {
         'color-picker': ColorPickerComponent,
         ColorInput,
         'texture-combine': TextureCombineComponent,
+        DitherButton,
     },
     created(){
         this.resetColorReplace();
