@@ -79,14 +79,14 @@ let histogramCanvas;
 let histogramCanvasIndicator;
 
 export default {
-    props: {                                                                                                                                
-        isWebglEnabled: {                                                                                                                   
-            type: Boolean,                                                                                                                 
-            required: true,                                                                                                                
-        },                                                                                                                                 
-        isLivePreviewEnabled: {                                                                                                             
-            type: Boolean,                                                                                                                 
-            required: true,                                                                                                                 
+    props: {
+        isWebglEnabled: {
+            type: Boolean,
+            required: true,
+        },
+        isLivePreviewEnabled: {
+            type: Boolean,
+            required: true,
         },
         isColorPickerLivePreviewEnabled: {
             type: Boolean,
