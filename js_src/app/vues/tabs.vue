@@ -1,11 +1,11 @@
 <template>
     <div :class="$style.tabsContainer">
         <button 
-            v-for="(tab, index) in globalControlsTabs" 
+            v-for="(tab, index) in tabs" 
             :key="tab.name"
-            :class="{[$style.tab]: true, [$style.active]: activeControlsTab === index, [$style.disabled]: tab.isDisabled}" 
-            @click="setActiveControlsTab(index, tab.isDisabled)"
-            :disabled="tab.isDisabled || activeControlsTab === index"
+            :class="{[$style.tab]: true, [$style.active]: activeTabIndex === index, [$style.disabled]: tab.isDisabled}" 
+            @click="tab.clicked(index)"
+            :disabled="tab.isDisabled || activeTabIndex === index"
         >
             {{tab.name}}
         </button>
@@ -63,33 +63,13 @@
 <script>
 export default {
     props: {
-        isImageLoaded: {
-            type: Boolean,
+        tabs: {
+            type: Array,
             required: true,
         },
-        activeControlsTab: {
+        activeTabIndex: {
             type: Number,
             required: true,
-        },
-        setActiveControlsTab: {
-            type: Function,
-            required: true,
-        },
-    },
-    computed: {
-        globalControlsTabs(){
-            const tabs = [
-                {name: 'Open'},
-                {name: 'Image'},
-                {name: 'Settings'},
-                {name: 'Export'},
-            ];
-            if(!this.isImageLoaded){
-                tabs[1].isDisabled = true;
-                tabs[3].isDisabled = true;
-            }
-
-            return tabs;
         },
     },
 };

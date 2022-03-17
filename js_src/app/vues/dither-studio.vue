@@ -12,10 +12,9 @@
         <div class="controls">
             <div ref="controlsContainer" class="controls-container">
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
-                    <global-controls-tabs 
-                        :activeControlsTab="activeControlsTab"
-                        :setActiveControlsTab="setActiveControlsTab"
-                        :isImageLoaded="isImageLoaded"
+                    <tabs 
+                        :activeTabIndex="activeControlsTab"
+                        :tabs="globalControlsTabs"
                     />
                     <!-- Global controls tabs bodies -->
                     <!-- Open tab -->
@@ -179,22 +178,10 @@
                     />
                 </div>
                 <div class="super-dither-controls-container" v-show="isImageLoaded">
-                    <div :class="$style.tabsContainer">
-                        <button 
-                            :class="{[$style.tab]: true, [$style.active]: activeDitherComponentId === bwDitherComponentId}" 
-                            @click="loadDitherTab(bwDitherComponentId)"
-                            :disabled="activeDitherComponentId === bwDitherComponentId"
-                        >
-                            BW Dither
-                        </button>
-                        <button 
-                            :class="{[$style.tab]: true, [$style.active]: activeDitherComponentId === colorDitherComponentId}" 
-                            @click="loadDitherTab(colorDitherComponentId)"
-                            :disabled="activeDitherComponentId === colorDitherComponentId"
-                        >
-                            Color Dither
-                        </button>
-                    </div>
+                    <tabs 
+                        :activeTabIndex="activeDitherComponentId"
+                        :tabs="ditherTabs"
+                    />
                     <div v-show="activeDitherComponentId === bwDitherComponentId">
                         <bw-dither-section ref="bwDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(bwDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(bwDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" :dither-algorithms="bwDitherAlgorithms" />  
                     </div>
@@ -251,6 +238,8 @@ import WebGlSmoothing from '../webgl-smoothing.js';
 import WebGlBilateralFilter from '../webgl-bilateral-filter.js';
 import WebGlCanvasFilters from '../webgl-canvas-filters.js';
 import ImageFiltersModel from '../image-filters-model.js';
+import { getGlobalTabs } from '../models/global-tabs.js'
+import { getDitherTabs } from '../models/dither-tabs.js'
 
 import CyclePropertyList from './cycle-property-list.vue';
 import HintContainer from './hint-container.vue';
@@ -264,7 +253,7 @@ import ZoomBar from './zoom-bar.vue';
 import ModalPrompt from './modal-prompt.vue';
 import BwDitherSection from './bw-dither.vue';
 import ColorDitherSection from './color-dither.vue';
-import GlobalControlsTabs from './global-controls-tabs.vue';
+import Tabs from './tabs.vue';
 import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
 
 
@@ -302,7 +291,7 @@ export default {
         ModalPrompt,
         BwDitherSection,
         ColorDitherSection,
-        GlobalControlsTabs,
+        Tabs,
         ImageCanvasSupercontainer,
     },
     created(){
@@ -406,6 +395,14 @@ export default {
         };
     },
     computed: {
+        globalControlsTabs(){
+            const clicked = (tabIndex) => this.activeControlsTab = tabIndex;
+
+            return getGlobalTabs(this.isImageLoaded, clicked);
+        },
+        ditherTabs(){
+            return getDitherTabs(this.loadDitherTab);
+        },
         //the source canvas for transformed (dithered and filtered image)
         //before zoom
         transformedSourceCanvas(){
@@ -581,12 +578,6 @@ export default {
         /*
         * Tabs
         */
-        setActiveControlsTab(tabIndex, isDisabled){
-            if(isDisabled){
-                return;
-            }
-            this.activeControlsTab = tabIndex;
-        },
         loadDitherTab(componentId){
             if(componentId === this.activeDitherComponentId){
                 return;
