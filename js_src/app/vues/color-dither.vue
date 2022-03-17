@@ -40,19 +40,9 @@
             </label>
             <cycle-property-list model-name="color palette" v-model="selectedPaletteIndex" :array-length="palettes.length" :array-start-index.number="1" />
         </div>
-        <div class="color-dither-number-of-colors-container">
-            <label for="color_dither_num_colors_input">Color count</label>
-                <input type="range" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" list="color_dither_num_colors_tickmarks" id="color_dither_num_colors_input" />
-            <datalist id="color_dither_num_colors_tickmarks">
-                <option 
-                    v-for="n in (numColorsMax - numColorsMin + 1)" 
-                    :key="n + numColorsMin - 1"
-                    :value="n + numColorsMin - 1"
-                >
-                </option>
-            </datalist>
-            <input type="number" v-model.number="numColors" :min="numColorsMin" :max="numColorsMax" step="1" />
-        </div>
+        <color-count-input
+            v-model="numColors"
+        />
         <fieldset>
             <legend>Color palette</legend>
             <color-picker 
@@ -118,6 +108,7 @@ import CyclePropertyList from './cycle-property-list.vue';
 import ColorPickerComponent from './color-picker.vue';
 import ColorInput from './color-input.vue';
 import PaletteButtons from './palette-buttons.vue';
+import ColorCountInput from './color-count-input.vue';
 
 
 //canvas stuff
@@ -162,15 +153,16 @@ export default {
         'color-picker': ColorPickerComponent,
         ColorInput,
         PaletteButtons,
+        ColorCountInput,
     },
     created(){
         //select first non-custom palette
         //needs to be done here to initialize palettes correctly
         this.selectedPaletteIndex = 1;
-        this.numColors = this.numColorsMax;
-        const defaultPalettes = Palettes.get(this.numColorsMax);
+        this.numColors = Constants.colorDitherMaxColors;
+        const defaultPalettes = Palettes.get(Constants.colorDitherMaxColors);
         this.defaultPalettesLength = defaultPalettes.length;
-        this.palettes = defaultPalettes.concat(UserSettings.getPalettes(this.numColorsMax));
+        this.palettes = defaultPalettes.concat(UserSettings.getPalettes(Constants.colorDitherMaxColors));
     },
     mounted(){
         //have to get canvases here, because DOM manipulation needs to happen in mounted hook
@@ -189,8 +181,6 @@ export default {
             defaultPalettesLength: 0,
             selectedPaletteIndex: null,
             numColors: null,
-            numColorsMin: 2,
-            numColorsMax: Constants.colorDitherMaxColors,
             colorDitherModes: [...ColorDitherModes.values()],
             selectedColorDitherModeIndex: 4,
             colorQuantizationModes: ColorQuantizationModes.modes,
@@ -224,7 +214,7 @@ export default {
             return this.colors.slice(0, this.numColors);  
         },
         selectedColorsVec(){
-            return ColorPicker.colorsToVecArray(this.selectedColors, this.numColorsMax);
+            return ColorPicker.colorsToVecArray(this.selectedColors, Constants.colorDitherMaxColors);
         },
         selectedColorDitherModeId(){
             return this.colorDitherModes[this.selectedColorDitherModeIndex].id;
@@ -271,20 +261,8 @@ export default {
                 this.optimizePalette();
             }
         },
-        numColors(newValue, oldValue){
-            let value = newValue;
-            if(value < this.numColorsMin){
-                value = this.numColorsMin;
-            }
-            else if(value > this.numColorsMax){
-                value = this.numColorsMax;
-            }
-            if(value !== this.numColors){
-                this.numColors = value;
-            }
-            if(value === oldValue){
-                return;
-            }
+        numColors(newValue){
+            this.numColors = newValue;
             if(this.isLivePreviewEnabled){
                 this.ditherImageWithSelectedAlgorithm();
             }
@@ -405,7 +383,7 @@ export default {
         changePaletteToOptimizePaletteResult(colorsHexArrayCopy){
             //this is so if optimize palette result has less colors than max, we keep the colors that are already in the palette
             //at the end of the palette
-            this.colorsShadow = colorsHexArrayCopy.concat(this.colorsShadow.slice(colorsHexArrayCopy.length, this.numColorsMax));
+            this.colorsShadow = colorsHexArrayCopy.concat(this.colorsShadow.slice(colorsHexArrayCopy.length, Constants.colorDitherMaxColors));
         },
         histogramWorkerMessageReceived(huePercentages){
             Histogram.drawColorHistogram(histogramCanvas, huePercentages);

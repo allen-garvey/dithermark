@@ -2,16 +2,6 @@
 * Color dither component controls
 */
 
-.color-dither-number-of-colors-container{
-    margin-top: 16px;
-    display: flex;
-    flex-wrap: wrap;
-    & > *{
-        margin-right: 1em;
-        align-self: center;
-    }
-}
-
 .colors-list-container{
     display: flex;
     flex-wrap: wrap;
