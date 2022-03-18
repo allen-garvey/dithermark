@@ -1,16 +1,16 @@
 <template>
     <div :class="$style.colorCountInputContainer">
         <label for="color_dither_num_colors_input">Color count</label>
-            <input 
-                type="range" 
-                :value="numColors" 
-                @input="updateNumColors($event.target.value)"
-                :min="numColorsMin" 
-                :max="numColorsMax" 
-                step="1" 
-                list="color_dither_num_colors_tickmarks" 
-                id="color_dither_num_colors_input" 
-            />
+        <input 
+            type="range" 
+            :value="numColors" 
+            @input="updateNumColors($event.target.value)"
+            :min="numColorsMin" 
+            :max="numColorsMax" 
+            step="1" 
+            list="color_dither_num_colors_tickmarks" 
+            id="color_dither_num_colors_input" 
+        />
         <datalist id="color_dither_num_colors_tickmarks">
             <option 
                 v-for="n in (numColorsMax - numColorsMin + 1)" 
