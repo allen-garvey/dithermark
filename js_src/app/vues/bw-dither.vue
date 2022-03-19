@@ -18,20 +18,9 @@
             </label>
             <cycle-property-list model-name="algorithm" v-model="selectedDitherAlgorithmIndex" :array-length="ditherAlgorithms.length" />
         </div>
-        <div class="spread-content threshold-container">
-            <label>
-                Threshold
-                <input type="range" :min="thresholdMin" :max="thresholdMax" v-model.number="threshold" list="threshold-tickmarks"/>
-                <input type="number" :min="thresholdMin" :max="thresholdMax" v-model.number="threshold"/>
-                <datalist id="threshold-tickmarks">
-                    <option value="0"/>
-                    <option value="63"/>
-                    <option value="127"/>
-                    <option value="191"/>
-                    <option value="255"/>
-                </datalist>
-            </label>
-        </div>
+        <threshold-input 
+            v-model="threshold"
+        />
         <fieldset>
             <legend>Color substitution</legend>
             <color-picker 
@@ -67,6 +56,7 @@ import CyclePropertyList from './cycle-property-list.vue';
 import ColorPickerComponent from './color-picker.vue';
 import ColorInput from './color-input.vue';
 import DitherButton from './dither-button.vue';
+import ThresholdInput from './threshold-input.vue';
 import TextureCombineComponent from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 
 
@@ -111,6 +101,7 @@ export default {
         ColorInput,
         'texture-combine': TextureCombineComponent,
         DitherButton,
+        ThresholdInput,
     },
     created(){
         this.resetColorReplace();
@@ -123,8 +114,6 @@ export default {
     data(){ 
         return{
             threshold: 127,
-            thresholdMin: 0,
-            thresholdMax: 255,
             selectedDitherAlgorithmIndex: 0,
             hasImageBeenTransformed: false,
             ditherGroups: AlgorithmModel.bwDitherGroups,
@@ -168,30 +157,11 @@ export default {
                 this.ditherImageWithSelectedAlgorithm();
             }
         },
-        threshold(newThreshold, oldThreshold){
+        threshold(){
             //reset bw texture
             this.freeTransformedImageBwTexture();
-            
-            let newThresholdCleaned = Math.floor(newThreshold);
-            if(isNaN(newThresholdCleaned)){
-                this.threshold = oldThreshold;
-                return;
-            }
-            if(newThresholdCleaned < this.thresholdMin){
-                newThresholdCleaned = this.thresholdMin;
-            }
-            else if(newThresholdCleaned > this.thresholdMax){
-                newThresholdCleaned = this.thresholdMax;
-            }
-            if(oldThreshold === newThresholdCleaned){
-                return;
-            }
-            if(newThresholdCleaned !== newThreshold){
-                this.threshold = newThresholdCleaned;
-                return;
-            }
-            
             Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
+            
             if(this.isLivePreviewEnabled){
                 this.ditherImageWithSelectedAlgorithm();
             }
