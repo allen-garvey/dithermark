@@ -35,7 +35,7 @@
                 <button class="btn btn-default btn-sm" @click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
             </div>
         </fieldset>
-            <texture-combine ref="textureCombineComponent" :loaded-image="loadedImage" :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"/>
+        <texture-combine ref="textureCombineComponent" :loaded-image="loadedImage" :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"/>
     </div>
 </template>
 
