@@ -1,40 +1,46 @@
 <template>
-    <div 
-        class="spread-content"
-        :class="$style.thresholdInputContainer"
-    >
-        <label>
-            Threshold
-            <input 
-                type="range" 
-                :min="thresholdMin" 
-                :max="thresholdMax" 
-                :value="threshold"
-                @input="updateThreshold($event.target.value)" 
-                list="threshold-tickmarks"
-            />
-            <input 
-                type="number" 
-                :min="thresholdMin" 
-                :max="thresholdMax" 
-                :value="threshold"
-                @input="updateThreshold($event.target.value)"
-            />
-            <datalist id="threshold-tickmarks">
-                <option value="0"/>
-                <option value="63"/>
-                <option value="127"/>
-                <option value="191"/>
-                <option value="255"/>
-            </datalist>
-        </label>
+    <div :class="$style.thresholdInputContainer">
+        <label for="threshold_input">Threshold</label>
+        <input 
+            type="range" 
+            :min="thresholdMin" 
+            :max="thresholdMax" 
+            :value="threshold"
+            @input="updateThreshold($event.target.value)" 
+            list="threshold-tickmarks"
+            id="threshold_input"
+        />
+        <input 
+            type="number" 
+            :min="thresholdMin" 
+            :max="thresholdMax" 
+            :value="threshold"
+            @input="updateThreshold($event.target.value)"
+        />
+        <datalist id="threshold-tickmarks">
+            <option value="0"/>
+            <option value="63"/>
+            <option value="127"/>
+            <option value="191"/>
+            <option value="255"/>
+        </datalist>
     </div>
 </template>
 
 <style lang="scss" module>
 
-.thresholdInputContainer input[type="range"]{
-    width: 200px;
+
+.thresholdInputContainer {
+    display: flex;
+    flex-wrap: wrap;
+    & > *{
+        margin-right: 1em;
+        align-self: center;
+    }
+    
+    input[type="range"] {
+        width: 200px;
+    }
 }
 
 </style>
