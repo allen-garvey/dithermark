@@ -264,8 +264,7 @@ export default {
                 this.optimizePalette();
             }
         },
-        numColors(newValue){
-            this.numColors = newValue;
+        numColors(){
             if(this.isLivePreviewEnabled){
                 this.ditherImageWithSelectedAlgorithm();
             }
