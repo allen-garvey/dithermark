@@ -5,16 +5,10 @@
             :on-click="ditherImageWithSelectedAlgorithm"
             v-if="!isLivePreviewEnabled"
         />
-        <div class="spread-content">
-            <label>Algorithm
-                <select v-model="selectedDitherAlgorithmIndex">
-                    <optgroup v-for="(ditherGroup, outerIndex) in ditherGroups" :label="ditherGroup.title" :key="outerIndex">
-                        <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" :value="ditherGroup.start + index" :key="index">{{ ditherAlgorithm.title }}</option>
-                    </optgroup>
-                </select>
-            </label>
-            <cycle-property-list model-name="algorithm" v-model="selectedDitherAlgorithmIndex" :array-length="ditherAlgorithms.length" />
-        </div>
+        <algorithm-select 
+            v-model="selectedDitherAlgorithmIndex"
+            :ditherAlgorithms="ditherAlgorithms"
+        />
         <threshold-input 
             v-model="threshold"
         />
@@ -32,17 +26,19 @@
                 <button class="btn btn-default btn-sm" @click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
             </div>
         </fieldset>
-        <texture-combine ref="textureCombineComponent" :loaded-image="loadedImage" :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"/>
+        <texture-combine 
+            ref="textureCombineComponent" 
+            :loaded-image="loadedImage" 
+            :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"
+        />
     </div>
 </template>
-
 
 <script>
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import Canvas from '../canvas.js';
 import Histogram from '../histogram.js';
 import WebGl from '../webgl.js';
-import AlgorithmModel from '../../generated_output/app/algorithm-model.js';
 import WorkerHeaders from '../../shared/worker-headers.js';
 import ColorPicker from '../color-picker.js';
 import WebGlBwDither from '../webgl-bw-dither.js';
@@ -54,6 +50,7 @@ import ColorInput from './color-input.vue';
 import DitherButton from './dither-button.vue';
 import ThresholdInput from './threshold-input.vue';
 import HistogramComponent from './histogram-bw.vue';
+import AlgorithmSelect from './algorithm-select-bw.vue';
 import TextureCombineComponent from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 
 
@@ -100,6 +97,7 @@ export default {
         DitherButton,
         ThresholdInput,
         Histogram: HistogramComponent,
+        AlgorithmSelect,
     },
     created(){
         this.resetColorReplace();
@@ -114,7 +112,6 @@ export default {
             threshold: 127,
             selectedDitherAlgorithmIndex: 0,
             hasImageBeenTransformed: false,
-            ditherGroups: AlgorithmModel.bwDitherGroups,
             loadedImage: null,
             colorReplaceColors: [],
             //for color picker
