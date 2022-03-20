@@ -1,26 +1,6 @@
 <template>
     <div class="dither-controls-container controls-panel">
-        <div 
-            class="histogram-container" 
-            :style="{ width: `${histogramBwWidth}px`, height: `${histogramHeight}px` }"
-        >
-            <canvas 
-                ref="histogramCanvasIndicator" 
-                class="histogram-canvas-indicator" 
-                :width="histogramBwWidth" 
-                :height="histogramHeight" 
-                title="Lightness histogram"
-            >
-            </canvas>
-            <canvas 
-                ref="histogramCanvas" 
-                class="histogram-canvas" 
-                :width="histogramBwWidth" 
-                :height="histogramHeight" 
-                title="Lightness histogram"
-            >
-            </canvas>
-        </div>
+        <histogram ref="histogram" />
         <dither-button 
             :on-click="ditherImageWithSelectedAlgorithm"
             v-if="!isLivePreviewEnabled"
@@ -59,7 +39,6 @@
 
 <script>
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
-import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js';
 import Histogram from '../histogram.js';
 import WebGl from '../webgl.js';
@@ -74,6 +53,7 @@ import ColorPickerComponent from './color-picker.vue';
 import ColorInput from './color-input.vue';
 import DitherButton from './dither-button.vue';
 import ThresholdInput from './threshold-input.vue';
+import HistogramComponent from './histogram-bw.vue';
 import TextureCombineComponent from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 
 
@@ -119,14 +99,15 @@ export default {
         'texture-combine': TextureCombineComponent,
         DitherButton,
         ThresholdInput,
+        Histogram: HistogramComponent,
     },
     created(){
         this.resetColorReplace();
     },
     mounted(){
         //have to get canvases here, because DOM manipulation needs to happen in mounted hook
-        histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
-        histogramCanvasIndicator = Canvas.create(this.$refs.histogramCanvasIndicator);
+        histogramCanvas = Canvas.create(this.$refs.histogram.histogramCanvas);
+        histogramCanvasIndicator = Canvas.create(this.$refs.histogram.histogramCanvasIndicator);
     },
     data(){ 
         return{
@@ -140,9 +121,6 @@ export default {
             shouldShowColorPicker: false,
             colorPickerColorIndex: 0,
             hasColorPickerChangedTheColor: false,
-            //histogram
-            histogramBwWidth: Constants.histogramBwWidth,
-            histogramHeight: Constants.histogramHeight,
         };
     },
     computed: {

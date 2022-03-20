@@ -12,14 +12,6 @@
     }
 }
 
-.histogram-canvas-indicator{
-    z-index: 10;
-}
-
-.histogram-canvas{
-    z-index: 1;
-}
-
 //hide color histogram at small screen widths
 //since it stretches screen, while not adding very much
 @media screen and (max-width: $histogram_color_required_width){
