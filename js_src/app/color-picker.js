@@ -76,10 +76,16 @@ function pixelsToHexArray(pixels){
     return ret;
 }
 
+export function defaultBwColors(){
+    const DEFAULT_BLACK_VALUE = '#000000';
+    const DEFAULT_WHITE_VALUE = '#ffffff';
+
+    return [DEFAULT_BLACK_VALUE, DEFAULT_WHITE_VALUE];
+}
+
 export default {
+    defaultBwColors,
     pixelFromHex: pixelFromColorPicker,
-    COLOR_REPLACE_DEFAULT_BLACK_VALUE: '#000000',
-    COLOR_REPLACE_DEFAULT_WHITE_VALUE: '#ffffff',
     colorsToVecArray,
     areColorArraysIdentical,
     prepareForWorker,

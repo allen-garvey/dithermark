@@ -12,20 +12,10 @@
         <threshold-input 
             v-model="threshold"
         />
-        <fieldset>
-            <legend>Color substitution</legend>
-            <color-picker 
-            v-if="shouldShowColorPicker" 
-            :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="colorPickerSelectedColor" 
-            @update:modelValue="colorPickerValueChanged" 
-            @ok="colorPickerOk" 
-            @cancel="colorPickerCanceled" />
-            <div class="bw-color-replace-container">
-                <color-input label="Black" id-prefix="bw" :is-selected="shouldShowColorPicker && colorPickerColorIndex===0" :on-click="createColorInputClicked(0)" :color-value="colorReplaceColors[0]" color-index.number="0" />
-                <color-input label="White" id-prefix="bw" :is-selected="shouldShowColorPicker && colorPickerColorIndex===1" :on-click="createColorInputClicked(1)" :color-value="colorReplaceColors[1]" color-index.number="1" />
-                <button class="btn btn-default btn-sm" @click="resetColorReplace" v-show="areColorReplaceColorsChangedFromDefaults" title="Reset colors to black and white">Reset</button>
-            </div>
-        </fieldset>
+        <color-substitution-input
+            v-model="colorReplaceColors"
+            :isColorPickerLivePreviewEnabled="isColorPickerLivePreviewEnabled"
+        />
         <texture-combine 
             ref="textureCombineComponent" 
             :loaded-image="loadedImage" 
@@ -44,15 +34,12 @@ import ColorPicker from '../color-picker.js';
 import WebGlBwDither from '../webgl-bw-dither.js';
 import WorkerUtil from '../worker-util.js';
 
-import CyclePropertyList from './cycle-property-list.vue';
-import ColorPickerComponent from './color-picker.vue';
-import ColorInput from './color-input.vue';
 import DitherButton from './dither-button.vue';
 import ThresholdInput from './threshold-input.vue';
 import HistogramComponent from './histogram-bw.vue';
 import AlgorithmSelect from './algorithm-select-bw.vue';
-import TextureCombineComponent from 'texture-combine-component'; //resolved via webpack config so not included in release builds
-
+import ColorSubstitutionInput from './color-substitution-input.vue';
+import TextureCombine from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 
 //used for creating BW texture for webgl color replace
 let isDitherWorkerBwWorking = false;
@@ -90,17 +77,12 @@ export default {
         },
     },
     components: {
-        CyclePropertyList,
-        'color-picker': ColorPickerComponent,
-        ColorInput,
-        'texture-combine': TextureCombineComponent,
+        TextureCombine,
         DitherButton,
         ThresholdInput,
         Histogram: HistogramComponent,
         AlgorithmSelect,
-    },
-    created(){
-        this.resetColorReplace();
+        ColorSubstitutionInput,
     },
     mounted(){
         //have to get canvases here, because DOM manipulation needs to happen in mounted hook
@@ -113,17 +95,10 @@ export default {
             selectedDitherAlgorithmIndex: 0,
             hasImageBeenTransformed: false,
             loadedImage: null,
-            colorReplaceColors: [],
-            //for color picker
-            shouldShowColorPicker: false,
-            colorPickerColorIndex: 0,
-            hasColorPickerChangedTheColor: false,
+            colorReplaceColors: ColorPicker.defaultBwColors(),
         };
     },
     computed: {
-        colorPickerSelectedColor(){
-            return this.colorReplaceColors[this.colorPickerColorIndex];
-        },
         selectedDitherAlgorithm(){
             return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
         },
@@ -135,9 +110,6 @@ export default {
         },
         colorReplaceWhitePixel(){
             return ColorPicker.pixelFromHex(this.colorReplaceColors[1]);
-        },
-        areColorReplaceColorsChangedFromDefaults(){
-            return this.colorReplaceColors[0] !== ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE || this.colorReplaceColors[1] !== ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE;
         },
         isImageLoaded(){
             return this.loadedImage != null;  
@@ -204,9 +176,6 @@ export default {
                 transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 this.requestDisplayTransformedImage();
             });
-        },
-        resetColorReplace(){
-            this.colorReplaceColors = [ColorPicker.COLOR_REPLACE_DEFAULT_BLACK_VALUE, ColorPicker.COLOR_REPLACE_DEFAULT_WHITE_VALUE];
         },
         //isNewImage is used to determine if the image is actually different,
         //or it is the same image with filters changed
@@ -300,36 +269,6 @@ export default {
             //to avoid weird errors, we will do this reset the variables here, even if requestCanvases fails
             transformedImageBwTexture = null;
             isDitherWorkerBwWorking = false;
-        },
-        /**
-         * Color replace color input/color picker stuff
-         */
-        createColorInputClicked(colorReplaceIndex){
-            return ()=>{
-                if(this.shouldShowColorPicker){
-                    return;
-                }
-                this.colorPickerColorIndex = colorReplaceIndex;
-                this.hasColorPickerChangedTheColor = false,
-                this.shouldShowColorPicker = true;
-            }
-        },
-        colorPickerValueChanged(colorHex){
-            this.hasColorPickerChangedTheColor = true,
-            this.colorReplaceColors[this.colorPickerColorIndex] = colorHex;
-        },
-        colorPickerOk(selectedColorHex){
-            //this will be true when color picker live update is disabled and the color has been changed
-            if(this.colorReplaceColors[this.colorPickerColorIndex] !== selectedColorHex){
-                this.colorReplaceColors[this.colorPickerColorIndex] = selectedColorHex;
-            }
-            this.shouldShowColorPicker = false;
-        },
-        colorPickerCanceled(previousColorHex){
-            if(this.hasColorPickerChangedTheColor){
-                this.colorReplaceColors[this.colorPickerColorIndex] = previousColorHex;
-            }
-            this.shouldShowColorPicker = false;
         },
     }
 };
