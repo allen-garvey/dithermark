@@ -1,7 +1,16 @@
 <template>
     <div class="dither-controls-container controls-panel">
-        <div class="histogram-container color-histogram-container" :style="{width: histogramColorWidth, height: histogramHeight}">
-            <canvas ref="histogramCanvas" :width="histogramColorWidth" :height="histogramHeight" title="Hue histogram"></canvas>
+        <div 
+            class="histogram-container color-histogram-container" 
+            :style="{width: `${histogramColorWidth}px`, height: `${histogramHeight}px`}"
+        >
+            <canvas 
+                ref="histogramCanvas" 
+                :width="histogramColorWidth" 
+                :height="histogramHeight" 
+                title="Hue histogram"
+            >
+            </canvas>
         </div>
         <dither-button 
             :on-click="ditherImageWithSelectedAlgorithm"
@@ -196,8 +205,8 @@ export default {
             hasColorPickerChangedTheColor: false,
             selectedPaletteIndexBeforeColorPickerOpened: 0,
             //histogram
-            histogramColorWidth: Constants.histogramColorWidth+'px',
-            histogramHeight: Constants.histogramHeight+'px',
+            histogramColorWidth: Constants.histogramColorWidth,
+            histogramHeight: Constants.histogramHeight,
         };
     },
     computed: {

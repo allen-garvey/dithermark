@@ -1,8 +1,25 @@
 <template>
     <div class="dither-controls-container controls-panel">
-        <div class="histogram-container" :style="{width: histogramBwWidth, height: histogramHeight}">
-            <canvas ref="histogramCanvasIndicator" class="histogram-canvas-indicator" :width="histogramBwWidth" :height="histogramHeight" title="Lightness histogram"></canvas>
-            <canvas ref="histogramCanvas" class="histogram-canvas" :width="histogramBwWidth" :height="histogramHeight" title="Lightness histogram"></canvas>
+        <div 
+            class="histogram-container" 
+            :style="{ width: `${histogramBwWidth}px`, height: `${histogramHeight}px` }"
+        >
+            <canvas 
+                ref="histogramCanvasIndicator" 
+                class="histogram-canvas-indicator" 
+                :width="histogramBwWidth" 
+                :height="histogramHeight" 
+                title="Lightness histogram"
+            >
+            </canvas>
+            <canvas 
+                ref="histogramCanvas" 
+                class="histogram-canvas" 
+                :width="histogramBwWidth" 
+                :height="histogramHeight" 
+                title="Lightness histogram"
+            >
+            </canvas>
         </div>
         <dither-button 
             :on-click="ditherImageWithSelectedAlgorithm"
@@ -124,8 +141,8 @@ export default {
             colorPickerColorIndex: 0,
             hasColorPickerChangedTheColor: false,
             //histogram
-            histogramBwWidth: Constants.histogramBwWidth+'px',
-            histogramHeight: Constants.histogramHeight+'px',
+            histogramBwWidth: Constants.histogramBwWidth,
+            histogramHeight: Constants.histogramHeight,
         };
     },
     computed: {
