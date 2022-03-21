@@ -22,8 +22,8 @@ const colorDitherAlgorithms = [
 ];
 
 export default {
-    bwDitherGroups: bwDitherGroups,
-    bwDitherAlgorithms: bwDitherAlgorithms,
-    colorDitherGroups: colorDitherGroups,
-    colorDitherAlgorithms: colorDitherAlgorithms,
+    bwDitherGroups,
+    bwDitherAlgorithms,
+    colorDitherGroups,
+    colorDitherAlgorithms,
 };
