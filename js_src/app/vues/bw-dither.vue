@@ -8,6 +8,7 @@
         <algorithm-select 
             v-model="selectedDitherAlgorithmIndex"
             :ditherAlgorithms="ditherAlgorithms"
+            ditherGroupKey="bwDitherGroups"
         />
         <threshold-input 
             v-model="threshold"
@@ -37,7 +38,7 @@ import WorkerUtil from '../worker-util.js';
 import DitherButton from './dither-button.vue';
 import ThresholdInput from './threshold-input.vue';
 import HistogramComponent from './histogram-bw.vue';
-import AlgorithmSelect from './algorithm-select-bw.vue';
+import AlgorithmSelect from './algorithm-select.vue';
 import ColorSubstitutionInput from './color-substitution-input.vue';
 import TextureCombine from 'texture-combine-component'; //resolved via webpack config so not included in release builds
 

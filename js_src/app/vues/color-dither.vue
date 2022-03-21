@@ -16,16 +16,11 @@
             :on-click="ditherImageWithSelectedAlgorithm"
             v-if="!isLivePreviewEnabled"
         />
-        <div class="spread-content">
-            <label>Algorithm
-                <select v-model="selectedDitherAlgorithmIndex">
-                        <optgroup v-for="(ditherGroup, groupIndex) in ditherGroups" :label="ditherGroup.title" :key="groupIndex">
-                            <option v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" :value="ditherGroup.start + index" :key="index">{{ ditherAlgorithm.title }}</option>
-                        </optgroup>
-                </select>
-            </label>
-            <cycle-property-list model-name="algorithm" v-model="selectedDitherAlgorithmIndex" :array-length="ditherAlgorithms.length" />
-        </div>
+        <algorithm-select 
+            v-model="selectedDitherAlgorithmIndex"
+            :ditherAlgorithms="ditherAlgorithms"
+            ditherGroupKey="colorDitherGroups"
+        />
         <div class="spread-content">
             <label>Color comparison
                 <select v-model="selectedColorDitherModeIndex">
@@ -120,6 +115,7 @@ import ColorInput from './color-input.vue';
 import PaletteButtons from './palette-buttons.vue';
 import ColorCountInput from './color-count-input.vue';
 import DitherButton from './dither-button.vue';
+import AlgorithmSelect from './algorithm-select.vue';
 
 
 //canvas stuff
@@ -133,14 +129,14 @@ function optimizePaletteMemorizationKey(numColors, modeId){
 }
 
 export default {
-    props: {                                                                                                                                
-        isWebglEnabled: {                                                                                                                   
-            type: Boolean,                                                                                                                 
-            required: true,                                                                                                                
-        },                                                                                                                                 
-        isLivePreviewEnabled: {                                                                                                             
-            type: Boolean,                                                                                                                 
-            required: true,                                                                                                                 
+    props: {                                                                                              
+        isWebglEnabled: {                                                                                 
+            type: Boolean,
+            required: true,
+        },
+        isLivePreviewEnabled: {
+            type: Boolean,
+            required: true,
         },
         isColorPickerLivePreviewEnabled: {
             type: Boolean,
@@ -166,6 +162,7 @@ export default {
         PaletteButtons,
         ColorCountInput,
         DitherButton,
+        AlgorithmSelect,
     },
     created(){
         //select first non-custom palette
@@ -183,7 +180,6 @@ export default {
     data(){ 
         return{
             selectedDitherAlgorithmIndex: 36,
-            ditherGroups: AlgorithmModel.colorDitherGroups,
             loadedImage: null,
             colors: [],
             //colors shadow and draggedIndex are for dragging colors in palette

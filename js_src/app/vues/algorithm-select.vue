@@ -44,6 +44,10 @@ export default {
             type: Number,
             required: true,
         },
+        ditherGroupKey: {
+            type: String,
+            required: true,
+        },
         ditherAlgorithms: {
             type: Array,
             required: true,
@@ -54,7 +58,7 @@ export default {
     },
     computed: {
         ditherGroups(){
-            return AlgorithmModel.bwDitherGroups;
+            return AlgorithmModel[this.ditherGroupKey];
         },
         selectedDitherAlgorithmIndex(){
             return this.modelValue;
