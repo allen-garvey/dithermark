@@ -11,11 +11,3 @@
         right: 0;
     }
 }
-
-//hide color histogram at small screen widths
-//since it stretches screen, while not adding very much
-@media screen and (max-width: $histogram_color_required_width){
-    .color-histogram-container{
-        display: none;
-    }
-}

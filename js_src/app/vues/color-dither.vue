@@ -1,17 +1,6 @@
 <template>
     <div class="dither-controls-container controls-panel">
-        <div 
-            class="histogram-container color-histogram-container" 
-            :style="{width: `${histogramColorWidth}px`, height: `${histogramHeight}px`}"
-        >
-            <canvas 
-                ref="histogramCanvas" 
-                :width="histogramColorWidth" 
-                :height="histogramHeight" 
-                title="Hue histogram"
-            >
-            </canvas>
-        </div>
+        <histogram ref="histogram" />
         <dither-button 
             :on-click="ditherImageWithSelectedAlgorithm"
             v-if="!isLivePreviewEnabled"
@@ -116,6 +105,7 @@ import PaletteButtons from './palette-buttons.vue';
 import ColorCountInput from './color-count-input.vue';
 import DitherButton from './dither-button.vue';
 import AlgorithmSelect from './algorithm-select.vue';
+import HistogramComponent from './histogram-color.vue';
 
 
 //canvas stuff
@@ -163,6 +153,7 @@ export default {
         ColorCountInput,
         DitherButton,
         AlgorithmSelect,
+        Histogram: HistogramComponent,
     },
     created(){
         //select first non-custom palette
@@ -175,7 +166,7 @@ export default {
     },
     mounted(){
         //have to get canvases here, because DOM manipulation needs to happen in mounted hook
-        histogramCanvas = Canvas.create(this.$refs.histogramCanvas);
+        histogramCanvas = Canvas.create(this.$refs.histogram.histogramCanvas);
     },
     data(){ 
         return{
@@ -200,9 +191,6 @@ export default {
             colorPickerColorIndex: 0,
             hasColorPickerChangedTheColor: false,
             selectedPaletteIndexBeforeColorPickerOpened: 0,
-            //histogram
-            histogramColorWidth: Constants.histogramColorWidth,
-            histogramHeight: Constants.histogramHeight,
         };
     },
     computed: {
