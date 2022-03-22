@@ -18,22 +18,11 @@
             </label>
             <cycle-property-list model-name="color mode" v-model="selectedColorDitherModeIndex" :array-length="colorDitherModes.length" />
         </div>
-        <div class="spread-content">
-            <label>Color palette
-                <select v-model="selectedPaletteIndex">
-                    <optgroup label="Scratch" v-if="palettes.length > 0">
-                        <option value="0">{{palettes[0].title}}</option>
-                    </optgroup>
-                    <optgroup label="Default palettes">
-                        <option v-for="(palette, index) in palettes.slice(1, defaultPalettesLength)" :value="index+1" :key="index">{{palette.title}}</option>
-                    </optgroup>
-                    <optgroup label="Saved palettes" v-if="palettes.length - defaultPalettesLength > 0">
-                        <option v-for="(palette, index) in palettes.slice(defaultPalettesLength)" :value="index+defaultPalettesLength" :key="index">{{palette.title}}</option>
-                    </optgroup>
-                </select>
-            </label>
-            <cycle-property-list model-name="color palette" v-model="selectedPaletteIndex" :array-length="palettes.length" :array-start-index.number="1" />
-        </div>
+        <color-palette-select 
+            v-model="selectedPaletteIndex"
+            :palettes="palettes"
+            :defaultPalettesLength="defaultPalettesLength"
+        />
         <color-count-input
             v-model="numColors"
         />
@@ -106,7 +95,7 @@ import ColorCountInput from './color-count-input.vue';
 import DitherButton from './dither-button.vue';
 import AlgorithmSelect from './algorithm-select.vue';
 import HistogramComponent from './histogram-color.vue';
-
+import ColorPaletteSelect from './color-palette-select.vue';
 
 //canvas stuff
 let histogramCanvas;
@@ -154,6 +143,7 @@ export default {
         DitherButton,
         AlgorithmSelect,
         Histogram: HistogramComponent,
+        ColorPaletteSelect,
     },
     created(){
         //select first non-custom palette
