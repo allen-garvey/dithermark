@@ -40,11 +40,13 @@
                     v-for="(color, i) in colors" 
                     :key="i"
                     id-prefix="color" 
-                    :on-click="createColorInputClicked(i)" :is-selected="shouldShowColorPicker && colorPickerColorIndex===i" 
+                    :on-click="createColorInputClicked(i)" 
+                    :is-selected="shouldShowColorPicker && colorPickerColorIndex===i" 
                     :color-index.number="i" 
                     :color-value="colorsShadow[i]" 
                     :is-disabled="i >= numColors" 
-                    :dragged-index="draggedIndex" :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" 
+                    :dragged-index="draggedIndex" 
+                    :handle-color-dragstart="handleColorDragstart" :handle-color-dragover="handleColorDragover" :handle-color-dragend="handleColorDragend" 
                 />
             </div>
             <palette-buttons 
