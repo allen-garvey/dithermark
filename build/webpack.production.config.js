@@ -1,6 +1,6 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const config = require('./webpack.config.js');
 
 config.mode = 'production';
@@ -18,7 +18,7 @@ config.optimization = {
             parallel: true,
         }),
         //while the sass is already minified, we need this plugin so css extracted from dithermark-vue-color is minified too
-        new OptimizeCSSAssetsPlugin,
+        new CssMinimizerPlugin(),
     ],
 };
 
