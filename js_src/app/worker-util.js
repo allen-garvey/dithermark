@@ -3,9 +3,6 @@ import WorkerHeaders from '../shared/worker-headers.js';
 import ColorPicker from './color-picker.js';
 import ArrayUtil from '../shared/array-util.js';
 
-//worker-loader https://github.com/webpack-contrib/worker-loader
-import DitherWorker from '../worker/worker-main.js'; //resolved to worker-loader in webpack config
-
 
 function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
     //(5 + (3 * 2)) * 2
@@ -134,7 +131,7 @@ function createWorkers(){
     //multiply by 2 because some browsers lie about cores (i.e. Safari)
     const numWorkers = hardwareConcurrency ? Math.min(hardwareConcurrency * 2, 8) : 1;
     const workers = ArrayUtil.create(numWorkers, ()=>{
-        return new DitherWorker();
+        return new Worker(new URL('../worker/worker-main.js', import.meta.url));
     });
     
     let workerCurrentIndex = 0;
