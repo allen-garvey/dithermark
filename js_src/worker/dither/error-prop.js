@@ -11,7 +11,7 @@ function createErrorMaxtrix(width, height){
     return {
         width: width,
         height: height,
-        data: new Int16Array(width * height)
+        data: new Float32Array(width * height),
     };
 }
 
