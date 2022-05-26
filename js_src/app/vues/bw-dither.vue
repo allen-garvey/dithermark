@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import { nextTick } from 'vue';
+
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import Canvas from '../canvas.js';
 import Histogram from '../histogram.js';
@@ -187,7 +189,9 @@ export default {
             
             //reset combine textures component if new image
             if(isNewImage && this.$refs.textureCombineComponent){
-                this.$refs.textureCombineComponent.resetTextures();
+                nextTick().then(() => {
+                    this.$refs.textureCombineComponent.resetTextures();
+                });
             }
 
             //draw histogram
