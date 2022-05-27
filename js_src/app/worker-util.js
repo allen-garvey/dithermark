@@ -39,16 +39,9 @@ function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, col
         colors: ColorPicker.prepareForWorker(colorsHex),
     };
 }
-//used to reduce race conditions when image
-//changes while worker is still working on previous image
-//doesn't 100% eliminate problem because if image changes
-//256 times before worker is done, will still have a problem,
-//but Uint8 is limit for worker return message, and this 
-//seems like a reasonable compromise
+// used to reduce race conditions when image
+// changes while worker is still working on previous image
 function generateImageId(previousImageId){
-    if(previousImageId >= 255){
-        return 0;
-    }
     return previousImageId + 1;
 }
 
