@@ -331,23 +331,23 @@ export default {
         ditherWorkerMessageReceivedDispatcher(messageTypeId, messageBody){
             switch(messageTypeId){
                 case WorkerHeaders.DITHER_COLOR:
-                    this.ditherWorkerMessageReceived(messageBody);
+                    this.ditherWorkerMessageReceived(messageBody.pixels);
                     break;
                 case WorkerHeaders.OPTIMIZE_PALETTE:
-                    const colors = messageBody.subarray(1, messageBody.length);
-                    const optimizePaletteKey = optimizePaletteMemorizationKey(colors.length / 3, messageBody[0]);
-                    this.optimizePaletteMessageReceived(colors, optimizePaletteKey, !this.colorQuantizationModes[messageBody[0]].disableCache);
+                    const colors = messageBody.colors;
+                    const optimizePaletteKey = optimizePaletteMemorizationKey(messageBody.numColors, messageBody.colorQuantizationModeId);
+                    this.optimizePaletteMessageReceived(colors, optimizePaletteKey, !this.colorQuantizationModes[messageBody.colorQuantizationModeId].disableCache);
                     break;
                 case WorkerHeaders.OPTIMIZE_PALETTE_PROGRESS:
-                    const key = optimizePaletteMemorizationKey(messageBody[1], messageBody[0]);
+                    const key = optimizePaletteMemorizationKey(messageBody.numColors, messageBody.colorQuantizationModeId);
                     //check to make sure still pending and not done first, to avoid race condition
                     if(this.isOptimizePaletteKeyPending(key)){
-                        this.pendingColorQuantizations[key] = messageBody[2];
+                        this.pendingColorQuantizations[key] = messageBody.percentage;
                     }
                     break;
                 //histogram
                 default:
-                    this.histogramWorkerMessageReceived(messageBody);
+                    this.histogramWorkerMessageReceived(messageBody.pixels);
                     break;
             }
         },

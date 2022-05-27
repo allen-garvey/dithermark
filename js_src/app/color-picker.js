@@ -18,11 +18,11 @@ function pixelFromHex(hex){
 }
 
 function prepareForWorker(hexColors){
-    const buffer = new ArrayBuffer(8 * hexColors.length * 3);
+    const buffer = new ArrayBuffer(hexColors.length * 3);
 
     return hexColors.map((hex, i) => {
         const {r, g, b} = parseHex(hex);
-        const array = new Uint8ClampedArray(buffer, i * 8 * 3, 3);
+        const array = new Uint8ClampedArray(buffer, i * 3, 3);
         array[0] = r;
         array[1] = g;
         array[2] = b;

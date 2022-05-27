@@ -799,24 +799,20 @@ export default {
         //webworker stuff
         workerMessageReceivedDispatcher(e){
             const messageData = e.data;
-            const messageFull = new Uint8Array(messageData);
-            //get image id and messageTypeId from start of buffer
-            const messageImageId = messageFull[0];
+            const messageImageId = messageData.imageId;
             //check for race condition where worker was working on old image
             if(messageImageId !== imageId){
                 return;
             }
-            const messageTypeId = messageFull[1];
-            //rest of the buffer is the actual pixel data
-            const pixels = messageFull.subarray(2);
+            const messageTypeId = messageData.messageTypeId;
             switch(messageTypeId){
                 case WorkerHeaders.DITHER:
                 case WorkerHeaders.DITHER_BW:
                 case WorkerHeaders.HISTOGRAM:
-                    this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
+                    this.$refs.bwDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, messageData);
                     break;
                 default:
-                    this.$refs.colorDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels);
+                    this.$refs.colorDitherSection.ditherWorkerMessageReceivedDispatcher(messageTypeId, messageData);
                     break;
             }
         },

@@ -234,17 +234,17 @@ export default {
                 worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
             });
         },
-        ditherWorkerMessageReceivedDispatcher(messageTypeId, pixels){
+        ditherWorkerMessageReceivedDispatcher(messageTypeId, message){
             switch(messageTypeId){
                 case WorkerHeaders.DITHER:
-                    this.ditherWorkerMessageReceived(pixels);
+                    this.ditherWorkerMessageReceived(message.pixels);
                     break;
                 case WorkerHeaders.DITHER_BW:
-                    this.ditherWorkerBwMessageReceived(pixels);
+                    this.ditherWorkerBwMessageReceived(message.pixels);
                     break;
                 //histogram
                 default:
-                    this.histogramWorkerMessageReceived(pixels);
+                    this.histogramWorkerMessageReceived(message.pixels);
                     break;
             }
         },

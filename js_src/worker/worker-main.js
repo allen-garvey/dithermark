@@ -16,25 +16,27 @@ function histogramAction(imageId, messageHeader){
     const messageTypeId = messageHeader.messageTypeId;
     //don't need to copy the original imagedata, since we are not modifying it
     const pixels = new Uint8ClampedArray(pixelBufferOriginal);
-    let histogramBuffer;
+    let histogramPixels;
     
     if(messageTypeId === WorkerHeaders.HUE_HISTOGRAM){
-        histogramBuffer = WorkerUtil.createHistogramBuffer(360, messageTypeId, imageId);
-        Histogram.createHueHistogram(pixels, histogramBuffer.array);
+        histogramPixels = WorkerUtil.createHistogramBuffer(360);
+        Histogram.createHueHistogram(pixels, histogramPixels);
     }
     else{
-        histogramBuffer = WorkerUtil.createHistogramBuffer(256, messageTypeId, imageId);
-        Histogram.createBwHistogram(pixels, histogramBuffer.array);   
+        histogramPixels = WorkerUtil.createHistogramBuffer(256);
+        Histogram.createBwHistogram(pixels, histogramPixels);   
     }
-    self.postMessage(histogramBuffer.buffer);
+    self.postMessage({
+        messageTypeId,
+        imageId,
+        pixels: histogramPixels,
+    });
 }
 
 function bwDitherAction(imageId, messageHeader){
-    //dither the image
     const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
     
-    const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId, imageId);
-    const pixels = pixelBufferCopy.pixels;
+    const pixels = WorkerUtil.copyPixels(pixelBufferOriginal);
     
     const imageHeight = messageHeader.imageHeight;
     const imageWidth = messageHeader.imageWidth;
@@ -44,14 +46,13 @@ function bwDitherAction(imageId, messageHeader){
         selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, threshold, messageHeader.blackPixel, messageHeader.whitePixel); 
     });
     
-    self.postMessage(pixelBufferCopy.buffer);
+    self.postMessage(WorkerUtil.createDitherResponse(imageId, messageHeader.messageTypeId, pixels));
 }
 
 function colorDitherAction(imageId, messageHeader){
     const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
 
-    const pixelBufferCopy = WorkerUtil.copyBufferWithMessageType(pixelBufferOriginal, messageHeader.messageTypeId, imageId);
-    const pixels = pixelBufferCopy.pixels;
+    const pixels = WorkerUtil.copyPixels(pixelBufferOriginal);
 
     const imageHeight = messageHeader.imageHeight;
     const imageWidth = messageHeader.imageWidth;
@@ -62,7 +63,7 @@ function colorDitherAction(imageId, messageHeader){
         selectedAlgorithm.algorithm(pixels, imageWidth, imageHeight, colorDitherModeId, colors); 
         });
 
-    self.postMessage(pixelBufferCopy.buffer);
+    self.postMessage(WorkerUtil.createDitherResponse(imageId, messageHeader.messageTypeId, pixels));
 }
 
 function createOptimizePaletteProgressCallback(imageId, colorQuantizationModeId, numColors, messageHeader){
@@ -91,7 +92,7 @@ function optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight){
 
 self.onmessage = (e)=>{
     const messageData = e.data;
-    
+
     switch(messageData.messageTypeId){
         case WorkerHeaders.DITHER:
         case WorkerHeaders.DITHER_BW:
