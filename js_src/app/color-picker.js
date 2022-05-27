@@ -3,33 +3,29 @@
 import Pixel from '../shared/pixel.js';
 
 
-function parseHex(hex, callback){
-    const r = parseInt(hex.substring(1, 3), 16);
-    const g = parseInt(hex.substring(3, 5), 16);
-    const b = parseInt(hex.substring(5, 7), 16);
-    
-    callback(r, g, b);
+function parseHex(hex){
+    return {
+        r: parseInt(hex.substring(1, 3), 16),
+        g: parseInt(hex.substring(3, 5), 16),
+        b: parseInt(hex.substring(5, 7), 16),
+    };
 }
 
 //takes hex in form #ffffff and returns pixel
-function pixelFromColorPicker(hex){
-    let ret;
-    
-    parseHex(hex, (r, g, b)=>{
-        ret = Pixel.create(r, g, b); 
-    });
-    
-    return ret;
+function pixelFromHex(hex){
+    const {r, g, b} = parseHex(hex);
+    return Pixel.create(r, g, b);
 }
 
-function prepareForWorker(hexColors, array){
-    let i = 0;
-    hexColors.forEach((hex)=>{
-        parseHex(hex, (r, g, b)=>{
-            array[i++] = r;
-            array[i++] = g;
-            array[i++] = b;
-        });
+function prepareForWorker(hexColors){
+    return hexColors.map((hex) => {
+        const {r, g, b} = parseHex(hex);
+        const array = new Uint8ClampedArray(3);
+        array[0] = r;
+        array[1] = g;
+        array[2] = b;
+
+        return array;
     });
 }
 
@@ -41,11 +37,10 @@ function colorsToVecArray(hexColors, maxColors){
     let offset = 0;
     
     hexColors.forEach((hex)=>{
-        parseHex(hex, (r, g, b)=>{
-            vec[offset++]   = r / 255;
-            vec[offset++] = g / 255;
-            vec[offset++] = b / 255;
-        });
+        const {r, g, b} = parseHex(hex);
+        vec[offset++]   = r / 255;
+        vec[offset++] = g / 255;
+        vec[offset++] = b / 255;
     });
     
     
@@ -85,7 +80,7 @@ export function defaultBwColors(){
 
 export default {
     defaultBwColors,
-    pixelFromHex: pixelFromColorPicker,
+    pixelFromHex,
     colorsToVecArray,
     areColorArraysIdentical,
     prepareForWorker,

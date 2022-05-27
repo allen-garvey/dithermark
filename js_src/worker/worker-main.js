@@ -91,31 +91,28 @@ function optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight){
 
 self.onmessage = (e)=>{
     const messageData = e.data;
-
-    //get new headers
-    const messageHeader = WorkerUtil.parseMessageHeader(messageData);
-    //perform action based on headers
-    switch(messageHeader.messageTypeId){
+    
+    switch(messageData.messageTypeId){
         case WorkerHeaders.DITHER:
         case WorkerHeaders.DITHER_BW:
-            bwDitherAction(imageId, messageHeader);
+            bwDitherAction(imageId, messageData);
             break;
         case WorkerHeaders.DITHER_COLOR:
-            colorDitherAction(imageId, messageHeader);
+            colorDitherAction(imageId, messageData);
             break;
         case WorkerHeaders.HISTOGRAM:
         case WorkerHeaders.HUE_HISTOGRAM:
-            histogramAction(imageId, messageHeader);
+            histogramAction(imageId, messageData);
             break;
         case WorkerHeaders.OPTIMIZE_PALETTE:
-            optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight);
+            optimizePaletteAction(imageId, messageData, imageWidth, imageHeight);
             break;
         //LOAD_IMAGE case
         default:
-            imageHeight = messageHeader.imageHeight;
-            imageWidth = messageHeader.imageWidth;
-            imageId = messageHeader.imageId;
-            pixelBufferOriginal = messageHeader.buffer;
+            imageHeight = messageData.imageHeight;
+            imageWidth = messageData.imageWidth;
+            imageId = messageData.imageId;
+            pixelBufferOriginal = messageData.buffer;
             break;
     }
 };

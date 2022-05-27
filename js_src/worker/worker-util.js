@@ -55,80 +55,9 @@ function createHistogramBuffer(length, messageTypeId, imageId){
     return {buffer: buffer, array: histogramArray};
 }
 
-function parseColorDitherMessageHeader(messageData){
-
-    const messageHeader = {
-        messageTypeId: messageData[0],
-        imageWidth : messageData[1],
-        imageHeight : messageData[2],
-        algorithmId : messageData[3],
-        colorDitherModeId : messageData[4],
-    };
-
-    const colorsRaw = messageData.subarray(5);
-    const colors = [];
-    for(let i=0;i<colorsRaw.length;i+=3){
-        colors.push(colorsRaw.subarray(i, i+3));
-    }
-    messageHeader.colors = colors;
-
-    return messageHeader;
-}
-
-function parseDitherMessageHeader(messageData){
-    const messageTypeId = messageData[0];
-    
-    const messageHeader = {
-        messageTypeId: messageTypeId,
-        imageWidth : messageData[1],
-        imageHeight : messageData[2],
-        algorithmId : messageData[3],
-        threshold : messageData[4],
-    };
-    if(messageTypeId === WorkerHeaders.DITHER){
-        messageHeader.blackPixel = Pixel.create(messageData[5], messageData[6], messageData[7]);
-        messageHeader.whitePixel = Pixel.create(messageData[8], messageData[9], messageData[10]);   
-    }
-    else{
-        messageHeader.blackPixel = Pixel.create(0, 0, 0);
-        messageHeader.whitePixel = Pixel.create(255, 255, 255);
-    }
-    return messageHeader;
-}
-
-function parseMessageHeader(headerBuffer){
-    if('messageTypeId' in headerBuffer){
-        return headerBuffer;
-    }
-
-    const messageData = new Uint16Array(headerBuffer);
-    const messageTypeId = messageData[0];
-    
-    switch(messageTypeId){
-        case WorkerHeaders.DITHER:
-        case WorkerHeaders.DITHER_BW:
-            return parseDitherMessageHeader(messageData);
-        case WorkerHeaders.DITHER_COLOR:
-            return parseColorDitherMessageHeader(messageData);
-        case WorkerHeaders.HISTOGRAM:
-        case WorkerHeaders.HUE_HISTOGRAM:
-            return {messageTypeId: messageTypeId};
-        case WorkerHeaders.OPTIMIZE_PALETTE:
-            return {
-                        messageTypeId: messageTypeId, 
-                        numColors: messageData[1], 
-                        colorQuantizationModeId: messageData[2],
-                    };
-        default:
-            return null;
-    }
-}
-
 export default {
-    // copyBuffer: copyBuffer,
     copyBufferWithMessageType,
     createHistogramBuffer,
     createOptimizePaletteBuffer,
     createOptimizePaletteProgressBuffer,
-    parseMessageHeader,
 };

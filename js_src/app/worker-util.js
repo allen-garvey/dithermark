@@ -2,61 +2,42 @@ import Polyfills from '../shared/polyfills.js';
 import WorkerHeaders from '../shared/worker-headers.js';
 import ColorPicker from './color-picker.js';
 import ArrayUtil from '../shared/array-util.js';
+import Pixel from '../shared/pixel.js';
 
 
 function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
-    //(5 + (3 * 2)) * 2
-    const buffer = new Polyfills.SharedArrayBuffer(22);
-    const bufferView = new Uint16Array(buffer);
-    
-    bufferView[0] = WorkerHeaders.DITHER;
-    bufferView[1] = imageWidth;
-    bufferView[2] = imageHeight;
-    
-    bufferView[3] = algorithmId;
-    bufferView[4] = threshold;
-    
-    bufferView[5] = blackPixel[0];
-    bufferView[6] = blackPixel[1];
-    bufferView[7] = blackPixel[2];
-    
-    bufferView[8] = whitePixel[0];
-    bufferView[9] = whitePixel[1];
-    bufferView[10] = whitePixel[2];
-
-    return buffer;
+    return {
+        messageTypeId: WorkerHeaders.DITHER,
+        imageWidth,
+        imageHeight,
+        algorithmId,
+        threshold,
+        blackPixel,
+        whitePixel,
+    };
 }
 
 function createDitherWorkerBwHeader(imageWidth, imageHeight, threshold, algorithmId){
-    //5 * 2
-    const buffer = new Polyfills.SharedArrayBuffer(10);
-    const bufferView = new Uint16Array(buffer);
-    
-    bufferView[0] = WorkerHeaders.DITHER_BW;
-    bufferView[1] = imageWidth;
-    bufferView[2] = imageHeight;
-    
-    bufferView[3] = algorithmId;
-    bufferView[4] = threshold;
-
-    return buffer;
+    return {
+        messageTypeId: WorkerHeaders.DITHER_BW,
+        imageWidth,
+        imageHeight,
+        algorithmId,
+        threshold,
+        blackPixel: Pixel.create(0, 0, 0),
+        whitePixel: Pixel.create(255, 255, 255),
+    };
 }
 
-function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, colorDitherMode, colorsHex){
-    //(5 * 2) + 2 *(colorsHex * 3)
-    const buffer = new Polyfills.SharedArrayBuffer(10 + (colorsHex.length * 6));
-    const bufferView = new Uint16Array(buffer);
-    
-    bufferView[0] = WorkerHeaders.DITHER_COLOR;
-    bufferView[1] = imageWidth;
-    bufferView[2] = imageHeight;
-    
-    bufferView[3] = algorithmId;
-    bufferView[4] = colorDitherMode;
-    
-    ColorPicker.prepareForWorker(colorsHex, bufferView.subarray(5));
-
-    return buffer;
+function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, colorDitherModeId, colorsHex){
+    return {
+        messageTypeId: WorkerHeaders.DITHER_COLOR,
+        imageWidth,
+        imageHeight,
+        algorithmId,
+        colorDitherModeId,
+        colors: ColorPicker.prepareForWorker(colorsHex),
+    };
 }
 //used to reduce race conditions when image
 //changes while worker is still working on previous image
@@ -81,37 +62,24 @@ function createLoadImageMessage(imageId, imageWidth, imageHeight, buffer){
     };
 }
 
-function createEmptyHeader(messageType){
-    const buffer = new Polyfills.SharedArrayBuffer(2);
-    const bufferView = new Uint16Array(buffer);
-    
-    bufferView[0] = messageType;
-    
-    return buffer;
-}
-
 function createHistogramWorkerHeader(){
-    return createEmptyHeader(WorkerHeaders.HISTOGRAM);
+    return {
+        messageTypeId: WorkerHeaders.HISTOGRAM,
+    };
 }
 //filterId for memorization purpores
 function createOptimizePaletteHeader(numColors, colorQuantizationModeId){
-    const buffer = new Polyfills.SharedArrayBuffer(6);
-    const bufferView = new Uint16Array(buffer);
-    
-    bufferView[0] = WorkerHeaders.OPTIMIZE_PALETTE;
-    bufferView[1] = numColors;
-    bufferView[2] = colorQuantizationModeId;
-    
-    return buffer;
+    return {
+        messageTypeId: WorkerHeaders.OPTIMIZE_PALETTE,
+        numColors,
+        colorQuantizationModeId,
+    };
 }
 
 function createColorHistogramWorkerHeader(){
-    const buffer = new Polyfills.SharedArrayBuffer(2);
-    const bufferView = new Uint16Array(buffer);
-    
-    bufferView[0] = WorkerHeaders.HUE_HISTOGRAM;
-    
-    return buffer;
+    return {
+        messageTypeId: WorkerHeaders.HUE_HISTOGRAM,
+    };
 }
 
 //returns promise;
