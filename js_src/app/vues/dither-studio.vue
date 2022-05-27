@@ -666,11 +666,9 @@ export default {
             //load image into the webworkers
             imageId = WorkerUtil.generateImageId(imageId);
             const buffer = Canvas.createSharedImageBuffer(sourceCanvas);
-            const ditherWorkerHeader = WorkerUtil.createLoadImageHeader(imageId, this.imageHeader.width, this.imageHeader.height);
+            const ditherWorkerMessage = WorkerUtil.createLoadImageMessage(imageId, this.imageHeader.width, this.imageHeader.height, buffer);
             ditherWorkers.forEach((ditherWorker)=>{
-                //copy image to web workers
-                ditherWorker.postMessage(ditherWorkerHeader);
-                ditherWorker.postMessage(buffer);
+                ditherWorker.postMessage(ditherWorkerMessage);
             });
             if(notifyDitherSection){
                 this.activeDitherSection.imageLoaded(this.imageHeader);

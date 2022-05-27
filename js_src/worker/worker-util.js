@@ -96,24 +96,15 @@ function parseDitherMessageHeader(messageData){
     return messageHeader;
 }
 
-function parseLoadImageMessageHeader(messageData){
-    const messageHeader = {
-        messageTypeId: messageData[0],
-        imageWidth : messageData[1],
-        imageHeight : messageData[2],
-        imageId: messageData[3],
-    };
-
-    return messageHeader;
-}
-
 function parseMessageHeader(headerBuffer){
+    if('messageTypeId' in headerBuffer){
+        return headerBuffer;
+    }
+
     const messageData = new Uint16Array(headerBuffer);
     const messageTypeId = messageData[0];
     
     switch(messageTypeId){
-        case WorkerHeaders.LOAD_IMAGE:
-            return parseLoadImageMessageHeader(messageData);
         case WorkerHeaders.DITHER:
         case WorkerHeaders.DITHER_BW:
             return parseDitherMessageHeader(messageData);
@@ -132,7 +123,6 @@ function parseMessageHeader(headerBuffer){
             return null;
     }
 }
-
 
 export default {
     // copyBuffer: copyBuffer,

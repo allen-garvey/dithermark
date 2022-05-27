@@ -70,17 +70,17 @@ function generateImageId(previousImageId){
     }
     return previousImageId + 1;
 }
-function createLoadImageHeader(imageId, imageWidth, imageHeight){
-    const buffer = new Polyfills.SharedArrayBuffer(8);
-    const bufferView = new Uint16Array(buffer);
-    
-    bufferView[0] = WorkerHeaders.LOAD_IMAGE;
-    bufferView[1] = imageWidth;
-    bufferView[2] = imageHeight;
-    bufferView[3] = imageId;
-    
-    return buffer;
+
+function createLoadImageMessage(imageId, imageWidth, imageHeight, buffer){
+    return {
+        messageTypeId: WorkerHeaders.LOAD_IMAGE,
+        imageId,
+        imageHeight,
+        imageWidth,
+        buffer,
+    };
 }
+
 function createEmptyHeader(messageType){
     const buffer = new Polyfills.SharedArrayBuffer(2);
     const bufferView = new Uint16Array(buffer);
@@ -161,7 +161,7 @@ export default {
     ditherWorkerColorHeader: createDitherWorkerColorHeader,
     optimizePaletteHeader: createOptimizePaletteHeader,
     generateImageId,
-    createLoadImageHeader,
+    createLoadImageMessage,
     histogramWorkerHeader: createHistogramWorkerHeader,
     colorHistogramWorkerHeader: createColorHistogramWorkerHeader,
     getDitherWorkers: getWorkers,

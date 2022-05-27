@@ -6,7 +6,6 @@ import Histogram from './histogram.js';
 import ColorQuantizationModes from '../generated_output/worker/color-quantization-modes.js';
 
 const ditherAlgorithms = Algorithms.model();
-let previousMessageWasLoadImageHeader = false;
 let imageId;
 let pixelBufferOriginal;
 let imageHeight = 0;
@@ -92,15 +91,7 @@ function optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight){
 
 self.onmessage = (e)=>{
     const messageData = e.data;
-    
-    //previous message was load image header, so load image
-    if(previousMessageWasLoadImageHeader){
-        if(messageData.byteLength > 0){
-            pixelBufferOriginal = messageData;
-        }
-        previousMessageWasLoadImageHeader = false;
-        return;
-    }
+
     //get new headers
     const messageHeader = WorkerUtil.parseMessageHeader(messageData);
     //perform action based on headers
@@ -120,12 +111,11 @@ self.onmessage = (e)=>{
             optimizePaletteAction(imageId, messageHeader, imageWidth, imageHeight);
             break;
         //LOAD_IMAGE case
-        //just sets flag since it means next message will be the actual image data
         default:
             imageHeight = messageHeader.imageHeight;
             imageWidth = messageHeader.imageWidth;
             imageId = messageHeader.imageId;
-            previousMessageWasLoadImageHeader = true;
+            pixelBufferOriginal = messageHeader.buffer;
             break;
     }
 };
