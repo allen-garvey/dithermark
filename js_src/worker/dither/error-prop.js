@@ -64,9 +64,7 @@ function errorPropagationDither(pixels, imageWidth, imageHeight, threshold, blac
             ret = blackPixel;
             currentError = adjustedLightness;
         }
-        if(currentError !== 0){
-            propagateError(errorPropagationModel, errorPropMatrix, x, y, currentError);
-        }
+        propagateError(errorPropagationModel, errorPropMatrix, x, y, currentError);
         
         return ret;
         
