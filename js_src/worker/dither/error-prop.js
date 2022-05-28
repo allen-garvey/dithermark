@@ -37,7 +37,7 @@ function errorMatrixValue(matrix, x, y){
 */
 function propagateError(propagationModel, errorPropMatrix, x, y, currentError){
     propagationModel.forEach((item)=>{
-        errorMatrixIncrement(errorPropMatrix, x + item.xOffset, y + item.yOffset, currentError, item.errorFraction);
+        errorMatrixIncrement(errorPropMatrix, x + item[1], y + item[2], currentError, item[0]);
     });
 }
 
