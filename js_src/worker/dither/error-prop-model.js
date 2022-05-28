@@ -13,12 +13,17 @@ function floydSteinberg(){
     const error5 = error1 * 5;
     const error3 = error1 * 3;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error7),
         createPropagationValue(1, 1, error1),
         createPropagationValue(0, 1, error5),
         createPropagationValue(-1, 1, error3),
     ];
+
+    return {
+        matrix,
+        numRows: 2,
+    };
 }
 
 function javisJudiceNinke(){
@@ -27,7 +32,7 @@ function javisJudiceNinke(){
     const error5 = error1 * 5;
     const error3 = error1 * 3;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error7),
         createPropagationValue(2, 0, error5),
 
@@ -43,6 +48,11 @@ function javisJudiceNinke(){
         createPropagationValue(1, 2, error3),
         createPropagationValue(2, 2, error1),
     ];
+
+    return {
+        matrix,
+        numRows: 3,
+    };
 }
 
 function stucki(){
@@ -51,7 +61,7 @@ function stucki(){
     const error4 = error1 * 4;
     const error2 = error1 * 2;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error8),
         createPropagationValue(2, 0, error4),
 
@@ -67,6 +77,11 @@ function stucki(){
         createPropagationValue(1, 2, error2),
         createPropagationValue(2, 2, error1),
     ];
+
+    return {
+        matrix,
+        numRows: 3,
+    };
 }
 
 function burkes(){
@@ -75,7 +90,7 @@ function burkes(){
     const error4 = errorPart * 4;
     const error2 = errorPart * 2;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error8),
         createPropagationValue(2, 0, error4),
 
@@ -85,6 +100,11 @@ function burkes(){
         createPropagationValue(1, 1, error4),
         createPropagationValue(2, 1, error2),
     ];
+
+    return {
+        matrix,
+        numRows: 2,
+    };
 }
 
 function sierra3(){
@@ -95,7 +115,7 @@ function sierra3(){
     const error3 = error1 * 3;
     const error2 = error1 * 2;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error5),
         createPropagationValue(2, 0, error3),
 
@@ -109,6 +129,11 @@ function sierra3(){
         createPropagationValue(0, 2, error3),
         createPropagationValue(1, 2, error2),
     ];
+
+    return {
+        matrix,
+        numRows: 3,
+    };
 }
 
 function sierra2(){
@@ -117,7 +142,7 @@ function sierra2(){
     const error3 = error1 * 3;
     const error2 = error1 * 2;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error4),
         createPropagationValue(2, 0, error3),
 
@@ -127,23 +152,33 @@ function sierra2(){
         createPropagationValue(1, 1, error2),
         createPropagationValue(2, 1, error1),
     ];
+
+    return {
+        matrix,
+        numRows: 2,
+    };
 }
 
 function sierra1(){
     const error1 = 1 / 4;
     const error2 = error1 * 2;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error2),
         createPropagationValue(-1, 1, error1),
         createPropagationValue(0, 1, error1),
     ];
+
+    return {
+        matrix,
+        numRows: 2,
+    };
 }
 
 function atkinson(){
     const error1 = 1 / 8;
 
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error1),
         createPropagationValue(2, 0, error1),
 
@@ -153,19 +188,29 @@ function atkinson(){
 
         createPropagationValue(0, 2, error1),
     ];
+
+    return {
+        matrix,
+        numRows: 3,
+    };
 }
 //based on atkinson, but with further reduced bleed
 function reducedAtkinson(){
     const error1 = 1 / 16;
     const error2 = error1 * 2;
     
-    return [
+    const matrix = [
         createPropagationValue(1, 0, error2),
         createPropagationValue(2, 0, error1),
 
         createPropagationValue(0, 1, error2),
         createPropagationValue(1, 1, error1),
     ];
+
+    return {
+        matrix,
+        numRows: 2,
+    };
 }
 
 export default {

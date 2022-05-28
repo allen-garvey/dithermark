@@ -64,7 +64,7 @@ function errorPropDitherBase(pixels, imageWidth, imageHeight, colorDitherModeId,
         
         const closestColorValue = colorValues[closestColorIndex];
         const currentError = errorAmountFunc(pixelAdjustedValue, closestColorValue, currentErrorBuffer);
-        propagateError(propagateErrorModel, errorMatrix, x, y, currentError);
+        propagateError(propagateErrorModel.matrix, errorMatrix, x, y, currentError);
 
         pixel.set(colors[closestColorIndex]);
         return pixel;
