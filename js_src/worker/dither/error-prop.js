@@ -45,13 +45,11 @@ function propagateError(propagationModel, errorPropMatrix, x, y, currentError){
 ** Actual dithering
 */
 function errorPropagationDither(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel, errorPropagationModel){
-    let errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
+    const errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
     
     return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
         const lightness = PixelMath.lightness(pixel);
-        let adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, y);
-        //limit adjusted lightness to be between 0 and 255
-        adjustedLightness = Math.min(Math.max(adjustedLightness, 0), 255);
+        const adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, y);
         
         let ret;
         let currentError = 0;
