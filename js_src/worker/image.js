@@ -4,32 +4,27 @@ import DitherUtil from '../shared/dither-util.js';
 
 
 function transformImage(pixels, imageWidth, imageHeight, pixelTransformFunc){
-    let y = 0;
-    let x = 0;
     const pixel = Pixel.create(0, 0, 0);
-    
-    for(let i=0;i<pixels.length;i+=4){
-        //nothing needs to be done for transparent pixels
-        if(pixels[i+3] > 0){
-            pixel[Pixel.R_INDEX] = pixels[i];
-            pixel[Pixel.G_INDEX] = pixels[i+1];
-            pixel[Pixel.B_INDEX] = pixels[i+2];
-            pixel[Pixel.A_INDEX] = pixels[i+3];
+
+    for(let i=0,y=0;y<imageHeight;y++){
+        for(let x=0;x<imageWidth;x++,i+=4){
+            //nothing needs to be done for transparent pixels
+            if(pixels[i+3] > 0){
+                pixel[Pixel.R_INDEX] = pixels[i];
+                pixel[Pixel.G_INDEX] = pixels[i+1];
+                pixel[Pixel.B_INDEX] = pixels[i+2];
+                pixel[Pixel.A_INDEX] = pixels[i+3];
+                
+                const outputPixel = pixelTransformFunc(pixel, x, y);
             
-            const outputPixel = pixelTransformFunc(pixel, x, y);
-        
-            pixels[i] = outputPixel[0];
-            pixels[i+1] = outputPixel[1];
-            pixels[i+2] = outputPixel[2];
-            pixels[i+3] = outputPixel[3];
-        }
-        
-        x++;
-        if(x >= imageWidth){
-            x = 0;
-            y++;
+                pixels[i] = outputPixel[0];
+                pixels[i+1] = outputPixel[1];
+                pixels[i+2] = outputPixel[2];
+                pixels[i+3] = outputPixel[3];
+            }
         }
     }
+    
     return pixels;
 }
 
