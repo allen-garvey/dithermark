@@ -6,7 +6,10 @@ function createPropagationValue(xOffset, yOffset, errorFraction){
 
     return array;
 }
-
+/*
+numRows is max y offset below current pixel row
+lengthOffset is max x offset from current pixel column
+*/
 function floydSteinberg(){
     const error1 = 1 / 16;
     const error7 = error1 * 7;
@@ -22,6 +25,7 @@ function floydSteinberg(){
 
     return {
         matrix,
+        lengthOffset: 1,
         numRows: 2,
     };
 }
@@ -51,6 +55,7 @@ function javisJudiceNinke(){
 
     return {
         matrix,
+        lengthOffset: 2,
         numRows: 3,
     };
 }
@@ -80,6 +85,7 @@ function stucki(){
 
     return {
         matrix,
+        lengthOffset: 2,
         numRows: 3,
     };
 }
@@ -103,6 +109,7 @@ function burkes(){
 
     return {
         matrix,
+        lengthOffset: 2,
         numRows: 2,
     };
 }
@@ -132,6 +139,7 @@ function sierra3(){
 
     return {
         matrix,
+        lengthOffset: 2,
         numRows: 3,
     };
 }
@@ -155,6 +163,7 @@ function sierra2(){
 
     return {
         matrix,
+        lengthOffset: 2,
         numRows: 2,
     };
 }
@@ -171,6 +180,7 @@ function sierra1(){
 
     return {
         matrix,
+        lengthOffset: 1,
         numRows: 2,
     };
 }
@@ -191,6 +201,7 @@ function atkinson(){
 
     return {
         matrix,
+        lengthOffset: 2,
         numRows: 3,
     };
 }
@@ -209,6 +220,7 @@ function reducedAtkinson(){
 
     return {
         matrix,
+        lengthOffset: 2,
         numRows: 2,
     };
 }

@@ -7,37 +7,31 @@ import ErrorPropModel from './error-prop-model.js';
 /*
 ** Error propagation matrix stuff
 */
-function createErrorMaxtrix(width, height){
-    return {
-        width: width,
-        height: height,
-        data: new Float32Array(width * height),
-    };
-}
+function createErrorMaxtrix(width, numRows, lengthOffset){
+    const rowLength = width + (lengthOffset * 2);
+    const ret = {};
 
-function errorMatrixIndexFor(matrix, x, y){
-    return (matrix.width * y) + x;
+    for(let i=0;i<numRows;i++){
+        ret[i] = new Float32Array(rowLength);
+    }
+
+    return ret;
 }
 
 function errorMatrixIncrement(matrix, x, y, error, errorFraction){
-    if(x >= matrix.width || y >= matrix.height){
-        return;
-    }
-    const index = errorMatrixIndexFor(matrix, x, y);
-    matrix.data[index] = matrix.data[index] + error * errorFraction;
+    matrix[y][x] = matrix[y][x] + error * errorFraction;
 }
 
 function errorMatrixValue(matrix, x, y){
-    const index = errorMatrixIndexFor(matrix, x, y);
-    return matrix.data[index];
+    return matrix[y][x];
 }
 
 /**
  * Propagate error functions
 */
-function propagateError(propagationModel, errorPropMatrix, x, y, currentError){
+function propagateError(propagationModel, errorPropMatrix, x, currentError){
     propagationModel.forEach((item)=>{
-        errorMatrixIncrement(errorPropMatrix, x + item[1], y + item[2], currentError, item[0]);
+        errorMatrixIncrement(errorPropMatrix, x + item[1], item[2], currentError, item[0]);
     });
 }
 
@@ -45,11 +39,13 @@ function propagateError(propagationModel, errorPropMatrix, x, y, currentError){
 ** Actual dithering
 */
 function errorPropagationDither(pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel, errorPropagationModel){
-    const errorPropMatrix = createErrorMaxtrix(imageWidth, imageHeight);
+    const errorPropMatrix = createErrorMaxtrix(imageWidth, errorPropagationModel.numRows, errorPropagationModel.lengthOffset);
+
+    let errorMatrixIndex = errorPropagationModel.lengthOffset;
     
     return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
         const lightness = PixelMath.lightness(pixel);
-        const adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, x, y);
+        const adjustedLightness = lightness + errorMatrixValue(errorPropMatrix, errorMatrixIndex, 0);
         
         let ret;
         let currentError = 0;
@@ -64,10 +60,22 @@ function errorPropagationDither(pixels, imageWidth, imageHeight, threshold, blac
             ret = blackPixel;
             currentError = adjustedLightness;
         }
-        propagateError(errorPropagationModel.matrix, errorPropMatrix, x, y, currentError);
+        propagateError(errorPropagationModel.matrix, errorPropMatrix, errorMatrixIndex, currentError);
+        errorMatrixIndex++;
         
-        return ret;
-        
+        return ret; 
+    }, () => {
+        errorMatrixIndex = errorPropagationModel.lengthOffset;
+        // fill first row of error prop model with zero, 
+        //move it to the end and move all other rows up one
+        const temp = errorPropMatrix[0];
+        temp.fill(0);
+        const length = Object.keys(errorPropMatrix).length;
+
+        for(let i=1;i<length;i++){
+            errorPropMatrix[i-1] = errorPropMatrix[i];
+        }
+        errorPropMatrix[length-1] = temp;
     });
 }
 
