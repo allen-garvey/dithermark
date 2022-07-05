@@ -14,10 +14,10 @@
         <div v-if="isImagePixelated">
             <label :class="$style.radioSuperLabel">Size</label>
             <label>Upsampled
-                <input type="radio" v-model.number="shouldUpsample" value="1" />
+                <input type="radio" v-model.number="shouldUpsample" :value="1" />
             </label>
             <label>Actual
-                <input type="radio" v-model.number="shouldUpsample" value="0" />
+                <input type="radio" v-model.number="shouldUpsample" :value="0" />
             </label>
         </div>
         <div>
