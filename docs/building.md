@@ -17,6 +17,7 @@ This project uses `make` for building and generally makes assumptions that file 
 * PHP >= 7.0 (with `cli`, `json` and `ctype` extensions)
 * Node >= 10.13
 * npm
+* rsync (for `make release` recipe)
 
 ## Getting Started
 
@@ -34,6 +35,7 @@ To create a release build (JavaScript is minified and logging and debugging feat
 * Type `make reset`
 * Type `make release`
 * To reset everything, so you can create a debug build again, type `make reset` and `make`
+* A release build without PHP dependencies is also created in `release`
 
 ## Errors with building older versions
 

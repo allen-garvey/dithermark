@@ -38,3 +38,4 @@ scripts/*.json
 scripts/optimize-palette-notes.js
 lib/*
 /js_src/generated_output/*
+release/*

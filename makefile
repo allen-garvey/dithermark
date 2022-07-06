@@ -59,6 +59,7 @@ reset:
 release: PHP_BUILD_MODE=release
 release: $(HTML_INDEX) $(JS_GENERATED_OUTPUT)
 	npm run deploy
+	rsync -av --exclude='*.php' --exclude='assets/bundle.js' --exclude='assets/js_src_worker_worker-main_js.bundle.js' $(PUBLIC_HTML_DIR) release
 
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
