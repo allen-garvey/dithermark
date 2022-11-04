@@ -1,0 +1,1027 @@
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8"/>
+        <title>Dithermark</title>
+        <meta name="description" content="An interactive, in-browser exploration of image dithering and color quantization algorithms"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <link rel="stylesheet" type="text/css" href="./assets/style.css"/>
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+    </head>
+    <body>
+                <div class="total-page">
+            <header class="header">
+                <nav class="nav">
+                    <h1 class="brand">Dithermark</h1>
+                    <ul>
+                        <li><a href="https://dithermark.com/faq">FAQ</a></li>
+                        <li><a href="https://github.com/allen-garvey/dithermark">Source</a></li>
+                    </ul>
+                </nav>
+            </header>
+            <main>
+                <noscript>Dithermark requires JavaScript to run. Please enable JavaScript in your browser settings and reload this page.</noscript>
+                <div id="app"></div>
+            </main>
+        </div>
+                <script type="webgl/vertex-shader" id="webgl-vertex-shader">
+    precision mediump float;
+        attribute vec4 a_position;
+    attribute vec2 a_texcoord;
+     
+    uniform mat4 u_matrix;
+    varying vec2 v_texcoord;
+     
+    void main() {
+       gl_Position = u_matrix * a_position;
+       v_texcoord = a_texcoord;
+    }
+</script>                <script type="webgl/fragment-shader-function" id="webgl-fragment-shader-lightness-function">
+    float lightness(vec3 pixel){
+        float maxVal = max(max(pixel.r, pixel.g), pixel.b);
+        float minVal = min(min(pixel.r, pixel.g), pixel.b);
+        return (maxVal + minVal) / 2.0;
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-hsv-functions">
+    vec3 rgb2hsv(vec3 c){
+        vec4 K = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
+                vec4 p = c.g < c.b ? vec4(c.bg, K.wz) : vec4(c.gb, K.xy);
+        vec4 q = c.r < p.x ? vec4(p.xyw, c.r) : vec4(c.r, p.yzx);
+
+        float d = q.x - min(q.w, q.y);
+        float e = 1.0e-10;
+        return vec3(abs(q.z + (q.w - q.y) / (6.0 * d + e)), d / (q.x + e), q.x);
+    }
+
+    vec3 hsv2rgb(vec3 c){
+        vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+        vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+        return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-hsl-functions">
+        vec3 RGBtoHCV(vec3 rgb){
+        float epsilon = 1.0e-10;
+        // Based on work by Sam Hocevar and Emil Persson
+        vec4 P = (rgb.g < rgb.b) ? vec4(rgb.bg, -1.0, 2.0/3.0) : vec4(rgb.gb, 0.0, -1.0/3.0);
+        vec4 Q = (rgb.r < P.x) ? vec4(P.xyw, rgb.r) : vec4(rgb.r, P.yzx);
+        float C = Q.x - min(Q.w, Q.y);
+        float H = abs((Q.w - Q.y) / (6.0 * C + epsilon) + Q.z);
+        return vec3(H, C, Q.x);
+    }
+
+    vec3 HUEtoRGB(float hue){
+        float r = abs(hue * 6.0 - 3.0) - 1.0;
+        float g = 2.0 - abs(hue * 6.0 - 2.0);
+        float b = 2.0 - abs(hue * 6.0 - 4.0);
+                return clamp(vec3(r, g, b), 0.0, 1.0);
+    }
+
+        float pixelSaturation(vec3 pixel){
+        float maxValue = max(max(pixel.r, pixel.g), pixel.b);
+        float minValue = min(min(pixel.r, pixel.g), pixel.b);
+        if(maxValue == minValue){
+            return 0.0;
+        }
+        float c = (maxValue + minValue) / 2.0;
+        float diff = maxValue - minValue;
+        return c > 0.5 ? diff / (2.0 - diff) : diff / (maxValue + minValue);
+    }
+
+    vec3 rgb2hsl(vec3 pixel){
+        vec3 hcv = RGBtoHCV(pixel);
+        float l = hcv.z - hcv.y * 0.5;
+        return vec3(hcv.x, pixelSaturation(pixel), l);
+    }
+
+    vec3 hsl2rgb(vec3 pixel){
+        vec3 rgb = HUEtoRGB(pixel.x);
+        float c = (1.0 - abs(2.0 * pixel.z - 1.0)) * pixel.y;
+        return (rgb - 0.5) * c + pixel.z;
+    }
+    
+    float hue_distance(float hue1, float hue2){
+        float distance = abs(hue1 - hue2);
+                return min(distance, 1.0 - distance);
+    }
+    
+    float hue(vec3 pixel){
+        return rgb2hsl(pixel).r;
+    }
+
+    float pixel_luma(vec3 pixel){
+        return dot(vec3(0.299, 0.587, 0.114), pixel);
+    }
+</script>        <script type="webgl/fragment-shader-function" id="webgl-rgb-distance">
+    float quick_distance(vec3 pixel1, vec3 pixel2){
+        vec3 distances = pixel1 - pixel2;
+        return dot(vec3(1.0), distances * distances);
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-luma-distance">
+        float quick_distance(vec3 pixel1, vec3 pixel2){
+        vec3 distances = pixel1 - pixel2;
+        return pixel_luma(distances * distances);
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-hue-distance">
+    float quick_distance(vec3 pixel1, vec3 pixel2){
+        vec3 hsl1 = rgb2hsl(pixel1);
+        vec3 hsl2 = rgb2hsl(pixel2);
+        float hueDist = hue_distance(hsl1.x, hsl2.x);
+
+        if(hsl1.y < 0.07){
+            float fraction = hsl1.y / 0.07;
+            vec2 hlDist = vec2(hueDist, hsl1.z - hsl2.z);
+            return dot(vec2(8.0 * fraction, (1.0 - fraction)), hlDist*hlDist);
+        }
+        return hueDist * hueDist;
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-hue-lightness-distance">
+    float quick_distance(vec3 pixel1, vec3 pixel2){
+        vec3 hsl1 = rgb2hsl(pixel1);
+        vec3 hsl2 = rgb2hsl(pixel2);
+        vec2 hlDist = vec2(hue_distance(hsl1.x, hsl2.x), hsl1.z - hsl2.z);
+
+        if(hsl1.y < 0.3){
+            float fraction = hsl1.y / 0.3;
+            return dot(vec2(2.0 * fraction, (1.0 - fraction)), hlDist*hlDist);
+        }
+        return dot(vec2(32.0, 1.0), hlDist*hlDist);
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-lightness-distance">
+    float quick_distance(vec3 pixel1, vec3 pixel2){
+        float lightness1 = lightness(pixel1);
+        float lightness2 = lightness(pixel2);
+        return abs(lightness1 - lightness2);
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-hue-saturation-lightness-distance">
+    float quick_distance(vec3 pixel1, vec3 pixel2){
+        vec3 hsl1 = rgb2hsl(pixel1);
+        vec3 hsl2 = rgb2hsl(pixel2);
+        vec3 hslDist = vec3(hue_distance(hsl1.r, hsl2.r), hsl1.gb - hsl2.gb);  
+        return dot(vec3(8.0, 1.0, 32.0), hslDist * hslDist);
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-hsl2-distance">
+    float quick_distance(vec3 pixel1, vec3 pixel2){
+        vec3 hsl1 = rgb2hsl(pixel1);
+        vec3 hsl2 = rgb2hsl(pixel2);
+        float hDist = hue_distance(hsl1.r, hsl2.r);
+        vec2 slDist = hsl1.gb - hsl2.gb;  
+        vec3 hslDist = vec3(hDist, slDist);
+
+        return dot(vec3(8.0, 1.0, 4.0), hslDist * hslDist);
+    }
+</script>
+<script type="webgl/fragment-shader-function" id="webgl-hsl2-complementary-distance">
+    float quick_distance(vec3 pixel1, vec3 pixel2){
+        vec3 hsl1 = rgb2hsl(pixel1);
+        vec3 hsl2 = rgb2hsl(pixel2);
+                float hDist = 0.5 - hue_distance(hsl1.r, hsl2.r);
+        vec2 slDist = hsl1.gb - hsl2.gb;  
+        vec3 hslDist = vec3(hDist, slDist);
+
+        return dot(vec3(8.0, 1.0, 4.0), hslDist * hslDist);
+    }
+</script>        <script type="webgl/fragment-shader" id="webgl-transparency-check-fshader">
+    vec4 pixel = texture2D(u_texture, v_texcoord);
+        if(pixel.a < 0.004){
+        gl_FragColor = vec4(0.0);
+        return;
+    }
+</script>                <script type="webgl/fragment-shader" id="webgl-random-dither-declaration-fshader">
+    uniform vec2 u_random_seed;
+    
+        highp float rand(vec2 co){
+        highp float a = 12.9898;
+        highp float b = 78.233;
+        highp float c = 43758.5453;
+        highp float dt = dot(co.xy, vec2(a,b));
+        highp float sn = mod(dt, 3.14);
+        return fract(sin(sn) * c);
+    }
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-random-ordered-dither-adjustment-fshader">
+    bayerValue = bayerValue * rand(v_texcoord.xy*u_random_seed.xy);
+</script>        <script type="webgl/fragment-shader-function" id="webgl-bitwise-function-template">
+        int #{{functionName}}(int n1, int n2){
+                float v1 = float(n1);
+        float v2 = float(n2);
+        
+        int byteVal = 1;
+        int result = 0;
+        
+        for(int i = 0; i < 32; i++){
+                        if(v1 < 0.5 || v2 < 0.5){
+                return result;
+            }
+            bool bit1IsOdd = mod(v1, 2.0) > 0.5;
+            bool bit2IsOdd = mod(v2, 2.0) > 0.5;
+            if(#{{operation}}){
+                result += byteVal;
+            }
+            v1 = floor(v1 / 2.0);
+            v2 = floor(v2 / 2.0);
+            byteVal *= 2;
+        }
+        return result;
+    }
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-declaration">
+        precision highp int;
+    
+    #{{bitwiseFunctions}}
+    
+    float aDitherMask1(int x, int y){
+        return float(AND(XOR(x, y * 149) * 1234, 511)) / 511.0;
+    }
+    
+    float aDitherMask2(int x, int y, int c){
+        return float(AND(XOR(x + (c * 17), y * 149) * 1234, 511)) / 511.0;
+    }
+    
+    float aDitherMask3(int x, int y){
+        return float(AND((x + (y * 237)) * 119,  255)) / 255.0;
+    }
+    
+    float aDitherMask4(int x, int y, int c){
+        return float(AND(((c * 67 + x) + (y * 236)) * 119, 255)) / 255.0;
+    }
+    
+    float arithmeticDither(vec2 pos, vec3 pixel){
+        int x = int(pos.x);
+        int y = int(pos.y);
+        return #{{arithmeticDitherReturn}};
+            }
+</script>        <script type="webgl/fragment-shader" id="webgl-fragment-shader-template">
+    precision mediump float;
+    
+    varying vec2 v_texcoord;
+    uniform sampler2D u_texture;
+    uniform float u_threshold;
+    uniform vec3 u_black_pixel;
+    uniform vec3 u_white_pixel;
+    uniform float u_dither_r_coefficient;
+    
+    #{{customDeclaration}}
+    
+    #{{lightnessFunction}}
+    
+    void main(){
+        #{{transparencyCheck}}
+        float pixelLightness = lightness(pixel.rgb);
+        #{{customBody}}
+        
+        vec3 outputPixel;
+        if(shouldUseBlackPixel){
+            outputPixel = u_black_pixel;
+        }
+        else{
+            outputPixel = u_white_pixel;
+        }
+        gl_FragColor = vec4(outputPixel, pixel.a);
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-threshold-fshader-body">
+    bool shouldUseBlackPixel = pixelLightness < u_threshold;
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
+    bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5) < u_threshold;
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-body">
+    bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (arithmeticDither(gl_FragCoord.xy, pixel.rgb) - 0.5) < u_threshold;
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-declaration">
+    uniform sampler2D u_bayer_texture;
+    uniform float u_bayer_texture_dimensions;
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-ordered-dither-fshader-body">
+   vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
+   vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+   float bayerValue = bayerPixel.r - 0.5;
+   #{{bayerValueAdjustment}}
+   bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * bayerValue < u_threshold;
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-color-replace-fshader-body">
+        bool shouldUseBlackPixel = pixel.r < 0.5;
+</script>
+
+        <script type="webgl/fragment-shader" id="webgl-color-dither-base-fshader">
+    precision mediump float;
+    
+    varying vec2 v_texcoord;
+    uniform sampler2D u_texture;
+    
+    uniform int u_colors_array_length;
+    uniform vec3 u_colors_array[18];
+    uniform float u_dither_r_coefficient;
+    
+    #{{lightnessFunction}}
+    
+    #{{hslFunctions}}
+    
+    #{{distanceFunction}}
+    
+    #{{customDeclaration}}
+    
+    void main(){
+        #{{transparencyCheck}}
+        vec3 adjustedPixel = pixel.rgb;
+
+        #{{customBody}}
+        
+        float shortestDistance = 9999.9;
+        vec3 closestPixel = adjustedPixel;
+        
+        for(int i=0;i<18;i++){
+            if(i >= u_colors_array_length){
+                break;
+            }
+            vec3 currentColor = u_colors_array[i];
+            float currentDistance = quick_distance(adjustedPixel, currentColor);
+            if(currentDistance < shortestDistance){
+                shortestDistance = currentDistance;
+                closestPixel = currentColor;
+            }
+        }
+        
+        vec3 outputPixel = closestPixel;
+
+        #{{optionalPostscript}}
+        
+        gl_FragColor = vec4(outputPixel, pixel.a);
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-ordered-dither-color-declaration-fshader">
+    uniform sampler2D u_bayer_texture;
+    uniform float u_bayer_texture_dimensions;
+</script>
+<script type="webgl/fragment-shader" id="webgl-ordered-dither-color-body-fshader">
+    vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
+    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+    float bayerValue = bayerPixel.r - 0.5;
+    #{{bayerValueAdjustment}}
+    adjustedPixel = clamp(adjustedPixel + vec3(u_dither_r_coefficient * bayerValue), 0.0, 1.0);
+</script>
+<script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-declaration-fshader">
+        
+        float lightnessStep(float l){
+        float lightnessSteps = 4.0;
+                return floor(0.5 + l * lightnessSteps) / lightnessSteps;
+    }
+    
+    vec3 hue_lightness_dither(vec3 pixel, float bayerValue){
+        vec3 hsl = rgb2hsl(pixel);
+    
+        float pixelLightness = hsl.b;
+        float l1 = lightnessStep(max(pixelLightness - 0.125, 0.0));
+        float l2 = lightnessStep(min(pixelLightness + 0.124, 1.0));
+        float lightnessDiff = (pixelLightness - l1) / (l2 - l1);
+        
+        float adjustedLightness = lightnessDiff < bayerValue ? l1 : l2;
+        
+        return hsl2rgb(vec3(hsl.rg, adjustedLightness));
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-hue-lightness-ordered-dither-color-postscript-fshader">
+        outputPixel = hue_lightness_dither(outputPixel, bayerPixel.r);
+</script>
+<script type="webgl/fragment-shader" id="webgl-random-dither-color-body-fshader">
+    float randomValue = u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5);
+    adjustedPixel = clamp(adjustedPixel + vec3(randomValue), 0.0, 1.0);
+</script>
+<script type="webgl/fragment-shader" id="webgl-arithmetic-dither-color-body">
+    float aDitherValue = u_dither_r_coefficient * (arithmeticDither(gl_FragCoord.xy, pixel.rgb) - 0.5);
+    adjustedPixel = clamp(adjustedPixel + vec3(aDitherValue), 0.0, 1.0);
+</script>        <script type="webgl/fragment-shader" id="webgl-yliluoma1-color-fshader">
+    precision mediump float;
+    
+    varying vec2 v_texcoord;
+    uniform sampler2D u_texture;
+
+    uniform sampler2D u_bayer_texture;
+    uniform float u_bayer_texture_dimensions;
+    
+    uniform int u_colors_array_length;
+    uniform vec3 u_colors_array[18];
+    
+    #{{lightnessFunction}}
+    
+    #{{hslFunctions}}
+    
+    #{{distanceFunction}}
+
+    float evaluate_mixing_error(vec3 pixel, vec3 color0, vec3 color1, vec3 color2, float ratioFraction){
+        return quick_distance(pixel, color0) + quick_distance(color1, color2) * 0.1 * (abs(ratioFraction-0.5) + 0.5);
+    }
+
+    int devise_mixing_plan(vec3 pixel, float bayerLength, float bayerValue){
+        int bayerLengthInt = int(bayerLength);
+        int color1Index = 0;
+        int color2Index = 0;
+                float colorRatio = 0.5;
+                float leastPenalty = 9999.99;
+                for(int index1=0;index1<18;index1++){
+            if(index1 >= u_colors_array_length){
+                break;
+            }
+            for(int index2=0;index2<18;index2++){
+                                if(index2<index1){
+                    continue;
+                }
+                if(index2 >= u_colors_array_length){
+                    break;
+                }
+                for(int ratio=0;ratio<64;ratio++){
+                    if(ratio >= bayerLengthInt){
+                        break;
+                    }
+                    if(index1 == index2 && ratio != 0){
+                        break;
+                    }
+                    float ratioFloat = float(ratio);
+                    float ratioFraction = ratioFloat / bayerLength;
+                                        vec3 color1 = u_colors_array[index1];
+                    vec3 color2 = u_colors_array[index2];
+                                        vec3 color0 = color1 + vec3(ratioFloat) * (color2 - color1) / vec3(bayerLength);
+                    float penalty = evaluate_mixing_error(pixel, color0, color1, color2, ratioFraction);
+                    if(penalty < leastPenalty){
+                                                leastPenalty = penalty;
+                        color1Index = index1;
+                        color2Index = index2;
+                        colorRatio = ratioFraction;
+                    }
+                }
+            }
+        }
+        if(bayerValue < colorRatio){
+            return color2Index;
+        }
+        return color1Index;
+    }
+    
+    void main(){
+        #{{transparencyCheck}}
+        vec3 outputPixel = pixel.rgb;
+        vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
+        vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+        float bayerValue = bayerPixel.r;
+        float bayerLength = u_bayer_texture_dimensions * u_bayer_texture_dimensions;
+        int colorIndex = devise_mixing_plan(outputPixel, bayerLength, bayerValue);
+        
+        for(int i=0;i<18;i++){
+            if(i == colorIndex){
+                outputPixel = u_colors_array[i];
+                break;
+            }
+        }
+
+        gl_FragColor = vec4(outputPixel, pixel.a);
+    }
+</script>        <script type="webgl/fragment-shader" id="webgl-yliluoma2-color-fshader">
+    precision mediump float;
+    
+    varying vec2 v_texcoord;
+    uniform sampler2D u_texture;
+
+    uniform sampler2D u_bayer_texture;
+    uniform float u_bayer_texture_dimensions;
+    
+    uniform int u_colors_array_length;
+    uniform vec3 u_colors_array[18];
+    
+    #{{lightnessFunction}}
+    
+    #{{hslFunctions}}
+    
+    #{{distanceFunction}}
+
+    int deviseMixingPlan(vec3 pixel, int planIndex){
+        vec2 planValues[18];
+        int proportionTotal = 0;
+        vec3 soFar = vec3(0.0);
+        for(int i=0;i<18;i++){
+            int chosenAmount = 1;
+            int chosen = 0;
+            int maxTestCount = int(max(1.0, float(proportionTotal)));
+                        float leastPenalty = 9999.99;
+
+            for(int index=0; index<18; index++){
+                if(index >= u_colors_array_length){
+                    break;
+                }   
+                vec3 color = u_colors_array[index];
+                vec3 sum = soFar;
+                vec3 add = color;
+                int p = 1;
+                for(int q=0; q<18; q++){
+                    if(p > maxTestCount){
+                        break;
+                    }
+                    sum += add;
+                    add += add;
+                    vec3 test = sum / vec3(float(proportionTotal + p));
+                    float penalty = quick_distance(pixel, test);
+                    if(penalty < leastPenalty){
+                        leastPenalty = penalty;
+                        chosen = index;
+                        chosenAmount = p;
+                    }
+                    p = p * 2;
+                }
+            }
+            for(int p=0; p<18; ++p){
+                if(p >= chosenAmount || proportionTotal >= u_colors_array_length){
+                    break;
+                }
+                for(int q=0; q<18; q++){
+                    if(q == proportionTotal){
+                        float luma = 0.0;
+                        for(int j=0;j<18;j++){
+                            if(j == chosen){
+                                luma = pixel_luma(u_colors_array[j]);
+                                break;
+                            }
+                        }
+                        planValues[q] = vec2(float(chosen), luma);
+                        break;
+                    }
+                }
+                proportionTotal++;
+            }
+            for(int p=0; p<18; ++p){
+                if(p==chosen){
+                    vec3 color = u_colors_array[p];
+                    soFar = soFar + color * vec3(float(chosenAmount));
+                    break;
+               }
+            }
+            if(proportionTotal >= u_colors_array_length){
+                break;
+            }
+        }
+        
+                int innerLoopLimit = u_colors_array_length-1;
+        for(int i=0;i<18;i++){
+            bool swapped = false;
+            for(int j=0;j<18-1;j++){
+                if(j >= innerLoopLimit){
+                    break;
+                }
+                if(planValues[j].y > planValues[j+1].y){
+                    vec2 temp = planValues[j];
+                    planValues[j] = planValues[j+1];
+                    planValues[j+1] = temp;
+
+                    swapped = true;
+                }
+            }
+            if(!swapped){
+                break;
+            }
+            innerLoopLimit--;
+        }
+
+        for(int i=0;i<18;i++){
+            if(i == planIndex){
+                return int(planValues[i].x);
+            }
+        }
+                return 0;
+    }
+    
+    void main(){
+        #{{transparencyCheck}}
+        vec3 outputPixel = pixel.rgb;
+        vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
+        vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+        float bayerLength = u_bayer_texture_dimensions * u_bayer_texture_dimensions;
+                float bayerValue = bayerPixel.r * (bayerLength - 1.0);
+        int planIndex = int(bayerValue * float(u_colors_array_length) / bayerLength);
+        int colorIndex = deviseMixingPlan(outputPixel, planIndex);
+        
+        for(int i=0;i<18;i++){
+            if(i == colorIndex){
+                outputPixel = u_colors_array[i];
+                break;
+            }
+        }
+
+        gl_FragColor = vec4(outputPixel, pixel.a);
+    }
+</script>        <script type="webgl/fragment-shader" id="webgl-stark-ordered-color-dither-fshader">
+    precision mediump float;
+    
+    varying vec2 v_texcoord;
+    uniform sampler2D u_texture;
+    
+    uniform int u_colors_array_length;
+    uniform vec3 u_colors_array[18];
+    uniform float u_dither_r_coefficient;
+
+    uniform sampler2D u_bayer_texture;
+    uniform float u_bayer_texture_dimensions;
+    
+    #{{lightnessFunction}}
+    
+    #{{hslFunctions}}
+    
+    #{{distanceFunction}}
+    
+    void main(){
+        #{{transparencyCheck}}
+        vec3 adjustedPixel = pixel.rgb;
+        
+        float shortestDistance = 9999.9;
+        vec3 outputPixel = adjustedPixel;
+        
+        for(int i=0;i<18;i++){
+            if(i >= u_colors_array_length){
+                break;
+            }
+            vec3 currentColor = u_colors_array[i];
+            float currentDistance = quick_distance(adjustedPixel, currentColor);
+            if(currentDistance < shortestDistance){
+                shortestDistance = currentDistance;
+                outputPixel = currentColor;
+            }
+        }
+        
+        vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
+        vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+        float bayerValue = bayerPixel.r;
+        float bayerPercentage = 1.0 - (bayerValue * u_dither_r_coefficient);
+        
+        //so we don't divide by 0
+        if(shortestDistance > 0.0){
+            float greatestAllowedDistance = shortestDistance;
+            for(int i=0;i<18;i++){
+                if(i >= u_colors_array_length){
+                    break;
+                }
+                vec3 currentColor = u_colors_array[i];
+                float currentDistance = quick_distance(adjustedPixel, currentColor);
+                if(currentDistance > greatestAllowedDistance && currentDistance / shortestDistance * bayerPercentage < 1.0){
+                    greatestAllowedDistance = currentDistance;
+                    outputPixel = currentColor;
+                }
+            }
+        }
+        
+        gl_FragColor = vec4(outputPixel, pixel.a);
+    }
+</script>                <script type="webgl/fragment-shader" id="webgl-fragment-shader-bilateral-filter">
+precision mediump float;
+
+varying vec2 v_texcoord;
+uniform sampler2D u_texture;
+uniform float u_exponent;
+uniform vec2 u_image_dimensions;
+void main(){
+    vec4 center = texture2D(u_texture, v_texcoord);
+    vec4 color = vec4(0.0);
+    float total = 0.0;
+    for (float x = -4.0; x <= 4.0; x += 1.0) {
+        for (float y = -4.0; y <= 4.0; y += 1.0) {
+            vec4 sample = texture2D(u_texture, v_texcoord + vec2(x, y) / u_image_dimensions);
+            float weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+            weight = pow(weight, u_exponent);
+            color += sample * weight;
+            total += weight;
+        }
+    }
+    gl_FragColor = color / total;
+}
+</script>
+        <script type="webgl/fragment-shader" id="webgl-fragment-shader-smoothing">
+precision highp float;
+
+varying vec2 v_texcoord;
+uniform sampler2D u_texture;
+uniform int u_radius;
+const int maxRadius = 16;
+uniform vec2 u_image_dimensions;
+
+void main(){
+    #{{transparencyCheck}}
+    vec2 uv = v_texcoord;
+    int radiusDiff = maxRadius - u_radius;
+    float n = float((u_radius + 1) * (u_radius + 1));
+
+    vec3 m[4];
+    vec3 s[4];
+    for(int k = 0; k < 4; ++k){
+        m[k] = vec3(0.0);
+        s[k] = vec3(0.0);
+    }
+
+    for(int j = -maxRadius; j <= 0; ++j){
+        if(j > -radiusDiff){
+            break;
+        }
+        for(int i = -maxRadius; i <= 0; ++i){
+            if(i > -radiusDiff){
+                break;
+            }
+            vec3 c = texture2D(u_texture, uv + vec2(i+radiusDiff, j+radiusDiff) / u_image_dimensions).rgb;
+            m[0] += c;
+            s[0] += c * c;
+        }
+    }
+
+    for(int j = -maxRadius; j <= 0; ++j){
+        if(j > -radiusDiff){
+            break;
+        }
+        for(int i = 0; i <= maxRadius; ++i){
+            if(i > u_radius){
+                break;
+            }
+            vec3 c = texture2D(u_texture, uv + vec2(i,j+radiusDiff) / u_image_dimensions).rgb;
+            m[1] += c;
+            s[1] += c * c;
+        }
+    }
+
+    for(int j = 0; j <= maxRadius; ++j){
+        if(j > u_radius){
+            break;
+        }
+        for(int i = 0; i <= maxRadius; ++i){
+            if(i > u_radius){
+                break;
+            }
+            vec3 c = texture2D(u_texture, uv + vec2(i,j) / u_image_dimensions).rgb;
+            m[2] += c;
+            s[2] += c * c;
+        }
+    }
+
+    for(int j = 0; j <= maxRadius; ++j){
+        if(j > u_radius){
+            break;
+        }
+        for(int i = -maxRadius; i <= 0; ++i){
+            if(i > -radiusDiff){
+                break;
+            }
+            vec3 c = texture2D(u_texture, uv + vec2(i+radiusDiff,j) / u_image_dimensions).rgb;
+            m[3] += c;
+            s[3] += c * c;
+        }
+    }
+
+
+    float min_sigma2 = 1e+2;
+    for(int k = 0; k < 4; ++k){
+        m[k] /= n;
+        s[k] = abs(s[k] / n - m[k] * m[k]);
+
+        float sigma2 = s[k].r + s[k].g + s[k].b;
+        if(sigma2 < min_sigma2){
+            min_sigma2 = sigma2;
+            gl_FragColor = vec4(m[k], pixel.a);
+        }
+    }
+}
+</script>        <script type="webgl/fragment-shader" id="webgl-fragment-canvas-filters">
+precision mediump float;
+
+varying vec2 v_texcoord;
+uniform sampler2D u_texture;
+uniform float u_contrast;
+uniform float u_saturation;
+uniform float u_brightness;
+uniform float u_hue_rotation;
+
+#{{hsvFunctions}}
+float hue_rotate(float pixelHue, float hueRotation){
+    return mod(pixelHue + hueRotation, 1.0);
+}
+
+void main(){
+    #{{transparencyCheck}}
+
+    vec3 adjustedPixel = pixel.rgb;
+        vec3 hsvPixel = rgb2hsv(adjustedPixel);
+    adjustedPixel = hsv2rgb(vec3(hue_rotate(hsvPixel.r, u_hue_rotation), hsvPixel.g * u_saturation, hsvPixel.b));
+        if(u_contrast >= 0.0){
+        adjustedPixel = (adjustedPixel - 0.5) / (1.0 - u_contrast) + 0.5;
+    }
+    else {
+        adjustedPixel = (adjustedPixel - 0.5) * (1.0 + u_contrast) + 0.5;
+    }
+        adjustedPixel *= u_brightness;
+
+    gl_FragColor = vec4(adjustedPixel, pixel.a);
+    
+}
+</script>        <script type="webgl/fragment-shader" id="webgl-fragment-contour-filter1">
+    precision mediump float;
+
+    uniform sampler2D u_texture;
+    varying vec2 v_texcoord;
+    uniform float u_radius;
+
+        float random(vec3 scale, float seed) {
+        return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);
+    }
+
+    void main(){
+        #{{transparencyCheck}}
+
+        vec2 color = vec2(0.0);
+        vec2 total = vec2(0.0);
+
+                float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);
+        for(float t = -30.0; t <= 30.0; t++){
+            float percent = (t + offset - 0.5) / 30.0;
+            float weight = 1.0 - abs(percent);
+            vec3 sample = texture2D(u_texture, v_texcoord + vec2(u_radius, 0.0) * percent).rgb;
+            float average = (sample.r + sample.g + sample.b) / 3.0;
+            color.x += average * weight;
+            total.x += weight;
+            if(abs(t) < 15.0){
+                weight = weight * 2.0 - 1.0;
+                color.y += average * weight;
+                total.y += weight;
+            }
+        }
+        gl_FragColor = vec4(color / total, 0.0, 1.0);
+    }
+</script>
+
+
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-base">
+    precision mediump float;
+
+    uniform sampler2D u_texture;
+    varying vec2 v_texcoord;
+    uniform float u_radius;
+    
+    #{{customDeclaration}}
+
+        float random(vec3 scale, float seed) {
+        return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);
+    }
+
+    void main(){
+        #{{transparencyCheck}}
+        
+        vec2 color = vec2(0.0);
+        vec2 total = vec2(0.0);
+
+                float offset = random(vec3(12.9898, 78.233, 151.7182), 0.0);
+
+        for(float t = -30.0; t <= 30.0; t++){
+            float percent = (t + offset - 0.5) / 30.0;
+            float weight = 1.0 - abs(percent);
+            vec2 sample = texture2D(u_texture, v_texcoord + vec2(0.0, u_radius) * percent).xy;
+            color.x += sample.x * weight;
+            total.x += weight;
+            if(abs(t) < 15.0){
+                weight = weight * 2.0 - 1.0;
+                color.y += sample.y * weight;
+                total.y += weight;
+            }
+        }
+        float c = clamp(10000.0 * (color.y / total.y - color.x / total.x) + 0.5, 0.0, 1.0);
+        if(c < 0.5){
+            gl_FragColor = #{{customOutlineColor}}
+        }
+        else{
+            gl_FragColor = vec4(0.0);
+        }
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-declaration-fixed">
+    uniform vec3 u_outline_color;
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-declaration-background">
+    uniform sampler2D u_background_texture;
+    uniform int u_colors_array_length;
+    uniform vec3 u_colors_array[18];
+
+    #{{lightnessFunction}}
+    #{{hslFunctions}}
+    #{{distanceFunction}}
+
+        vec3 get_dark_outline_color(vec3 backgroundPixel){
+        vec3 outlineColor = backgroundPixel;
+        float backgroundLightness = lightness(backgroundPixel);
+        
+                float shortestDistance = 99999.99;
+        for(int i=0;i<18;i++){
+            if(i >= u_colors_array_length){
+                break;
+            }
+            vec3 currentColor = u_colors_array[i];
+            float currentDistance = quick_distance(backgroundPixel, currentColor);
+            if(lightness(currentColor) < backgroundLightness && currentDistance < shortestDistance){
+                shortestDistance = currentDistance;
+                outlineColor = currentColor;
+            }
+        }
+
+        return outlineColor;
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-color-fixed">
+    vec4(u_outline_color, 1.0);
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-contour-filter2-color-background">
+    vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);
+</script>        <script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-base">
+    precision mediump float;
+
+    uniform sampler2D u_texture;
+    uniform float u_strength;
+    uniform vec2 u_image_dimensions;
+    varying vec2 v_texcoord;
+
+    #{{customDeclaration}}
+    
+    void main(){
+        #{{transparencyCheck}}
+
+        vec2 dx = vec2(1.0 / u_image_dimensions.x, 0.0);
+        vec2 dy = vec2(0.0, 1.0 / u_image_dimensions.y);
+        float bigTotal = 0.0;
+        float smallTotal = 0.0;
+        vec3 bigAverage = vec3(0.0);
+        vec3 smallAverage = vec3(0.0);
+        for (float x = -#{{edgeThickness}}; x <= #{{edgeThickness}}; x += 1.0) {
+            for (float y = -#{{edgeThickness}}; y <= #{{edgeThickness}}; y += 1.0) {
+                vec3 sample = texture2D(u_texture, v_texcoord + dx * x + dy * y).rgb;
+                bigAverage += sample;
+                bigTotal += 1.0;
+                if (abs(x) + abs(y) < #{{edgeThickness}}) {
+                    smallAverage += sample;
+                    smallTotal += 1.0;
+                }
+            }
+        }
+        vec3 edge = max(vec3(0.0), bigAverage / bigTotal - smallAverage / smallTotal);
+        vec3 edgeDiff = pixel.rgb - dot(edge, edge) * u_strength;
+        
+        if(max(max(edgeDiff.r, edgeDiff.g), edgeDiff.b) <= 0.0){
+            gl_FragColor = #{{customOutlineColor}}
+        }
+        else{
+            gl_FragColor = vec4(0.0);    
+        }
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-declaration-fixed">
+    uniform vec3 u_outline_color;
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-declaration-background">
+    uniform sampler2D u_background_texture;
+    uniform int u_colors_array_length;
+    uniform vec3 u_colors_array[18];
+
+    #{{lightnessFunction}}
+    #{{hslFunctions}}
+    #{{distanceFunction}}
+
+        vec3 get_dark_outline_color(vec3 backgroundPixel){
+        vec3 outlineColor = backgroundPixel;
+        float backgroundLightness = lightness(backgroundPixel);
+        
+                float shortestDistance = 99999.99;
+        for(int i=0;i<18;i++){
+            if(i >= u_colors_array_length){
+                break;
+            }
+            vec3 currentColor = u_colors_array[i];
+            float currentDistance = quick_distance(backgroundPixel, currentColor);
+            if(lightness(currentColor) < backgroundLightness && currentDistance < shortestDistance){
+                shortestDistance = currentDistance;
+                outlineColor = currentColor;
+            }
+        }
+
+        return outlineColor;
+    }
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-color-fixed">
+    vec4(u_outline_color, 1.0);
+</script>
+<script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-color-background">
+    vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);
+</script>        <script type="text/javascript" src="./assets/bundle.min.js"></script>
+    </body>
+</html>
