@@ -34,7 +34,7 @@
     "css-minimizer-webpack-plugin": "^4.0.0",
     "electron": "^21.2.2",
     "mini-css-extract-plugin": "^2.6.1",
-    "node-sass": "7.0.1",
+    "node-sass": "7.0.3",
     "sass-loader": "^13.0.2",
     "terser-webpack-plugin": "^5.3.3",
     "vue-loader": "17.0.0",
