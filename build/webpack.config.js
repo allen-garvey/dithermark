@@ -75,7 +75,6 @@ module.exports = {
                     },
                     {
                         use: [
-                            'vue-style-loader',
                             {
                                 loader: MiniCssExtractPlugin.loader,
                                 options: {
