@@ -39,7 +39,7 @@ class DitherAlgorithm {
 
     public function setId(int $id){
         if(!is_null($this->id)){
-            $error = "id for ${$this->name} has already been assigned and cannot be changed";
+            $error = "id for {${$this->name}} has already been assigned and cannot be changed";
             throw new Exception($error);
         }
         $this->id = $id;
@@ -111,11 +111,11 @@ function getOrderedMatrixPatterns(): array{
  * Helper functions to create dither algorithms
  */
 function dimensionsSuffix(int $dimensions): string{
-    return "${dimensions}×${dimensions}";
+    return "{$dimensions}×{$dimensions}";
 }
 function bayerTitle(string $titlePrefix, int $dimensions, string $suffix=''): string{
     $dimensionsSuffix = dimensionsSuffix($dimensions);
-    return "${titlePrefix} ${dimensionsSuffix}${suffix}";
+    return "{$titlePrefix} {$dimensionsSuffix}{$suffix}";
 }
 function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int $dimensions, bool $isRandom=false, bool $addDimensionsToTitle=false): string{
     $randomIndicatorSuffix = $isRandom ? ' (R)' : '';
@@ -125,10 +125,10 @@ function orderedMatrixTitle(string $titlePrefix, string $orderedMatrixName, int 
     $matrixTitle = titleizeCamelCase($orderedMatrixName);
     if(!empty($titlePrefix)){
         $dimensionsSuffix = $addDimensionsToTitle ? ' '.dimensionsSuffix($dimensions) : '';    
-        return "${titlePrefix} ${matrixTitle}${dimensionsSuffix}${randomIndicatorSuffix}";
+        return "{$titlePrefix} {$matrixTitle}{$dimensionsSuffix}{$randomIndicatorSuffix}";
     }
     $dimensionsSuffix = $addDimensionsToTitle ? dimensionsSuffix($dimensions).' ' : '';
-    return "${matrixTitle} ${dimensionsSuffix}${randomIndicatorSuffix}";
+    return "{$matrixTitle} {$dimensionsSuffix}{$randomIndicatorSuffix}";
 }
 function titleizeCamelCase(string $camelCase): string{
     $isFirstLetter = true;
@@ -154,8 +154,8 @@ function titleizeCamelCase(string $camelCase): string{
 function yliluoma1BuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Yliluoma 1';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
-    $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
-    $webglFunc = "ColorDither.createYliluoma1OrderedDither(${dimensions}, '${orderedMatrixName}')";
+    $webworkerFunc = "OrderedDither.createYliluoma1ColorDither({$dimensions}, '{$orderedMatrixName}')";
+    $webglFunc = "ColorDither.createYliluoma1OrderedDither({$dimensions}, '{$orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function yliluoma1Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
@@ -164,8 +164,8 @@ function yliluoma1Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
 function yliluoma2BuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Yliluoma 2';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
-    $webworkerFunc = "OrderedDither.createYliluoma2ColorDither(${dimensions}, '${orderedMatrixName}')";
-    $webglFunc = "ColorDither.createYliluoma2OrderedDither(${dimensions}, '${orderedMatrixName}')";
+    $webworkerFunc = "OrderedDither.createYliluoma2ColorDither({$dimensions}, '{$orderedMatrixName}')";
+    $webglFunc = "ColorDither.createYliluoma2OrderedDither({$dimensions}, '{$orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function yliluoma2Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
@@ -178,9 +178,9 @@ function yliluoma2Builder(OrderedMatrixPattern $pattern): DitherAlgorithm{
 function starkOrderedDitherBuilderBase(string $orderedMatrixName, int $dimensions, bool $addDimensionsToTitle=false): DitherAlgorithm{
     $titlePrefix = 'Stark';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, false, $addDimensionsToTitle);
-    // $webworkerFunc = "OrderedDither.createYliluoma1ColorDither(${dimensions}, '${orderedMatrixName}')";
-    $webworkerFunc = "OrderedDither.createStarkColorOrderedDither(${dimensions}, '${orderedMatrixName}')";
-    $webglFunc = "ColorDither.createStarkOrderedDither(${dimensions}, '${orderedMatrixName}')";
+    // $webworkerFunc = "OrderedDither.createYliluoma1ColorDither({$dimensions}, '{$orderedMatrixName}')";
+    $webworkerFunc = "OrderedDither.createStarkColorOrderedDither({$dimensions}, '{$orderedMatrixName}')";
+    $webglFunc = "ColorDither.createStarkOrderedDither({$dimensions}, '{$orderedMatrixName}')";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function starkOrderedDitherBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
@@ -194,8 +194,8 @@ function hueLightnessBuilderBase(string $orderedMatrixName, int $dimensions, boo
     $titlePrefix = 'Hue-Lightness';
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $randomArg = $isRandom ? ', true' : '';
-    $webworkerFunc = "OrderedDither.createHueLightnessDither('${orderedMatrixName}',${dimensions}${randomArg})";
-    $webglFunc = "ColorDither.createHueLightnessOrderedDither(${dimensions},'${orderedMatrixName}'${randomArg})";
+    $webworkerFunc = "OrderedDither.createHueLightnessDither('{$orderedMatrixName}',{$dimensions}{$randomArg})";
+    $webglFunc = "ColorDither.createHueLightnessOrderedDither({$dimensions},'{$orderedMatrixName}'{$randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function hueLightnessBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
@@ -212,8 +212,8 @@ function orderedDitherBwBuilderBase(string $orderedMatrixName, int $dimensions, 
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $pascalCase = ucfirst($orderedMatrixName);
     $randomArg = $isRandom ? ', true' : '';
-    $webworkerFunc = "OrderedDither.create${pascalCase}Dither(${dimensions}${randomArg})";
-    $webglFunc = "BwDither.create${pascalCase}Dither(${dimensions}${randomArg})";
+    $webworkerFunc = "OrderedDither.create{$pascalCase}Dither({$dimensions}{$randomArg})";
+    $webglFunc = "BwDither.create{$pascalCase}Dither({$dimensions}{$randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function orderedDitherBwBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
@@ -230,8 +230,8 @@ function orderedDitherColorBuilderBase(string $orderedMatrixName, int $dimension
     $title = orderedMatrixTitle($titlePrefix, $orderedMatrixName, $dimensions, $isRandom, $addDimensionsToTitle);
     $pascalCase = ucfirst($orderedMatrixName);
     $randomArg = $isRandom ? ', true' : '';
-    $webworkerFunc = "OrderedDither.create${pascalCase}ColorDither(${dimensions}${randomArg})";
-    $webglFunc = "ColorDither.create${pascalCase}ColorDither(${dimensions}${randomArg})";
+    $webworkerFunc = "OrderedDither.create{$pascalCase}ColorDither({$dimensions}{$randomArg})";
+    $webglFunc = "ColorDither.create{$pascalCase}ColorDither({$dimensions}{$randomArg})";
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc);
 }
 function orderedDitherColorBuilder(OrderedMatrixPattern $pattern): DitherAlgorithm{
@@ -245,27 +245,27 @@ function orderedDitherColorRandomBuilder(OrderedMatrixPattern $pattern): DitherA
  */
 function errorPropBwDitherBuilder(string $funcName, string $title=''): DitherAlgorithm{
     $title = !empty($title) ? $title : titleizeCamelCase($funcName);
-    return new DitherAlgorithm($title, "ErrorPropDither.${funcName}", '');
+    return new DitherAlgorithm($title, "ErrorPropDither.{$funcName}", '');
 }
 function errorPropColorDitherBuilder(string $funcName, string $title=''): DitherAlgorithm{
     $title = !empty($title) ? $title : titleizeCamelCase($funcName);
-    return new DitherAlgorithm($title, "ErrorPropColorDither.${funcName}", '');
+    return new DitherAlgorithm($title, "ErrorPropColorDither.{$funcName}", '');
 }
 /**
  * Arithmetic dither
  */
 function arithmeticDitherBwBuilder(string $titleSuffix, string $funcNameSuffix): DitherAlgorithm{
-    $title = "Adither ${titleSuffix}";
-    $webworkerFunc = "Threshold.adither${funcNameSuffix}";
-    $webglFunc = "BwDither.aDither${funcNameSuffix}";
+    $title = "Adither {$titleSuffix}";
+    $webworkerFunc = "Threshold.adither{$funcNameSuffix}";
+    $webglFunc = "BwDither.aDither{$funcNameSuffix}";
 
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc, ['requiresHighPrecisionInt' => 'true']);
 }
 
 function arithmeticDitherColorBuilder(string $titleSuffix, string $funcNameSuffix): DitherAlgorithm{
-    $title = "Adither ${titleSuffix}";
-    $webworkerFunc = "Threshold.adither${funcNameSuffix}Color";
-    $webglFunc = "ColorDither.aDither${funcNameSuffix}";
+    $title = "Adither {$titleSuffix}";
+    $webworkerFunc = "Threshold.adither{$funcNameSuffix}Color";
+    $webglFunc = "ColorDither.aDither{$funcNameSuffix}";
     
     return new DitherAlgorithm($title, $webworkerFunc, $webglFunc, ['requiresHighPrecisionInt' => 'true']);
 }
@@ -496,7 +496,7 @@ function printAppAlgoModel(array $algoModel){
 				<?php endif; ?>
                 <?php if(!empty($algorithm->appOptions())): 
                     foreach($algorithm->appOptions() as $key => $value):
-                        echo "${key}: $value";
+                        echo "$key: $value";
                     endforeach; 
                 endif; ?>
 			},

@@ -188,5 +188,5 @@ function encodeQuantizationValueForWorkerJs(string $key, $value){
     else if($key === 'algo' || !is_string($value)){
         return $value;
     }
-    return "'${value}'";
+    return "'{$value}'";
 }
