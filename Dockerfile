@@ -1,13 +1,12 @@
-FROM alpine:3.15
+FROM alpine:3.16
 
 # install needed packages
 RUN apk update && apk add \
     make \
     nodejs \ 
     npm \
-    php7 \
-    php7-json \
-    php7-ctype
+    php8 \
+    php8-ctype
 
 # setup project directories
 RUN mkdir -p /home/dithermark
