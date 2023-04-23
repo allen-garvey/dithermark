@@ -1,0 +1,31 @@
+{
+    "name": "dithermark",
+    "version": "1.0.0",
+    "description": "Web application to interactively demonstrate image dithering algorithms",
+    "main": "main.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "electron ./electron/main.js",
+      "package": "electron-forge package",
+      "make": "electron-forge make"
+    },
+    "repository": {
+      "type": "git",
+      "url": "git+https://github.com/allen-garvey/dithermark.git"
+    },
+    "author": "Allen Garvey",
+    "license": "MIT",
+    "bugs": {
+      "url": "https://github.com/allen-garvey/dithermark/issues"
+    },
+    "homepage": "https://github.com/allen-garvey/dithermark#readme",
+    "dependencies": {},
+    "devDependencies": {
+      "@electron-forge/cli": "^6.1.1",
+      "@electron-forge/maker-deb": "^6.1.1",
+      "@electron-forge/maker-squirrel": "^6.1.1",
+      "@electron-forge/maker-zip": "^6.1.1",
+      "electron": "^24.1.2"
+    }
+  }
+  

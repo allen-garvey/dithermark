@@ -11,8 +11,7 @@
     "build": "webpack --config build/webpack.config.js",
     "deploy": "webpack --config build/webpack.production.config.js",
     "watch": "webpack --config build/webpack.watch.config.js",
-    "dev": "php -S localhost:3000 -t public_html",
-    "start": "electron ./electron/main.js"
+    "dev": "php -S localhost:3000 -t public_html"
   },
   "repository": {
     "type": "git",
@@ -32,7 +31,6 @@
     "@vue/compiler-sfc": "3.2.47",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^5.0.0",
-    "electron": "^24.1.2",
     "mini-css-extract-plugin": "^2.7.5",
     "node-sass": "8.0.0",
     "sass-loader": "^13.2.2",

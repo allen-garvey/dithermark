@@ -39,3 +39,6 @@ scripts/optimize-palette-notes.js
 lib/*
 /js_src/generated_output/*
 release/*
+electron/node_modules/*
+electron/public_html/*
+electron/out/*

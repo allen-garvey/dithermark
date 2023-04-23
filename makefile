@@ -3,7 +3,11 @@ PHP_BUILD_MODE=debug
 # HTML
 PUBLIC_HTML_DIR=public_html
 HTML_INDEX=$(PUBLIC_HTML_DIR)/index.html
-ELECTRON_HTML_INDEX=$(PUBLIC_HTML_DIR)/electron.html
+
+# Electron
+ELECTRON_DIR=electron
+ELECTRON_HTML_DIR=$(ELECTRON_DIR)/$(PUBLIC_HTML_DIR)
+ELECTRON_HTML_INDEX=$(ELECTRON_HTML_DIR)/electron.html
 
 
 #php source
@@ -56,7 +60,6 @@ electron: $(ELECTRON_HTML_INDEX)
 #used when changing between PHP_BUILD_MODES
 reset:
 	rm -f $(HTML_INDEX)
-	rm -f $(ELECTRON_HTML_INDEX)
 	rm -f $(JS_GENERATED_OUTPUT)
 
 #see comment for all: about running webpack each time recipe is called
@@ -90,6 +93,9 @@ $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT): $(JS_GENERATED_WORKER_CO
 $(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG)
 	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
 
-$(ELECTRON_HTML_INDEX): $(HTML_INDEX)
+$(ELECTRON_HTML_DIR): $(HTML_INDEX)
+	cp -r $(PUBLIC_HTML_DIR) $(ELECTRON_HTML_DIR)
+
+$(ELECTRON_HTML_INDEX): $(ELECTRON_HTML_DIR)
 	sed 's|/assets/style.css|./assets/style.css|' $(HTML_INDEX) | sed 's|//dithermark.com/faq|https://dithermark.com/faq|' | sed 's|/assets/bundle.min.js|./assets/bundle.min.js|' > $(ELECTRON_HTML_INDEX)
 

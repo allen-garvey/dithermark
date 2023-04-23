@@ -9,7 +9,7 @@ const createWindow = () => {
     height: 600,
   });
 
-  win.loadFile(path.join(__dirname, '../public_html', 'electron.html'));
+  win.loadFile(path.join(__dirname, 'public_html', 'electron.html'));
 };
 
 app.whenReady().then(() => {
