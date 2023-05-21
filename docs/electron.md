@@ -1,7 +1,12 @@
 # Building for Electron
 
+## Prerequisites
+
 * Follow directions to create a production build, and build with `make release`
 * Run `make electron`
+
+## Building the binary 
+
 * In `electron` directory run `npm install` to install dependencies
 * Run `npm run package`
 * Run `npm run make` or `npm run make -- --arch=universal --platform=darwin` on Mac for universal (both Apple Silicon and x64) build
