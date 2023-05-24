@@ -2,6 +2,10 @@
 
 An interactive, in-browser playground for image dithering and color quantization algorithms. Demo at [https://app.dithermark.com](https://app.dithermark.com)
 
+## Electron
+
+Standalone desktop Electron builds can be found [on the releases page.](https://github.com/allen-garvey/dithermark/releases)
+
 ## Dependencies for running
 
 * Dithermark requires advanced browser features such as: ES6 syntax, typed arrays, webworkers, fetch api, canvas api, CSS variables and WebGL 1 (optional) and so requires a browser version from roughly the second half of 2017 or later
