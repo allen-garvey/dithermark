@@ -7,6 +7,7 @@ import Util from './webgl-util.js';
 
 
 const THRESHOLD = 1;
+const ADAPTIVE_THRESHOLD = 13;
 const RANDOM_THRESHOLD = 2;
 const ORDERED_DITHER = 3;
 const ORDERED_RANDOM_DITHER = 4
@@ -37,7 +38,7 @@ function createWebGLDrawImageFunc(gl, fragmentShaderText, customUniformNames = [
             
             //set custom uniform values
             if(setCustomUniformsFunc){
-                setCustomUniformsFunc(gl, customUniformLocations);
+                setCustomUniformsFunc(gl, customUniformLocations, texWidth, texHeight);
             }
         });
     };
@@ -102,6 +103,15 @@ function webGLThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPi
     // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel);
+}
+
+function webGLAdaptiveThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
+    const drawFunc = getDrawFunc(ADAPTIVE_THRESHOLD, gl, ['webgl-adaptive-threshold-fshader-declaration', 'webgl-adaptive-threshold-fshader-body'], ['u_image_dimensions']);
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    drawFunc(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel, (gl, customUniformLocations, texWidth, texHeight)=>{
+        gl.uniform2f(customUniformLocations['u_image_dimensions'], texWidth, texHeight);
+    });
 }
 
 function webGLRandomThreshold(gl, texture, imageWidth, imageHeight, threshold, blackPixel, whitePixel){
@@ -195,6 +205,7 @@ function webGL3TextureCombine(gl, imageWidth, imageHeight, blackPixel, whitePixe
 
 const exports = {
     threshold: webGLThreshold,
+    adaptiveThreshold: webGLAdaptiveThreshold,
     randomThreshold: webGLRandomThreshold,
     aDitherAdd1: createArithmeticDither(ADITHER_ADD1, Shader.aDitherAdd1Return),
     aDitherAdd2: createArithmeticDither(ADITHER_ADD2, Shader.aDitherAdd2Return),

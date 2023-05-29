@@ -31,6 +31,28 @@
     bool shouldUseBlackPixel = pixelLightness < u_threshold;
 </script>
 
+<script type="webgl/fragment-shader" id="webgl-adaptive-threshold-fshader-declaration">
+    uniform vec2 u_image_dimensions;
+</script>
+
+<script type="webgl/fragment-shader" id="webgl-adaptive-threshold-fshader-body">
+    float sum = 0.0;
+    vec2 dx = vec2(1.0 / u_image_dimensions.x, 0.0);
+    vec2 dy = vec2(0.0, 1.0 / u_image_dimensions.y);
+    float total = 0.0;
+
+    for (float x = -4.0; x <= 4.0; x += 1.0) {
+        for (float y = -4.0; y <= 4.0; y += 1.0) {
+            vec3 sample = texture2D(u_texture, v_texcoord + dx * x + dy * y).rgb;
+            sum += lightness(sample);
+            total++;
+        }
+    }
+    float average = sum / total;
+
+    bool shouldUseBlackPixel = pixelLightness < u_threshold * average;
+</script>
+
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
     bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5) < u_threshold;
 </script>

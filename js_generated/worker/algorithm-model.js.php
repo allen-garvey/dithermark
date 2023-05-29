@@ -8,6 +8,7 @@
 */
 
 import Threshold from '../../worker/dither/threshold.js';
+import AdaptiveThreshold from '../../worker/dither/adaptive-threshold.js';
 import OrderedDither from '../../worker/dither/ordered.js';
 import ErrorPropDither from '../../worker/dither/error-prop.js';
 import ErrorPropColorDither from '../../worker/dither/error-prop-color.js';

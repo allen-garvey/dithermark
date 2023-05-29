@@ -316,6 +316,7 @@ function bwAlgorithmModelBase(): array{
     $ret = [
         'Threshold',
         new DitherAlgorithm('Threshold', 'Threshold.image', 'BwDither.threshold'),
+        new DitherAlgorithm('Adaptive Threshold', 'AdaptiveThreshold.image', 'BwDither.adaptiveThreshold'),
         'Random',
         new DitherAlgorithm('Random', 'Threshold.randomDither', 'BwDither.randomThreshold'),
         'Arithmetic',
