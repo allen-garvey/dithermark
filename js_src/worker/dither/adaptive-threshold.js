@@ -5,7 +5,8 @@ import PixelMath from '../../shared/pixel-math.js';
 const WINDOW_SIZE = 8;
 
 const adaptiveThreshold = (pixels, imageWidth, imageHeight, threshold, blackPixel, whitePixel) => {
-    const percentAdjustment = threshold / 255;
+    let percentAdjustment = threshold / 255;
+    percentAdjustment = percentAdjustment + ((1 - percentAdjustment) / 4);
     
     return Image.transform(pixels, imageWidth, imageHeight, (pixel, x, y)=>{
         const xStart = Math.max(0, x - WINDOW_SIZE);

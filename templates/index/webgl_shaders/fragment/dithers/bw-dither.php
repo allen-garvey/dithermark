@@ -49,8 +49,9 @@
         }
     }
     float average = sum / total;
+    float adjustment = u_threshold + ((1.0 - u_threshold) / 4.0);
 
-    bool shouldUseBlackPixel = pixelLightness < u_threshold * average;
+    bool shouldUseBlackPixel = pixelLightness < adjustment * average;
 </script>
 
 <script type="webgl/fragment-shader" id="webgl-random-threshold-fshader-body">
