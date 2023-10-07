@@ -515,15 +515,6 @@ export default {
         },
     },
     watch: {
-        loadedImage(newValue, oldValue){
-            //only do this for the first image loaded
-            if(!oldValue){
-                //make links open in new tab now, so user won't lose saved work
-                document.querySelectorAll('.nav a').forEach((link)=>{
-                    link.target = '_blank';
-                });
-            }
-        },
         currentEditorThemeIndex(newThemeIndex, oldThemeIndex){
             const classList = document.documentElement.classList;
             //need this for firefox full screen mode to work
