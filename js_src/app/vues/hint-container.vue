@@ -65,7 +65,9 @@ export default {
         fileDropped($event){
             if($event.dataTransfer.files.length > 0){
                 const file = $event.dataTransfer.files[0];
-                Fs.openImageFile(file, this.imageOpened, this.openImageError);
+                Fs.openImageFile(file)
+                    .catch(this.openImageError)
+                    .then(([imageElement, file]) => this.imageOpened(imageElement, file));
             }
         },
     }

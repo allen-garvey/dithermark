@@ -76,7 +76,10 @@ export default {
         onFileInputChange($event){
             const fileInput = $event.target;
 
-            Fs.openImageFile(fileInput.files[0], this.imageOpened, this.openImageError);
+            Fs.openImageFile(fileInput.files[0])
+                .catch(this.openImageError)
+                .then(([imageElement, file]) => this.imageOpened(imageElement, file));
+
             fileInput.value = '';
         },
         openImageFromUrlFailed(error, imageUrl){

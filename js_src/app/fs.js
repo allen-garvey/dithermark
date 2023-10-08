@@ -28,24 +28,26 @@ class FetchError extends Error{
     }
 }
 
-function openImageFile(file, imageLoadFunc, errFunc) {
+const isImageFile = (file) => file.type.startsWith('image/');
+
+const openImageFile = (file) => new Promise((resolve, reject) => {
     if(!file){
-        return errFunc('No files selected');
+        return reject('No files selected');
     }
 
-    if(!file.type.startsWith('image/')){
+    if(!isImageFile(file)){
         const fileType = file.type || 'folder';
-        return errFunc(`${file.name} appears to be of type ${fileType} rather than an image`);
+        return reject(`${file.name} appears to be of type ${fileType} rather than an image`);
     }
     imageElement.onload = ()=> {
-        imageLoadFunc(imageElement, file);
+        resolve([imageElement, file]);
     };
     if(currentImageObjectUrl){
         URL.revokeObjectURL(currentImageObjectUrl);
     }
     currentImageObjectUrl = URL.createObjectURL(file);
     imageElement.src = currentImageObjectUrl;
-}
+});
 
 function openImageUrl(imageUrl){
     const urlSplit = imageUrl.split('/');
@@ -180,6 +182,7 @@ function isDirectDownloadSupported(canvas){
 }
 
 export default {
+    isImageFile,
     openImageFile,
     openImageUrl,
     saveImage,
