@@ -9,11 +9,25 @@
             >
                 Image file
             </button>
+            <button 
+                class="btn btn-default" 
+                @click="batchOpenDeviceImages" 
+                title="Automatically dither multiple files"
+            >
+                Batch convert image files
+            </button>
             <input 
                 type="file"
                 @change.prevent="onFileInputChange($event)"
                 ref="fileInput" 
                 v-show="false" 
+            />
+            <input 
+                type="file"
+                @change.prevent="onBatchFileInputChange($event)"
+                ref="batchFileInput" 
+                v-show="false" 
+                multiple
             />
         </fieldset>
         <fieldset>
@@ -55,6 +69,10 @@ export default {
             type: Function,
             required: true,
         },
+        onBatchFilesSelected: {
+            type: Function,
+            required: true,
+        },
         openImageError: {
             type: Function,
             required: true,
@@ -72,6 +90,17 @@ export default {
     methods: {
         openDeviceImage(){
             this.$refs.fileInput.click();
+        },
+        batchOpenDeviceImages(){
+            this.$refs.batchFileInput.click();
+        },
+        onBatchFileInputChange($event){
+            const fileInput = $event.target;
+            const files = Array.from(fileInput.files).filter(file => Fs.isImageFile(file));
+            if(files.length === 0){
+                return this.openImageError('No image files selected');
+            }
+            this.onBatchFilesSelected(files);
         },
         onFileInputChange($event){
             const fileInput = $event.target;

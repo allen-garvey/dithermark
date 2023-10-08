@@ -20,6 +20,7 @@
                     <!-- Open tab -->
                     <open-tab 
                         :image-opened="loadImage" 
+                        :on-batch-files-selected="loadBatchImages"
                         :open-image-error="onOpenImageError" 
                         :request-modal="showModalPrompt" 
                         v-show="activeControlsTab === 0"
@@ -175,6 +176,7 @@
                         :save-requested="onSaveRequested" 
                         :is-image-pixelated="isImagePixelated"
                         v-show="activeControlsTab === 3"
+                        ref="exportTab"
                     />
                 </div>
                 <div class="super-dither-controls-container" v-show="isImageLoaded">
@@ -240,6 +242,8 @@ import WebGlCanvasFilters from '../webgl-canvas-filters.js';
 import ImageFiltersModel from '../image-filters-model.js';
 import { getGlobalTabs } from '../models/global-tabs.js'
 import { getDitherTabs } from '../models/dither-tabs.js'
+import Fs from '../fs.js';
+import { sleep } from '../util.js';
 
 import CyclePropertyList from './cycle-property-list.vue';
 import HintContainer from './hint-container.vue';
@@ -592,6 +596,22 @@ export default {
             Canvas.copy(this.transformedSourceCanvas, exportCanvas, scale);
 
             callback(exportCanvas, this.loadedImage.unsplash);
+        },
+        loadBatchImages(files){
+            if(files.length === 0){
+                return;
+            }
+            Fs.openImageFile(files[0]).then(([image, file]) => {
+                this.loadImage(image, file);
+                return sleep(300);
+            })
+            .then(() => {
+                this.$refs.exportTab.saveImage();
+                return sleep(100);
+            })
+            .then(() => {
+                this.loadBatchImages(files.slice(1));
+            });
         },
         loadImage(image, file){
             const loadedImage = {
