@@ -302,7 +302,7 @@ export default {
                 });
         });
         originalImageCanvas = Canvas.create();
-        sourceCanvas = Canvas.create();
+        sourceCanvas = Canvas.create(null, {willReadFrequently: true});
         transformCanvas = Canvas.create();
         transformCanvasWebGl = Canvas.createWebgl();
         ditherOutputCanvas = Canvas.create();

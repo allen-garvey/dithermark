@@ -20,11 +20,11 @@ function isBlendModeSupported(canvasObject, globalCompositeOperation){
 }
 
 //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
-function createCanvas(canvas=null){
+function createCanvas(canvas=null, contextOpts={}){
     canvas = canvas || document.createElement('canvas');
     return {
         canvas,
-        context: canvas.getContext('2d'),
+        context: canvas.getContext('2d', contextOpts),
     };
 }
 
