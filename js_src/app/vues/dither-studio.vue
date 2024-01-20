@@ -23,6 +23,7 @@
                         :on-batch-files-selected="loadBatchImages"
                         :open-image-error="onOpenImageError" 
                         :request-modal="showModalPrompt" 
+                        :is-batch-convert-enabled="isImageLoaded && areExperimentalFeaturesEnabled"
                         v-show="activeControlsTab === 0"
                     />
                     <!-- Image tab -->

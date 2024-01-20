@@ -1,5 +1,5 @@
 <template>
-    <div class="controls-tab-container">
+    <div class="controls-tab-container" :class="$style.container">
         <fieldset>
             <legend>Device</legend>
             <button 
@@ -13,6 +13,7 @@
                 class="btn btn-default" 
                 @click="batchOpenDeviceImages" 
                 title="Automatically dither multiple files"
+                v-if="isBatchConvertEnabled"
             >
                 Batch convert image files
             </button>
@@ -34,7 +35,6 @@
             <legend>Web</legend>
             <button 
                 class="btn btn-default" 
-                :class="$style.webButton"
                 @click="showOpenImageUrlPrompt" 
                 :disabled="isCurrentlyLoadingImageUrl" 
                 title="Open image from Url"
@@ -54,8 +54,10 @@
 </template>
 
 <style lang="scss" module>
-    .webButton {
-        margin-right: 0.5rem;
+    .container {
+        button + button {
+            margin-left: 0.5rem;
+        }
     }
 </style>
 
@@ -79,6 +81,10 @@ export default {
         },
         requestModal: {
             type: Function,
+            required: true,
+        },
+        isBatchConvertEnabled: {
+            type: Boolean,
             required: true,
         },
     },
