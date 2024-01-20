@@ -156,6 +156,14 @@
                                     </label>
                                 </div>
                             </fieldset>
+                            <fieldset>
+                                <legend>Other</legend>
+                                <div class="spread-content">
+                                    <label title="Enable incomplete or experimental features such as batch convert">Enable experimental features
+                                        <input type="checkbox" v-model="areExperimentalFeaturesEnabled" title="Enable incomplete or experimental features such as batch convert"/>
+                                    </label>
+                                </div>
+                            </fieldset>
                             <div v-if="!isLivePreviewEnabled" class="hint">
                                 To update the image output, use the &#8220;Dither&#8221; button
                             </div>
@@ -347,6 +355,7 @@ export default {
         this.isColorPickerLivePreviewEnabledSetting = globalSettings.isColorPickerLivePreviewEnabled;
         this.automaticallyResizeLargeImages = globalSettings.automaticallyResizeLargeImages;
         this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
+        this.areExperimentalFeaturesEnabled = globalSettings.enableExperimentalFeatures;
 
         //should be last statement of mounted function
         this.finishedInitialization = true;
@@ -364,6 +373,7 @@ export default {
             isLivePreviewEnabled: true,
             isColorPickerLivePreviewEnabledSetting: false,
             automaticallyResizeLargeImages: true,
+            areExperimentalFeaturesEnabled: false,
             isWebglSupported: false,
             isWebglEnabled: false,
             isWebglHighpFloatSupported: false,
@@ -515,6 +525,7 @@ export default {
                 isColorPickerLivePreviewEnabled: this.isColorPickerLivePreviewEnabledSetting,
                 automaticallyResizeLargeImages: this.automaticallyResizeLargeImages,
                 showOriginalImage: this.showOriginalImage,
+                enableExperimentalFeatures: this.areExperimentalFeaturesEnabled,
             };
         },
     },
