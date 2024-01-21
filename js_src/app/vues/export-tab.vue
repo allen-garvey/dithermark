@@ -141,29 +141,32 @@ export default {
         //downloads image
         //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
         saveImage(){
-            if(this.isCurrentlySavingImage){
-                return;
-            }
-            this.isCurrentlySavingImage = true;
-            this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
-                Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl=null)=>{
-                    //objectUrl will be null if we are using toBlob polyfill, which opens image in new tab
-                    if(objectUrl){
-                        saveImageLink = saveImageLink || createSaveImageLink();
-                        saveImageLink.href = objectUrl;
-                        saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
-                        saveImageLink.click();
-                    }
+            return new Promise((resolve) => {
+                if(this.isCurrentlySavingImage){
+                    return resolve();
+                }
+                this.isCurrentlySavingImage = true;
+                this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
+                    Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl=null)=>{
+                        //objectUrl will be null if we are using toBlob polyfill, which opens image in new tab
+                        if(objectUrl){
+                            saveImageLink = saveImageLink || createSaveImageLink();
+                            saveImageLink.href = objectUrl;
+                            saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
+                            saveImageLink.click();
+                        }
 
-                    //clear the canvas to free up memory
-                    Canvas.clear(saveImageCanvas);
-                    //follow Unsplash API guidelines for triggering download
-                    //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
-                    if(unsplash){
-                        //arguably should be POST request here, but much easier to just use GET
-                        fetch(`${Constants.unsplashDownloadUrl}?${Constants.unsplashApiPhotoIdQueryKey}=${unsplash.id}`);
-                    }
-                    this.isCurrentlySavingImage = false;
+                        //clear the canvas to free up memory
+                        Canvas.clear(saveImageCanvas);
+                        //follow Unsplash API guidelines for triggering download
+                        //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
+                        if(unsplash){
+                            //arguably should be POST request here, but much easier to just use GET
+                            fetch(`${Constants.unsplashDownloadUrl}?${Constants.unsplashApiPhotoIdQueryKey}=${unsplash.id}`);
+                        }
+                        this.isCurrentlySavingImage = false;
+                        resolve();
+                    });
                 });
             });
         },
