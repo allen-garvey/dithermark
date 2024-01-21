@@ -371,6 +371,7 @@ export default {
             activeControlsTab: 0,
             //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
             loadedImage: null,
+            batchImageQueue: [],
             isLivePreviewEnabled: true,
             isColorPickerLivePreviewEnabledSetting: false,
             automaticallyResizeLargeImages: true,
@@ -610,19 +611,27 @@ export default {
             callback(exportCanvas, this.loadedImage.unsplash);
         },
         loadBatchImages(files){
-            if(files.length === 0){
+            this.batchImageQueue = files;
+            this.loadNextBatchImage();
+        },
+        loadNextBatchImage(){
+            if(this.batchImageQueue.length === 0){
                 return;
             }
-            Fs.openImageFile(files[0]).then(([image, file]) => {
+            Fs.openImageFile(this.batchImageQueue[0]).then(([image, file]) => {
                 this.loadImage(image, file);
-                return sleep(300);
-            })
+            });
+        },
+        imageProcessingCompleted(){
+            // export image if we are in batch processing mode
+            if(this.batchImageQueue.length === 0){
+                return;
+            }
+            this.$refs.exportTab.saveImage()
+            .then(() => sleep(100))
             .then(() => {
-                this.$refs.exportTab.saveImage();
-                return sleep(100);
-            })
-            .then(() => {
-                this.loadBatchImages(files.slice(1));
+                this.batchImageQueue = this.batchImageQueue.slice(1);
+                this.loadNextBatchImage();
             });
         },
         loadImage(image, file){
@@ -847,6 +856,7 @@ export default {
                     this.imageFiltersAfterDitherChanged();
                 }
                 this.zoomImage();
+                this.imageProcessingCompleted();
             }
         },
         onCanvasesRequested(componentId, callback){
