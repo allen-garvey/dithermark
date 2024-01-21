@@ -125,59 +125,16 @@
                     </div>
                     <!-- Settings tab -->
                     <div v-show="activeControlsTab === 2">
-                        <div class="controls-tab-container">
-                            <fieldset>
-                                <legend>Appearance</legend>
-                                <div class="spread-content">
-                                    <label>Theme
-                                        <select v-model.number="currentEditorThemeIndex">
-                                            <template v-for="(theme, index) in editorThemes" :key="index">
-                                                <option :value="index">{{theme.name}}</option>
-                                            </template>
-                                        </select>
-                                    </label>
-                                    <cycle-property-list model-name="theme" v-model="currentEditorThemeIndex" :array-length="editorThemes.length" />
-                                </div>
-                                <full-screen-mode-control/>
-                            </fieldset>
-                            <fieldset>
-                                <legend>Performance</legend>
-                                <div class="spread-content">
-                                    <label title="Immediately transform image when controls change">Live update
-                                        <input type="checkbox" v-model="isLivePreviewEnabled" title="Immediately transform image when controls change"/>
-                                    </label>
-                                    <label v-if="isLivePreviewEnabled" title="Update colors immediately when selected in color picker">Color picker live update
-                                        <input type="checkbox" v-model="isColorPickerLivePreviewEnabledSetting" title="Update colors immediately when selected in color picker"/>
-                                    </label>
-                                    <label title="Automatically shrink large images when opening them">Shrink large images
-                                        <input type="checkbox" v-model="automaticallyResizeLargeImages" title="Automatically shrink large images when opening them"/>
-                                    </label>
-                                    <label v-if="isWebglSupported" title="Use WebGL to speed up performance when possible">Use WebGL
-                                        <input type="checkbox" v-model="isWebglEnabled" title="Use WebGL to speed up performance when possible"/>
-                                    </label>
-                                </div>
-                            </fieldset>
-                            <fieldset>
-                                <legend>Other</legend>
-                                <div class="spread-content">
-                                    <label title="Enable incomplete or experimental features such as batch convert">Enable experimental features
-                                        <input type="checkbox" v-model="areExperimentalFeaturesEnabled" title="Enable incomplete or experimental features such as batch convert"/>
-                                    </label>
-                                </div>
-                            </fieldset>
-                            <div v-if="!isLivePreviewEnabled" class="hint">
-                                To update the image output, use the &#8220;Dither&#8221; button
-                            </div>
-                            <div v-if="isLivePreviewEnabled && !isColorPickerLivePreviewEnabledSetting" class="hint">
-                                Colors won&#8217;t update until you press the color picker OK button
-                            </div>
-                            <div v-if="!automaticallyResizeLargeImages" class="hint">
-                                Opening very large images can result in poor performance or browser crashes
-                            </div>
-                            <div v-if="isWebglSupported && !isWebglEnabled" class="hint">
-                                With WebGL is disabled some image filters will not be available, and the Yliluoma 1 and Yliluoma 2 dithers will be very slow
-                            </div>
-                        </div>
+                        <settings-tab 
+                            :is-webgl-supported="isWebglSupported"
+                            :editor-themes="editorThemes"
+                            v-model:current-editor-theme-index="currentEditorThemeIndex"
+                            v-model:is-live-preview-enabled="isLivePreviewEnabled"
+                            v-model:is-color-picker-live-preview-enabled-setting="isColorPickerLivePreviewEnabledSetting"
+                            v-model:automatically-resize-large-images="automaticallyResizeLargeImages"
+                            v-model:is-webgl-enabled="isWebglEnabled"
+                            v-model:are-experimental-features-enabled="areExperimentalFeaturesEnabled"
+                        />
                     </div>
                     <!-- Export tab -->
                     <export-tab 
@@ -258,7 +215,6 @@ import CyclePropertyList from './cycle-property-list.vue';
 import HintContainer from './hint-container.vue';
 import Alerts from './alerts.vue';
 import ExportTab from './export-tab.vue';
-import FullScreenModeControl from './full-screen-mode-control.vue';
 import OpenTab from './open-tab.vue';
 import OutlineFiltersControls from './outline-filters-controls.vue';
 import UnsplashAttribution from './unsplash-attribution.vue';
@@ -268,6 +224,8 @@ import BwDitherSection from './bw-dither.vue';
 import ColorDitherSection from './color-dither.vue';
 import Tabs from './tabs.vue';
 import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
+import SettingsTab from './settings-tab.vue';
+import editorThemes from '../editor-themes.js';
 
 
 //webworker stuff
@@ -296,7 +254,6 @@ export default {
         HintContainer,
         Alerts,
         ExportTab,
-        FullScreenModeControl,
         OpenTab,
         OutlineFiltersControls,
         UnsplashAttribution,
@@ -306,6 +263,7 @@ export default {
         ColorDitherSection,
         Tabs,
         ImageCanvasSupercontainer,
+        SettingsTab,
     },
     created(){
         WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
@@ -403,7 +361,7 @@ export default {
             //user settings
             showOriginalImage: true,
             editorThemes: EditorThemes.get(),
-            currentEditorThemeIndex: null,
+            currentEditorThemeIndex: 0,
             //used so we know when component is done initializing,
             //so we don't do any spurious saving of global setting changes
             //done by initialization rather than user
