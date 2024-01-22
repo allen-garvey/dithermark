@@ -11,6 +11,12 @@
         />
         <div class="controls">
             <div ref="controlsContainer" class="controls-container">
+                <batch-convert-overlay 
+                    v-if="isBatchConverting" 
+                    :current-file-name="loadedImage.fileName"
+                    :batch-images-left="batchImageQueue.length"
+                    :batch-image-count="batchImageCount"
+                />
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
                     <tabs 
                         :activeTabIndex="activeControlsTab"
@@ -225,6 +231,7 @@ import ColorDitherSection from './color-dither.vue';
 import Tabs from './tabs.vue';
 import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
 import SettingsTab from './settings-tab.vue';
+import BatchConvertOverlay from './batch-convert-overlay.vue';
 import editorThemes from '../editor-themes.js';
 
 
@@ -264,6 +271,7 @@ export default {
         Tabs,
         ImageCanvasSupercontainer,
         SettingsTab,
+        BatchConvertOverlay,
     },
     created(){
         WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
@@ -330,6 +338,7 @@ export default {
             //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
             loadedImage: null,
             batchImageQueue: [],
+            batchImageCount: 0,
             isLivePreviewEnabled: true,
             isColorPickerLivePreviewEnabledSetting: false,
             automaticallyResizeLargeImages: true,
@@ -369,6 +378,9 @@ export default {
         };
     },
     computed: {
+        isBatchConverting(){
+            return this.batchImageQueue.length > 0;
+        },
         globalControlsTabs(){
             const clicked = (tabIndex) => this.activeControlsTab = tabIndex;
 
@@ -570,6 +582,7 @@ export default {
         },
         loadBatchImages(files){
             this.batchImageQueue = files;
+            this.batchImageCount = files.length;
             this.loadNextBatchImage();
         },
         loadNextBatchImage(){

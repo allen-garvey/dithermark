@@ -11,6 +11,7 @@ input[type="checkbox"]{
 }
 
 .controls-container{
+    position: relative;
     @include background_color_transition;
     display: flex;
     flex-wrap: wrap;
