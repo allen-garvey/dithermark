@@ -5,17 +5,29 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: 'development',
-    entry: [`${__dirname}/../js_src/index.js`, `${__dirname}/../sass/style.scss`,],
+    entry: [
+        `${__dirname}/../js_src/index.js`,
+        `${__dirname}/../sass/style.scss`,
+    ],
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, '../public_html/assets')
+        path: path.resolve(__dirname, '../public_html/assets'),
     },
     resolve: {
         alias: {
-            'app-performance-timer': path.resolve(__dirname, '../js_src/shared/timer.js'),
-            'print-palette-button': path.resolve(__dirname, '../js_src/app/vues/print-palette-button.vue'),
-            'texture-combine-component': path.resolve(__dirname, '../js_src/app/vues/texture-combine.vue'),
-        }
+            'app-performance-timer': path.resolve(
+                __dirname,
+                '../js_src/shared/timer.js'
+            ),
+            'print-palette-button': path.resolve(
+                __dirname,
+                '../js_src/app/vues/print-palette-button.vue'
+            ),
+            'texture-combine-component': path.resolve(
+                __dirname,
+                '../js_src/app/vues/texture-combine.vue'
+            ),
+        },
     },
     devServer: {
         static: {
@@ -31,7 +43,7 @@ module.exports = {
         rules: [
             {
                 test: /\.vue$/,
-                loader: 'vue-loader'
+                loader: 'vue-loader',
             },
             //besides the sass files, also extracts css from dithermark-vue-color
             {
@@ -46,7 +58,7 @@ module.exports = {
                     {
                         loader: 'sass-loader',
                     },
-                ]
+                ],
             },
             {
                 test: /\.scss$/,
@@ -61,17 +73,24 @@ module.exports = {
                                 options: {
                                     esModule: false,
                                     modules: {
-                                        localIdentName: '[local]_[hash:base64:8]',
+                                        localIdentName:
+                                            '[local]_[hash:base64:8]',
                                     },
-                                }
+                                },
                             },
                             {
                                 loader: 'sass-loader',
                                 options: {
-                                    additionalData: `@import "${path.resolve(__dirname, '../sass')}/variables.scss"; @import "${path.resolve(__dirname, '../sass')}/mixins.scss";`,
+                                    additionalData: `@import "${path.resolve(
+                                        __dirname,
+                                        '../sass'
+                                    )}/variables.scss"; @import "${path.resolve(
+                                        __dirname,
+                                        '../sass'
+                                    )}/mixins.scss";`,
                                 },
                             },
-                        ]
+                        ],
                     },
                     {
                         use: [
@@ -83,11 +102,11 @@ module.exports = {
                             },
                             'css-loader',
                             'sass-loader',
-                        ]
+                        ],
                     },
                 ],
             },
-        ]
+        ],
     },
     plugins: [
         new VueLoaderPlugin(),
@@ -97,6 +116,7 @@ module.exports = {
         new webpack.DefinePlugin({
             __VUE_OPTIONS_API__: true,
             __VUE_PROD_DEVTOOLS__: false,
+            __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
         }),
     ],
 };
