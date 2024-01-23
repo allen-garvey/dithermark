@@ -107,6 +107,8 @@ export default {
                 return this.openImageError('No image files selected');
             }
             this.onBatchFilesSelected(files);
+            // clear input so the same files can be re-selected
+            $event.target.value = '';
         },
         onFileInputChange($event){
             const fileInput = $event.target;
