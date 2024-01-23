@@ -164,7 +164,7 @@
                     </div>
                 </div>
             </div>
-            <zoom-bar ref="zoomBar" v-show="isImageLoaded" :show-original-image="showOriginalImage" :zoom-changed="zoomImage" :request-dimensions-for-zoom-fit="onDimensionsRequestedForZoomFit" />
+            <zoom-bar ref="zoomBar" v-show="isImageLoaded && !isBatchConverting" :show-original-image="showOriginalImage" :zoom-changed="zoomImage" :request-dimensions-for-zoom-fit="onDimensionsRequestedForZoomFit" />
         </div>
         <!-- //if unsplash-attribution component is not in extra div, it breaks dithering for some reason -->
         <div ref="unsplashAttributionContainer">
