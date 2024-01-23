@@ -21,11 +21,11 @@
     "homepage": "https://github.com/allen-garvey/dithermark#readme",
     "dependencies": {},
     "devDependencies": {
-      "@electron-forge/cli": "^6.1.1",
-      "@electron-forge/maker-deb": "^6.1.1",
-      "@electron-forge/maker-squirrel": "^6.1.1",
-      "@electron-forge/maker-zip": "^6.1.1",
-      "electron": "^24.1.2"
+      "@electron-forge/cli": "^7.2.0",
+      "@electron-forge/maker-deb": "^7.2.0",
+      "@electron-forge/maker-squirrel": "^7.2.0",
+      "@electron-forge/maker-zip": "^7.2.0",
+      "electron": "^28.1.4"
     }
   }
   
