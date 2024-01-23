@@ -97,5 +97,5 @@ $(ELECTRON_HTML_DIR): $(HTML_INDEX)
 	cp -r $(PUBLIC_HTML_DIR) $(ELECTRON_HTML_DIR)
 
 $(ELECTRON_HTML_INDEX): $(ELECTRON_HTML_DIR)
-	sed 's|/assets/style.css|./assets/style.css|' $(HTML_INDEX) | sed 's|//dithermark.com/faq|https://dithermark.com/faq|' | sed 's|/assets/bundle.min.js|./assets/bundle.min.js|' > $(ELECTRON_HTML_INDEX)
+	sed 's|/assets/style.css|./assets/style.css|' $(HTML_INDEX) | sed 's|/assets/bundle.min.js|./assets/bundle.min.js|' > $(ELECTRON_HTML_INDEX)
 

@@ -61,8 +61,7 @@
         require_once(INC_PATH.'unsplash-api-secret.php');
     }
 
-    define('APP_SUPPORT_SITE_URL_BASE', '//dithermark.com/');
-    define('APP_SUPPORT_SITE_FAQ_PAGE_URL', APP_SUPPORT_SITE_URL_BASE.'faq');
+    define('APP_SUPPORT_SITE_FAQ_PAGE_URL', 'https://www.dithermark.com/faq');
 
 
     if(BUILD_MODE_RELEASE){
