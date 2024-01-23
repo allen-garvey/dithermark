@@ -29,7 +29,7 @@
                         :on-batch-files-selected="loadBatchImages"
                         :open-image-error="onOpenImageError" 
                         :request-modal="showModalPrompt" 
-                        :is-batch-convert-enabled="isImageLoaded && areExperimentalFeaturesEnabled"
+                        :is-batch-convert-enabled="isImageLoaded"
                         v-show="activeControlsTab === 0"
                     />
                     <!-- Image tab -->
@@ -139,7 +139,6 @@
                             v-model:is-color-picker-live-preview-enabled-setting="isColorPickerLivePreviewEnabledSetting"
                             v-model:automatically-resize-large-images="automaticallyResizeLargeImages"
                             v-model:is-webgl-enabled="isWebglEnabled"
-                            v-model:are-experimental-features-enabled="areExperimentalFeaturesEnabled"
                         />
                     </div>
                     <!-- Export tab -->
@@ -322,7 +321,6 @@ export default {
         this.isColorPickerLivePreviewEnabledSetting = globalSettings.isColorPickerLivePreviewEnabled;
         this.automaticallyResizeLargeImages = globalSettings.automaticallyResizeLargeImages;
         this.isWebglEnabled = this.isWebglSupported && globalSettings.isWebglEnabled;
-        this.areExperimentalFeaturesEnabled = globalSettings.enableExperimentalFeatures;
 
         //should be last statement of mounted function
         this.finishedInitialization = true;
@@ -342,7 +340,6 @@ export default {
             isLivePreviewEnabled: true,
             isColorPickerLivePreviewEnabledSetting: false,
             automaticallyResizeLargeImages: true,
-            areExperimentalFeaturesEnabled: false,
             isWebglSupported: false,
             isWebglEnabled: false,
             isWebglHighpFloatSupported: false,
@@ -497,7 +494,6 @@ export default {
                 isColorPickerLivePreviewEnabled: this.isColorPickerLivePreviewEnabledSetting,
                 automaticallyResizeLargeImages: this.automaticallyResizeLargeImages,
                 showOriginalImage: this.showOriginalImage,
-                enableExperimentalFeatures: this.areExperimentalFeaturesEnabled,
             };
         },
     },

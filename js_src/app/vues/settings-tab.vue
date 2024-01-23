@@ -50,15 +50,7 @@
                 />
             </div>
         </fieldset>
-        <fieldset>
-            <legend>Other</legend>
-            <checkbox 
-                tooltip="Enable incomplete or experimental features such as batch convert"
-                label="Enable experimental features"
-                :model-value="areExperimentalFeaturesEnabled" 
-                @update:model-value="newValue => $emit('update:areExperimentalFeaturesEnabled', newValue)"
-            />
-        </fieldset>
+
         <div v-if="!isLivePreviewEnabled" class="hint">
             To update the image output, use the &#8220;Dither&#8221; button
         </div>
@@ -107,10 +99,6 @@ export default {
             required: true,
         },
         isWebglEnabled: {
-            type: Boolean,
-            required: true,
-        },
-        areExperimentalFeaturesEnabled: {
             type: Boolean,
             required: true,
         },

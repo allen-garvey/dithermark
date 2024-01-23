@@ -34,7 +34,6 @@ function defaultGlobalSettings(areControlsPinned) {
         isColorPickerLivePreviewEnabled: areControlsPinned,
         automaticallyResizeLargeImages: true,
         showOriginalImage: false,
-        enableExperimentalFeatures: false,
     };
 }
 
