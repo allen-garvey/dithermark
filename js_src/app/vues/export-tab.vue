@@ -1,6 +1,6 @@
 <template>
     <div class="controls-tab-container">
-        <div v-if="shouldShowFileName">
+        <div>
             <label>File name
                 <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" /><span>{{saveImageFileType.extension}}</span>
             </label>
@@ -22,9 +22,6 @@
         </div>
         <div>
             <button class="btn btn-success" @click="saveImage" :disabled="isCurrentlySavingImage" title="Save image to downloads folder">Save</button>
-        </div>
-        <div v-if="!shouldShowFileName" class="hint">
-            Image will open in a new tab. Right click / long press on the image to save
         </div>
     </div>
 </template>
@@ -77,14 +74,12 @@ export default {
     },
     created(){
         saveImageCanvas = Canvas.create();
-        this.shouldShowFileName = Fs.isDirectDownloadSupported(saveImageCanvas.canvas);
     },
     data(){
         return {
             saveImageFileName: '',
             saveImageFileTypeIndex: 0,
             isCurrentlySavingImage: false,
-            shouldShowFileName: true,
             //should be boolean, but v-model only supports numbers
             //only used if image is pixelated
             shouldUpsample: 1,
