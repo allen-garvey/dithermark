@@ -6,10 +6,6 @@ function areCanvasFiltersSupported(canvasObject) {
     return 'filter' in canvasObject.context;
 }
 
-function isToBlobSupported(canvas) {
-    return 'toBlob' in canvas;
-}
-
 //globalCompositeOperation from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
 //otherwise known as blend mode
 //test for support from: https://stackoverflow.com/questions/26123588/test-if-browser-supports-multiply-for-globalcompositeoperation-canvas-property
@@ -207,5 +203,4 @@ export default {
     loadPixels,
     devicePixelRatio,
     areCanvasFiltersSupported,
-    isToBlobSupported,
 };
