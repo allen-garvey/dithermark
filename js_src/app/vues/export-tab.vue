@@ -40,7 +40,7 @@
 import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js'
 import Fs from '../fs.js';
-import { isiOs } from '../cross-platform';
+import { isiOs } from '../cross-platform.js';
 
 
 let saveImageCanvas;
