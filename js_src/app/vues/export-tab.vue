@@ -40,6 +40,7 @@
 import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js'
 import Fs from '../fs.js';
+import { isiOs } from '../cross-platform';
 
 
 let saveImageCanvas;
@@ -101,7 +102,7 @@ export default {
             ];
 
             // https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp
-            if(!Fs.isRunningOniOS()){
+            if(!isiOs()){
                 types.push(
                     {
                         label: 'webp (lossless)',

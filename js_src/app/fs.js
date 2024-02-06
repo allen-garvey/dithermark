@@ -163,25 +163,10 @@ function saveImage(canvas, fileType, callback) {
     );
 }
 
-//needed because using blob urls for some reason fails on iOS
-//mentioned in: https://github.com/eligrey/FileSaver.js/issues/375
-//from: https://stackoverflow.com/questions/9038625/detect-if-device-is-ios
-//will be false positive on IE11 or if user agent is spoofed, but is not a big deal,
-//since IE11 is not supported anyway, and if someone is spoofing the user agent they will
-//just get the export fallback, which should work anyway, it just won't be a nice as directly downloading
-function isRunningOniOS() {
-    const iOsRegex = /iP(ad|hone|od)/;
-    return (
-        iOsRegex.test(navigator.userAgent) ||
-        (navigator.platform && iOsRegex.test(navigator.platform))
-    );
-}
-
 export default {
     isImageFile,
     openImageFile,
     openImageUrl,
     saveImage,
     messageForOpenImageUrlError,
-    isRunningOniOS,
 };
