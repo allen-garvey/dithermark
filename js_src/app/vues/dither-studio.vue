@@ -29,7 +29,7 @@
                         :on-batch-files-selected="loadBatchImages"
                         :open-image-error="onOpenImageError" 
                         :request-modal="showModalPrompt" 
-                        :is-batch-convert-enabled="isImageLoaded"
+                        :is-batch-convert-enabled="isBatchConvertEnabled"
                         v-show="activeControlsTab === 0"
                     />
                     <!-- Image tab -->
@@ -232,6 +232,7 @@ import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
 import SettingsTab from './settings-tab.vue';
 import BatchConvertOverlay from './batch-convert-overlay.vue';
 import editorThemes from '../editor-themes.js';
+import { isiOs } from '../cross-platform.js';
 
 
 //webworker stuff
@@ -375,6 +376,9 @@ export default {
         };
     },
     computed: {
+        isBatchConvertEnabled(){
+            return this.isImageLoaded && !isiOs();
+        },
         isBatchConverting(){
             return this.batchImageQueue.length > 0;
         },
