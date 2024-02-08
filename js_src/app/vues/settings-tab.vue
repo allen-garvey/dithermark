@@ -21,7 +21,7 @@
         </fieldset>
         <fieldset>
             <legend>Performance</legend>
-            <div class="spread-content">
+            <div class="spread-content" :class="$style.checkboxesContainer">
                 <checkbox 
                     tooltip="Immediately transform image when controls change"
                     label="Live update"
@@ -65,6 +65,12 @@
         </div>
     </div>
 </template>
+
+<style lang="scss" module>
+    .checkboxesContainer {
+        gap: 16px;
+    }
+</style>
 
 <script>
 import CyclePropertyList from './cycle-property-list.vue';
