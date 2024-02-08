@@ -35,10 +35,12 @@
                     <!-- Image tab -->
                     <div v-show="activeControlsTab === 1">
                         <div class="controls-tab-container">
-                            <div class="spread-content">
-                                <label>Show source image
-                                    <input type="checkbox" v-model="showOriginalImage"/>
-                                </label>
+                            <div>
+                                <checkbox 
+                                    label="Show source image"
+                                    tooltip="Display the original image next to the dithered image"
+                                    v-model="showOriginalImage"
+                                />
                             </div>
                             <fieldset>
                                 <legend>Filters <small>(pre dither)</small></legend>
@@ -231,6 +233,7 @@ import Tabs from './tabs.vue';
 import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
 import SettingsTab from './settings-tab.vue';
 import BatchConvertOverlay from './batch-convert-overlay.vue';
+import Checkbox from './checkbox.vue';
 import editorThemes from '../editor-themes.js';
 import { isiOs } from '../cross-platform.js';
 
@@ -272,6 +275,7 @@ export default {
         ImageCanvasSupercontainer,
         SettingsTab,
         BatchConvertOverlay,
+        Checkbox,
     },
     created(){
         WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
