@@ -7,7 +7,7 @@
         </div>
         <div>
             <label :class="$style.radioSuperLabel">File type</label>
-            <label v-for="(fileType, i) of saveImageFileTypes" :key="fileType.mime">{{ fileType.label }}
+            <label :class="$style.exportTypeLabel" v-for="(fileType, i) of saveImageFileTypes" :key="fileType.mime">{{ fileType.label }}
                 <input type="radio" v-model="saveImageFileTypeIndex" :value="i" />
             </label>
         </div>
@@ -31,6 +31,10 @@
 .radioSuperLabel{
     margin-right: 30px;
     min-width: 4em;
+    display: inline-block;
+}
+
+.exportTypeLabel {
     display: inline-block;
 }
 
@@ -105,7 +109,7 @@ export default {
             if(!isiOs()){
                 types.push(
                     {
-                        label: 'webp (lossless)',
+                        label: 'webp\xa0(lossless)',
                         mime: 'image/webp',
                         extension: '.webp',
                     }
