@@ -5,6 +5,7 @@ import ColorPalettes from './color-palettes.js';
 const localStorage = window.localStorage;
 const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
 const USER_GLOBAL_SETTINGS_KEY = 'user-global-settings';
+const USER_EXPORT_SETTINGS_KEY = 'user-export-settings';
 
 function savePalettes(palettes) {
     localStorage.setItem(USER_SAVED_PALETTES_KEY, JSON.stringify(palettes));
@@ -15,7 +16,11 @@ function getSettingOrDefault(key, defaultValue) {
     if (!setting) {
         return defaultValue;
     }
-    return JSON.parse(setting);
+    try {
+        return JSON.parse(setting);
+    } catch {
+        return defaultValue;
+    }
 }
 
 function saveGlobalSettings(globalSettings) {
