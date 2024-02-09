@@ -1,15 +1,14 @@
 <template>
     <div class="controls-tab-container">
         <div>
-            <label>File name
-                <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" /><span>{{saveImageFileType.extension}}</span>
-            </label>
+            <label :class="$style.exportLabel" for="export-tab-filename">File name</label>
+            <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" id="export-tab-filename" /><span>{{saveImageFileType.extension}}</span>
         </div>
         <div>
-            <label :class="$style.radioSuperLabel">File type</label>
-            <label :class="$style.exportTypeLabel" v-for="(fileType, i) of saveImageFileTypes" :key="fileType.mime">{{ fileType.label }}
-                <input type="radio" v-model="saveImageFileTypeIndex" :value="i" />
-            </label>
+            <label :class="$style.exportLabel" for="export-tab-filetype">File type</label>
+            <select v-model="saveImageFileTypeValue" id="export-tab-filetype">
+                <option v-for="fileType of saveImageFileTypes" :key="fileType.value" :value="fileType.value">{{ fileType.label }}</option>
+            </select>
         </div>
         <div v-if="isImagePixelated">
             <label :class="$style.radioSuperLabel">Size</label>
@@ -27,15 +26,10 @@
 </template>
 
 <style lang="scss" module>
-
-.radioSuperLabel{
-    margin-right: 30px;
-    min-width: 4em;
+.exportLabel {
     display: inline-block;
-}
-
-.exportTypeLabel {
-    display: inline-block;
+    min-width: 4.5em;
+    margin-right: 0.8em;
 }
 
 </style>
@@ -44,7 +38,7 @@
 import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js'
 import Fs from '../fs.js';
-import { isiOs } from '../cross-platform.js';
+import { getSaveImageFileTypes } from '../export-model.js';
 
 
 let saveImageCanvas;
@@ -83,7 +77,7 @@ export default {
     data(){
         return {
             saveImageFileName: '',
-            saveImageFileTypeIndex: 0,
+            saveImageFileTypeValue: getSaveImageFileTypes()[0].value,
             isCurrentlySavingImage: false,
             //should be boolean, but v-model only supports numbers
             //only used if image is pixelated
@@ -92,34 +86,10 @@ export default {
     },
     computed: {
         saveImageFileTypes(){
-            const types = [
-                {
-                    label: 'png',
-                    mime: 'image/png',
-                    extension: '.png',
-                },
-                {
-                    label: 'jpeg',
-                    mime: 'image/jpeg',
-                    extension: '.jpg',
-                },
-            ];
-
-            // https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp
-            if(!isiOs()){
-                types.push(
-                    {
-                        label: 'webp\xa0(lossless)',
-                        mime: 'image/webp',
-                        extension: '.webp',
-                    }
-                );
-            }
-
-            return types;
+            return getSaveImageFileTypes();
         },
         saveImageFileType(){
-            return this.saveImageFileTypes[this.saveImageFileTypeIndex];
+            return this.saveImageFileTypes.find(fileType => fileType.value === this.saveImageFileTypeValue);
         },
     },
     watch: {
