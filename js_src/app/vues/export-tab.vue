@@ -39,7 +39,7 @@ import Constants from '../../generated_output/app/constants.js';
 import Canvas from '../canvas.js'
 import Fs from '../fs.js';
 import { getSaveImageFileTypes } from '../export-model.js';
-
+import  userSettings from '../user-settings.js';
 
 let saveImageCanvas;
 let saveImageLink;
@@ -77,7 +77,7 @@ export default {
     data(){
         return {
             saveImageFileName: '',
-            saveImageFileTypeValue: getSaveImageFileTypes()[0].value,
+            saveImageFileTypeValue: userSettings.getExportSettings().fileType,
             isCurrentlySavingImage: false,
             //should be boolean, but v-model only supports numbers
             //only used if image is pixelated
@@ -105,6 +105,11 @@ export default {
                 title = `${title} | ${newValue}`;
             }
             document.title = title;
+        },
+        saveImageFileTypeValue(newValue){
+            userSettings.saveExportSettings({
+                fileType: newValue,
+            });
         },
     },
     methods: {
