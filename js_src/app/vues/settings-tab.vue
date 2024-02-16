@@ -51,17 +51,8 @@
             </div>
         </fieldset>
 
-        <div v-if="!isLivePreviewEnabled" class="hint">
-            To update the image output, use the &#8220;Dither&#8221; button
-        </div>
-        <div v-if="isLivePreviewEnabled && !isColorPickerLivePreviewEnabledSetting" class="hint">
-            Colors won&#8217;t update until you press the color picker OK button
-        </div>
-        <div v-if="!automaticallyResizeLargeImages" class="hint">
-            Opening very large images can result in poor performance or browser crashes
-        </div>
-        <div v-if="isWebglSupported && !isWebglEnabled" class="hint">
-            With WebGL is disabled some image filters will not be available, and the Yliluoma 1 and Yliluoma 2 dithers will be very slow
+        <div :class="$style.hint" v-for="hint in hints" :key="hint">
+            {{ hint }}
         </div>
     </div>
 </template>
@@ -69,6 +60,9 @@
 <style lang="scss" module>
     .checkboxesContainer {
         gap: 16px;
+    }
+    .hint {
+        font-size: 0.8rem;
     }
 </style>
 
@@ -113,6 +107,29 @@ export default {
         CyclePropertyList,
         FullScreenModeControl,
         Checkbox,
+    },
+    computed: {
+        hints(){
+            const hints = [];
+
+            if(!this.isLivePreviewEnabled){
+                hints.push('To update the image output, use the “Dither” button.');
+            }
+            else if(!this.isColorPickerLivePreviewEnabledSetting){
+                hints.push('Colors won’t update until you press the color picker OK button.');
+            }
+
+            if(!this.automaticallyResizeLargeImages){
+                hints.push('Opening very large images can result in poor performance or browser crashes.');
+            }
+
+            if(this.isWebglSupported && !this.isWebglEnabled){
+                hints.push('With WebGL is disabled some image filters will not be available, and the Yliluoma 1, Yliluoma 2 and adaptive threshold dithers will be very slow.');
+            }
+
+
+            return hints;
+        },
     },
 };
 </script>
