@@ -3,5 +3,11 @@
 </template>
 <script>
 //this is an empty component for components that should not appear in release builds (print palette button, texture combine component)
-export default {};
+export default {
+    methods: {
+        resetTextures(){
+            
+        },
+    }
+};
 </script>
