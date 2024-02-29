@@ -11,11 +11,11 @@
             </select>
         </div>
         <div v-if="isImagePixelated">
-            <label :class="$style.radioSuperLabel">Size</label>
-            <label>Upsampled
+            <label :class="$style.exportLabel">Size</label>
+            <label :class="$style.radioLabel">Upsampled
                 <input type="radio" v-model.number="shouldUpsample" :value="1" />
             </label>
-            <label>Actual
+            <label :class="$style.radioLabel">Actual
                 <input type="radio" v-model.number="shouldUpsample" :value="0" />
             </label>
         </div>
@@ -30,6 +30,14 @@
     display: inline-block;
     min-width: 4.5em;
     margin-right: 0.8em;
+}
+
+.radioLabel{
+    font-size: 0.8rem;
+
+    & + & {
+        margin-left: 0.5em;
+    }
 }
 
 </style>
