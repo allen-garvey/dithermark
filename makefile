@@ -71,6 +71,10 @@ release: $(HTML_INDEX) $(JS_GENERATED_OUTPUT)
 unsplash_api:
 	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
 
+serverless:
+	mkdir -p inc/serverless/build
+	php inc/serverless/unsplash-download.php > inc/serverless/build/unsplash-download.php
+
 ###### PHP generated JS
 
 $(JS_GENERATED_APP_CONSTANTS_OUTPUT): $(JS_GENERATED_APP_CONSTANTS_SRC) $(PHP_CONFIG)

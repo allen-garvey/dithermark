@@ -14,9 +14,5 @@ export default {
     unsplashReferralAppName: '<?= UNSPLASH_REFERRAL_APP_NAME; ?>',
     unsplashApiUrl: '<?= UNSPLASH_API_URL; ?>',
     unsplashApiPhotoIdQueryKey: '<?= UNSPLASH_PHOTO_ID_QUERY_KEY; ?>',
-    <?php if(BUILD_MODE_RELEASE && defined('UNSPLASH_DOWNLOAD_URL_PRODUCTION')): ?>
-        unsplashDownloadUrl: '<?= UNSPLASH_DOWNLOAD_URL_PRODUCTION; ?>',
-    <?php else: ?>
-        unsplashDownloadUrl: '<?= UNSPLASH_DOWNLOAD_URL; ?>',
-    <?php endif; ?>
+    unsplashDownloadUrl: '<?= UNSPLASH_DOWNLOAD_URL; ?>',
 };
