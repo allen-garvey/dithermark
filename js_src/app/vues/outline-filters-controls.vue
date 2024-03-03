@@ -64,10 +64,20 @@
             </div>
             <cycle-property-list model-name="outline opacity" v-model="selectedOutlineOpacity" :array-length="outlineOpacities.length" />
         </div>
-        <div v-if="isImageOutlineFilterActive &amp;&amp; isImageOutlineFixedColor">
-            <color-picker v-if="shouldShowColorPicker" :should-live-update="isColorPickerLivePreviewEnabled" :selected-color="fixedOutlineColor" @input="colorPickerValueChanged" @ok="colorPickerDone" @cancel="colorPickerDone" />
+        <div v-if="isImageOutlineFilterActive && isImageOutlineFixedColor">
+            <color-picker 
+                v-if="shouldShowColorPicker" 
+                :should-live-update="isColorPickerLivePreviewEnabled" 
+                :selected-color="fixedOutlineColor" 
+                @update:modelValue="colorPickerValueChanged" 
+                @ok="colorPickerDone" 
+                @cancel="colorPickerDone" 
+            />
             <div class="spread-content image-outline-color-input">
-                <color-input label="Color" id-prefix="outline-color" :is-selected="shouldShowColorPicker" :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
+                <color-input 
+                    label="Color" 
+                    id-prefix="outline-color" :is-selected="shouldShowColorPicker" 
+                    :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
             </div>
         </div>
     </fieldset>
