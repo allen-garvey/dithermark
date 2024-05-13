@@ -58,6 +58,10 @@
     bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5) < u_threshold;
 </script>
 
+<script type="webgl/fragment-shader" id="webgl-simplex-threshold-fshader-body">
+    bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (snoise(gl_FragCoord.xy) - 0.5) < u_threshold;
+</script>
+
 <script type="webgl/fragment-shader" id="webgl-arithmetic-dither-fshader-body">
     bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (arithmeticDither(gl_FragCoord.xy, pixel.rgb) - 0.5) < u_threshold;
 </script>

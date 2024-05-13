@@ -8,16 +8,17 @@ import { generateRandomSeed } from './webgl-random.js';
 const THRESHOLD = 1;
 const ADAPTIVE_THRESHOLD = 13;
 const RANDOM_THRESHOLD = 2;
-const ORDERED_DITHER = 3;
-const ORDERED_RANDOM_DITHER = 4;
-const COLOR_REPLACE = 5;
-const TEXTURE_COMBINE = 6;
-const ADITHER_ADD1 = 7;
-const ADITHER_ADD2 = 8;
-const ADITHER_ADD3 = 9;
-const ADITHER_XOR1 = 10;
-const ADITHER_XOR2 = 11;
-const ADITHER_XOR3 = 12;
+const SIMPLEX_THRESHOLD = 3;
+const ORDERED_DITHER = 4;
+const ORDERED_RANDOM_DITHER = 5;
+const COLOR_REPLACE = 6;
+const TEXTURE_COMBINE = 7;
+const ADITHER_ADD1 = 8;
+const ADITHER_ADD2 = 9;
+const ADITHER_ADD3 = 10;
+const ADITHER_XOR1 = 11;
+const ADITHER_XOR2 = 12;
+const ADITHER_XOR3 = 13;
 
 /*
  * Actual webgl function creation
@@ -271,6 +272,32 @@ function webGLRandomThreshold(
     );
 }
 
+function simplexThreshold(
+    gl,
+    texture,
+    imageWidth,
+    imageHeight,
+    threshold,
+    blackPixel,
+    whitePixel
+) {
+    const drawFunc = getDrawFunc(SIMPLEX_THRESHOLD, gl, [
+        'webgl-simplex-declaration-fshader',
+        'webgl-simplex-threshold-fshader-body',
+    ]);
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    drawFunc(
+        gl,
+        texture,
+        imageWidth,
+        imageHeight,
+        threshold,
+        blackPixel,
+        whitePixel
+    );
+}
+
 function createArithmeticDither(ditherKey, customDeclarationReplace) {
     const customReplacements = [
         {
@@ -486,6 +513,7 @@ const exports = {
     threshold: webGLThreshold,
     adaptiveThreshold: webGLAdaptiveThreshold,
     randomThreshold: webGLRandomThreshold,
+    simplexThreshold,
     aDitherAdd1: createArithmeticDither(ADITHER_ADD1, Shader.aDitherAdd1Return),
     aDitherAdd2: createArithmeticDither(ADITHER_ADD2, Shader.aDitherAdd2Return),
     aDitherAdd3: createArithmeticDither(ADITHER_ADD3, Shader.aDitherAdd3Return),

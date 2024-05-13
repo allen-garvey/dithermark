@@ -319,6 +319,7 @@ function bwAlgorithmModelBase(): array{
         new DitherAlgorithm('Adaptive Threshold', 'AdaptiveThreshold.image', 'BwDither.adaptiveThreshold'),
         'Random',
         new DitherAlgorithm('Random', 'Threshold.randomDither', 'BwDither.randomThreshold'),
+        new DitherAlgorithm('Simplex', 'Threshold.randomDither', 'BwDither.simplexThreshold'),
         'Arithmetic',
         arithmeticDitherBwBuilder('XOR (High)', 'Xor1'),
         arithmeticDitherBwBuilder('XOR (Medium)', 'Xor3'),
