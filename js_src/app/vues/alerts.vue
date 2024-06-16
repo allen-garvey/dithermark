@@ -1,6 +1,6 @@
 <template>
     <div :class="$style.alertsContainer">
-        <div :class="[$style.alert, $style.danger]" v-if="showOpenImageErrorMessage && openImageErrorMessage">
+        <div :class="[$style.alert, $style.danger]" v-if="showOpenImageErrorMessage && openImageErrorMessage" role="alert">
             <div :class="$style.closeButtonContainer">
                 <button @click="showOpenImageErrorMessage=false" :class="$style.closeButton">×</button>
             </div>
@@ -11,7 +11,7 @@
                 {{openImageErrorMessage}}
             </template>
         </div>
-        <div :class="[$style.alert, $style.warning]" v-if="showWebglWarningMessage && webglWarningMessage">
+        <div :class="[$style.alert, $style.warning]" v-if="showWebglWarningMessage && webglWarningMessage" role="alert">
             <div :class="$style.closeButtonContainer">
                 <button @click="showWebglWarningMessage=false" :class="$style.closeButton">×</button>
             </div>
