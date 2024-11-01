@@ -1,5 +1,7 @@
+@use './variables';
+
 .global-controls-panel{
-    margin: 0 $controls_gutter 16px 0;
+    margin: 0 variables.$controls_gutter 16px 0;
     fieldset{
         padding: 2px 0 12px;
     }
@@ -20,7 +22,7 @@
 
 .label-align{
     label{
-        min-width: $global_controls_label_min_width;
+        min-width: variables.$global_controls_label_min_width;
         display: inline-block;
     }
 }

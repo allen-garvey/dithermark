@@ -15,7 +15,7 @@
     text-align: right;
 
     //styles for desktop
-    @include pinned_controls_mq{
+    @include mixins.pinned_controls_mq{
         text-align: left;
     }
 }

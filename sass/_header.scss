@@ -1,5 +1,8 @@
+@use './variables';
+@use './mixins';
+
 .header{
-    padding: 8px $global_horizontal_padding 4px;
+    padding: 8px variables.$global_horizontal_padding 4px;
     position: -webkit-sticky;
     position: sticky;
     left: 0;
@@ -31,7 +34,7 @@
     font-size: 20px;
 }
 
-@include pinned_controls_mq{
+@include mixins.pinned_controls_mq{
     .header{
         //so position sticky works
         display: inline-block;

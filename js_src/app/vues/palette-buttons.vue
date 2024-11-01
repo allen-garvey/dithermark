@@ -37,7 +37,7 @@
     margin: 8px 0;
 }
 
-@include pinned_controls_mq{
+@include mixins.pinned_controls_mq{
 	.paletteButtonsContainer{
 		//reduce upper margin from color inputs
 		margin-top: -8px;

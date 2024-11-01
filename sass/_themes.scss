@@ -1,9 +1,11 @@
+@use './mixins';
+
 //note that link colors for unsplash-attribution are not
 //using css variables, since that messes up default link colors
 //when variables are unset
 
 body{
-    @include background_color_transition;
+    @include mixins.background_color_transition;
     --main-bg-color: white;
     --pinned-controls-bg-color: white;
     --main-text-color: black;

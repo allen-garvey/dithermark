@@ -28,7 +28,7 @@
         min-width: calc(100vw - 22px);
     }
 
-    @include pinned_controls_mq{
+    @include mixins.pinned_controls_mq{
         .hintContainer{
             font-size: 3.15em;
             min-height: 90vh;

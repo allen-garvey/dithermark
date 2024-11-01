@@ -17,7 +17,7 @@
 .canvasSupercontainer{
     display: flex;
     overflow-x: scroll;
-    max-width: calc(100vw - #{$chrome_fullscreen_horizontal_scrollbar_height});
+    max-width: calc(100vw - #{variables.$chrome_fullscreen_horizontal_scrollbar_height});
 }
 
 .canvasContainer{
@@ -26,10 +26,10 @@
 }
 
 .sourceOutputCanvas{
-    margin-right: $canvasMargin;
+    margin-right: variables.$canvasMargin;
 }
 
-@include pinned_controls_mq{
+@include mixins.pinned_controls_mq{
     .canvasSupercontainer{
         overflow-x: initial;
         max-width: none;
@@ -38,7 +38,7 @@
     .canvasContainer{
         &::before, &::after{
             content: '';
-            width: $pinned_controls_canvas_padding;
+            width: variables.$pinned_controls_canvas_padding;
         }
     }
 }

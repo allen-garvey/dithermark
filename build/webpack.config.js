@@ -81,10 +81,10 @@ module.exports = {
                             {
                                 loader: 'sass-loader',
                                 options: {
-                                    additionalData: `@import "${path.resolve(
+                                    additionalData: `@use "${path.resolve(
                                         __dirname,
                                         '../sass'
-                                    )}/variables.scss"; @import "${path.resolve(
+                                    )}/variables.scss"; @use "${path.resolve(
                                         __dirname,
                                         '../sass'
                                     )}/mixins.scss";`,

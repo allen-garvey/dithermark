@@ -35,10 +35,10 @@
     word-break: break-word;
 }
 
-@include pinned_controls_mq{
+@include mixins.pinned_controls_mq{
     .alertsContainer{
         top: 0;
-        max-width: calc(100vw - #{$pinned_dither_controls_width});
+        max-width: calc(100vw - #{variables.$pinned_dither_controls_width});
     }
 }
 
@@ -67,19 +67,19 @@
 }
 
 .danger{
-    color: $danger_text_color;
-    border-color: $danger_border_color;
-    background-color: $danger_background_color;
+    color: variables.$danger_text_color;
+    border-color: variables.$danger_border_color;
+    background-color: variables.$danger_background_color;
 
     .link{
-        color: $danger_link_color;
+        color: variables.$danger_link_color;
     }
 }
 
 .warning{
-    color: $warning_text_color;
-    border-color: $warning_border_color;
-    background-color: $warning_background_color;
+    color: variables.$warning_text_color;
+    border-color: variables.$warning_border_color;
+    background-color: variables.$warning_background_color;
 }
 
 </style>

@@ -11,7 +11,7 @@
 .unsplashAttribution{
     position: -webkit-sticky;
     position: sticky;
-    left: $global_horizontal_padding;
+    left: variables.$global_horizontal_padding;
     //so position sticky works
     display: inline-block;
 }

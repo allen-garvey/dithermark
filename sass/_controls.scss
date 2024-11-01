@@ -2,6 +2,9 @@
 * Controls styles shared between global controls panel, bw dither controls and color dither controls
 */
 
+@use './variables';
+@use './mixins';
+
 input[type="radio"]{
     margin-right: 14px;
     margin-left: 2px;
@@ -9,13 +12,13 @@ input[type="radio"]{
 
 .controls-container{
     position: relative;
-    @include background_color_transition;
+    @include mixins.background_color_transition;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
-    width: $controlsWidth;
+    width: variables.$controlsWidth;
     max-width: 100%;
-    padding: 0 $global_horizontal_padding;
+    padding: 0 variables.$global_horizontal_padding;
 }
 
 .controls{

@@ -1,3 +1,5 @@
+@use './variables';
+
 html, body{
     font-family: "Liberation Sans", system-ui, -apple-system, "Helvetica Neue", Helvetica, "Segoe UI", Arial, "Ubuntu", "Noto Sans", "Oxygen-Sans", sans-serif;
 }
@@ -100,8 +102,8 @@ input[type="range"]{
     
     //add vertical margin to items when wrapped
     //https://stackoverflow.com/questions/30887071/margin-top-only-when-the-flex-item-is-wrapped
-    margin-bottom: -1 * $spread_content_margin_when_wrapped;
+    margin-bottom: -1 * variables.$spread_content_margin_when_wrapped;
     & > *{
-        margin-bottom: $spread_content_margin_when_wrapped;
+        margin-bottom: variables.$spread_content_margin_when_wrapped;
     }
 }

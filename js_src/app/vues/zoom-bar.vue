@@ -40,12 +40,12 @@
 
 <style lang="scss" module>
     .zoomContainer{
-        @include background_color_transition;
+        @include mixins.background_color_transition;
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: flex-end;
-        padding: 4px $global_horizontal_padding;
+        padding: 4px variables.$global_horizontal_padding;
     }
 
     .controls{
@@ -54,7 +54,7 @@
         flex-basis: 100%;
         margin-bottom: 12px;
         //max width required for Microsoft Edge at small screen sizes, otherwise it keeps expanding
-        max-width: calc(100vw - #{$chrome_fullscreen_horizontal_scrollbar_height});
+        max-width: calc(100vw - #{variables.$chrome_fullscreen_horizontal_scrollbar_height});
         input[type="range"]{
             flex-basis: calc(100% - 138px);
             vertical-align: bottom;
@@ -71,10 +71,10 @@
     .buttonContainer{
         display: flex;
         justify-content: space-between;
-        width: $zoom_bar_button_container_width;
+        width: variables.$zoom_bar_button_container_width;
     }
 
-    @include pinned_controls_mq{
+    @include mixins.pinned_controls_mq{
         .zoomContainer{
             font-size: 12px;
             position: fixed;
@@ -83,13 +83,13 @@
             left: 0;
             background-color: var(--pinned-controls-bg-color);
             box-sizing: border-box;
-            border-top: $controls_border;
+            border-top: variables.$controls_border;
             //-1 pixel so it hides border
-            width: calc(100% - #{$pinned_dither_controls_width});
+            width: calc(100% - #{variables.$pinned_dither_controls_width});
         }
         .controls{
             // align-items: baseline;
-            flex-basis: calc(100% - #{$zoom_bar_button_container_width});
+            flex-basis: calc(100% - #{variables.$zoom_bar_button_container_width});
             margin-bottom: 0;
         }
         .zoomFitButton{
@@ -99,7 +99,7 @@
 
     @media all and (display-mode: fullscreen) {
         .zoomContainer {
-            bottom: $chrome_fullscreen_horizontal_scrollbar_height;
+            bottom: variables.$chrome_fullscreen_horizontal_scrollbar_height;
              
             body:-moz-full-screen & {
                 bottom: 0;

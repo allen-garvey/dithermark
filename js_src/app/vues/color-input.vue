@@ -30,7 +30,7 @@
     align-items: center;
     justify-content: space-between;
     flex-basis: 110px;
-    margin: 0 13px $colors_container_margin_bottom 0;
+    margin: 0 13px variables.$colors_container_margin_bottom 0;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 4px;
@@ -66,7 +66,7 @@
     display: inline-block;
     &:focus-within{
         outline: 5px auto -webkit-focus-ring-color;
-        border-color: $highlight_color;
+        border-color: variables.$highlight_color;
         outline-offset: -2px;
     }
 }

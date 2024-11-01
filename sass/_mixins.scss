@@ -1,17 +1,19 @@
+@use './variables';
+
 @mixin sticky_controls_mq{
-    @media screen and (min-width: $sticky_controls_mq_width){
+    @media screen and (min-width: variables.$sticky_controls_mq_width){
         @content;
     }
 }
 
 @mixin pinned_controls_mq{
-    @media screen and (min-width: $pinned_controls_mq_width) and (min-height: $global_controls_height + $pinned_dither_controls_min_height){
+    @media screen and (min-width: variables.$pinned_controls_mq_width) and (min-height: variables.$global_controls_height + variables.$pinned_dither_controls_min_height){
         @content;
     }
 }
 
 @mixin alerts_mq{
-    @media screen and (min-width: $pinned_dither_controls_width + $alerts_max_width){
+    @media screen and (min-width: variables.$pinned_dither_controls_width + variables.$alerts_max_width){
         @content;
     }
 }

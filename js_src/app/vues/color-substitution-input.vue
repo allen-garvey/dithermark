@@ -44,7 +44,7 @@
         flex-wrap: wrap;
         .btn{
             flex-basis: 25%;
-            margin-bottom: $colors_container_margin_bottom;
+            margin-bottom: variables.$colors_container_margin_bottom;
         }
     }
 </style>

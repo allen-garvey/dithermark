@@ -1,10 +1,13 @@
+@use './variables';
+@use './mixins';
+
 //styles for tablets
 
 //unfortunately we can't use position sticky because
 //while it works on desktop browsers, mobile devices
 //don't let it stick for some reason, so we have to resort to
 //horizontal scrollbars for now
-// @include sticky_controls_mq{
+// @include mixins.sticky_controls_mq{
 // 	.app-container{
 // 		//has to be inline-block for position: sticky to work
 // 		display: inline-block;
@@ -24,7 +27,7 @@
 
 
 //styles for desktop
-@include pinned_controls_mq{
+@include mixins.pinned_controls_mq{
 	//reset tablet styles
 	.controls{
 		align-items: center;
@@ -41,25 +44,25 @@
 		right: 0;
 		overflow-y: scroll;
 		box-sizing: border-box;
-		width: $pinned_dither_controls_width;
+		width: variables.$pinned_dither_controls_width;
 		padding: 0;
 	}
 
 	.super-dither-controls-container, .global-controls-panel{
-		border-left: $controls_border;
-		padding: 8px $global_horizontal_padding;
+		border-left: variables.$controls_border;
+		padding: 8px variables.$global_horizontal_padding;
 	}
 	.super-dither-controls-container{
-		border-bottom: $controls_border;
+		border-bottom: variables.$controls_border;
 	}
 	.global-controls-panel{
 		margin: 0;
-		min-height: $global_controls_height;
+		min-height: variables.$global_controls_height;
 		
 		//for before image has loaded
 		//and there are no controls below it
 		&.no-image{
-			border-bottom: $controls_border;
+			border-bottom: variables.$controls_border;
 			border-radius: 3px;
 		}
 	}
@@ -68,7 +71,7 @@
 //otherwise will overlap chrome scrollbars
 @media all and (display-mode: fullscreen) {
 	.controls-container {
-		bottom: $chrome_fullscreen_horizontal_scrollbar_height;
+		bottom: variables.$chrome_fullscreen_horizontal_scrollbar_height;
 
 		body:-moz-full-screen & {
 			bottom: 0;

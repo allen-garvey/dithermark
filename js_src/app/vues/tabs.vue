@@ -48,7 +48,7 @@
         }
     }
 
-    @include pinned_controls_mq{
+    @include mixins.pinned_controls_mq{
         .tabsContainer{
             .tab{
                 &.active{

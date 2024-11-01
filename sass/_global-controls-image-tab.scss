@@ -2,6 +2,8 @@
 * Styles for image tab
 */
 
+@use './variables';
+
 .image-outline-color-input label{
-    min-width: $global_controls_label_min_width;
+    min-width: variables.$global_controls_label_min_width;
 }
