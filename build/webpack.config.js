@@ -37,6 +37,11 @@ module.exports = {
             publicPath: 'http://localhost:3000/assets/',
         },
         port: 3000,
+        client: {
+            overlay: {
+                warnings: false,
+            },
+        },
         open: true,
     },
     module: {
