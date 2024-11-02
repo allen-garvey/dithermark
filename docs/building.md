@@ -26,7 +26,7 @@ This project uses `make` for building and generally makes assumptions that file 
 * Type `make install`
 * Type `make` to compile the project
 * (If you run into any errors at this point, first check that you have all the needed dependencies for the project. Then type `make reset` and `make` again, and see if that fixes your problem).
-* Type `npm run dev` to start a local development server, after which you should be able to view the site at [localhost:3000](http://localhost:3000)
+* Type `npm start` to start a local development server, after which you should be able to view the site at [localhost:3000](http://localhost:3000)
 
 ## Creating release build
 
