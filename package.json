@@ -13,7 +13,8 @@
     "deploy": "webpack --config build/webpack.production.config.js",
     "watch": "webpack --config build/webpack.watch.config.js",
     "start": "php -S localhost:3000 -t public_html",
-    "start:server": "node server/index.js"
+    "start:server": "node server/index.js",
+    "build:html": "node build/build.js"
   },
   "repository": {
     "type": "git",
