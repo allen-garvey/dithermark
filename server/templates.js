@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
-import { APP_NAME } from '../constants.js';
+import { APP_NAME, UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +27,27 @@ const render = (string, context) => {
  */
 const getTemplate = (filename) =>
     fs.readFile(path.join(__dirname, 'templates', filename), 'utf8');
+
+export const renderUnsplashDownloadApi = () => {
+    const templatePromise = getTemplate('unsplash-download.php');
+    const unsplashRandomImagesPromise = fs
+        .readFile(
+            path.join(__dirname, '..', 'public_html', 'api', 'unsplash.json'),
+            'utf8'
+        )
+        .then((s) =>
+            JSON.stringify(JSON.parse(s).map((imageData) => imageData.download))
+        );
+
+    return Promise.all([templatePromise, unsplashRandomImagesPromise]).then(
+        ([template, unsplashRandomImageData]) => {
+            return render(template, {
+                UNSPLASH_API_PHOTO_ID_QUERY_KEY,
+                unsplashRandomImageData,
+            });
+        }
+    );
+};
 
 export const renderHome = () => {
     const shaders = [

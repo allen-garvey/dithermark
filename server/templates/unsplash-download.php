@@ -1,20 +1,4 @@
 <?php
-/**
- * Used to follow Unsplash API guidelines for triggering a download
- * https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
- */
-
-require_once(__DIR__ . '/../config.php');
-
-function openJson(string $path): array{
-    return json_decode(file_get_contents($path), true);
-}
-
-$unsplashJsonPath = __DIR__ . '/../../public_html/api/' . UNSPLASH_RANDOM_IMAGES_JSON;
-
-?>
-<?= '<?php'; ?>
-
 function main($args) {
     $photoIdQueryParamName = '<?= UNSPLASH_PHOTO_ID_QUERY_KEY ?>';
     if(!isset($args[$photoIdQueryParamName])){
@@ -34,7 +18,7 @@ function main($args) {
     }
 
     $photoId = (int) $photoId;
-    $unsplashImageData = <?= '[' . implode(', ', array_map(fn($item): string => "'".$item['download']."'", openJson($unsplashJsonPath))) . ']'; ?>;
+    $unsplashImageData = <?= unsplashRandomImageData; ?>;
 
     if($photoId < 0 || $photoId >= count($unsplashImageData)){
         return [

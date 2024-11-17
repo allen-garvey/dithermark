@@ -3,7 +3,6 @@
 ## Additional Dependencies
 
 * [Unsplash API Key](https://unsplash.com/developers)
-* PHP >= 7.0 running on your server
 
 ## Generate random images Json file for client
 
@@ -12,11 +11,11 @@
 
 ## DigitalOcean serverless function setup
 
-* Run `make serverless` to generate a PHP serverless function
+* Run `npm run build:html` to generate a PHP serverless function
 
 * Create a php serverless function in the DigitalOcean control plane
 
-* Paste contents of `inc/serverless/build/unsplash-download.php` as the function body
+* Paste contents of `serverless/unsplash-download.php` as the function body
 
 * Set `UNSPLASH_ACCESS_KEY` as an environment variable
 
