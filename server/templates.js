@@ -2,7 +2,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
-import { APP_NAME, UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../constants.js';
+import {
+    APP_NAME,
+    UNSPLASH_API_PHOTO_ID_QUERY_KEY,
+    COLOR_DITHER_MAX_COLORS,
+    YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH,
+} from '../constants.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,8 +17,10 @@ const __dirname = path.dirname(__filename);
  * @param {Object.<string, string>} context
  */
 const render = (string, context) => {
-    // remove comments
-    const cleanedString = string.replace(/^\s*\/\/.*$/gm, '');
+    // remove comments, and then empty lines caused by removing comments
+    const cleanedString = string
+        .replace(/^\s*\/\/.*$/gm, '')
+        .replace(/^\s*\r?\n$/gm, '');
 
     return Object.entries(context).reduce(
         (totalString, [key, value]) =>
@@ -51,10 +58,46 @@ export const renderUnsplashDownloadApi = () => {
 
 export const renderHome = () => {
     const shaders = [
+        // vertex
         {
             id: 'webgl-vertex-shader',
             path: 'vertex/vertex.glsl',
-            context: {},
+        },
+        // filters
+        {
+            id: 'webgl-fragment-shader-smoothing',
+            path: 'fragment/filters/smoothing.glsl',
+        },
+        {
+            id: 'webgl-fragment-canvas-filters',
+            path: 'fragment/filters/canvas-filters.glsl',
+        },
+        {
+            id: 'webgl-fragment-shader-bilateral-filter',
+            path: 'fragment/filters/bilateral-filter.glsl',
+        },
+        // color dithers
+        {
+            id: 'webgl-yliluoma1-color-fshader',
+            path: 'fragment/dithers/color/yliluoma1.glsl',
+            context: {
+                COLOR_DITHER_MAX_COLORS,
+                YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH,
+            },
+        },
+        {
+            id: 'webgl-yliluoma2-color-fshader',
+            path: 'fragment/dithers/color/yliluoma2.glsl',
+            context: {
+                COLOR_DITHER_MAX_COLORS,
+            },
+        },
+        {
+            id: 'webgl-stark-ordered-color-dither-fshader',
+            path: 'fragment/dithers/color/stark-ordered-dither.glsl',
+            context: {
+                COLOR_DITHER_MAX_COLORS,
+            },
         },
     ];
 
@@ -64,7 +107,7 @@ export const renderHome = () => {
                 (shaderText) =>
                     `<script type="webgl/vertex-shader" id="${
                         shader.id
-                    }">${render(shaderText, shader.context)}</script>`
+                    }">${render(shaderText, shader.context || {})}</script>`
             )
         )
     ).then((shaderTexts) => shaderTexts.join(''));
