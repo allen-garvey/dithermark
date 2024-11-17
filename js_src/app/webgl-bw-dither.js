@@ -153,15 +153,10 @@ function generateFragmentShader(
 //fragment shaders
 const fragmentShaderTemplate = Shader.shaderText(
     'webgl-fragment-shader-template'
-)
-    .replace(
-        '#{{lightnessFunction}}',
-        Shader.shaderText('webgl-fragment-shader-lightness-function')
-    )
-    .replace(
-        '#{{transparencyCheck}}',
-        Shader.shaderText('webgl-transparency-check-fshader')
-    );
+).replace(
+    '#{{lightnessFunction}}',
+    Shader.shaderText('webgl-fragment-shader-lightness-function')
+);
 const bitwiseFunctionsText = Shader.generateBitwiseFunctionsText();
 
 //draw image created functions

@@ -40,7 +40,6 @@
         <?php //shared fragment shaders ?>
         <?php require(TEMPLATES_WEBGL_SHARED_FRAGMENT_SHADERS_PATH.'hsl-functions.php'); ?>
         <?php require(TEMPLATES_WEBGL_SHARED_FRAGMENT_SHADERS_PATH.'pixel-distance-functions.php'); ?>
-        <?php require(TEMPLATES_WEBGL_SHARED_FRAGMENT_SHADERS_PATH.'transparency-check.php'); ?>
         <?php //dither fragment shaders ?>
         <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'shared-dither.php'); ?>
         <?php require(TEMPLATES_WEBGL_DITHER_FRAGMENT_SHADERS_PATH.'arithmetic-dither-functions.php'); ?>

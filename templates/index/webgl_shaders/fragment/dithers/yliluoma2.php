@@ -126,7 +126,7 @@
     }
     
     void main(){
-        #{{transparencyCheck}}
+        vec4 pixel = texture2D(u_texture, v_texcoord);
         vec3 outputPixel = pixel.rgb;
         vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
         vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);

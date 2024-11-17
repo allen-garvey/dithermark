@@ -25,7 +25,7 @@ float hue_rotate(float pixelHue, float hueRotation){
 }
 
 void main(){
-    #{{transparencyCheck}}
+    vec4 pixel = texture2D(u_texture, v_texcoord);
 
     vec3 adjustedPixel = pixel.rgb;
     <?php //adjust saturation and hue rotation ?>

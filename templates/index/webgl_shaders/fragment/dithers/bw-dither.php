@@ -13,7 +13,7 @@
     #{{lightnessFunction}}
     
     void main(){
-        #{{transparencyCheck}}
+        vec4 pixel = texture2D(u_texture, v_texcoord);
         float pixelLightness = lightness(pixel.rgb);
         #{{customBody}}
         

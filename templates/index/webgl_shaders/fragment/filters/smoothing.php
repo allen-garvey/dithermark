@@ -16,7 +16,7 @@ const int maxRadius = 16;
 uniform vec2 u_image_dimensions;
 
 void main(){
-    #{{transparencyCheck}}
+    vec4 pixel = texture2D(u_texture, v_texcoord);
     vec2 uv = v_texcoord;
     int radiusDiff = maxRadius - u_radius;
     float n = float((u_radius + 1) * (u_radius + 1));

@@ -38,7 +38,7 @@ THE SOFTWARE.
     #{{customDeclaration}}
     
     void main(){
-        #{{transparencyCheck}}
+        vec4 pixel = texture2D(u_texture, v_texcoord);
 
         vec2 dx = vec2(1.0 / u_image_dimensions.x, 0.0);
         vec2 dy = vec2(0.0, 1.0 / u_image_dimensions.y);

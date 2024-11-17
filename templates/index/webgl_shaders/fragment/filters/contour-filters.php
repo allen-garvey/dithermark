@@ -41,7 +41,7 @@ THE SOFTWARE.
     }
 
     void main(){
-        #{{transparencyCheck}}
+        vec4 pixel = texture2D(u_texture, v_texcoord);
 
         vec2 color = vec2(0.0);
         vec2 total = vec2(0.0);
@@ -84,7 +84,7 @@ THE SOFTWARE.
     }
 
     void main(){
-        #{{transparencyCheck}}
+        vec4 pixel = texture2D(u_texture, v_texcoord);
         
         vec2 color = vec2(0.0);
         vec2 total = vec2(0.0);

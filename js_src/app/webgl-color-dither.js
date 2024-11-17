@@ -92,27 +92,15 @@ function createFragmentShaderTexts() {
     //reused webgl fragment shader texts
     const fragmentShaderBaseText = shaderText(
         'webgl-color-dither-base-fshader'
-    ).replace(
-        '#{{transparencyCheck}}',
-        Shader.shaderText('webgl-transparency-check-fshader')
     );
     const yliluoma1FragmentShaderBase = shaderText(
         'webgl-yliluoma1-color-fshader'
-    ).replace(
-        '#{{transparencyCheck}}',
-        Shader.shaderText('webgl-transparency-check-fshader')
     );
     const yliluoma2FragmentShaderBase = shaderText(
         'webgl-yliluoma2-color-fshader'
-    ).replace(
-        '#{{transparencyCheck}}',
-        Shader.shaderText('webgl-transparency-check-fshader')
     );
     const starkOrderedDitherFragmentShaderBase = shaderText(
         'webgl-stark-ordered-color-dither-fshader'
-    ).replace(
-        '#{{transparencyCheck}}',
-        Shader.shaderText('webgl-transparency-check-fshader')
     );
     const aDitherDeclaration = shaderText(
         'webgl-arithmetic-dither-fshader-declaration'

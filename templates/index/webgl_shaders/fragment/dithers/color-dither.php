@@ -17,7 +17,7 @@
     #{{customDeclaration}}
     
     void main(){
-        #{{transparencyCheck}}
+        vec4 pixel = texture2D(u_texture, v_texcoord);
         vec3 adjustedPixel = pixel.rgb;
 
         #{{customBody}}
