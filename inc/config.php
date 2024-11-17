@@ -52,11 +52,6 @@
 
     define('CSS_APP_URL', CSS_URL_BASE.'style.css');
 
-    define('API_URL', BASE_URL.'api/');
-    define('UNSPLASH_RANDOM_IMAGES_JSON', 'unsplash.json');
-    define('UNSPLASH_API_URL', API_URL.UNSPLASH_RANDOM_IMAGES_JSON);
-    require_once(INC_PATH.'unsplash-api-secret.php');
-
     define('APP_SUPPORT_SITE_FAQ_PAGE_URL', 'https://www.dithermark.com/faq');
 
 
@@ -72,12 +67,6 @@
     */
     define('APP_NAME', 'Dithermark');
     
-    define('HISTOGRAM_HEIGHT', 96);
-    //has to be multiple of 256, since there are 256 lightness values
-    define('HISTOGRAM_BW_WIDTH', 1 * 256);
-    //must be a multiple of 360, since there are 360 hues
-    define('HISTOGRAM_COLOR_WIDTH', 1 * 360);
-    
     //color dither stuff
     //needs to be here because webgl shaders also rely on this constant
     define('COLOR_DITHER_MAX_COLORS', 18);
@@ -85,22 +74,10 @@
     //dimensions are 8 instead of 16, since at dimensions 16 it is very slow, while not being much different than 8
     define('YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH', 8*8);
 
-    //for unsplash referral links
-    define('UNSPLASH_REFERRAL_APP_NAME', 'dithermark');
-    //for when downoading Unsplash image
-    define('UNSPLASH_PHOTO_ID_QUERY_KEY', 'photo_id');
-
     if(BUILD_MODE_RELEASE){
-        define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', false);
-        define('ENABLE_TIMER_LOGGING', false);
         define('ENABLE_TEXTURE_COMBINE', false);
     }
     else{
-        //whether or not print color palette button is shown
-        //(useful for when creating new color palettes)
-        define('ENABLE_PRINT_COLOR_PALETTE_BUTTON', true);
-        //used for performance logging for dither and optimize palette
-        define('ENABLE_TIMER_LOGGING', true);
         //used in bw dither to combine the outputs of 3 separate dithers into 1 result image
         //while interesting, not as cool as hoped, and adds user complexity, so it is not included
         //in the release
