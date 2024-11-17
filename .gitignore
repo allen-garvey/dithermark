@@ -43,3 +43,4 @@ electron/node_modules/*
 electron/public_html/*
 electron/out/*
 inc/serverless/build/*
+unsplash-secrets.js

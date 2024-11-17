@@ -7,7 +7,7 @@
 
 ## Generate random images Json file for client
 
-* Copy `inc/unsplash-api-secret-example.php` by running `cp inc/unsplash-api-secret-example.php inc/unsplash-api-secret.php` and replace `YOUR_ACCESS_KEY_HERE` with your Unsplash API access key
+* Copy `unsplash-secrets.example.js` by running `cp unsplash-secrets.example.js unsplash-secrets.js` and fill out values with your Unsplash app name, access key, and the url for your Unsplash serverless API url.
 * Run `make unsplash_api` to generate a json file with random images from Unsplash
 
 ## DigitalOcean serverless function setup
