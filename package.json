@@ -11,7 +11,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack --config build/webpack.config.cjs",
     "deploy": "webpack --config build/webpack.production.config.cjs",
-    "watch": "webpack --config build/webpack.watch.config.cjs",
+    "watch": "webpack --config build/webpack.config.cjs --watch",
     "start": "php -S localhost:3000 -t public_html",
     "start:server": "node server/index.js",
     "build:html": "node build/build.js"
