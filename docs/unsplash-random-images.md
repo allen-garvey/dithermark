@@ -7,7 +7,7 @@
 ## Generate random images Json file for client
 
 * Copy `unsplash-secrets.example.js` by running `cp unsplash-secrets.example.js unsplash-secrets.js` and fill out values with your Unsplash app name, access key, and the url for your Unsplash serverless API url.
-* Run `make unsplash_api` to generate a json file with random images from Unsplash
+* Run `npm run seed:unsplash` to generate a json file with random images from Unsplash
 
 ## DigitalOcean serverless function setup
 

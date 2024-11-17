@@ -1,6 +1,7 @@
 export {
     UNSPLASH_APP_NAME,
     UNSPLASH_DOWNLOAD_URL,
+    UNSPLASH_ACCESS_KEY,
 } from './unsplash-secrets.js';
 
 export const APP_NAME = 'Dithermark';

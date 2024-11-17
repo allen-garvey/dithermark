@@ -14,7 +14,8 @@
     "watch": "webpack --config build/webpack.config.cjs --watch",
     "start": "php -S localhost:3000 -t public_html",
     "start:server": "node server/index.js",
-    "build:html": "node build/build.js"
+    "build:html": "node build/build.js",
+    "seed:unsplash": "node scripts/unsplash-random-images.js"
   },
   "repository": {
     "type": "git",

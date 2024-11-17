@@ -30,7 +30,7 @@ public_html/js/*.js
 public_html/styles/*
 public_html/assets/*
 public_html/index.html
-public_html/api/unsplash.json
+public_html/api/*.json
 *.rb
 sass/lib/*
 inc/unsplash-api-secret.php

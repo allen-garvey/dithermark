@@ -65,9 +65,6 @@ release: $(HTML_INDEX) $(JS_GENERATED_OUTPUT)
 	npm run deploy
 	rsync -av --exclude='*.php' --exclude='assets/bundle.js' --exclude='assets/js_src_worker_worker-main_js.bundle.js' $(PUBLIC_HTML_DIR) release
 
-unsplash_api:
-	php scripts/unsplash-random-images.php > $(PUBLIC_HTML_DIR)/api/unsplash.json
-
 ###### PHP generated JS
 
 $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT): $(JS_GENERATED_APP_ALGORITHM_MODEL_SRC) $(PHP_CONFIG) $(PHP_DITHER_ALGORITHM_MODEL)
