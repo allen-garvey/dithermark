@@ -204,8 +204,6 @@
 * transformCanvasOutput: output from dither as shown to user, after zoom 
 */
 
-
-import Constants from '../../generated_output/app/constants.js'
 import AlgorithmModel from '../../generated_output/app/algorithm-model.js';
 import UserSettings from '../user-settings.js'
 import Canvas from '../canvas.js';
@@ -238,7 +236,6 @@ import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
 import SettingsTab from './settings-tab.vue';
 import BatchConvertOverlay from './batch-convert-overlay.vue';
 import Checkbox from './checkbox.vue';
-import editorThemes from '../editor-themes.js';
 import { isiOs } from '../cross-platform.js';
 
 
@@ -282,7 +279,7 @@ export default {
         Checkbox,
     },
     created(){
-        WorkerUtil.getDitherWorkers(Constants.ditherWorkerUrl).then((workers)=>{
+        WorkerUtil.getDitherWorkers().then((workers)=>{
             ditherWorkers = workers;
             ditherWorkers.forEach((ditherWorker)=>{
                 ditherWorker.onmessage = this.workerMessageReceivedDispatcher; 

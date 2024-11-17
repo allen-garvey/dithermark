@@ -43,7 +43,7 @@
 </style>
 
 <script>
-import Constants from '../../generated_output/app/constants.js';
+import { APP_NAME, UNSPLASH_DOWNLOAD_URL, UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../../../constants.js';
 import Canvas from '../canvas.js'
 import Fs from '../fs.js';
 import { getSaveImageFileTypes } from '../export-model.js';
@@ -108,7 +108,7 @@ export default {
             if(newValue === oldValue){
                 return;
             }
-            let title = Constants.appName;
+            let title = APP_NAME;
             if(newValue){
                 title = `${title} | ${newValue}`;
             }
@@ -145,7 +145,7 @@ export default {
                         //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
                         if(unsplash){
                             //arguably should be POST request here, but much easier to just use GET
-                            fetch(`${Constants.unsplashDownloadUrl}?${Constants.unsplashApiPhotoIdQueryKey}=${unsplash.id}`);
+                            fetch(`${UNSPLASH_DOWNLOAD_URL}?${UNSPLASH_API_PHOTO_ID_QUERY_KEY}=${unsplash.id}`);
                         }
                         this.isCurrentlySavingImage = false;
                         resolve();

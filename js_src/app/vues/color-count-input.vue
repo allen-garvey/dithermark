@@ -43,7 +43,7 @@
 </style>
 
 <script>
-import Constants from '../../generated_output/app/constants.js'
+import { COLOR_DITHER_MAX_COLORS } from '../../../constants.js';
 
 export default {
     props: {
@@ -57,7 +57,7 @@ export default {
             return 2;
         },
         numColorsMax(){
-            return Constants.colorDitherMaxColors;
+            return COLOR_DITHER_MAX_COLORS;
         },
         numColors(){
             return this.modelValue;

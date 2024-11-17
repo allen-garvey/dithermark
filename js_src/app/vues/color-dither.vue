@@ -77,8 +77,7 @@
 
 <script>
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
-import Constants from '../../generated_output/app/constants.js'
-import AlgorithmModel from '../../generated_output/app/algorithm-model.js';
+import { COLOR_DITHER_MAX_COLORS } from '../../../constants.js';
 import ColorQuantizationModes from '../../generated_output/app/color-quantization-modes.js'
 import Palettes from '../color-palettes.js';
 import UserSettings from '../user-settings.js'
@@ -151,10 +150,10 @@ export default {
         //select first non-custom palette
         //needs to be done here to initialize palettes correctly
         this.selectedPaletteIndex = 1;
-        this.numColors = Constants.colorDitherMaxColors;
-        const defaultPalettes = Palettes.get(Constants.colorDitherMaxColors);
+        this.numColors = COLOR_DITHER_MAX_COLORS;
+        const defaultPalettes = Palettes.get(COLOR_DITHER_MAX_COLORS);
         this.defaultPalettesLength = defaultPalettes.length;
-        this.palettes = defaultPalettes.concat(UserSettings.getPalettes(Constants.colorDitherMaxColors));
+        this.palettes = defaultPalettes.concat(UserSettings.getPalettes(COLOR_DITHER_MAX_COLORS));
     },
     mounted(){
         //have to get canvases here, because DOM manipulation needs to happen in mounted hook
@@ -202,7 +201,7 @@ export default {
             return this.colors.slice(0, this.numColors);  
         },
         selectedColorsVec(){
-            return ColorPicker.colorsToVecArray(this.selectedColors, Constants.colorDitherMaxColors);
+            return ColorPicker.colorsToVecArray(this.selectedColors, COLOR_DITHER_MAX_COLORS);
         },
         selectedColorDitherModeId(){
             return this.colorDitherModes[this.selectedColorDitherModeIndex].id;
@@ -370,7 +369,7 @@ export default {
         changePaletteToOptimizePaletteResult(colorsHexArrayCopy){
             //this is so if optimize palette result has less colors than max, we keep the colors that are already in the palette
             //at the end of the palette
-            this.colorsShadow = colorsHexArrayCopy.concat(this.colorsShadow.slice(colorsHexArrayCopy.length, Constants.colorDitherMaxColors));
+            this.colorsShadow = colorsHexArrayCopy.concat(this.colorsShadow.slice(colorsHexArrayCopy.length, COLOR_DITHER_MAX_COLORS));
         },
         histogramWorkerMessageReceived(huePercentages){
             Histogram.drawColorHistogram(histogramCanvas, huePercentages);

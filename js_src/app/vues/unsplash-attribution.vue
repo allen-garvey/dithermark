@@ -22,7 +22,7 @@
 //used to fulfill guidelines from:
 //https://medium.com/unsplash/unsplash-api-guidelines-attribution-4d433941d777
 
-import Constants from '../../generated_output/app/constants.js';
+import { UNSPLASH_REFERRAL_APP_NAME } from '../../../constants.js';
 
 export default {
     props: {
@@ -33,7 +33,7 @@ export default {
     },
     computed: {
         unsplashQueryParam(){
-            return `?utm_source=${Constants.unsplashReferralAppName}&utm_medium=referral`;
+            return `?utm_source=${UNSPLASH_REFERRAL_APP_NAME}&utm_medium=referral`;
         },
         authorName(){
             return this.unsplashInfo.author.name;

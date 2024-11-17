@@ -35,7 +35,7 @@
 </style>
 
 <script>
-import Constants from '../../generated_output/app/constants.js';
+import { HISTOGRAM_BW_WIDTH, HISTOGRAM_HEIGHT } from '../histogram.js';
 
 export default {
     expose: ['histogramCanvasIndicator', 'histogramCanvas'],
@@ -47,10 +47,10 @@ export default {
             return this.$refs.histogramCanvas;
         },
         histogramWidth() {
-            return Constants.histogramBwWidth;
+            return HISTOGRAM_BW_WIDTH;
         },
         histogramHeight() {
-            return Constants.histogramHeight;
+            return HISTOGRAM_HEIGHT;
         },
     },
 };
