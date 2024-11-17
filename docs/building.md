@@ -1,6 +1,6 @@
 # Building
 
-This is a guide for installing and building the project directly on you computer. For using with Docker, see `docker.md` in the `docs` directory.
+This is a guide for installing and building the project directly on you computer.
 
 ## High-level overview of build system
 
@@ -8,7 +8,7 @@ This project using webpack to bundle and compile JavaScript and Sass files, PHP 
 
 ## Building on Windows
 
-This project uses `make` for building and generally makes assumptions that file paths follow POSIX conventions, and as such will not likely build on Windows as is. Therefore it is recommended that Windows users use either the Windows Subsystem for Linux when following this guide, or use Docker and follow the Docker directions. That being said, both webpack and PHP are cross-platform and the `make` commands only consist of: creating directories, running PHP cli and saving the output to a file, running webpack, and deleting files, so it should be technically possible to translate the `makefile` to an equivalent Windows version if you are so inclined.
+This project uses `make` for building and generally makes assumptions that file paths follow POSIX conventions, and as such will not likely build on Windows as is. Therefore it is recommended that Windows users use the Windows Subsystem for Linux when following this guide.
 
 ## Dependencies for building
 

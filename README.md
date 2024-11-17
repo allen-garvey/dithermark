@@ -15,7 +15,6 @@ Standalone desktop Electron builds can be found [on the releases page.](https://
 
 * FAQ for *using* this project can be found at [dithermark.com/faq](https://dithermark.com/faq)
 * Documentation for building can be found in `docs/building.md`
-* Documentation for building using Docker can be found in `docks/docker.md`
 * Guides for other common tasks, such as: creating a release build, setting up random images with Unsplash, and increasing the color count for color dithers can be found in the `docs` folder
 
 ## Known Limitations
