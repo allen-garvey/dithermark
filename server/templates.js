@@ -28,11 +28,33 @@ const render = (string, context) => {
 const getTemplate = (filename) =>
     fs.readFile(path.join(__dirname, 'templates', filename), 'utf8');
 
-export const renderHome = () =>
-    getTemplate('index.html').then((template) =>
-        render(template, {
-            APP_NAME,
-            APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
-            GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
-        })
+export const renderHome = () => {
+    const shaders = [
+        {
+            id: 'webgl-vertex-shader',
+            path: 'vertex/vertex.hlsl',
+            context: {},
+        },
+    ];
+
+    const shaderPromises = Promise.all(
+        shaders.map((shader) =>
+            getTemplate(path.join('shaders', shader.path)).then(
+                (shaderText) =>
+                    `<script type="webgl/vertex-shader" id="${
+                        shader.id
+                    }">${render(shaderText, shader.context)}</script>`
+            )
+        )
+    ).then((shaderTexts) => shaderTexts.join(''));
+
+    return Promise.all([shaderPromises, getTemplate('index.html')]).then(
+        ([shaderContent, indexTemplate]) =>
+            render(indexTemplate, {
+                APP_NAME,
+                APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
+                GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
+                shaderContent: shaderContent,
+            })
     );
+};
