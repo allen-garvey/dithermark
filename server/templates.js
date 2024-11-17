@@ -53,7 +53,7 @@ export const renderHome = () => {
     const shaders = [
         {
             id: 'webgl-vertex-shader',
-            path: 'vertex/vertex.hlsl',
+            path: 'vertex/vertex.glsl',
             context: {},
         },
     ];
