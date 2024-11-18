@@ -7,7 +7,9 @@ import { renderHome, renderUnsplashDownloadApi } from '../server/templates.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const homePromise = renderHome().then((indexContent) =>
+const isProduction = process.env.IS_PRODUCTION === 'true';
+
+const homePromise = renderHome(isProduction).then((indexContent) =>
     fs.writeFile(
         path.join(__dirname, '..', 'public_html', 'index.html'),
         indexContent

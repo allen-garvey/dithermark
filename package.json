@@ -15,6 +15,7 @@
     "start": "php -S localhost:3000 -t public_html",
     "start:server": "node server/index.js",
     "build:html": "node build/build.js",
+    "build:html:prod": "IS_PRODUCTION=true node build/build.js",
     "seed:unsplash": "node scripts/unsplash-random-images.js"
   },
   "repository": {

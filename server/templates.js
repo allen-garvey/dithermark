@@ -56,7 +56,10 @@ export const renderUnsplashDownloadApi = () => {
     );
 };
 
-export const renderHome = () => {
+/**
+ * @param {boolean} isProduction
+ */
+export const renderHome = (isProduction) => {
     const shaders = [
         // vertex
         {
@@ -265,6 +268,19 @@ export const renderHome = () => {
             },
         },
     ];
+
+    if (isProduction) {
+        //texture combine used in bw dither to combine the outputs of 3 separate dithers into 1 result image
+        // while interesting, not as cool as hoped, and ui/ux is not completely clear if you don't know what it does, so it is not included in the release
+        shaders.push({
+            id: 'webgl-combine-dither-fshader-body',
+            path: 'fragment/dithers/bw/texture-combine/texture-combine-body.glsl',
+        });
+        shaders.push({
+            id: 'webgl-combine-dither-fshader-declaration',
+            path: 'fragment/dithers/bw/texture-combine/texture-combine-declaration.glsl',
+        });
+    }
 
     const shaderPromises = Promise.all(
         shaders.map((shader) =>

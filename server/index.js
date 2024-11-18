@@ -15,7 +15,7 @@ app.use(
 );
 
 app.get('/', (req, res) => {
-    renderHome().then((html) => res.send(html));
+    renderHome(false).then((html) => res.send(html));
 });
 
 app.listen(port, () => {
