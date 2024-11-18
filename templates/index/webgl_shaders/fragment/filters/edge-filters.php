@@ -68,9 +68,6 @@ THE SOFTWARE.
         }
     }
 </script>
-<script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-declaration-fixed">
-    uniform vec3 u_outline_color;
-</script>
 <script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-declaration-background">
     uniform sampler2D u_background_texture;
     uniform int u_colors_array_length;
@@ -101,10 +98,4 @@ THE SOFTWARE.
 
         return outlineColor;
     }
-</script>
-<script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-color-fixed">
-    vec4(u_outline_color, 1.0);
-</script>
-<script type="webgl/fragment-shader" id="webgl-fragment-edge-filter-color-background">
-    vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);
 </script>

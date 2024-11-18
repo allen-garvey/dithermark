@@ -3,7 +3,18 @@
  * used in both BW and Color webgl dithers
  */
 
-const shaderTextMap = new Map();
+const shaderTextMap = new Map([
+    // edge filters
+    [
+        'webgl-fragment-edge-filter-declaration-fixed',
+        'uniform vec3 u_outline_color;',
+    ],
+    ['webgl-fragment-edge-filter-color-fixed', 'vec4(u_outline_color, 1.0);'],
+    [
+        'webgl-fragment-edge-filter-color-background',
+        'vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);',
+    ],
+]);
 
 /**
  * @param {string} id
