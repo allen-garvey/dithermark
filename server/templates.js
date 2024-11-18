@@ -126,7 +126,7 @@ export const renderHome = (isProduction) => {
             path: 'fragment/shared/colors/hsv.glsl',
         },
         {
-            id: '"webgl-fragment-shader-lightness-function',
+            id: 'webgl-fragment-shader-lightness-function',
             path: 'fragment/shared/colors/lightness.glsl',
         },
         // shared pixel distance functions
