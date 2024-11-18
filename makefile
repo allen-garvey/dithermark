@@ -11,7 +11,6 @@ ELECTRON_HTML_INDEX=$(ELECTRON_HTML_DIR)/electron.html
 
 
 #php source
-PHP_TEMPLATES != find ./templates/index -type f -name '*.php'
 PHP_CONFIG=inc/config.php
 PHP_DITHER_ALGORITHM_MODEL=inc/models/algorithm-model.php
 PHP_COLOR_QUANTIZATION_MODES=inc/models/color-quantization-modes.php
@@ -42,7 +41,7 @@ JS_GENERATED_OUTPUT= $(JS_GENERATED_APP_ALGORITHM_MODEL_OUTPUT) $(JS_GENERATED_A
 # running webpack each time the recipe is run is technically inefficient,
 # but it's the only way to not have make warnings without the dev and production css output file names being different
 # also, we avoid the edge case where make won't trigger rebuild if packages in node_modules are updated by running webpack each time
-all: $(JS_GENERATED_OUTPUT) $(HTML_INDEX)
+all: $(JS_GENERATED_OUTPUT)
 	npm run build
 
 setup:
@@ -56,12 +55,11 @@ electron: $(ELECTRON_HTML_INDEX)
 
 #used when changing between PHP_BUILD_MODES
 reset:
-	rm -f $(HTML_INDEX)
 	rm -f $(JS_GENERATED_OUTPUT)
 
 #see comment for all: about running webpack each time recipe is called
 release: PHP_BUILD_MODE=release
-release: $(HTML_INDEX) $(JS_GENERATED_OUTPUT)
+release: $(JS_GENERATED_OUTPUT)
 	npm run deploy
 	rsync -av --exclude='*.php' --exclude='assets/bundle.js' --exclude='assets/js_src_worker_worker-main_js.bundle.js' $(PUBLIC_HTML_DIR) release
 
@@ -80,9 +78,6 @@ $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT): $(JS_GENERATED_WORKER_CO
 	php $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_SRC) $(PHP_BUILD_MODE) > $(JS_GENERATED_WORKER_COLOR_QUANTIZATION_MODES_OUTPUT)
 
 ####### HTML
-
-$(HTML_INDEX): $(PHP_TEMPLATES) $(PHP_CONFIG)
-	php templates/index/index.php $(PHP_BUILD_MODE) > $(HTML_INDEX)
 
 $(ELECTRON_HTML_DIR): $(HTML_INDEX)
 	cp -r $(PUBLIC_HTML_DIR) $(ELECTRON_HTML_DIR)
