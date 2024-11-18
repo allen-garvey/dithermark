@@ -168,6 +168,38 @@ export const renderHome = () => {
             id: 'webgl-simplex-declaration-fshader',
             path: 'fragment/dithers/shared/simplex-declaration.glsl',
         },
+        // color dither base
+        {
+            id: 'webgl-arithmetic-dither-color-body',
+            path: 'fragment/dithers/color/base/arithmetic-color-dither-body.glsl',
+        },
+        {
+            id: 'webgl-color-dither-base-fshader',
+            path: 'fragment/dithers/color/base/color-dither-base.glsl',
+            context: {
+                COLOR_DITHER_MAX_COLORS,
+            },
+        },
+        {
+            id: 'webgl-hue-lightness-ordered-dither-color-declaration-fshader',
+            path: 'fragment/dithers/color/base/hue-lightness-ordered-color-dither-declaration.glsl',
+        },
+        {
+            id: 'webgl-hue-lightness-ordered-dither-color-postscript-fshader',
+            path: 'fragment/dithers/color/base/hue-lightness-ordered-color-dither-postscript.glsl',
+        },
+        {
+            id: 'webgl-ordered-dither-color-body-fshader',
+            path: 'fragment/dithers/color/base/ordered-color-dither-body.glsl',
+        },
+        {
+            id: 'webgl-ordered-dither-color-declaration-fshader',
+            path: 'fragment/dithers/color/base/ordered-color-dither-declaration.glsl',
+        },
+        {
+            id: 'webgl-random-dither-color-body-fshader',
+            path: 'fragment/dithers/color/base/random-color-dither-body.glsl',
+        },
         // color dithers
         {
             id: 'webgl-yliluoma1-color-fshader',
