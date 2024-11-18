@@ -1,7 +1,7 @@
 const path = require('path');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const config = require('./webpack.config.js');
+const config = require('./webpack.config.cjs');
 
 config.mode = 'production';
 config.output.filename = 'bundle.min.js';
