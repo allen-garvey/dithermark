@@ -76,6 +76,17 @@ export const renderHome = () => {
             id: 'webgl-fragment-shader-bilateral-filter',
             path: 'fragment/filters/bilateral-filter.glsl',
         },
+        {
+            id: 'webgl-fragment-edge-filter-base',
+            path: 'fragment/filters/edge-filters/edge-filter-base.glsl',
+        },
+        {
+            id: 'webgl-fragment-edge-filter-declaration-background',
+            path: 'fragment/filters/edge-filters/edge-filter-background.glsl',
+            context: {
+                COLOR_DITHER_MAX_COLORS,
+            },
+        },
         // color dithers
         {
             id: 'webgl-yliluoma1-color-fshader',
