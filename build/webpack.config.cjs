@@ -10,7 +10,7 @@ module.exports = {
         `${__dirname}/../sass/style.scss`,
     ],
     output: {
-        filename: 'bundle.js',
+        filename: 'app.js',
         path: path.resolve(__dirname, '../public_html/assets'),
     },
     resolve: {
