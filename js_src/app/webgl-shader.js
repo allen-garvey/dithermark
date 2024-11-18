@@ -14,6 +14,19 @@ const shaderTextMap = new Map([
         'webgl-fragment-edge-filter-color-background',
         'vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);',
     ],
+    // contour filters
+    [
+        'webgl-fragment-contour-filter2-declaration-fixed',
+        'uniform vec3 u_outline_color;',
+    ],
+    [
+        'webgl-fragment-contour-filter2-color-fixed',
+        'vec4(u_outline_color, 1.0);',
+    ],
+    [
+        'webgl-fragment-contour-filter2-color-background',
+        'vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);',
+    ],
 ]);
 
 /**
