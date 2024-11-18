@@ -76,6 +76,7 @@ export const renderHome = () => {
             id: 'webgl-fragment-shader-bilateral-filter',
             path: 'fragment/filters/bilateral-filter.glsl',
         },
+        // filters edge
         {
             id: 'webgl-fragment-edge-filter-base',
             path: 'fragment/filters/edge-filters/edge-filter-base.glsl',
@@ -83,6 +84,22 @@ export const renderHome = () => {
         {
             id: 'webgl-fragment-edge-filter-declaration-background',
             path: 'fragment/filters/edge-filters/edge-filter-background.glsl',
+            context: {
+                COLOR_DITHER_MAX_COLORS,
+            },
+        },
+        // filters contour
+        {
+            id: 'webgl-fragment-contour-filter1',
+            path: 'fragment/filters/contour-filters/contour-filter1.glsl',
+        },
+        {
+            id: 'webgl-fragment-contour-filter2-base',
+            path: 'fragment/filters/contour-filters/contour-filter2-base.glsl',
+        },
+        {
+            id: 'webgl-fragment-contour-filter2-declaration-background',
+            path: 'fragment/filters/contour-filters/contour-filter2-background.glsl',
             context: {
                 COLOR_DITHER_MAX_COLORS,
             },
