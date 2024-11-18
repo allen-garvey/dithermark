@@ -113,6 +113,15 @@ export const renderHome = () => {
             id: 'webgl-arithmetic-dither-fshader-declaration',
             path: 'fragment/dithers/arithmetic-dither/arithmetic-dither-declaration.glsl',
         },
+        // shared dithers
+        {
+            id: 'webgl-random-dither-declaration-fshader',
+            path: 'fragment/dithers/shared/random-dither-declaration.glsl',
+        },
+        {
+            id: 'webgl-simplex-declaration-fshader',
+            path: 'fragment/dithers/shared/simplex-declaration.glsl',
+        },
         // color dithers
         {
             id: 'webgl-yliluoma1-color-fshader',
@@ -142,9 +151,10 @@ export const renderHome = () => {
         shaders.map((shader) =>
             getTemplate(path.join('shaders', shader.path)).then(
                 (shaderText) =>
-                    `<script type="webgl/vertex-shader" id="${
-                        shader.id
-                    }">${render(shaderText, shader.context || {})}</script>`
+                    `<script type="webgl/shader" id="${shader.id}">${render(
+                        shaderText,
+                        shader.context || {}
+                    )}</script>`
             )
         )
     ).then((shaderTexts) => shaderTexts.join(''));
