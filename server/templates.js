@@ -113,6 +113,19 @@ export const renderHome = () => {
             id: 'webgl-arithmetic-dither-fshader-declaration',
             path: 'fragment/dithers/arithmetic-dither/arithmetic-dither-declaration.glsl',
         },
+        // shared color functions
+        {
+            id: 'webgl-hsl-functions',
+            path: 'fragment/shared/colors/hsl.glsl',
+        },
+        {
+            id: 'webgl-hsv-functions',
+            path: 'fragment/shared/colors/hsv.glsl',
+        },
+        {
+            id: '"webgl-fragment-shader-lightness-function',
+            path: 'fragment/shared/colors/lightness.glsl',
+        },
         // shared dithers
         {
             id: 'webgl-random-dither-declaration-fshader',
