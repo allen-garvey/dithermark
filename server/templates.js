@@ -126,6 +126,39 @@ export const renderHome = () => {
             id: '"webgl-fragment-shader-lightness-function',
             path: 'fragment/shared/colors/lightness.glsl',
         },
+        // shared pixel distance functions
+        {
+            id: 'webgl-hsl2-complementary-distance',
+            path: 'fragment/shared/pixel-distance/hsl2-complement-distance.glsl',
+        },
+        {
+            id: 'webgl-hsl2-distance',
+            path: 'fragment/shared/pixel-distance/hsl2-distance.glsl',
+        },
+        {
+            id: 'webgl-hue-distance',
+            path: 'fragment/shared/pixel-distance/hue-distance.glsl',
+        },
+        {
+            id: 'webgl-hue-lightness-distance',
+            path: 'fragment/shared/pixel-distance/hue-lightness-distance.glsl',
+        },
+        {
+            id: 'webgl-hue-saturation-lightness-distance',
+            path: 'fragment/shared/pixel-distance/hue-saturation-lightness-distance.glsl',
+        },
+        {
+            id: 'webgl-lightness-distance',
+            path: 'fragment/shared/pixel-distance/lightness-distance.glsl',
+        },
+        {
+            id: 'webgl-luma-distance',
+            path: 'fragment/shared/pixel-distance/luma-distance.glsl',
+        },
+        {
+            id: 'webgl-rgb-distance',
+            path: 'fragment/shared/pixel-distance/rgb-distance.glsl',
+        },
         // shared dithers
         {
             id: 'webgl-random-dither-declaration-fshader',
