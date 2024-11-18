@@ -104,6 +104,15 @@ export const renderHome = () => {
                 COLOR_DITHER_MAX_COLORS,
             },
         },
+        // arithmetic dithers
+        {
+            id: 'webgl-bitwise-function-template',
+            path: 'fragment/dithers/arithmetic-dither/bitwise-function-template.glsl',
+        },
+        {
+            id: 'webgl-arithmetic-dither-fshader-declaration',
+            path: 'fragment/dithers/arithmetic-dither/arithmetic-dither-declaration.glsl',
+        },
         // color dithers
         {
             id: 'webgl-yliluoma1-color-fshader',
