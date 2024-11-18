@@ -1,0 +1,2 @@
+uniform sampler2D u_bayer_texture;
+uniform float u_bayer_texture_dimensions;

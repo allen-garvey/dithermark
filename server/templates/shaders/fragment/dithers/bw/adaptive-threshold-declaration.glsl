@@ -1,0 +1,1 @@
+uniform vec2 u_image_dimensions;

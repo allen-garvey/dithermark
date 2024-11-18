@@ -168,6 +168,47 @@ export const renderHome = () => {
             id: 'webgl-simplex-declaration-fshader',
             path: 'fragment/dithers/shared/simplex-declaration.glsl',
         },
+        // bw dithers
+        {
+            id: 'webgl-adaptive-threshold-fshader-body',
+            path: 'fragment/dithers/bw/adaptive-threshold-body.glsl',
+        },
+        {
+            id: 'webgl-adaptive-threshold-fshader-declaration',
+            path: 'fragment/dithers/bw/adaptive-threshold-declaration.glsl',
+        },
+        {
+            id: 'webgl-arithmetic-dither-fshader-body',
+            path: 'fragment/dithers/bw/arithmetic-dither-body.glsl',
+        },
+        {
+            id: 'webgl-fragment-shader-template',
+            path: 'fragment/dithers/bw/bw-dither-base.glsl',
+        },
+        {
+            id: 'webgl-color-replace-fshader-body',
+            path: 'fragment/dithers/bw/color-replace-body.glsl',
+        },
+        {
+            id: 'webgl-ordered-dither-fshader-body',
+            path: 'fragment/dithers/bw/ordered-dither-body.glsl',
+        },
+        {
+            id: 'webgl-ordered-dither-fshader-declaration',
+            path: 'fragment/dithers/bw/ordered-dither-declaration.glsl',
+        },
+        {
+            id: 'webgl-random-threshold-fshader-body',
+            path: 'fragment/dithers/bw/random-threshold-body.glsl',
+        },
+        {
+            id: 'webgl-simplex-threshold-fshader-body',
+            path: 'fragment/dithers/bw/simplex-threshold-body.glsl',
+        },
+        {
+            id: 'webgl-threshold-fshader-body',
+            path: 'fragment/dithers/bw/threshold-body.glsl',
+        },
         // color dither base
         {
             id: 'webgl-arithmetic-dither-color-body',
