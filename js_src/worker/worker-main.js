@@ -147,7 +147,7 @@ function optimizePaletteAction(
             paletteBuffer = quantizationFunction(
                 pixels,
                 numColors,
-                colorQuantizationAlgo,
+                colorQuantizationAlgo.options,
                 imageWidth,
                 imageHeight,
                 progressCallback
