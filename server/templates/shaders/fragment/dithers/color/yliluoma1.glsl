@@ -33,10 +33,9 @@ int devise_mixing_plan(vec3 pixel, float bayerLength, float bayerValue){
     //big number
     float leastPenalty = 9999.99;
     
-        // Loop through every unique combination of two colors from the palette,
-        // and through each possible way to mix those two colors. They can be
-        // mixed in exactly 64 ways, when the threshold matrix is 8x8.
-    ?>
+    // Loop through every unique combination of two colors from the palette,
+    // and through each possible way to mix those two colors. They can be
+    // mixed in exactly 64 ways, when the threshold matrix is 8x8.
     for(int index1=0;index1<<?= COLOR_DITHER_MAX_COLORS; ?>;index1++){
         if(index1 >= u_colors_array_length){
             break;
