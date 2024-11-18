@@ -62,8 +62,17 @@
             <div class="spread-content optimize-palette-controls-container">
                 <label>Algorithm
                     <select v-model="selectedColorQuantizationModeIndex">
-                        <optgroup v-for="(colorQuantizationGroup, groupIndex) in colorQuantizationGroups" :label="colorQuantizationGroup.title" :key="groupIndex">
-                            <option v-for="(colorQuantizationMode, index) in colorQuantizationModes.slice(colorQuantizationGroup.start, colorQuantizationGroup.start + colorQuantizationGroup.length)" :value="colorQuantizationGroup.start + index" :key="index">{{ colorQuantizationMode.title }}</option>
+                        <optgroup 
+                            v-for="colorQuantizationGroup in colorQuantizationGroups" :label="colorQuantizationGroup.title" 
+                            :key="colorQuantizationGroup.title"
+                        >
+                            <option 
+                                v-for="colorQuantizationMode in colorQuantizationGroup.items" 
+                                :value="colorQuantizationMode.index" 
+                                :key="colorQuantizationMode.slug"
+                            >
+                                    {{ colorQuantizationMode.title }}
+                            </option>
                         </optgroup>
                     </select>
                 </label>
@@ -78,7 +87,8 @@
 <script>
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import { COLOR_DITHER_MAX_COLORS } from '../../../constants.js';
-import ColorQuantizationModes from '../../generated_output/app/color-quantization-modes.js'
+import { getColorQuantizationGroups } from '../models/color-quantization-modes.js';
+import { getColorQuantizationModes } from '../../shared/models/color-quantization-modes.js';
 import Palettes from '../color-palettes.js';
 import UserSettings from '../user-settings.js'
 import ColorDitherModes from '../../shared/color-dither-modes.js'
@@ -173,8 +183,8 @@ export default {
             numColors: null,
             colorDitherModes: [...ColorDitherModes.values()],
             selectedColorDitherModeIndex: 4,
-            colorQuantizationModes: ColorQuantizationModes.modes,
-            colorQuantizationGroups: ColorQuantizationModes.groups,
+            colorQuantizationGroups: getColorQuantizationGroups(),
+            colorQuantizationModes: getColorQuantizationModes(),
             selectedColorQuantizationModeIndex: 0,
             pendingColorQuantizations: {},
             //for color picker
@@ -380,6 +390,7 @@ export default {
                 this.requestDisplayTransformedImage();
             });
         },
+        // Palettes
         optimizePalette(){
             const key = optimizePaletteMemorizationKey(this.numColors, this.selectedColorQuantizationModeIndex);
             if(this.isOptimizePaletteKeyPending(key)){

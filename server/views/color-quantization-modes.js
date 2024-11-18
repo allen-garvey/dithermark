@@ -423,7 +423,11 @@ const colorQuantizationModesModel = [
 
     return {
         options: {},
-        shouldResultsBeCached: true,
+        slug: item.title
+            .toLocaleLowerCase()
+            .replace(/\)/g, '')
+            .replace(/( \()/g, '--')
+            .replace(/[ ,()]+/g, '-'),
         ...item,
     };
 });
