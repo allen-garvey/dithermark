@@ -12,11 +12,6 @@
     }
 </script>
 
-<?php //used to randomize ordered dither in bw and color dithers ?>
-<script type="webgl/fragment-shader" id="webgl-random-ordered-dither-adjustment-fshader">
-    bayerValue = bayerValue * rand(v_texcoord.xy*u_random_seed.xy);
-</script>
-
 <?php //the following is based on: https://github.com/ashima/webgl-noise/blob/master/src/noise2D.glsl 
 // the original returns values in range -1 to 1. This version is altered to return values in range 0 to 1.
 ?>

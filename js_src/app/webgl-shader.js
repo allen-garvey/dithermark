@@ -27,6 +27,12 @@ const shaderTextMap = new Map([
         'webgl-fragment-contour-filter2-color-background',
         'vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);',
     ],
+    // shared dither
+    [
+        //used to randomize ordered dither in bw and color dithers
+        'webgl-random-ordered-dither-adjustment-fshader',
+        'bayerValue = bayerValue * rand(v_texcoord.xy*u_random_seed.xy);',
+    ],
 ]);
 
 /**
