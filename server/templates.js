@@ -269,7 +269,7 @@ export const renderHome = (isProduction) => {
         },
     ];
 
-    if (isProduction) {
+    if (!isProduction) {
         //texture combine used in bw dither to combine the outputs of 3 separate dithers into 1 result image
         // while interesting, not as cool as hoped, and ui/ux is not completely clear if you don't know what it does, so it is not included in the release
         shaders.push({
