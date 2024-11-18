@@ -2,7 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import express from 'express';
 import { APP_NAME } from '../constants.js';
-import { renderHome } from './templates.js';
+import { renderHome } from './views/home.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

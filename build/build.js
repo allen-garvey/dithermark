@@ -2,7 +2,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
-import { renderHome, renderUnsplashDownloadApi } from '../server/templates.js';
+import { renderHome } from '../server/views/home.js';
+import { renderUnsplashDownloadApi } from '../server/views/unsplash-download-api.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,60 +1,11 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs/promises';
+import { render, getTemplate } from './view-helpers.js';
 
 import {
     APP_NAME,
-    UNSPLASH_API_PHOTO_ID_QUERY_KEY,
     COLOR_DITHER_MAX_COLORS,
     YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH,
-} from '../constants.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-/**
- * @param {string} string
- * @param {Object.<string, string>} context
- */
-const render = (string, context) => {
-    // remove comments, and then empty lines caused by removing comments
-    const cleanedString = string
-        .replace(/^\s*\/\/.*$/gm, '')
-        .replace(/^\s*\r?\n$/gm, '');
-
-    return Object.entries(context).reduce(
-        (totalString, [key, value]) =>
-            totalString.replace(new RegExp(`<\\?= ${key}; \\?>`, 'g'), value),
-        cleanedString
-    );
-};
-
-/**
- * @param {string} filename
- */
-const getTemplate = (filename) =>
-    fs.readFile(path.join(__dirname, 'templates', filename), 'utf8');
-
-export const renderUnsplashDownloadApi = () => {
-    const templatePromise = getTemplate('unsplash-download.php');
-    const unsplashRandomImagesPromise = fs
-        .readFile(
-            path.join(__dirname, '..', 'public_html', 'api', 'unsplash.json'),
-            'utf8'
-        )
-        .then((s) =>
-            JSON.stringify(JSON.parse(s).map((imageData) => imageData.download))
-        );
-
-    return Promise.all([templatePromise, unsplashRandomImagesPromise]).then(
-        ([template, unsplashRandomImageData]) => {
-            return render(template, {
-                UNSPLASH_API_PHOTO_ID_QUERY_KEY,
-                unsplashRandomImageData,
-            });
-        }
-    );
-};
+} from '../../constants.js';
 
 /**
  * @param {boolean} isProduction
