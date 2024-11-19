@@ -78,6 +78,10 @@ export default {
             type: Array,
             required: true,
         },
+        isWebglHighIntPrecisionSupported: {
+            type: Boolean,
+            required: true,
+        },
     },
     components: {
         TextureCombine,
