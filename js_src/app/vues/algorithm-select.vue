@@ -6,14 +6,14 @@
                 @change="$emit('update:modelValue', parseInt($event.target.value))"
             >
                 <optgroup 
-                    v-for="(ditherGroup, outerIndex) in ditherGroups" 
+                    v-for="ditherGroup in ditherGroups" 
                     :label="ditherGroup.title" 
                     :key="ditherGroup.title"
                 >
                     <option 
-                        v-for="(ditherAlgorithm, index) in ditherAlgorithms.slice(ditherGroup.start, ditherGroup.start + ditherGroup.length)" 
-                        :value="ditherGroup.start + index" 
-                        :key="`${ditherGroup.title}-${ditherAlgorithm.title}`"
+                        v-for="ditherAlgorithm in ditherGroup.items" 
+                        :value="ditherAlgorithm.index" 
+                        :key="ditherAlgorithm.slug"
                     >
                         {{ ditherAlgorithm.title }}
                     </option>
@@ -24,7 +24,7 @@
             model-name="algorithm" 
             :modelValue="selectedDitherAlgorithmIndex"
             @update:modelValue="$emit('update:modelValue', $event)"
-            :array-length="ditherAlgorithms.length" 
+            :array-length="algorithmCount" 
         />
     </div>
 </template>
@@ -34,8 +34,6 @@
 </style>
 
 <script>
-import AlgorithmModel from '../../generated_output/app/algorithm-model.js';
-
 import CyclePropertyList from './cycle-property-list.vue';
 
 export default {
@@ -44,12 +42,12 @@ export default {
             type: Number,
             required: true,
         },
-        ditherGroupKey: {
-            type: String,
+        ditherGroups: {
+            type: Array,
             required: true,
         },
-        ditherAlgorithms: {
-            type: Array,
+        algorithmCount: {
+            type: Number,
             required: true,
         },
     },
@@ -57,9 +55,6 @@ export default {
         CyclePropertyList,
     },
     computed: {
-        ditherGroups(){
-            return AlgorithmModel[this.ditherGroupKey];
-        },
         selectedDitherAlgorithmIndex(){
             return this.modelValue;
         },

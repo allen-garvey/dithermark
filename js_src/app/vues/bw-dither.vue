@@ -7,8 +7,8 @@
         />
         <algorithm-select 
             v-model="selectedDitherAlgorithmIndex"
-            :ditherAlgorithms="ditherAlgorithms"
-            ditherGroupKey="bwDitherGroups"
+            :algorithmCount="ditherAlgorithms.length"
+            :ditherGroups="ditherGroups"
         />
         <threshold-input 
             v-model="threshold"
@@ -43,6 +43,7 @@ import HistogramComponent from './histogram-bw.vue';
 import AlgorithmSelect from './algorithm-select.vue';
 import ColorSubstitutionInput from './color-substitution-input.vue';
 import TextureCombine from 'texture-combine-component'; //resolved via webpack config so not included in release builds
+import { getBwGroups, getBwDitherAlgorithms } from '../models/dither-algorithms.js';
 
 //used for creating BW texture for webgl color replace
 let isDitherWorkerBwWorking = false;
@@ -74,10 +75,6 @@ export default {
             type: Function,
             required: true,
         },
-        ditherAlgorithms: {
-            type: Array,
-            required: true,
-        },
         isWebglHighIntPrecisionSupported: {
             type: Boolean,
             required: true,
@@ -103,6 +100,8 @@ export default {
             hasImageBeenTransformed: false,
             loadedImage: null,
             colorReplaceColors: ColorPicker.defaultBwColors(),
+            ditherGroups: getBwGroups(),
+            ditherAlgorithms: getBwDitherAlgorithms(this.isWebglHighIntPrecisionSupported),
         };
     },
     computed: {

@@ -7,8 +7,8 @@
         />
         <algorithm-select 
             v-model="selectedDitherAlgorithmIndex"
-            :ditherAlgorithms="ditherAlgorithms"
-            ditherGroupKey="colorDitherGroups"
+            :algorithmCount="ditherAlgorithms.length"
+            :ditherGroups="ditherGroups"
         />
         <div class="spread-content">
             <label>Color comparison
@@ -89,6 +89,7 @@ import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import { COLOR_DITHER_MAX_COLORS } from '../../../constants.js';
 import { getColorQuantizationGroups } from '../models/color-quantization-modes.js';
 import { getColorQuantizationModes } from '../../shared/models/color-quantization-modes.js';
+import { getColorGroups, getColorDitherAlgorithms } from '../models/dither-algorithms.js';
 import Palettes from '../color-palettes.js';
 import UserSettings from '../user-settings.js'
 import ColorDitherModes from '../../shared/color-dither-modes.js'
@@ -119,11 +120,11 @@ function optimizePaletteMemorizationKey(numColors, modeId){
 }
 
 export default {
-    props: {                                                                                              
-        isWebglEnabled: {                                                                                 
+    props: {                                                                                   
+        isWebglEnabled: {
             type: Boolean,
             required: true,
-        },
+        },                                                                              
         isLivePreviewEnabled: {
             type: Boolean,
             required: true,
@@ -138,10 +139,6 @@ export default {
         },
         requestDisplayTransformedImage: {
             type: Function,
-            required: true,
-        },
-        ditherAlgorithms: {
-            type: Array,
             required: true,
         },
         isWebglHighIntPrecisionSupported: {
@@ -176,6 +173,8 @@ export default {
     data(){ 
         return{
             selectedDitherAlgorithmIndex: 36,
+            ditherGroups: getColorGroups(),
+            ditherAlgorithms: getColorDitherAlgorithms(this.isWebglHighIntPrecisionSupported),
             loadedImage: null,
             colors: [],
             //colors shadow and draggedIndex are for dragging colors in palette

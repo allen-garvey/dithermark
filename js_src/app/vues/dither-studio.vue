@@ -164,14 +164,13 @@
                     <div v-show="activeDitherComponentId === bwDitherComponentId">
                         <bw-dither-section 
                             ref="bwDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(bwDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(bwDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled || isBatchConverting" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" 
-                            :dither-algorithms="bwDitherAlgorithms" 
                             :isWebglHighIntPrecisionSupported="isWebglHighIntPrecisionSupported"
                         />  
                     </div>
                     <div v-show="activeDitherComponentId === colorDitherComponentId">
                         <color-dither-section 
                             ref="colorDitherSection" @request-worker="onWorkerRequested" :request-canvases="requestPermissionCallbackBuilder(colorDitherComponentId, onCanvasesRequested)" :request-display-transformed-image="requestPermissionCallbackBuilder(colorDitherComponentId, onRequestDisplayTransformedImage)" :is-webgl-enabled="isWebglEnabled" :is-live-preview-enabled="isLivePreviewEnabled || isBatchConverting" :is-color-picker-live-preview-enabled="isColorPickerLivePreviewEnabled" 
-                            @request-modal-prompt="showModalPrompt" :dither-algorithms="colorDitherAlgorithms" 
+                            @request-modal-prompt="showModalPrompt"
                             :isWebglHighIntPrecisionSupported="isWebglHighIntPrecisionSupported"
                         />
                     </div>
@@ -212,7 +211,6 @@
 * transformCanvasOutput: output from dither as shown to user, after zoom 
 */
 
-import AlgorithmModel from '../../generated_output/app/algorithm-model.js';
 import UserSettings from '../user-settings.js'
 import Canvas from '../canvas.js';
 import WorkerHeaders from '../../shared/worker-headers.js';
@@ -305,18 +303,6 @@ export default {
             this.isWebglHighpFloatSupported = transformCanvasWebGl.supportsHighFloatPrecision;
             this.isWebglHighIntPrecisionSupported = transformCanvasWebGl.supportsHighIntPrecision;
         }
-
-        //remove webgl algorithms requiring high precision ints (if necessary)
-        if(!transformCanvasWebGl.supportsHighIntPrecision){
-            const removeUnsupportedWebGl = (algorithm)=>{
-                if(algorithm.requiresHighPrecisionInt){
-                    algorithm.webGlFunc = null;
-                }
-                return algorithm;
-            };
-            this.bwDitherAlgorithms = this.bwDitherAlgorithms.map(removeUnsupportedWebGl);
-            this.colorDitherAlgorithms = this.colorDitherAlgorithms.map(removeUnsupportedWebGl);
-        }
     },
     mounted(){
         const refs = this.$refs;
@@ -342,8 +328,6 @@ export default {
     },
     data(){
         return {
-            bwDitherAlgorithms: AlgorithmModel.bwDitherAlgorithms,
-            colorDitherAlgorithms: AlgorithmModel.colorDitherAlgorithms,
             bwDitherComponentId: 0,
             colorDitherComponentId: 1,
             activeDitherComponentId: 1,

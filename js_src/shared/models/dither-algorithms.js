@@ -57,7 +57,7 @@ const getOrderedDitherPatterns = () => [
 
 const getBwOrderedModels = () =>
     getOrderedDitherPatterns().map((model) => {
-        const { title, orderedOpts } = model;
+        const { title, ...orderedOpts } = model;
         const slug = `ordered--${orderedOpts.pattern}-${orderedOpts.dimensions}`;
 
         return {
@@ -82,7 +82,7 @@ const getBwOrderedModels = () =>
 
 const getColorOrderedModels = () =>
     getOrderedDitherPatterns().map((model) => {
-        const { title, orderedOpts } = model;
+        const { title, ...orderedOpts } = model;
         const dimensions = orderedOpts.dimensions;
         const slug = `ordered--${orderedOpts.pattern}-${dimensions}`;
 
