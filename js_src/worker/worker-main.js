@@ -1,14 +1,19 @@
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import WorkerUtil from './worker-util.js';
 import WorkerHeaders from '../shared/worker-headers.js';
-import Algorithms from '../generated_output/worker/algorithm-model.js';
 import Histogram from './histogram.js';
 import { getColorQuantizationModes } from '../shared/models/color-quantization-modes.js';
 import { getColorQuantizationAlgo } from './models/optimize-palette-translation.js';
+import {
+    getBwDitherAlgorithms,
+    getColorDitherAlgorithms,
+} from './models/dither-algorithms.js';
 
 const colorQuantizationModes = getColorQuantizationModes();
 
-const ditherAlgorithms = Algorithms.model();
+const bwDitherAlgorithms = getBwDitherAlgorithms();
+const colorDitherAlgorithms = getColorDitherAlgorithms();
+
 let imageId;
 let pixelBufferOriginal;
 let imageHeight = 0;
@@ -35,7 +40,7 @@ function histogramAction(imageId, messageHeader) {
 }
 
 function bwDitherAction(imageId, messageHeader) {
-    const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmIndex];
+    const selectedAlgorithm = bwDitherAlgorithms[messageHeader.algorithmIndex];
 
     const pixels = WorkerUtil.copyPixels(pixelBufferOriginal);
 
@@ -68,7 +73,8 @@ function bwDitherAction(imageId, messageHeader) {
 }
 
 function colorDitherAction(imageId, messageHeader) {
-    const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmIndex];
+    const selectedAlgorithm =
+        colorDitherAlgorithms[messageHeader.algorithmIndex];
 
     const pixels = WorkerUtil.copyPixels(pixelBufferOriginal);
 
