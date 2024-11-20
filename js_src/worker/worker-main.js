@@ -4,7 +4,7 @@ import WorkerHeaders from '../shared/worker-headers.js';
 import Algorithms from '../generated_output/worker/algorithm-model.js';
 import Histogram from './histogram.js';
 import { getColorQuantizationModes } from '../shared/models/color-quantization-modes.js';
-import { getColorQuantizationAlgo } from './optimize-palette-translation.js';
+import { getColorQuantizationAlgo } from './models/optimize-palette-translation.js';
 
 const colorQuantizationModes = getColorQuantizationModes();
 

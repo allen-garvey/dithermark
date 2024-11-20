@@ -1,13 +1,13 @@
-import Popularity from './optimize-palette/popularity.js';
-import MedianCut from './optimize-palette/median-cut.js';
-import RgbQuant from './optimize-palette/rgb-quant.js';
-import Perceptual from './optimize-palette/perceptual.js';
-import Octree from './optimize-palette/octree.js';
-import KMeans from './optimize-palette/k-means.js';
-import Random from './optimize-palette/random.js';
-import ColorChannel from './optimize-palette/color-channel.js';
-import Uniform from './optimize-palette/uniform.js';
-import NeuQuant from './optimize-palette/neu-quant.js';
+import Popularity from '../optimize-palette/popularity.js';
+import MedianCut from '../optimize-palette/median-cut.js';
+import RgbQuant from '../optimize-palette/rgb-quant.js';
+import Perceptual from '../optimize-palette/perceptual.js';
+import Octree from '../optimize-palette/octree.js';
+import KMeans from '../optimize-palette/k-means.js';
+import Random from '../optimize-palette/random.js';
+import ColorChannel from '../optimize-palette/color-channel.js';
+import Uniform from '../optimize-palette/uniform.js';
+import NeuQuant from '../optimize-palette/neu-quant.js';
 
 const algoMap = new Map([
     ['random-palette', { algo: Random.random, options: {} }],
