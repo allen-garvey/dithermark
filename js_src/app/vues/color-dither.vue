@@ -172,7 +172,7 @@ export default {
     },
     data(){ 
         return{
-            selectedDitherAlgorithmIndex: 36,
+            selectedDitherAlgorithmIndex: 38,
             ditherGroups: getColorGroups(),
             ditherAlgorithms: getColorDitherAlgorithms(this.isWebglHighIntPrecisionSupported),
             loadedImage: null,
