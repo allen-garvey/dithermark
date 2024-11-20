@@ -8,12 +8,14 @@
     "./js_src/app/vues/*.vue"
   ],
   "scripts": {
-    "build": "webpack --config build/webpack.config.cjs",
-    "deploy": "webpack --config build/webpack.production.config.cjs",
-    "watch": "webpack --config build/webpack.config.cjs --watch",
     "start": "node server/index.js",
+    "watch": "webpack --config build/webpack.config.cjs --watch",
+    "build": "npm run build:html && npm run build:js",
     "build:html": "node build/build.js",
-    "build:html:prod": "IS_PRODUCTION=true node build/build.js",
+    "build:js": "webpack --config build/webpack.config.cjs",
+    "deploy": "npm run deploy:html && npm run deploy:js",
+    "deploy:html": "IS_PRODUCTION=true node build/build.js",
+    "deploy:js": "webpack --config build/webpack.production.config.cjs",
     "seed:unsplash": "node scripts/unsplash-random-images.js"
   },
   "repository": {
