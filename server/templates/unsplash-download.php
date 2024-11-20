@@ -1,6 +1,6 @@
 <?php
 function main($args) {
-    $photoIdQueryParamName = '<?= UNSPLASH_PHOTO_ID_QUERY_KEY ?>';
+    $photoIdQueryParamName = '<?= UNSPLASH_PHOTO_ID_QUERY_KEY; ?>';
     if(!isset($args[$photoIdQueryParamName])){
         return [
             'statusCode' => 400,

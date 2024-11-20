@@ -29,7 +29,7 @@ export const renderUnsplashDownloadApi = () => {
     return Promise.all([templatePromise, unsplashRandomImagesPromise]).then(
         ([template, unsplashRandomImageData]) => {
             return render(template, {
-                UNSPLASH_API_PHOTO_ID_QUERY_KEY,
+                UNSPLASH_PHOTO_ID_QUERY_KEY: UNSPLASH_API_PHOTO_ID_QUERY_KEY,
                 unsplashRandomImageData,
             });
         }
