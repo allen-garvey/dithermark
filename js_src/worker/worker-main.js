@@ -35,7 +35,7 @@ function histogramAction(imageId, messageHeader) {
 }
 
 function bwDitherAction(imageId, messageHeader) {
-    const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
+    const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmIndex];
 
     const pixels = WorkerUtil.copyPixels(pixelBufferOriginal);
 
@@ -68,7 +68,7 @@ function bwDitherAction(imageId, messageHeader) {
 }
 
 function colorDitherAction(imageId, messageHeader) {
-    const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmId];
+    const selectedAlgorithm = ditherAlgorithms[messageHeader.algorithmIndex];
 
     const pixels = WorkerUtil.copyPixels(pixelBufferOriginal);
 

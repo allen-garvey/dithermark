@@ -4,48 +4,65 @@ import ColorPicker from './color-picker.js';
 import ArrayUtil from '../shared/array-util.js';
 import Pixel from '../shared/pixel.js';
 
-
-function createDitherWorkerHeader(imageWidth, imageHeight, threshold, algorithmId, blackPixel, whitePixel){
+function createDitherWorkerHeader(
+    imageWidth,
+    imageHeight,
+    threshold,
+    algorithmIndex,
+    blackPixel,
+    whitePixel
+) {
     return {
         messageTypeId: WorkerHeaders.DITHER,
         imageWidth,
         imageHeight,
-        algorithmId,
+        algorithmIndex,
         threshold,
         blackPixel,
         whitePixel,
     };
 }
 
-function createDitherWorkerBwHeader(imageWidth, imageHeight, threshold, algorithmId){
+function createDitherWorkerBwHeader(
+    imageWidth,
+    imageHeight,
+    threshold,
+    algorithmIndex
+) {
     return {
         messageTypeId: WorkerHeaders.DITHER_BW,
         imageWidth,
         imageHeight,
-        algorithmId,
+        algorithmIndex,
         threshold,
         blackPixel: Pixel.create(0, 0, 0),
         whitePixel: Pixel.create(255, 255, 255),
     };
 }
 
-function createDitherWorkerColorHeader(imageWidth, imageHeight, algorithmId, colorDitherModeId, colorsHex){
+function createDitherWorkerColorHeader(
+    imageWidth,
+    imageHeight,
+    algorithmIndex,
+    colorDitherModeId,
+    colorsHex
+) {
     return {
         messageTypeId: WorkerHeaders.DITHER_COLOR,
         imageWidth,
         imageHeight,
-        algorithmId,
+        algorithmIndex,
         colorDitherModeId,
         colors: ColorPicker.prepareForWorker(colorsHex),
     };
 }
 // used to reduce race conditions when image
 // changes while worker is still working on previous image
-function generateImageId(previousImageId){
+function generateImageId(previousImageId) {
     return previousImageId + 1;
 }
 
-function createLoadImageMessage(imageId, imageWidth, imageHeight, buffer){
+function createLoadImageMessage(imageId, imageWidth, imageHeight, buffer) {
     return {
         messageTypeId: WorkerHeaders.LOAD_IMAGE,
         imageId,
@@ -55,13 +72,13 @@ function createLoadImageMessage(imageId, imageWidth, imageHeight, buffer){
     };
 }
 
-function createHistogramWorkerHeader(){
+function createHistogramWorkerHeader() {
     return {
         messageTypeId: WorkerHeaders.HISTOGRAM,
     };
 }
 //filterId for memorization purpores
-function createOptimizePaletteHeader(numColors, colorQuantizationModeId){
+function createOptimizePaletteHeader(numColors, colorQuantizationModeId) {
     return {
         messageTypeId: WorkerHeaders.OPTIMIZE_PALETTE,
         numColors,
@@ -69,7 +86,7 @@ function createOptimizePaletteHeader(numColors, colorQuantizationModeId){
     };
 }
 
-function createColorHistogramWorkerHeader(){
+function createColorHistogramWorkerHeader() {
     return {
         messageTypeId: WorkerHeaders.HUE_HISTOGRAM,
     };
@@ -78,38 +95,40 @@ function createColorHistogramWorkerHeader(){
 //returns promise;
 //gets worker src code, and then initializes queue of workers
 //very loosely based on: https://stackoverflow.com/questions/10343913/how-to-create-a-web-worker-from-a-string
-function getWorkers(){
-    return new Promise((resolve, reject)=>{
+function getWorkers() {
+    return new Promise((resolve, reject) => {
         resolve(createWorkers());
     });
 }
 
 //creates queue of webworkers
-function createWorkers(){
+function createWorkers() {
     const hardwareConcurrency = window.navigator.hardwareConcurrency;
     //limit webworkers to 8 because hardwareConcurrency doesn't distinguish between
     //real cores and hyperthreads, and running on 4 core machine at least having more than 8 workers shows no benefit
     //multiply by 2 because some browsers lie about cores (i.e. Safari)
-    const numWorkers = hardwareConcurrency ? Math.min(hardwareConcurrency * 2, 8) : 1;
-    const workers = ArrayUtil.create(numWorkers, ()=>{
+    const numWorkers = hardwareConcurrency
+        ? Math.min(hardwareConcurrency * 2, 8)
+        : 1;
+    const workers = ArrayUtil.create(numWorkers, () => {
         return new Worker(new URL('../worker/worker-main.js', import.meta.url));
     });
-    
+
     let workerCurrentIndex = 0;
 
-    function getNextWorker(){
+    function getNextWorker() {
         const worker = workers[workerCurrentIndex];
         workerCurrentIndex++;
-        if(workerCurrentIndex === workers.length){
+        if (workerCurrentIndex === workers.length) {
             workerCurrentIndex = 0;
         }
         return worker;
     }
-    
-    function forEach(callback){
+
+    function forEach(callback) {
         workers.forEach(callback);
     }
-    
+
     return {
         getNextWorker: getNextWorker,
         forEach: forEach,
