@@ -6,6 +6,7 @@ import {
 } from '../../shared/models/dither-algorithms.js';
 
 import { getBwWebglTranslator } from './bw-algorithm-webgl-translation.js';
+import { getColorWebglTranslator } from './color-algorithm-webgl-translation.js';
 
 const bwIndexMap = new Map(
     getBwAlgorithms().map((item, index) => [item.slug, index])
@@ -48,14 +49,12 @@ export const getBwDitherAlgorithms = (isWebglHighIntPrecisionSupported) => {
  * @param {boolean} isWebglHighIntPrecisionSupported
  */
 export const getColorDitherAlgorithms = (isWebglHighIntPrecisionSupported) => {
-    // const webglTranslator = getBwWebglTranslator(
-    //     isWebglHighIntPrecisionSupported
-    // );
+    const webglTranslator = getColorWebglTranslator(
+        isWebglHighIntPrecisionSupported
+    );
 
-    // return getBwAlgorithms().map((item) => ({
-    //     ...item,
-    //     webGlFunc: webglTranslator(item),
-    // }));
-
-    return getBwAlgorithms();
+    return getColorAlgorithms().map((item) => ({
+        ...item,
+        webGlFunc: webglTranslator(item),
+    }));
 };
