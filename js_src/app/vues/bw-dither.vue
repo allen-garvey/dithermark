@@ -166,7 +166,7 @@ export default {
             if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
                 isDitherWorkerBwWorking = true;
                 this.$emit('request-worker', (worker)=>{
-                    worker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id));
+                    worker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.index));
                 });
                 
             }
@@ -234,7 +234,7 @@ export default {
                 return;
             }
             this.$emit('request-worker', (worker)=>{
-                worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.id, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
+                worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.index, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
             });
         },
         ditherWorkerMessageReceivedDispatcher(messageTypeId, message){

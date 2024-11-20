@@ -39,8 +39,9 @@ export const getBwDitherAlgorithms = (isWebglHighIntPrecisionSupported) => {
         isWebglHighIntPrecisionSupported
     );
 
-    return getBwAlgorithms().map((item) => ({
+    return getBwAlgorithms().map((item, index) => ({
         ...item,
+        index,
         webGlFunc: webglTranslator(item),
     }));
 };
@@ -53,8 +54,9 @@ export const getColorDitherAlgorithms = (isWebglHighIntPrecisionSupported) => {
         isWebglHighIntPrecisionSupported
     );
 
-    return getColorAlgorithms().map((item) => ({
+    return getColorAlgorithms().map((item, index) => ({
         ...item,
+        index,
         webGlFunc: webglTranslator(item),
     }));
 };

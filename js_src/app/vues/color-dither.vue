@@ -337,7 +337,7 @@ export default {
                 return;
             }
             this.$emit('request-worker', (worker)=>{
-                worker.postMessage(WorkerUtil.ditherWorkerColorHeader(this.loadedImage.width, this.loadedImage.height, this.selectedDitherAlgorithm.id, this.selectedColorDitherModeId, this.selectedColors));
+                worker.postMessage(WorkerUtil.ditherWorkerColorHeader(this.loadedImage.width, this.loadedImage.height, this.selectedDitherAlgorithm.index, this.selectedColorDitherModeId, this.selectedColors));
             });
         },
         ditherWorkerMessageReceivedDispatcher(messageTypeId, messageBody){
