@@ -5,8 +5,8 @@
         <title><?= APP_NAME; ?></title>
         <meta name="description" content="An interactive, in-browser exploration of image dithering and color quantization algorithms"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <link rel="stylesheet" type="text/css" href="/assets/style.css"/>
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png"/>
+        <link rel="stylesheet" type="text/css" href="<?= URL_ROOT; ?>/assets/style.css"/>
+        <link rel="apple-touch-icon" href="<?= URL_ROOT; ?>/apple-touch-icon.png"/>
     </head>
     <body>
         //this extra .total-page div is unfortunately required for FireFox full screen mode to allow scrolling, instead of just cutting content off
@@ -30,6 +30,6 @@
             </main>
         </div>
         <?= shaderContent; ?>
-        <script type="text/javascript" src="/assets/app.js"></script>
+        <script type="text/javascript" src="<?= URL_ROOT; ?>/assets/app.js"></script>
     </body>
 </html>
