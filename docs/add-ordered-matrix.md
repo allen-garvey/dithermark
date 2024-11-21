@@ -1,6 +1,6 @@
 # Add (a new) Ordered Matrix
 
-An ordered matrix can be thought of as a pattern that is used for the ordered dithers. In this project the term "Bayer Matrix" is used for historical reason, since the Bayer pattern was implemented first, and it was too much effort to change this (interestingly, the [ordered dithering Wikipedia article](https://en.wikipedia.org/wiki/Ordered_dithering) lists bayer matrix as a generic term for this anyway). This guide will walk you through how to do this.
+An ordered matrix can be thought of as a pattern that is used for the ordered dithers. In this project the term "Bayer Matrix" is used for historical reasons, since the Bayer pattern was implemented first, and it was too much effort to change this (interestingly, the [ordered dithering Wikipedia article](https://en.wikipedia.org/wiki/Ordered_dithering) lists bayer matrix as a generic term for this anyway). This guide will walk you through how to do this.
 
 ## Overview
 
@@ -30,10 +30,6 @@ An ordered matrix can be thought of as a pattern that is used for the ordered di
 
 * If you see an error in the console when trying to use you pattern when WebGL is enabled saying something similar to `RangeError: Source is too large`, that means your function is returning an array whose length is not the same as `dimensions*dimensions` (despite the error saying the source is too large, the array your are returning might actually be too small).
 
-## Note About the Yliluoma Dithers
+## Note About the Yliluoma 1 Dither
 
-* You may have noticed that the Yliluoma dithers did not use your new pattern by default. This is because the Yliluoma dithers are more resource intensive, and so you have to manually enable the pattern for them. Note that the Yliluoma 1 dither is particularly resource intensive, even with WebGL enabled, and so will not work with patterns with `dimensions > 8` by default. (To enable this, you have to change the `YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH` constant in `inc/config.php`, though this is not recommended).
-
-* To enable your ordered matrix pattern with the Yliluoma dithers, edit the `$yliluoma1PatternKeys` and/or `$yliluoma2PatternKeys` associative arrays in the `colorOrderedDitherAlgorithmModel()` function (in `inc/models/algorithm-model.php`) by adding the `UNIQUE_KEY` you used in the array returned from the `getOrderedMatrixPatterns()` function.
-
-* Save the file and run `make`.
+* The Yliluoma 1 dither is particularly resource intensive, even with WebGL enabled, and so is not enabled for patterns with dimensions larger than 8. (To change this, you can increase the `YLILUOMA_1_ORDERED_MATRIX_MAX_DIMENSIONS` constant in `constants.js`, though this is not recommended).
