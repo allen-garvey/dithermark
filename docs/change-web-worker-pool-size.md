@@ -1,3 +1,0 @@
-# Change Web Worker Pool Size
-
-The color quantization (optimize palette) logic and error propagation dithers (and all dithers when WebGL is disabled) are handled by a pool of Web Workers. By default, the number is set to 2x the number of CPU cores, but capped at 8 both to preserve memory and because (at least on a 4 core machine) numbers greater than 8 were not found to increase performance significantly. To change the pool size, edit the `createWorkers()` function in `js_src/app/worker-util.js`.
