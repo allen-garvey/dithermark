@@ -26,7 +26,7 @@ An ordered matrix can be thought of as a pattern that is used for the ordered di
 
 * Now go to `inc/models/algorithm-model.php` and find the function `getOrderedMatrixPatterns()`. You need to add your new function to the returned array. The ordered of the patterns in the returned array is the same order that is used for the UI. You need to add a new entry in this format: `'UNIQUE_KEY' => new OrderedMatrixPattern('nameOfYourExportedFunction', dimensions),` (Dimensions should be the dimensions your function is expecting).
 
-* An that's it! If you run `make` you should now see your matrix pattern as an available option!
+* An that's it! If you follow the directions in `building.md` for developing locally, you should now see your matrix pattern as an available option!
 
 * If you see an error in the console when trying to use you pattern when WebGL is enabled saying something similar to `RangeError: Source is too large`, that means your function is returning an array whose length is not the same as `dimensions*dimensions` (despite the error saying the source is too large, the array your are returning might actually be too small).
 
