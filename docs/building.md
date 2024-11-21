@@ -12,12 +12,7 @@ This project uses `make` for building and generally makes assumptions that file 
 
 ## Dependencies for building
 
-* POSIX compatible operating system (Linux, Unix, macOs)
-* make
-* PHP >= 7.0 (with `cli`, `json` and `ctype` extensions)
-* Node >= 18
-* npm
-* rsync (for `make release` recipe)
+* Node.js >= 22
 
 ## Getting Started
 
@@ -36,13 +31,3 @@ To create a release build (JavaScript is minified and logging and debugging feat
 * Type `make release`
 * To reset everything, so you can create a debug build again, type `make reset` and `make`
 * A release build without PHP dependencies is also created in `release`
-
-## Running in Electron
-
-* Make the project using `make`
-* Run `make electron`
-* Type `npm start`
-
-## Errors with building older versions
-
-* If for some reason you are trying to build a very old version of this project (before `dithermark-vue-color` was added as an `npm` dependency) you might get a `make` error about `vue-color` missing. See `vue-color-missing-error.md` in the `docs` directory on how to fix this.
