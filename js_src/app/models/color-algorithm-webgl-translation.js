@@ -22,29 +22,6 @@ export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
         arithmeticEntries.forEach(([key, value]) => webglMap.set(key, value));
     }
 
-    const orderedDitherMap = new Map([
-        ['bayer', ColorDither.createBayerColorDither],
-        ['hatchHorizontal', ColorDither.createHatchHorizontalColorDither],
-        ['hatchVertical', ColorDither.createHatchVerticalColorDither],
-        ['hatchRight', ColorDither.createHatchRightColorDither],
-        ['hatchLeft', ColorDither.createHatchLeftColorDither],
-        [
-            'crossHatchHorizontal',
-            ColorDither.createCrossHatchHorizontalColorDither,
-        ],
-        ['crossHatchVertical', ColorDither.createCrossHatchVerticalColorDither],
-        ['crossHatchRight', ColorDither.createCrossHatchRightColorDither],
-        ['crossHatchLeft', ColorDither.createCrossHatchLeftColorDither],
-        ['zigzagHorizontal', ColorDither.createZigzagHorizontalColorDither],
-        ['zigzagVertical', ColorDither.createZigzagVerticalColorDither],
-        ['checkerboard', ColorDither.createCheckerboardColorDither],
-        ['cluster', ColorDither.createClusterColorDither],
-        ['fishnet', ColorDither.createFishnetColorDither],
-        ['dot', ColorDither.createDotColorDither],
-        ['halftone', ColorDither.createHalftoneColorDither],
-        ['square', ColorDither.createSquareColorDither],
-    ]);
-
     return (algorithm) => {
         if (algorithm.orderedOpts) {
             const { pattern, dimensions, isRandom, type } =
@@ -73,7 +50,10 @@ export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
                         pattern
                     );
                 default:
-                    return orderedDitherMap.get(pattern)(dimensions, isRandom);
+                    return ColorDither.orderedDitherBuilder(pattern)(
+                        dimensions,
+                        isRandom
+                    );
             }
         }
 

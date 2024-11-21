@@ -24,30 +24,11 @@ export const getBwWebglTranslator = (isWebglHighIntPrecisionSupported) => {
         arithmeticEntries.forEach(([key, value]) => webglMap.set(key, value));
     }
 
-    const orderedDitherMap = new Map([
-        ['bayer', BwDither.createBayerDither],
-        ['hatchHorizontal', BwDither.createHatchHorizontalDither],
-        ['hatchVertical', BwDither.createHatchVerticalDither],
-        ['hatchRight', BwDither.createHatchRightDither],
-        ['hatchLeft', BwDither.createHatchLeftDither],
-        ['crossHatchHorizontal', BwDither.createCrossHatchHorizontalDither],
-        ['crossHatchVertical', BwDither.createCrossHatchVerticalDither],
-        ['crossHatchRight', BwDither.createCrossHatchRightDither],
-        ['crossHatchLeft', BwDither.createCrossHatchLeftDither],
-        ['zigzagHorizontal', BwDither.createZigzagHorizontalDither],
-        ['zigzagVertical', BwDither.createZigzagVerticalDither],
-        ['checkerboard', BwDither.createCheckerboardDither],
-        ['cluster', BwDither.createClusterDither],
-        ['fishnet', BwDither.createFishnetDither],
-        ['dot', BwDither.createDotDither],
-        ['halftone', BwDither.createHalftoneDither],
-        ['square', BwDither.createSquareDither],
-    ]);
-
     return (algorithm) => {
         if (algorithm.orderedOpts) {
             const { pattern, dimensions, isRandom } = algorithm.orderedOpts;
-            return orderedDitherMap.get(pattern)(dimensions, isRandom);
+
+            return BwDither.orderedDitherBuilder(pattern)(dimensions, isRandom);
         }
 
         return webglMap.get(algorithm.slug) || false;

@@ -402,7 +402,7 @@ function webGLOrderedDither(
     );
 }
 
-function createOrderedDitherBase(matrixKeyPrefix, bayerFuncName) {
+function orderedDitherBuilder(bayerFuncName) {
     return function (dimensions, isRandom = false) {
         const bayerAdjustmentText = isRandom
             ? Shader.shaderText(
@@ -418,7 +418,7 @@ function createOrderedDitherBase(matrixKeyPrefix, bayerFuncName) {
             blackPixel,
             whitePixel
         ) {
-            const matrixKey = `${matrixKeyPrefix}-${dimensions}`;
+            const matrixKey = `${bayerFuncName}-${dimensions}`;
             let bayerTexture = bayerTextures[matrixKey];
             if (!bayerTexture) {
                 bayerTexture = BayerWebgl.createAndLoadTexture(
@@ -504,7 +504,7 @@ function webGL3TextureCombine(
     );
 }
 
-const exports = {
+export default {
     threshold: webGLThreshold,
     adaptiveThreshold: webGLAdaptiveThreshold,
     randomThreshold: webGLRandomThreshold,
@@ -517,13 +517,5 @@ const exports = {
     aDitherXor3: createArithmeticDither(ADITHER_XOR3, Shader.aDitherXor3Return),
     colorReplace: webGLColorReplace,
     textureCombine: webGL3TextureCombine,
+    orderedDitherBuilder,
 };
-
-DitherUtil.generateBayerKeys((orderedDitherKey, bwDitherKey) => {
-    exports[bwDitherKey] = createOrderedDitherBase(
-        orderedDitherKey,
-        orderedDitherKey
-    );
-});
-
-export default exports;

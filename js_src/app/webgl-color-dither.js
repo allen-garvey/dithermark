@@ -405,14 +405,8 @@ function orderedDither(
     );
 }
 
-function createOrderedDitherBase(
-    dimensions,
-    algoKey,
-    textureKeyPrefix,
-    bayerFuncName,
-    isRandom
-) {
-    let bayerKey = `${textureKeyPrefix}-${dimensions}`;
+function createOrderedDitherBase(dimensions, algoKey, bayerFuncName, isRandom) {
+    let bayerKey = `${bayerFuncName}-${dimensions}`;
     return (
         gl,
         texture,
@@ -447,11 +441,7 @@ function createOrderedDitherBase(
     };
 }
 
-function orderedDitherBuilder(
-    textureKeyPrefix,
-    bayerFuncName,
-    algoKey = ORDERED_DITHER
-) {
+function orderedDitherBuilder(bayerFuncName, algoKey = ORDERED_DITHER) {
     return function (dimensions, isRandom = false) {
         let adjustedAlgoKey = algoKey;
         if (isRandom) {
@@ -463,7 +453,6 @@ function orderedDitherBuilder(
         return createOrderedDitherBase(
             dimensions,
             adjustedAlgoKey,
-            textureKeyPrefix,
             bayerFuncName,
             isRandom
         );
@@ -482,7 +471,6 @@ function orderedDitherBuilder2(algoKey = ORDERED_DITHER) {
         return createOrderedDitherBase(
             dimensions,
             adjustedAlgoKey,
-            bayerFuncName,
             bayerFuncName,
             isRandom
         );
@@ -520,8 +508,8 @@ function createArithmeticDither(key) {
     };
 }
 
-const exports = {
-    closestColor: closestColor,
+export default {
+    closestColor,
     randomClosestColor: randomDither,
     aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
     aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
@@ -535,15 +523,5 @@ const exports = {
     createYliluoma1OrderedDither: orderedDitherBuilder2(YLILUOMA1),
     createYliluoma2OrderedDither: orderedDitherBuilder2(YLILUOMA2),
     createStarkOrderedDither: orderedDitherBuilder2(STARK_ORDERED_DITHER),
+    orderedDitherBuilder,
 };
-
-DitherUtil.generateBayerKeys(
-    (orderedDitherKey, bwDitherKey, colorDitherKey) => {
-        exports[colorDitherKey] = orderedDitherBuilder(
-            orderedDitherKey,
-            orderedDitherKey
-        );
-    }
-);
-
-export default exports;
