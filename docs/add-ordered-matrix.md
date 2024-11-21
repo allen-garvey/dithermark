@@ -20,7 +20,7 @@ An ordered matrix can be thought of as a pattern that is used for the ordered di
 
 * In `js_src/shared/bayer-matrix.js` create a function with the signature `function myBayerFunc(dimensions: int): Uint8Array[dimensions*dimensions]`. It should take a single integer parameter that is the dimensions of the matrix, and return a Uint8Array of length `dimensions * dimensions`. All values in the array should be in the range 0..(`length-1`) inclusive, as discussed in the overview section.
 
-* The dimensions parameter doesn't need to be used, it is just there in case you are programattically generating your matrix, or you are reusing the same function to return multiple matrixes.
+* The dimensions parameter doesn't need to be used, it is just there in case you are programmatically generating your matrix, or you are reusing the same function to return multiple matrixes.
 
 * At the bottom of the file, export your function. The function name should be in camel case format. Take care when naming your export, as it is used to automagically name your pattern in the UI. (For instance myCoolFunction would turn into "My Cool Function")
 
