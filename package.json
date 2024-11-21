@@ -16,6 +16,7 @@
     "deploy": "npm run deploy:html && npm run deploy:js",
     "deploy:html": "IS_PRODUCTION=true node build/build.js",
     "deploy:js": "webpack --config build/webpack.production.config.cjs",
+    "electron:js": "webpack --config build/webpack.electron.config.cjs",
     "seed:unsplash": "node scripts/unsplash-random-images.js"
   },
   "repository": {
