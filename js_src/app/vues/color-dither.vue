@@ -170,11 +170,15 @@ export default {
         //have to get canvases here, because DOM manipulation needs to happen in mounted hook
         histogramCanvas = Canvas.create(this.$refs.histogram.histogramCanvas);
     },
-    data(){ 
+    data(){
+        const ditherAlgorithms = getColorDitherAlgorithms(this.isWebglHighIntPrecisionSupported);
+
+        const selectedDitherAlgorithmIndex = ditherAlgorithms.findIndex(algo => algo.slug === 'ordered--bayer-16');
+        
         return{
-            selectedDitherAlgorithmIndex: 38,
+            selectedDitherAlgorithmIndex,
             ditherGroups: getColorGroups(),
-            ditherAlgorithms: getColorDitherAlgorithms(this.isWebglHighIntPrecisionSupported),
+            ditherAlgorithms,
             loadedImage: null,
             colors: [],
             //colors shadow and draggedIndex are for dragging colors in palette
