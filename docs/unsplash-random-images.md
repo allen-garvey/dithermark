@@ -1,22 +1,34 @@
 # Setting up Unsplash random images
 
-## Additional Dependencies
+This is a guide for implementing the Unsplash random images feature, while following the [Unsplash API Guidelines](https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines).
 
-* [Unsplash API Key](https://unsplash.com/developers)
+## Getting started
 
-## Generate random images Json file for client
+* Create an account at the [unsplash developers site](https://unsplash.com/developers) and create a new app.
 
-* Copy `unsplash-secrets.example.js` by running `cp unsplash-secrets.example.js unsplash-secrets.js` and fill out values with your Unsplash app name, access key, and the url for your Unsplash serverless API url.
-* Run `npm run seed:unsplash` to generate a json file with random images from Unsplash
+* Add your app name to `UNSPLASH_APP_NAME` in `unsplash-secrets.js`.
+* Add your app access key to `UNSPLASH_ACCESS_KEY` in `unsplash-secrets.js`.
+
+## Generate random images JSON file for client
+
+* Run `npm run seed:unsplash` to generate a json file with random images from Unsplash.
 
 ## DigitalOcean serverless function setup
 
-* Run `npm run build:html` to generate a PHP serverless function
+In order to comply with the [Unsplash API Guidelines](https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines), you will need to make an API call to Unsplash when a user downloads an Unsplash image. This guide shows you how to use [DigitalOcean functions](https://www.digitalocean.com/products/functions) to implement an API.
 
-* Create a php serverless function in the DigitalOcean control plane
+### Prerequisites
 
-* Paste contents of `serverless/unsplash-download.php` as the function body
+* Follow the instructions above to generate the Unsplash random images JSON file.
 
-* Set `UNSPLASH_ACCESS_KEY` as an environment variable
+### Directions
 
-* Copy the serverless function url, and set `UNSPLASH_DOWNLOAD_URL` in `inc/unsplash-api-secret.php`
+* Run `npm run deploy` to generate a PHP serverless function.
+
+* Create a new PHP function in the DigitalOcean control plane.
+
+* Paste the contents of `serverless/unsplash-download.php` as the function source.
+
+* Set `UNSPLASH_ACCESS_KEY` as an environment variable, using the value from `unsplash-secrets.js`
+
+* Copy the serverless function url, and set `UNSPLASH_DOWNLOAD_URL` in `unsplash-secrets.js`.
