@@ -312,6 +312,19 @@ const smile = (dimensions) => {
     ]);
 };
 
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const heart = (dimensions) => {
+    return new Uint8Array([
+        15, 17, 12, 12, 12, 12, 17, 15, 23, 63, 63, 20, 20, 63, 63, 23, 31, 63,
+        63, 44, 44, 63, 63, 31, 12, 44, 63, 63, 63, 63, 44, 12, 12, 44, 63, 63,
+        63, 63, 44, 12, 12, 12, 44, 63, 63, 44, 12, 12, 12, 12, 12, 40, 40, 12,
+        12, 12, 12, 12, 12, 17, 17, 12, 12, 12,
+    ]);
+};
+
 export default {
     bayer,
     square,
@@ -331,4 +344,5 @@ export default {
     halftone,
     checkerboard,
     smile,
+    heart,
 };

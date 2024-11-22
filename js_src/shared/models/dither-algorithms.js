@@ -45,6 +45,7 @@ const getOrderedDitherPatterns = () => [
     },
     { title: 'Checkerboard', pattern: 'checkerboard', dimensions: 2 },
     { title: 'Cluster', pattern: 'cluster', dimensions: 4 },
+    { title: 'Heart', pattern: 'heart', dimensions: 8 },
     { title: 'Smile 8×8', pattern: 'smile', dimensions: 8 },
     { title: 'Smile 16×16', pattern: 'smile', dimensions: 16 },
     { title: 'Fishnet', pattern: 'fishnet', dimensions: 8 },
