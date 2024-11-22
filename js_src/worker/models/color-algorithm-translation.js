@@ -22,29 +22,6 @@ const algorithmMap = new Map([
     ['reduced-atkinson', ErrorPropColorDither.reducedAtkinson],
 ]);
 
-const orderedDitherMap = new Map([
-    ['bayer', OrderedDither.createBayerColorDither],
-    ['hatchHorizontal', OrderedDither.createHatchHorizontalColorDither],
-    ['hatchVertical', OrderedDither.createHatchVerticalColorDither],
-    ['hatchRight', OrderedDither.createHatchRightColorDither],
-    ['hatchLeft', OrderedDither.createHatchLeftColorDither],
-    [
-        'crossHatchHorizontal',
-        OrderedDither.createCrossHatchHorizontalColorDither,
-    ],
-    ['crossHatchVertical', OrderedDither.createCrossHatchVerticalColorDither],
-    ['crossHatchRight', OrderedDither.createCrossHatchRightColorDither],
-    ['crossHatchLeft', OrderedDither.createCrossHatchLeftColorDither],
-    ['zigzagHorizontal', OrderedDither.createZigzagHorizontalColorDither],
-    ['zigzagVertical', OrderedDither.createZigzagVerticalColorDither],
-    ['checkerboard', OrderedDither.createCheckerboardColorDither],
-    ['cluster', OrderedDither.createClusterColorDither],
-    ['fishnet', OrderedDither.createFishnetColorDither],
-    ['dot', OrderedDither.createDotColorDither],
-    ['halftone', OrderedDither.createHalftoneColorDither],
-    ['square', OrderedDither.createSquareColorDither],
-]);
-
 export const getColorDitherAlgorithmForItem = (algorithmModel) => {
     if (algorithmModel.orderedOpts) {
         const { pattern, dimensions, isRandom, type } =
@@ -73,7 +50,10 @@ export const getColorDitherAlgorithmForItem = (algorithmModel) => {
                     pattern
                 );
             default:
-                return orderedDitherMap.get(pattern)(dimensions, isRandom);
+                return OrderedDither.colorOrderedDitherBuilder(pattern)(
+                    dimensions,
+                    isRandom
+                );
         }
     }
 

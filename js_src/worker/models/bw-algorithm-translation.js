@@ -25,30 +25,13 @@ const algorithmMap = new Map([
     ['reduced-atkinson', ErrorPropDither.reducedAtkinson],
 ]);
 
-const orderedDitherMap = new Map([
-    ['bayer', OrderedDither.createBayerDither],
-    ['hatchHorizontal', OrderedDither.createHatchHorizontalDither],
-    ['hatchVertical', OrderedDither.createHatchVerticalDither],
-    ['hatchRight', OrderedDither.createHatchRightDither],
-    ['hatchLeft', OrderedDither.createHatchLeftDither],
-    ['crossHatchHorizontal', OrderedDither.createCrossHatchHorizontalDither],
-    ['crossHatchVertical', OrderedDither.createCrossHatchVerticalDither],
-    ['crossHatchRight', OrderedDither.createCrossHatchRightDither],
-    ['crossHatchLeft', OrderedDither.createCrossHatchLeftDither],
-    ['zigzagHorizontal', OrderedDither.createZigzagHorizontalDither],
-    ['zigzagVertical', OrderedDither.createZigzagVerticalDither],
-    ['checkerboard', OrderedDither.createCheckerboardDither],
-    ['cluster', OrderedDither.createClusterDither],
-    ['fishnet', OrderedDither.createFishnetDither],
-    ['dot', OrderedDither.createDotDither],
-    ['halftone', OrderedDither.createHalftoneDither],
-    ['square', OrderedDither.createSquareDither],
-]);
-
 export const getBwDitherAlgorithmForItem = (algorithmModel) => {
     if (algorithmModel.orderedOpts) {
         const { pattern, dimensions, isRandom } = algorithmModel.orderedOpts;
-        return orderedDitherMap.get(pattern)(dimensions, isRandom);
+        return OrderedDither.orderedDitherBuilder(pattern)(
+            dimensions,
+            isRandom
+        );
     }
 
     return algorithmMap.get(algorithmModel.slug);
