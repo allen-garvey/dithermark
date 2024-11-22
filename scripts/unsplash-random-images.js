@@ -60,7 +60,7 @@ const isModifierWord = (word) =>
 
 /**
  * @param {string[]} words
- * @param {integer} maxDescriptiveWords
+ * @param {number} maxDescriptiveWords
  */
 const trimModifierWords = (words, maxDescriptiveWords) => {
     const ret = [];
