@@ -1,12 +1,12 @@
 # Add (a new) Ordered Matrix
 
-An ordered matrix can be thought of as a pattern that is used for the ordered dithers. In this project the term "Bayer Matrix" is used for historical reasons, since the Bayer pattern was implemented first, and it was too much effort to change this (interestingly, the [ordered dithering Wikipedia article](https://en.wikipedia.org/wiki/Ordered_dithering) lists bayer matrix as a generic term for this anyway). This guide will walk you through how to do this.
+An ordered matrix can be thought of as a pattern that is used for the ordered dithers. This guide will walk you through how to add your own custom pattern for dithering.
 
 ## Overview
 
 * An ordered matrix can be thought of as a two dimensional array, though it is represented as a one dimensional `Uint8Array`
 
-* An ordered matrix has `dimensions` which can be thought of the length of the sides of a square. The total length of the ordered matrix must be the same as `dimensions * dimensions`
+* An ordered matrix has `dimensions` which can be thought of as the length of the sides of a square. The total length of the ordered matrix must be the same as `dimensions * dimensions`
 
 * The `dimensions` must be an integer in the range of 2..16 inclusive. While technically any integer in this range *should* work only powers of 2 (2, 4, 8, 16) have actually been tested (use other values at your own risk!).
 
@@ -16,15 +16,15 @@ An ordered matrix can be thought of as a pattern that is used for the ordered di
 
 * Thus, for an ordered matrix to produce the most *realistic* results possible, you want the average of all the values in your ordered matrix to be as close to `length/2` as possible. If you don't do this, everything will still work, but your results might be, shall we say *interesting*.
 
-## Actually adding your matrix
+## Implementation
 
-* In `js_src/shared/bayer-matrix.js` create a function with the signature `function myBayerFunc(dimensions: int): Uint8Array[dimensions*dimensions]`. It should take a single integer parameter that is the dimensions of the matrix, and return a Uint8Array of length `dimensions * dimensions`. All values in the array should be in the range 0..(`length-1`) inclusive, as discussed in the overview section.
+* In `js_src/shared/bayer-matrix.js` create a function with the type `(dimensions: int) => Uint8Array[dimensions*dimensions]`. It should take a single integer parameter that is the dimensions of the matrix, and return a Uint8Array of length `dimensions * dimensions`. All values in the array should be in the range 0..(`length-1`) inclusive, as discussed in the overview section.
 
-* The dimensions parameter doesn't need to be used, it is just there in case you are programmatically generating your matrix, or you are reusing the same function to return multiple matrixes.
+* The dimensions parameter is there in case you are programmatically generating your matrix, or are reusing the same function to return multiple matrixes.
 
-* At the bottom of the file, export your function. The function name should be in camel case format. Take care when naming your export, as it is used to automagically name your pattern in the UI. (For instance myCoolFunction would turn into "My Cool Function")
+* At the bottom of the file, export your function.
 
-* Now go to `inc/models/algorithm-model.php` and find the function `getOrderedMatrixPatterns()`. You need to add your new function to the returned array. The ordered of the patterns in the returned array is the same order that is used for the UI. You need to add a new entry in this format: `'UNIQUE_KEY' => new OrderedMatrixPattern('nameOfYourExportedFunction', dimensions),` (Dimensions should be the dimensions your function is expecting).
+* Now go to `js_src/shared/models/dither-algorithms.js` and find the function `getOrderedDitherPatterns()`. Add your pattern as an entry to the returned array. The `title` will be used in the UI, the `pattern` should be the name of your exported function in `bayer-matrix.js`, and the dimensions should be the dimensions of your pattern as discussed above.
 
 * An that's it! If you follow the directions in `building.md` for developing locally, you should now see your matrix pattern as an available option!
 
