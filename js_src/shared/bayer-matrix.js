@@ -1,8 +1,23 @@
-/** iterative bayer matrix creation function based on recursive definition from
- * https://en.wikipedia.org/wiki/Ordered_dithering of bayer matrix
- * @param dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
+/**
+ *
+ * @param {Uint8Array} source
+ * @param {number} dimensions
  */
-function bayer(dimensions) {
+const rotate90Degrees = (source, dimensions) => {
+    const ret = new Uint8Array(source.length);
+    for (let x = dimensions - 1, retIndex = 0; x >= 0; x--) {
+        for (let y = 0; y < dimensions; y++, retIndex++) {
+            ret[retIndex] = source[x + y * dimensions];
+        }
+    }
+    return ret;
+};
+
+/** iterative bayer matrix creation const based on recursive definition from
+ * https://en.wikipedia.org/wiki/Ordered_dithering of bayer matrix
+ * @param {number} dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
+ */
+const bayer = (dimensions) => {
     const bayerBase = new Uint8Array([0, 2, 3, 1]);
 
     //guard against infinite loop
@@ -46,19 +61,9 @@ function bayer(dimensions) {
         bayerArray = newBayerArray;
     }
     return bayerArray;
-}
-function rotate90Degrees(source, dimensions) {
-    const ret = new Uint8Array(source.length);
-    for (let x = dimensions - 1, retIndex = 0; x >= 0; x--) {
-        for (let y = 0; y < dimensions; y++, retIndex++) {
-            ret[retIndex] = source[x + y * dimensions];
-        }
-    }
-    return ret;
-}
+};
 
 //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2002/lectures/cs559-5.ppt
-//dimensions should be power of 2
 //example for 4x4
 // return new Uint8Array([
 //     15, 11, 7, 3,
@@ -66,7 +71,11 @@ function rotate90Degrees(source, dimensions) {
 //     7, 7, 7, 3,
 //     3, 3, 3, 0,
 // ]);
-function square(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const square = (dimensions) => {
     const length = dimensions * dimensions;
     const ret = new Uint8Array(length);
     ret[0] = length - 1;
@@ -85,53 +94,91 @@ function square(dimensions) {
     ret[length - 1] = 0;
 
     return ret;
-}
+};
 
 //based on: http://research.cs.wisc.edu/graphics/Courses/559-f2004/lectures/cs559-5.ppt
-function cluster(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const cluster = (dimensions) => {
     return new Uint8Array([
         11, 5, 9, 3, 0, 15, 13, 6, 7, 12, 14, 1, 2, 8, 4, 10,
     ]);
-}
+};
 
-//diagonal hatch pattern
-//to upper right
-function hatchRight(dimensions) {
+//diagonal hatch pattern to upper right
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const hatchRight = (dimensions) => {
     return new Uint8Array([15, 7, 0, 7, 7, 0, 7, 15, 0, 7, 15, 7, 7, 15, 7, 0]);
-}
+};
 
-//diagonal hatch pattern
-//to upper left
+//diagonal hatch pattern to upper left
 //(reflection of hatchRight)
-function hatchLeft(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const hatchLeft = (dimensions) => {
     return rotate90Degrees(hatchRight(dimensions), dimensions);
-}
+};
 
-function hatchVertical(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const hatchVertical = (dimensions) => {
     return new Uint8Array([7, 0, 7, 15, 7, 0, 7, 15, 7, 0, 7, 15, 7, 0, 7, 15]);
-}
+};
 
-function hatchHorizontal(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const hatchHorizontal = (dimensions) => {
     return rotate90Degrees(hatchVertical(dimensions), dimensions);
-}
+};
 
-function crossHatchVertical(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const crossHatchVertical = (dimensions) => {
     return new Uint8Array([9, 2, 9, 15, 5, 0, 5, 13, 9, 2, 9, 15, 5, 0, 5, 13]);
-}
+};
 
-function crossHatchHorizontal(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const crossHatchHorizontal = (dimensions) => {
     return rotate90Degrees(crossHatchVertical(dimensions), dimensions);
-}
+};
 
-function crossHatchRight(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const crossHatchRight = (dimensions) => {
     return new Uint8Array([13, 6, 2, 7, 8, 0, 6, 15, 2, 8, 13, 6, 7, 15, 8, 0]);
-}
+};
 
-function crossHatchLeft(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const crossHatchLeft = (dimensions) => {
     return rotate90Degrees(crossHatchRight(dimensions), dimensions);
-}
+};
 
-function zigzagHorizontal(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const zigzagHorizontal = (dimensions) => {
     if (dimensions <= 4) {
         return new Uint8Array([
             7, 0, 0, 7, 0, 7, 7, 0, 7, 15, 15, 7, 15, 7, 7, 15,
@@ -165,23 +212,34 @@ function zigzagHorizontal(dimensions) {
         31, 63, 31, 0, 31, 63, 63, 31, 0, 31, 0, 31, 63, 31, 31, 63, 31, 0, 31,
         63, 31, 0, 0, 31, 63, 31,
     ]);
-}
+};
 
-function zigzagVertical(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const zigzagVertical = (dimensions) => {
     return rotate90Degrees(zigzagHorizontal(dimensions), dimensions);
-}
+};
 
-//fishnet pattern
-function fishnet(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const fishnet = (dimensions) => {
     return new Uint8Array([
         47, 15, 15, 15, 15, 15, 15, 47, 15, 31, 15, 15, 15, 15, 31, 15, 15, 15,
         47, 15, 15, 47, 15, 15, 15, 15, 15, 63, 63, 15, 15, 15, 15, 15, 15, 63,
         63, 15, 15, 15, 15, 15, 47, 15, 15, 47, 15, 15, 15, 31, 15, 15, 15, 15,
         31, 15, 47, 15, 15, 15, 15, 15, 15, 47,
     ]);
-}
+};
 
-function dot(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const dot = (dimensions) => {
     if (dimensions === 4) {
         return new Uint8Array([
             0, 2, 3, 0, 2, 15, 12, 3, 3, 13, 14, 2, 0, 3, 2, 0,
@@ -193,22 +251,43 @@ function dot(dimensions) {
         47, 31, 15, 15, 31, 31, 47, 47, 31, 31, 15, 0, 15, 31, 31, 31, 31, 15,
         0, 0, 0, 15, 15, 15, 15, 0, 0,
     ]);
-}
+};
 
 //from: http://caca.zoy.org/study/part2.html
 //halftone pattern, similar to newspapers
-function halftone(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const halftone = (dimensions) => {
     return new Uint8Array([
         24, 10, 12, 26, 35, 47, 49, 37, 8, 0, 2, 14, 45, 59, 61, 51, 22, 6, 4,
         16, 43, 57, 63, 53, 30, 20, 18, 28, 33, 41, 55, 39, 34, 46, 48, 36, 25,
         11, 13, 27, 44, 58, 60, 50, 9, 1, 3, 15, 42, 56, 62, 52, 23, 7, 5, 17,
         32, 40, 54, 38, 31, 121, 19, 29,
     ]);
-}
+};
 
-function checkerboard(dimensions) {
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const checkerboard = (dimensions) => {
     return new Uint8Array([1, 2, 2, 1]);
-}
+};
+
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const smile = (dimensions) => {
+    return new Uint8Array([
+        18, 26, 26, 26, 26, 26, 26, 18, 26, 40, 54, 26, 26, 54, 40, 26, 26, 54,
+        63, 26, 26, 63, 54, 26, 26, 26, 26, 26, 26, 26, 26, 26, 26, 63, 26, 26,
+        26, 26, 63, 26, 26, 40, 63, 26, 26, 63, 40, 26, 26, 31, 40, 63, 63, 40,
+        31, 26, 18, 26, 26, 26, 26, 26, 26, 18,
+    ]);
+};
 
 export default {
     bayer,
@@ -228,4 +307,5 @@ export default {
     zigzagVertical,
     halftone,
     checkerboard,
+    smile,
 };
