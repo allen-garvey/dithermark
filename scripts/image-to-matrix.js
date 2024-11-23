@@ -1,0 +1,43 @@
+import sharp from 'sharp';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import fs from 'fs/promises';
+
+import { lightness } from '../js_src/shared/pixel-math-lite.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const outputDir = path.join(__dirname, 'matrix-output');
+
+const imageName = 'heart-16x16.png';
+
+fs.mkdir(outputDir, { recursive: true })
+    .then(() =>
+        sharp(path.join(__dirname, 'images', imageName)).raw().toBuffer()
+    )
+    .then((pixels) => {
+        const pixelsLength = pixels.length;
+        const lightnessMatrix = new Uint8Array(pixelsLength / 4);
+        const lightnessDivisor = 256 / lightnessMatrix.length;
+
+        for (let i = 0, j = 0; i < pixelsLength; i += 4, j++) {
+            lightnessMatrix[j] = Math.floor(
+                lightness(pixels.subarray(i, i + 4)) / lightnessDivisor
+            );
+        }
+
+        const sum = lightnessMatrix.reduce((acc, value) => acc + value, 0);
+
+        const outputFilepath = path.join(outputDir, `${imageName}.matrix.json`);
+        console.log(
+            `${imageName} saved to: ${outputFilepath}\nAverage lightness: ${
+                sum / lightnessMatrix.length
+            }. Ideal average: ${lightnessMatrix.length / 2}`
+        );
+
+        return fs.writeFile(
+            outputFilepath,
+            JSON.stringify(Array.from(lightnessMatrix))
+        );
+    });

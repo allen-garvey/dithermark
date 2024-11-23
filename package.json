@@ -19,7 +19,8 @@
     "electron": "npm run electron:html && npm run electron:js",
     "electron:html": "IS_PRODUCTION=true ELECTRON=true node build/build.js",
     "electron:js": "webpack --config build/webpack.electron.config.cjs",
-    "seed:unsplash": "node scripts/unsplash-random-images.js"
+    "seed:unsplash": "node scripts/unsplash-random-images.js",
+    "image-to-matrix": "node scripts/image-to-matrix.js"
   },
   "repository": {
     "type": "git",
@@ -43,6 +44,7 @@
     "mini-css-extract-plugin": "^2.9.2",
     "sass": "^1.80.5",
     "sass-loader": "^16.0.3",
+    "sharp": "^0.33.5",
     "terser-webpack-plugin": "^5.3.10",
     "vue-loader": "17.4.2",
     "vue-style-loader": "^4.1.3",

@@ -1,4 +1,4 @@
-# Add (a new) Ordered Matrix
+# How to Add an Ordered Dither Pattern
 
 An ordered matrix can be thought of as a pattern that is used for the ordered dithers. This guide will walk you through how to add your own custom pattern for dithering.
 
@@ -16,6 +16,20 @@ An ordered matrix can be thought of as a pattern that is used for the ordered di
 
 * Thus, for an ordered matrix to produce the most *realistic* results possible, you want the average of all the values in your ordered matrix to be as close to `length/2` as possible. If you don't do this, everything will still work, but your results might be, shall we say *interesting*.
 
+## Creating a pattern from an image
+
+If you don't want to create an array of numbers by hand, you can convert an image into a matrix.
+
+* Create an image of 2x2, 4x4, 8x8 or 16x16 pixels. Color the image how you like. Using grayscale values will give you the most accurate preview of the pattern, but you can use color values.
+
+* Export your image as a png file into `scripts/images`.
+
+* In the file `scripts/image-to-matrix.js` edit the `imageName` variable to be the name of your image.
+
+* Run `npm run image-to-matrix`.
+
+* The array saved from the script above can be used as your matrix values in the implementation steps below.
+
 ## Implementation
 
 * In `js_src/shared/bayer-matrix.js` create a function with the type `(dimensions: int) => Uint8Array[dimensions*dimensions]`. It should take a single integer parameter that is the dimensions of the matrix, and return a Uint8Array of length `dimensions * dimensions`. All values in the array should be in the range 0..(`length-1`) inclusive, as discussed in the overview section.
@@ -30,6 +44,6 @@ An ordered matrix can be thought of as a pattern that is used for the ordered di
 
 * If you see an error in the console when trying to use you pattern when WebGL is enabled saying something similar to `RangeError: Source is too large`, that means your function is returning an array whose length is not the same as `dimensions*dimensions` (despite the error saying the source is too large, the array your are returning might actually be too small).
 
-## Note About the Yliluoma 1 Dither
+## Note about the Yliluoma 1 dither
 
 * The Yliluoma 1 dither is particularly resource intensive, even with WebGL enabled, and so is not enabled for patterns with dimensions larger than 8. (To change this, you can increase the `YLILUOMA_1_ORDERED_MATRIX_MAX_DIMENSIONS` constant in `constants.js`, though this is not recommended).

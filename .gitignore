@@ -45,3 +45,5 @@ electron/out/*
 inc/serverless/build/*
 unsplash-secrets.js
 serverless/*
+scripts/images/*
+scripts/matrix-output/*.json
