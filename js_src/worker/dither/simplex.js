@@ -146,8 +146,8 @@ export function createNoise2D() {
             n2 = t2 * t2 * (g2x * x2 + g2y * y2);
         }
         // Add contributions from each corner to get the final noise value.
-        // The result is scaled to return values in the interval [-1,1].
-        return 35.0 * (n0 + n1 + n2) + 1;
+        // The result is scaled to return values in the interval [0,1].
+        return 35.0 * (n0 + n1 + n2) + 0.5;
     };
 }
 
