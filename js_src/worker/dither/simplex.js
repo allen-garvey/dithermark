@@ -32,7 +32,6 @@ Better rank ordering method by Stefan Gustavson in 2012.
 // these __PURE__ comments help uglifyjs with dead code removal
 //
 const SQRT3 = /*#__PURE__*/ Math.sqrt(3.0);
-const SQRT5 = /*#__PURE__*/ Math.sqrt(5.0);
 const F2 = 0.5 * (SQRT3 - 1.0);
 const G2 = (3.0 - SQRT3) / 6.0;
 
@@ -57,14 +56,6 @@ const grad2 = /*#__PURE__*/ new Float64Array([
 ]);
 
 /**
- * A random() function, must return a number in the interval [0,1), just like Math.random().
- * @name RandomFn
- * @function
- * @return {number}
- */
-//export type RandomFn = () => number;
-
-/**
  * Samples the noise field in two dimensions
  *
  * Coordinates should be finite, bigger than -2^31 and smaller than 2^31.
@@ -72,24 +63,27 @@ const grad2 = /*#__PURE__*/ new Float64Array([
  * @function
  * @param {number} x
  * @param {number} y
- * @returns {number} a number in the interval [-1, 1]
+ * @returns {number} a number in the interval [0, 1]
  */
 // export type NoiseFunction2D = (x: number, y: number) => number;
 
 /**
  * Creates a 2D noise function
- * @param {RandomFn} random the random function that will be used to build the permutation table
- * @returns {NoiseFunction2D}
+ * //@returns {NoiseFunction2D}
  */
-export function createNoise2D(random = Math.random) {
-    const perm = buildPermutationTable(random);
+export function createNoise2D() {
+    const perm = buildPermutationTable();
     // precalculating this yields a little ~3% performance improvement.
     const permGrad2x = new Float64Array(perm).map((v) => grad2[(v % 12) * 2]);
     const permGrad2y = new Float64Array(perm).map(
         (v) => grad2[(v % 12) * 2 + 1]
     );
+    /**
+     * @param {number} x
+     * @param {number} y
+     * @returns {number}
+     */
     return function noise2D(x, y) {
-        // if(!isFinite(x) || !isFinite(y)) return 0;
         let n0 = 0; // Noise contributions from the three corners
         let n1 = 0;
         let n2 = 0;
@@ -153,25 +147,22 @@ export function createNoise2D(random = Math.random) {
         }
         // Add contributions from each corner to get the final noise value.
         // The result is scaled to return values in the interval [-1,1].
-        return 70.0 * (n0 + n1 + n2);
+        return 35.0 * (n0 + n1 + n2) + 1;
     };
 }
 
 /**
  * Builds a random permutation table.
- * This is exported only for (internal) testing purposes.
- * Do not rely on this export.
- * @param {RandomFn} random
  * @return {Uint8Array}
  */
-function buildPermutationTable(random) {
+function buildPermutationTable() {
     const tableSize = 512;
     const p = new Uint8Array(tableSize);
     for (let i = 0; i < tableSize / 2; i++) {
         p[i] = i;
     }
     for (let i = 0; i < tableSize / 2 - 1; i++) {
-        const r = i + ~~(random() * (256 - i));
+        const r = i + ~~(Math.random() * (256 - i));
         const aux = p[i];
         p[i] = p[r];
         p[r] = aux;
