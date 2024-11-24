@@ -7,7 +7,7 @@ const algorithmMap = new Map([
     ['threshold', Threshold.image],
     ['adaptive-threshold', AdaptiveThreshold.image],
     ['random', Threshold.randomDither],
-    ['simplex', Threshold.randomDither],
+    ['simplex', Threshold.simplexDither],
     ['xor--high', Threshold.aditherXor1],
     ['xor--medium', Threshold.aditherXor3],
     ['xor--low', Threshold.aditherXor2],
