@@ -170,9 +170,6 @@ export function createNoise2D() {
 //     for (let i = 256; i < tableSize; i++) {
 //         p[i] = p[i - 256];
 //     }
-
-//     console.log(JSON.stringify(Array.from(p)));
-
 //     return p;
 // }
 
