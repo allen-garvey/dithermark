@@ -9,23 +9,25 @@ import { generateRandomSeed } from './webgl-random.js';
 // when adding algorithm key make sure to add to ALGO_KEYS array below
 const CLOSEST_COLOR = 0;
 const RANDOM_CLOSEST_COLOR = 1;
-const ORDERED_DITHER = 2;
-const ORDERED_DITHER_RANDOM = 3;
-const HUE_LIGHTNESS_ORDERED_DITHER = 4;
-const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 5;
-const ADITHER_ADD1 = 6;
-const ADITHER_ADD2 = 7;
-const ADITHER_ADD3 = 8;
-const ADITHER_XOR1 = 9;
-const ADITHER_XOR2 = 10;
-const ADITHER_XOR3 = 11;
-const YLILUOMA1 = 12;
-const YLILUOMA2 = 13;
-const STARK_ORDERED_DITHER = 14;
+const SIMPLEX_CLOSEST_COLOR = 2;
+const ORDERED_DITHER = 3;
+const ORDERED_DITHER_RANDOM = 4;
+const HUE_LIGHTNESS_ORDERED_DITHER = 5;
+const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 6;
+const ADITHER_ADD1 = 7;
+const ADITHER_ADD2 = 8;
+const ADITHER_ADD3 = 9;
+const ADITHER_XOR1 = 10;
+const ADITHER_XOR2 = 11;
+const ADITHER_XOR3 = 12;
+const YLILUOMA1 = 13;
+const YLILUOMA2 = 14;
+const STARK_ORDERED_DITHER = 15;
 
 const ALGO_KEYS = [
     CLOSEST_COLOR,
     RANDOM_CLOSEST_COLOR,
+    SIMPLEX_CLOSEST_COLOR,
     ORDERED_DITHER,
     ORDERED_DITHER_RANDOM,
     HUE_LIGHTNESS_ORDERED_DITHER,
@@ -206,6 +208,12 @@ function createFragmentShaderTexts() {
         shaderText(
             'webgl-hue-lightness-ordered-dither-color-declaration-fshader'
         );
+    const simplexDitherBodyText = shaderText(
+        'webgl-simplex-dither-color-body-fshader'
+    );
+    const simplexDitherDeclarationText = shaderText(
+        'webgl-simplex-declaration-fshader'
+    );
     //shader source code
     const closestColorShaderBase = generateFragmentShader('', '');
     const orderedDitherBase = generateFragmentShader(
@@ -230,10 +238,15 @@ function createFragmentShaderTexts() {
         randomDitherDeclarationText,
         randomDitherBodyText
     );
+    const simplexDitherShaderBase = generateFragmentShader(
+        simplexDitherDeclarationText,
+        simplexDitherBodyText
+    );
 
     const fragmentShaderTexts = new Map([
         [CLOSEST_COLOR, shaderTextContainer(closestColorShaderBase)],
         [RANDOM_CLOSEST_COLOR, shaderTextContainer(randomDitherShaderBase)],
+        [SIMPLEX_CLOSEST_COLOR, shaderTextContainer(simplexDitherShaderBase)],
         [ORDERED_DITHER, shaderTextContainer(orderedDitherBase)],
         [ORDERED_DITHER_RANDOM, shaderTextContainer(orderedDitherRandomBase)],
         [
@@ -333,6 +346,38 @@ function closestColor(
             createWebGLDrawImageFunc(
                 gl,
                 fragmentShaderTexts.get(CLOSEST_COLOR)[colorDitherModeId]
+            )
+    );
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    drawImageFunc(
+        gl,
+        texture,
+        imageWidth,
+        imageHeight,
+        colorsArray,
+        colorsArrayLength
+    );
+}
+
+function simplexClosestColor(
+    gl,
+    texture,
+    imageWidth,
+    imageHeight,
+    colorDitherModeId,
+    colorsArray,
+    colorsArrayLength
+) {
+    const drawImageFunc = getCachedDrawImageFunc(
+        SIMPLEX_CLOSEST_COLOR,
+        colorDitherModeId,
+        () =>
+            createWebGLDrawImageFunc(
+                gl,
+                fragmentShaderTexts.get(SIMPLEX_CLOSEST_COLOR)[
+                    colorDitherModeId
+                ]
             )
     );
     // Tell WebGL how to convert from clip space to pixels

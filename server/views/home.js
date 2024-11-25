@@ -192,6 +192,10 @@ export const renderHome = ({ isProduction = false, isElectron = false }) => {
             id: 'webgl-random-dither-color-body-fshader',
             path: 'fragment/dithers/color/base/random-color-dither-body.glsl',
         },
+        {
+            id: 'webgl-simplex-dither-color-body-fshader',
+            path: 'fragment/dithers/color/base/simplex-color-dither-body.glsl',
+        },
         // color dithers
         {
             id: 'webgl-yliluoma1-color-fshader',
