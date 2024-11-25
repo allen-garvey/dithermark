@@ -294,6 +294,10 @@ function yliluoma1DeviseMixingPlan(
     pixelDistanceFunc,
     mixPixel
 ) {
+    const R_INDEX = 0;
+    const G_INDEX = 1;
+    const B_INDEX = 2;
+
     const colorsLength = colors.length;
     let colorIndex1 = 0;
     let colorIndex2 = 0;
@@ -312,17 +316,17 @@ function yliluoma1DeviseMixingPlan(
                 const color1 = colors[index1];
                 const color2 = colors[index2];
                 // Determine what mixing them in this proportion will produce
-                mixPixel[Pixel.R_INDEX] =
-                    color1[Pixel.R_INDEX] +
-                    (ratio * (color2[Pixel.R_INDEX] - color1[Pixel.R_INDEX])) /
+                mixPixel[R_INDEX] =
+                    color1[R_INDEX] +
+                    (ratio * (color2[R_INDEX] - color1[R_INDEX])) /
                         matrixLength;
-                mixPixel[Pixel.G_INDEX] =
-                    color1[Pixel.G_INDEX] +
-                    (ratio * (color2[Pixel.G_INDEX] - color1[Pixel.G_INDEX])) /
+                mixPixel[G_INDEX] =
+                    color1[G_INDEX] +
+                    (ratio * (color2[G_INDEX] - color1[G_INDEX])) /
                         matrixLength;
-                mixPixel[Pixel.B_INDEX] =
-                    color1[Pixel.B_INDEX] +
-                    (ratio * (color2[Pixel.B_INDEX] - color1[Pixel.B_INDEX])) /
+                mixPixel[B_INDEX] =
+                    color1[B_INDEX] +
+                    (ratio * (color2[B_INDEX] - color1[B_INDEX])) /
                         matrixLength;
                 // Determine how well that matches what we want to accomplish
                 const penalty = yliluoma1EvaluateMixingError(
