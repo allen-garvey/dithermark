@@ -4,6 +4,6 @@
         "checkJs": true
     },
     "include": [
-        "js_src/**/*"
+        "js/**/*"
     ]
 }

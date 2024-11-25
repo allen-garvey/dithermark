@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
-import { lightness } from '../js_src/shared/pixel-math-lite.js';
+import { lightness } from '../js/shared/pixel-math-lite.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

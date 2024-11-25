@@ -5,10 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
     mode: 'development',
-    entry: [
-        `${__dirname}/../js_src/index.js`,
-        `${__dirname}/../sass/style.scss`,
-    ],
+    entry: [`${__dirname}/../js/index.js`, `${__dirname}/../sass/style.scss`],
     output: {
         filename: 'app.js',
         path: path.resolve(__dirname, '../public_html/assets'),
@@ -17,15 +14,15 @@ module.exports = {
         alias: {
             'app-performance-timer': path.resolve(
                 __dirname,
-                '../js_src/shared/timer.js'
+                '../js/shared/timer.js'
             ),
             'print-palette-button': path.resolve(
                 __dirname,
-                '../js_src/app/vues/print-palette-button.vue'
+                '../js/app/vues/print-palette-button.vue'
             ),
             'texture-combine-component': path.resolve(
                 __dirname,
-                '../js_src/app/vues/texture-combine.vue'
+                '../js/app/vues/texture-combine.vue'
             ),
         },
     },

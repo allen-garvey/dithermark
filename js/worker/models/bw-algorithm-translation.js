@@ -1,7 +1,7 @@
-import Threshold from '../../worker/dither/threshold.js';
-import AdaptiveThreshold from '../../worker/dither/adaptive-threshold.js';
-import OrderedDither from '../../worker/dither/ordered.js';
-import ErrorPropDither from '../../worker/dither/error-prop.js';
+import Threshold from '../dither/threshold.js';
+import AdaptiveThreshold from '../dither/adaptive-threshold.js';
+import OrderedDither from '../dither/ordered.js';
+import ErrorPropDither from '../dither/error-prop.js';
 
 const algorithmMap = new Map([
     ['threshold', Threshold.image],

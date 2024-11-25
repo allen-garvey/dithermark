@@ -37,7 +37,7 @@ inc/unsplash-api-secret.php
 scripts/*.json
 scripts/optimize-palette-notes.js
 lib/*
-/js_src/generated_output/*
+js/generated_output/*
 release/*
 electron/node_modules/*
 electron/public_html/*

@@ -32,13 +32,13 @@ If you don't want to create an array of numbers by hand, you can convert an imag
 
 ## Implementation
 
-* In `js_src/shared/bayer-matrix.js` create a function with the type `(dimensions: int) => Uint8Array[dimensions*dimensions]`. It should take a single integer parameter that is the dimensions of the matrix, and return a Uint8Array of length `dimensions * dimensions`. All values in the array should be in the range 0..(`length-1`) inclusive, as discussed in the overview section.
+* In `js/shared/bayer-matrix.js` create a function with the type `(dimensions: int) => Uint8Array[dimensions*dimensions]`. It should take a single integer parameter that is the dimensions of the matrix, and return a Uint8Array of length `dimensions * dimensions`. All values in the array should be in the range 0..(`length-1`) inclusive, as discussed in the overview section.
 
 * The dimensions parameter is there in case you are programmatically generating your matrix, or are reusing the same function to return multiple matrixes.
 
 * At the bottom of the file, export your function.
 
-* Now go to `js_src/shared/models/dither-algorithms.js` and find the function `getOrderedDitherPatterns()`. Add your pattern as an entry to the returned array. The `title` will be used in the UI, the `pattern` should be the name of your exported function in `bayer-matrix.js`, and the dimensions should be the dimensions of your pattern as discussed above.
+* Now go to `js/shared/models/dither-algorithms.js` and find the function `getOrderedDitherPatterns()`. Add your pattern as an entry to the returned array. The `title` will be used in the UI, the `pattern` should be the name of your exported function in `bayer-matrix.js`, and the dimensions should be the dimensions of your pattern as discussed above.
 
 * An that's it! If you follow the directions in `building.md` for developing locally, you should now see your matrix pattern as an available option!
 

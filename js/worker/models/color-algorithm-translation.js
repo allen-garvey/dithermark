@@ -1,6 +1,6 @@
-import Threshold from '../../worker/dither/threshold.js';
-import OrderedDither from '../../worker/dither/ordered.js';
-import ErrorPropColorDither from '../../worker/dither/error-prop-color.js';
+import Threshold from '../dither/threshold.js';
+import OrderedDither from '../dither/ordered.js';
+import ErrorPropColorDither from '../dither/error-prop-color.js';
 
 const algorithmMap = new Map([
     ['closest-color', Threshold.closestColor],

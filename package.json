@@ -3,9 +3,9 @@
   "type": "module",
   "version": "1.0.0",
   "description": "Web application to interactively demonstrate image dithering algorithms",
-  "main": "js_src/index.js",
+  "main": "js/index.js",
   "sideEffects": [
-    "./js_src/app/vues/*.vue"
+    "./js/app/vues/*.vue"
   ],
   "scripts": {
     "start": "node server/index.js",
