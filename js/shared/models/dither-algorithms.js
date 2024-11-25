@@ -191,6 +191,14 @@ const getDiffusionReducedBleedModel = () => ({
     ],
 });
 
+const getNoiseModel = () => ({
+    title: 'Noise',
+    items: [
+        { title: 'Random', slug: 'random' },
+        { title: 'Simplex', slug: 'simplex' },
+    ],
+});
+
 export const getBwDitherModel = () =>
     [
         {
@@ -200,13 +208,7 @@ export const getBwDitherModel = () =>
                 { title: 'Adaptive Threshold', slug: 'adaptive-threshold' },
             ],
         },
-        {
-            title: 'Random',
-            items: [
-                { title: 'Random', slug: 'random' },
-                { title: 'Simplex', slug: 'simplex' },
-            ],
-        },
+        getNoiseModel(),
         getArithmeticModel(),
         getDiffusionModel(),
         getDiffusionReducedBleedModel(),
@@ -218,13 +220,7 @@ export const getColorDitherModel = () =>
             title: 'Threshold',
             items: [{ title: 'Closest Color', slug: 'closest-color' }],
         },
-        {
-            title: 'Random',
-            items: [
-                { title: 'Random', slug: 'random' },
-                { title: 'Simplex', slug: 'simplex' },
-            ],
-        },
+        getNoiseModel(),
         getArithmeticModel(),
         getDiffusionModel(),
         getDiffusionReducedBleedModel(),
