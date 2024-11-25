@@ -220,7 +220,10 @@ export const getColorDitherModel = () =>
         },
         {
             title: 'Random',
-            items: [{ title: 'Random', slug: 'random' }],
+            items: [
+                { title: 'Random', slug: 'random' },
+                { title: 'Simplex', slug: 'simplex' },
+            ],
         },
         getArithmeticModel(),
         getDiffusionModel(),

@@ -5,6 +5,7 @@ import ErrorPropColorDither from '../dither/error-prop-color.js';
 const algorithmMap = new Map([
     ['closest-color', Threshold.closestColor],
     ['random', Threshold.randomClosestColor],
+    ['simplex', Threshold.simplexClosestColor],
     ['xor--high', Threshold.aditherXor1Color],
     ['xor--medium', Threshold.aditherXor3Color],
     ['xor--low', Threshold.aditherXor2Color],

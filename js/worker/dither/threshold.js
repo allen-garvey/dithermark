@@ -167,12 +167,9 @@ export default {
     randomDither: thresholdGenerator(randomThreshold),
     simplexDither: thresholdGenerator(simplexThreshold),
     //color dither functions
-    closestColor: colorDitherBuilder(() => {
-        return 0;
-    }),
-    randomClosestColor: colorDitherBuilder(() => {
-        return Math.random() - 0.5;
-    }),
+    closestColor: colorDitherBuilder(() => 0),
+    randomClosestColor: colorDitherBuilder(() => Math.random() - 0.5),
+    simplexClosestColor: colorDitherBuilder((x, y) => sNoise(x, y) - 0.5),
     aditherXor1Color: colorDitherBuilder(
         colorADitherFuncGenerator(aDitherXorFunc1)
     ),
