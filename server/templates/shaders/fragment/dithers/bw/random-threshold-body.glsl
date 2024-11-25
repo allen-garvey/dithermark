@@ -1,1 +1,1 @@
-bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (rand(v_texcoord.xy*u_random_seed.xy) - 0.5) < u_threshold;
+bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (rand(gl_FragCoord.xy*u_random_seed.xy) - 0.5) < u_threshold;
