@@ -300,6 +300,23 @@ const drawImageFuncs = new Map(ALGO_KEYS.map((key) => [key, new Map()]));
 //saved bayer textures
 const bayerTextures = new Map();
 
+/**
+ *
+ * @param {number} algoKey
+ * @param {number} colorDitherModeId
+ * @param {Function} createDrawFunc
+ * @returns {Function}
+ */
+const getCachedDrawImageFunc = (algoKey, colorDitherModeId, createDrawFunc) => {
+    const algoFuncMap = drawImageFuncs.get(algoKey);
+    let drawImageFunc = algoFuncMap.get(colorDitherModeId);
+    if (!drawImageFunc) {
+        drawImageFunc = createDrawFunc();
+        algoFuncMap.set(colorDitherModeId, drawImageFunc);
+    }
+    return drawImageFunc;
+};
+
 function closestColor(
     gl,
     texture,
@@ -309,15 +326,15 @@ function closestColor(
     colorsArray,
     colorsArrayLength
 ) {
-    const algoFuncMap = drawImageFuncs.get(CLOSEST_COLOR);
-    let drawImageFunc = algoFuncMap.get(colorDitherModeId);
-    if (!drawImageFunc) {
-        drawImageFunc = createWebGLDrawImageFunc(
-            gl,
-            fragmentShaderTexts.get(CLOSEST_COLOR)[colorDitherModeId]
-        );
-        algoFuncMap.set(colorDitherModeId, drawImageFunc);
-    }
+    const drawImageFunc = getCachedDrawImageFunc(
+        CLOSEST_COLOR,
+        colorDitherModeId,
+        () =>
+            createWebGLDrawImageFunc(
+                gl,
+                fragmentShaderTexts.get(CLOSEST_COLOR)[colorDitherModeId]
+            )
+    );
     // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     drawImageFunc(
@@ -339,16 +356,19 @@ function randomDither(
     colorsArray,
     colorsArrayLength
 ) {
-    const algoFuncMap = drawImageFuncs.get(RANDOM_CLOSEST_COLOR);
-    let drawImageFunc = algoFuncMap.get(colorDitherModeId);
-    if (!drawImageFunc) {
-        drawImageFunc = createWebGLDrawImageFunc(
-            gl,
-            fragmentShaderTexts.get(RANDOM_CLOSEST_COLOR)[colorDitherModeId],
-            ['u_random_seed']
-        );
-        algoFuncMap.set(colorDitherModeId, drawImageFunc);
-    }
+    const drawImageFunc = getCachedDrawImageFunc(
+        RANDOM_CLOSEST_COLOR,
+        colorDitherModeId,
+        () =>
+            createWebGLDrawImageFunc(
+                gl,
+                fragmentShaderTexts.get(RANDOM_CLOSEST_COLOR)[
+                    colorDitherModeId
+                ],
+                ['u_random_seed']
+            )
+    );
+
     // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     drawImageFunc(
@@ -381,21 +401,25 @@ function orderedDither(
     bayerDimensions,
     isRandom
 ) {
-    const algoFuncMap = drawImageFuncs.get(algoKey);
-    let drawImageFunc = algoFuncMap.get(colorDitherModeId);
-
-    if (!drawImageFunc) {
-        let customUniforms = ['u_bayer_texture_dimensions', 'u_bayer_texture'];
-        if (isRandom) {
-            customUniforms = customUniforms.concat(['u_random_seed']);
+    const drawImageFunc = getCachedDrawImageFunc(
+        algoKey,
+        colorDitherModeId,
+        () => {
+            let customUniforms = [
+                'u_bayer_texture_dimensions',
+                'u_bayer_texture',
+            ];
+            if (isRandom) {
+                customUniforms = customUniforms.concat(['u_random_seed']);
+            }
+            return createWebGLDrawImageFunc(
+                gl,
+                fragmentShaderTexts.get(algoKey)[colorDitherModeId],
+                customUniforms
+            );
         }
-        drawImageFunc = createWebGLDrawImageFunc(
-            gl,
-            fragmentShaderTexts.get(algoKey)[colorDitherModeId],
-            customUniforms
-        );
-        algoFuncMap.set(colorDitherModeId, drawImageFunc);
-    }
+    );
+
     // Tell WebGL how to convert from clip space to pixels
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
     drawImageFunc(
@@ -511,15 +535,16 @@ function createArithmeticDither(key) {
         colorsArray,
         colorsArrayLength
     ) => {
-        const algoFuncMap = drawImageFuncs.get(key);
-        let drawImageFunc = algoFuncMap.get(colorDitherModeId);
-        if (!drawImageFunc) {
-            drawImageFunc = createWebGLDrawImageFunc(
-                gl,
-                fragmentShaderTexts.get(key)[colorDitherModeId]
-            );
-            algoFuncMap.set(colorDitherModeId, drawImageFunc);
-        }
+        const drawImageFunc = getCachedDrawImageFunc(
+            key,
+            colorDitherModeId,
+            () =>
+                createWebGLDrawImageFunc(
+                    gl,
+                    fragmentShaderTexts.get(key)[colorDitherModeId]
+                )
+        );
+
         // Tell WebGL how to convert from clip space to pixels
         gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
         drawImageFunc(
