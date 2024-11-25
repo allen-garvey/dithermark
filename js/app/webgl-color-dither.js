@@ -606,6 +606,7 @@ function createArithmeticDither(key) {
 export default {
     closestColor,
     randomClosestColor: randomDither,
+    simplexClosestColor,
     aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
     aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
     aDitherAdd3: createArithmeticDither(ADITHER_ADD3),

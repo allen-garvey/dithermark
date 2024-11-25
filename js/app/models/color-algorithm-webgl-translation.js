@@ -7,6 +7,7 @@ export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
     const webglMap = new Map([
         ['closest-color', ColorDither.closestColor],
         ['random', ColorDither.randomClosestColor],
+        ['simplex', ColorDither.simplexClosestColor],
     ]);
 
     const arithmeticEntries = [
