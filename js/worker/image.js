@@ -73,37 +73,34 @@ function colorDitherImage(
     const pixel = new Uint8ClampedArray(3);
 
     for (let i = 0; i < pixels.length; i += 4) {
-        //nothing needs to be done for transparent pixels
-        if (pixels[i + 3] > 0) {
-            pixel[Pixel.R_INDEX] = pixels[i];
-            pixel[Pixel.G_INDEX] = pixels[i + 1];
-            pixel[Pixel.B_INDEX] = pixels[i + 2];
-            // pixel[Pixel.A_INDEX] = pixels[i+3]; //not necessary to set alpha
+        pixel[0] = pixels[i];
+        pixel[1] = pixels[i + 1];
+        pixel[2] = pixels[i + 2];
+        // pixel[Pixel.A_INDEX] = pixels[i+3]; //not necessary to set alpha
 
-            const pixelAdjustmentValue =
-                pixelAdjustmentFunc(x, y, pixel) * ditherRCoefficient;
-            if (pixelAdjustmentValue !== 0) {
-                //no need to clamp results, since Uint8ClampedArray does this automatically
-                pixel[0] = pixel[0] + pixelAdjustmentValue;
-                pixel[1] = pixel[1] + pixelAdjustmentValue;
-                pixel[2] = pixel[2] + pixelAdjustmentValue;
-            }
-            const closestColor =
-                colors[
-                    findClosestColorIndex(
-                        pixelValueFunc(pixel),
-                        colorValues,
-                        pixelDistanceFunc
-                    )
-                ];
-            //postscriptFunc is for hue-lightness dither
-            const outputPixel = postscriptFunc(closestColor, x, y, pixel);
-
-            pixels[i] = outputPixel[0];
-            pixels[i + 1] = outputPixel[1];
-            pixels[i + 2] = outputPixel[2];
-            pixels[i + 3] = pixels[i + 3];
+        const pixelAdjustmentValue =
+            pixelAdjustmentFunc(x, y, pixel) * ditherRCoefficient;
+        if (pixelAdjustmentValue !== 0) {
+            //no need to clamp results, since Uint8ClampedArray does this automatically
+            pixel[0] = pixel[0] + pixelAdjustmentValue;
+            pixel[1] = pixel[1] + pixelAdjustmentValue;
+            pixel[2] = pixel[2] + pixelAdjustmentValue;
         }
+        const closestColor =
+            colors[
+                findClosestColorIndex(
+                    pixelValueFunc(pixel),
+                    colorValues,
+                    pixelDistanceFunc
+                )
+            ];
+        //postscriptFunc is for hue-lightness dither
+        const outputPixel = postscriptFunc(closestColor, x, y, pixel);
+
+        pixels[i] = outputPixel[0];
+        pixels[i + 1] = outputPixel[1];
+        pixels[i + 2] = outputPixel[2];
+        pixels[i + 3] = pixels[i + 3];
 
         x++;
         if (x >= imageWidth) {
