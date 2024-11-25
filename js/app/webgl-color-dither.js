@@ -222,51 +222,62 @@ function createFragmentShaderTexts() {
         randomDitherBodyText
     );
 
-    //map containing program source code
-    const fragmentShaderTexts = createLookupContainer();
-    fragmentShaderTexts[CLOSEST_COLOR] = shaderTextContainer(
-        closestColorShaderBase
-    );
-    fragmentShaderTexts[RANDOM_CLOSEST_COLOR] = shaderTextContainer(
-        randomDitherShaderBase
-    );
-    fragmentShaderTexts[ORDERED_DITHER] =
-        shaderTextContainer(orderedDitherBase);
-    fragmentShaderTexts[ORDERED_DITHER_RANDOM] = shaderTextContainer(
-        orderedDitherRandomBase
-    );
-    fragmentShaderTexts[HUE_LIGHTNESS_ORDERED_DITHER] = shaderTextContainer(
-        hueLightnessOrderedDitherBase
-    );
-    fragmentShaderTexts[HUE_LIGHTNESS_RANDOM_ORDERED_DITHER] =
-        shaderTextContainer(hueLightnessRandomOrderedDitherBase);
-    fragmentShaderTexts[ADITHER_ADD1] = shaderTextContainer(
-        generateADitherShader(Shader.aDitherAdd1Return)
-    );
-    fragmentShaderTexts[ADITHER_ADD2] = shaderTextContainer(
-        generateADitherShader(Shader.aDitherAdd2Return)
-    );
-    fragmentShaderTexts[ADITHER_ADD3] = shaderTextContainer(
-        generateADitherShader(Shader.aDitherAdd3Return)
-    );
-    fragmentShaderTexts[ADITHER_XOR1] = shaderTextContainer(
-        generateADitherShader(Shader.aDitherXor1Return)
-    );
-    fragmentShaderTexts[ADITHER_XOR2] = shaderTextContainer(
-        generateADitherShader(Shader.aDitherXor2Return)
-    );
-    fragmentShaderTexts[ADITHER_XOR3] = shaderTextContainer(
-        generateADitherShader(Shader.aDitherXor3Return)
-    );
-    fragmentShaderTexts[YLILUOMA1] = shaderTextContainer(
-        yliluoma1FragmentShaderBase
-    );
-    fragmentShaderTexts[YLILUOMA2] = shaderTextContainer(
-        yliluoma2FragmentShaderBase
-    );
-    fragmentShaderTexts[STARK_ORDERED_DITHER] = shaderTextContainer(
-        starkOrderedDitherFragmentShaderBase
-    );
+    const fragmentShaderTexts = new Map([
+        [CLOSEST_COLOR, shaderTextContainer(closestColorShaderBase)],
+        [RANDOM_CLOSEST_COLOR, shaderTextContainer(randomDitherShaderBase)],
+        [ORDERED_DITHER, shaderTextContainer(orderedDitherBase)],
+        [ORDERED_DITHER_RANDOM, shaderTextContainer(orderedDitherRandomBase)],
+        [
+            HUE_LIGHTNESS_ORDERED_DITHER,
+            shaderTextContainer(hueLightnessOrderedDitherBase),
+        ],
+        [
+            HUE_LIGHTNESS_RANDOM_ORDERED_DITHER,
+            shaderTextContainer(hueLightnessRandomOrderedDitherBase),
+        ],
+        [
+            ADITHER_ADD1,
+            shaderTextContainer(
+                generateADitherShader(Shader.aDitherAdd1Return)
+            ),
+        ],
+        [
+            ADITHER_ADD2,
+            shaderTextContainer(
+                generateADitherShader(Shader.aDitherAdd2Return)
+            ),
+        ],
+        [
+            ADITHER_ADD3,
+            shaderTextContainer(
+                generateADitherShader(Shader.aDitherAdd3Return)
+            ),
+        ],
+        [
+            ADITHER_XOR1,
+            shaderTextContainer(
+                generateADitherShader(Shader.aDitherXor1Return)
+            ),
+        ],
+        [
+            ADITHER_XOR2,
+            shaderTextContainer(
+                generateADitherShader(Shader.aDitherXor2Return)
+            ),
+        ],
+        [
+            ADITHER_XOR3,
+            shaderTextContainer(
+                generateADitherShader(Shader.aDitherXor3Return)
+            ),
+        ],
+        [YLILUOMA1, shaderTextContainer(yliluoma1FragmentShaderBase)],
+        [YLILUOMA2, shaderTextContainer(yliluoma2FragmentShaderBase)],
+        [
+            STARK_ORDERED_DITHER,
+            shaderTextContainer(starkOrderedDitherFragmentShaderBase),
+        ],
+    ]);
 
     return fragmentShaderTexts;
 }
@@ -293,7 +304,7 @@ function closestColor(
     if (!drawImageFunc) {
         drawImageFunc = createWebGLDrawImageFunc(
             gl,
-            fragmentShaderTexts[CLOSEST_COLOR][colorDitherModeId]
+            fragmentShaderTexts.get(CLOSEST_COLOR)[colorDitherModeId]
         );
         drawImageFuncs[CLOSEST_COLOR][colorDitherModeId] = drawImageFunc;
     }
@@ -322,7 +333,7 @@ function randomDither(
     if (!drawImageFunc) {
         drawImageFunc = createWebGLDrawImageFunc(
             gl,
-            fragmentShaderTexts[RANDOM_CLOSEST_COLOR][colorDitherModeId],
+            fragmentShaderTexts.get(RANDOM_CLOSEST_COLOR)[colorDitherModeId],
             ['u_random_seed']
         );
         drawImageFuncs[RANDOM_CLOSEST_COLOR][colorDitherModeId] = drawImageFunc;
@@ -367,7 +378,7 @@ function orderedDither(
         }
         drawImageFunc = createWebGLDrawImageFunc(
             gl,
-            fragmentShaderTexts[algoKey][colorDitherModeId],
+            fragmentShaderTexts.get(algoKey)[colorDitherModeId],
             customUniforms
         );
         drawImageFuncs[algoKey][colorDitherModeId] = drawImageFunc;
@@ -491,7 +502,7 @@ function createArithmeticDither(key) {
         if (!drawImageFunc) {
             drawImageFunc = createWebGLDrawImageFunc(
                 gl,
-                fragmentShaderTexts[key][colorDitherModeId]
+                fragmentShaderTexts.get(key)[colorDitherModeId]
             );
             drawImageFuncs[key][colorDitherModeId] = drawImageFunc;
         }
