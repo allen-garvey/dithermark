@@ -6,6 +6,7 @@ import BayerWebgl from './webgl-bayer.js';
 import DitherUtil from '../shared/dither-util.js';
 import { generateRandomSeed } from './webgl-random.js';
 
+// when adding algorithm key make sure to add to ALGO_KEYS array below
 const CLOSEST_COLOR = 0;
 const RANDOM_CLOSEST_COLOR = 1;
 const ORDERED_DITHER = 2;
@@ -297,7 +298,7 @@ const fragmentShaderTexts = createFragmentShaderTexts();
 const drawImageFuncs = new Map(ALGO_KEYS.map((key) => [key, new Map()]));
 
 //saved bayer textures
-const bayerTextures = {};
+const bayerTextures = new Map();
 
 function closestColor(
     gl,
@@ -439,14 +440,14 @@ function createOrderedDitherBase(dimensions, algoKey, bayerFuncName, isRandom) {
         colorsArray,
         colorsArrayLength
     ) => {
-        let bayerTexture = bayerTextures[bayerKey];
+        let bayerTexture = bayerTextures.get(bayerKey);
         if (!bayerTexture) {
             bayerTexture = BayerWebgl.createAndLoadTexture(
                 gl,
                 Bayer[bayerFuncName](dimensions),
                 dimensions
             );
-            bayerTextures[bayerKey] = bayerTexture;
+            bayerTextures.set(bayerKey, bayerTexture);
         }
         orderedDither(
             algoKey,
