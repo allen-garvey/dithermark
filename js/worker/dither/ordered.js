@@ -462,11 +462,7 @@ function yliluoma2DeviseMixingPlan(
     });
 }
 function pixelLuma(pixel) {
-    return (
-        pixel[Pixel.R_INDEX] * 299 +
-        pixel[Pixel.G_INDEX] * 587 +
-        pixel[Pixel.B_INDEX] * 114
-    );
+    return pixel[0] * 299 + pixel[1] * 587 + pixel[2] * 114;
 }
 function createYliluoma2ColorDither(dimensions, bayerFuncName) {
     const matrix = createMatrix(dimensions, Bayer[bayerFuncName](dimensions));
