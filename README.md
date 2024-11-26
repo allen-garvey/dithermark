@@ -14,7 +14,7 @@ Standalone desktop Electron builds can be found [on the releases page.](https://
 
 ## Known Limitations
 
-* If the image size is greater than browser WebGL context paramater `MAX_TEXTURE_SIZE`, only the lower left corner of the image will be dithered
+* If the image size is greater than browser WebGL context parameter `MAX_TEXTURE_SIZE`, only the lower left corner of the image will be dithered
 * A `UInt16Array` is used to transmit image width and height information to webworkers, meaning that images with a width or height greater than 65535 pixels in either dimension will not be processed correctly
 
 ## License
