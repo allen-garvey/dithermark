@@ -26,19 +26,12 @@ Thumbs.db
 *.eot
 *.woff
 *.zip
-public_html/js/*.js
-public_html/styles/*
 public_html/assets/*
 public_html/index.html
 public_html/api/*.json
 *.rb
 sass/lib/*
 inc/unsplash-api-secret.php
-scripts/*.json
-scripts/optimize-palette-notes.js
-lib/*
-js/generated_output/*
-release/*
 electron/node_modules/*
 electron/public_html/*
 electron/out/*
@@ -47,3 +40,4 @@ unsplash-secrets.js
 serverless/*
 scripts/images/*
 scripts/matrix-output/*.json
+scripts/scratch/*
