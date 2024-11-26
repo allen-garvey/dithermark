@@ -1,4 +1,3 @@
-import Polyfills from '../shared/polyfills.js';
 import WorkerHeaders from '../shared/worker-headers.js';
 import ColorPicker from './color-picker.js';
 import ArrayUtil from '../shared/array-util.js';
