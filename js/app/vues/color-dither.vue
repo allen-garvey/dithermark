@@ -35,7 +35,7 @@
                 @ok="colorPickerOk" 
                 @cancel="colorPickerCanceled" 
             />
-            <div class="colors-list-container" @dragover="handleColorDragover">
+            <div :class="$style.colorsListContainer" @dragover="handleColorDragover">
                 <color-input
                     v-for="(color, i) in colors" 
                     :key="i"
@@ -59,7 +59,10 @@
         </fieldset>
         <fieldset>
             <legend>Optimize palette</legend>
-            <div class="spread-content optimize-palette-controls-container">
+            <div 
+                class="spread-content"
+                :class="$style.optimizePaletteControlsContainer"
+            >
                 <label>Algorithm
                     <select v-model="selectedColorQuantizationModeIndex">
                         <optgroup 
@@ -77,12 +80,31 @@
                     </select>
                 </label>
                 <cycle-property-list model-name="optimize palette algorithm" v-model="selectedColorQuantizationModeIndex" :array-length="colorQuantizationModes.length" />
-                <div class="optimize-palette-pending">{{selectedColorQuantizationPendingMessage}}</div>
+                <div :class="$style.optimizePalettePending">{{selectedColorQuantizationPendingMessage}}</div>
                 <button class="btn btn-primary btn-sm" @click="optimizePalette" :disabled="isSelectedColorQuantizationPending" title="Optimize palette">Optimize</button>
             </div>
         </fieldset>
     </div>
 </template>
+
+<style lang="scss" module>
+    .colorsListContainer{
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .optimizePalettePending{
+        color: var(--hint-text-color);
+        font-size: 14px;
+        min-width: 8em;
+        max-width: 100%;
+    }
+
+    .optimizePaletteControlsContainer{
+        //so 'optimize button is not cut off for phone size screens'
+        max-width: calc(100vw - 44px);
+    }
+</style>
 
 <script>
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
