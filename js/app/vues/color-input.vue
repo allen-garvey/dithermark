@@ -110,6 +110,7 @@ export default {
     props: {
         colorIndex: {
             type: Number,
+            default: 0,
         }, 
         colorValue: {
             type: String,
