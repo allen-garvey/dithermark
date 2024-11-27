@@ -99,11 +99,5 @@ input[type="range"]{
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    
-    //add vertical margin to items when wrapped
-    //https://stackoverflow.com/questions/30887071/margin-top-only-when-the-flex-item-is-wrapped
-    margin-bottom: -1 * variables.$spread_content_margin_when_wrapped;
-    & > *{
-        margin-bottom: variables.$spread_content_margin_when_wrapped;
-    }
+    row-gap: 0.5rem;
 }
