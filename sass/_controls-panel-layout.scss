@@ -32,21 +32,6 @@
 	.controls{
 		align-items: center;
 	}
-	//desktop styles
-	.controls-container{
-		position: fixed;
-		z-index: 11;
-		display: block;
-		background-color: var(--pinned-controls-bg-color);
-		max-width: 100%;
-		max-height: 100%;
-		top: 0;
-		right: 0;
-		overflow-y: scroll;
-		box-sizing: border-box;
-		width: variables.$pinned_dither_controls_width;
-		padding: 0;
-	}
 
 	.super-dither-controls-container, .global-controls-panel{
 		border-left: variables.$controls_border;
@@ -64,17 +49,6 @@
 		&.no-image{
 			border-bottom: variables.$controls_border;
 			border-radius: 3px;
-		}
-	}
-}
-
-//otherwise will overlap chrome scrollbars
-@media all and (display-mode: fullscreen) {
-	.controls-container {
-		bottom: variables.$chrome_fullscreen_horizontal_scrollbar_height;
-
-		body:-moz-full-screen & {
-			bottom: 0;
 		}
 	}
 }

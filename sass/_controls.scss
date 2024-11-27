@@ -10,17 +10,6 @@ input[type="radio"]{
     margin-left: 2px;
 }
 
-.controls-container{
-    position: relative;
-    @include mixins.background_color_transition;
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    width: variables.$controlsWidth;
-    max-width: 100%;
-    padding: 0 variables.$global_horizontal_padding;
-}
-
 .controls{
     display: flex;
     flex-direction: column;

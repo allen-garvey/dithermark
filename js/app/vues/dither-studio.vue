@@ -10,7 +10,7 @@
             v-if="!isImageLoaded"
         />
         <div class="controls">
-            <div ref="controlsContainer" class="controls-container">
+            <div ref="controlsContainer" :class="$style.controlsContainer">
                 <batch-convert-overlay 
                     v-if="isBatchConverting" 
                     :current-file-name="loadedImage.fileName"
@@ -194,6 +194,45 @@
 <style lang="scss" module>
     .imageLoaded {
         padding-bottom: 154px;
+    }
+    .controlsContainer{
+        position: relative;
+        @include mixins.background_color_transition;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        width: variables.$controlsWidth;
+        max-width: 100%;
+        padding: 0 variables.$global_horizontal_padding;
+    }
+
+    //styles for desktop
+    @include mixins.pinned_controls_mq{
+        .controlsContainer{
+            position: fixed;
+            z-index: 11;
+            display: block;
+            background-color: var(--pinned-controls-bg-color);
+            max-width: 100%;
+            max-height: 100%;
+            top: 0;
+            right: 0;
+            overflow-y: scroll;
+            box-sizing: border-box;
+            width: variables.$pinned_dither_controls_width;
+            padding: 0;
+        }
+    }
+
+    //otherwise will overlap chrome scrollbars
+    @media all and (display-mode: fullscreen) {
+        .controlsContainer {
+            bottom: variables.$chrome_fullscreen_horizontal_scrollbar_height;
+
+            body:-moz-full-screen & {
+                bottom: 0;
+            }
+        }
     }
 </style>
 
