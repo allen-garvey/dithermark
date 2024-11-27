@@ -212,7 +212,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        width: variables.$controlsWidth;
+        width: 900px;
         max-width: 100%;
         padding: 0 variables.$global_horizontal_padding;
     }

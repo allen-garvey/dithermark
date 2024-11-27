@@ -31,23 +31,8 @@ $pinned_dither_controls_min_height: 400px;
 //padding to left and right of canvas when controls are pinned so controls don't overlap 
 $pinned_controls_canvas_padding: $pinned_dither_controls_width + 30px;
 
-//media queries
-$pinned_controls_mq_width: 1080px;
-$sticky_controls_mq_width: 440px;
-
-$alerts_max_width: 1000px;
-
-//color picker
-$color_picker_full_version_min_width: 465px;
-
-//histogram
-//minimum width + 1px required to show color histogram
-$histogram_color_required_width: 399px;
-
 //controls variables
 $controls_gutter: 20px;
-$controlsWidth: 900px;
-$superContainerMargin: 16px;
 
 //controls borders
 $controls_border: 1px solid rgba(var(--main-text-color-rgb), 0.1);

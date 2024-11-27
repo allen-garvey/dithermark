@@ -17,7 +17,7 @@
 <style lang="scss" module>
 //hide color histogram at small screen widths
 //since it stretches screen, while not adding very much
-@media screen and (max-width: variables.$histogram_color_required_width){
+@media screen and (max-width: 399px){
     .colorHistogramContainer{
         display: none;
     }
