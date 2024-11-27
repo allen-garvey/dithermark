@@ -73,15 +73,25 @@
                 @ok="colorPickerDone" 
                 @cancel="colorPickerDone" 
             />
-            <div class="spread-content image-outline-color-input">
+            <div 
+                class="spread-content"
+                :class="$style.imageOutlineColorInput"
+            >
                 <color-input 
                     label="Color" 
-                    id-prefix="outline-color" :is-selected="shouldShowColorPicker" 
+                    id-prefix="outline-color" 
+                    :is-selected="shouldShowColorPicker" 
                     :on-click="()=>{shouldShowColorPicker = true;}" :color-value="fixedOutlineColor" />
             </div>
         </div>
     </fieldset>
 </template>
+
+<style lang="scss" module>
+    .imageOutlineColorInput label{
+        min-width: variables.$global_controls_label_min_width;
+    }
+</style>
 
 <script>
 import Canvas from '../canvas.js';
