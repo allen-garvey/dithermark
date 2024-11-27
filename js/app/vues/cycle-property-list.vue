@@ -22,7 +22,7 @@
 <style lang="scss" module>
 
 .cyclePropertyButton{
-    min-width: 60px;
+    min-width: 56px;
     height: 28px;
 }
 
