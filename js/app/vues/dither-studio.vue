@@ -9,7 +9,7 @@
             :open-image-error="onOpenImageError"
             v-if="!isImageLoaded"
         />
-        <div class="controls">
+        <div :class="$style.controls">
             <div ref="controlsContainer" :class="$style.controlsContainer">
                 <batch-convert-overlay 
                     v-if="isBatchConverting" 
@@ -195,6 +195,17 @@
     .imageLoaded {
         padding-bottom: 154px;
     }
+
+    .controls{
+        display: flex;
+        flex-direction: column;
+        //22px to account for vertical scrollbar width
+        max-width: calc(100vw - 22px);
+        &, & > *{
+            box-sizing: border-box;
+        }
+    }
+
     .controlsContainer{
         position: relative;
         @include mixins.background_color_transition;
@@ -208,6 +219,9 @@
 
     //styles for desktop
     @include mixins.pinned_controls_mq{
+        .controls{
+            align-items: center;
+        }
         .controlsContainer{
             position: fixed;
             z-index: 11;

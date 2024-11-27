@@ -10,17 +10,6 @@ input[type="radio"]{
     margin-left: 2px;
 }
 
-.controls{
-    display: flex;
-    flex-direction: column;
-    //22px to account for vertical scrollbar width
-    max-width: calc(100vw - 22px);
-    &, & > *{
-        box-sizing: border-box;
-    }
-}
-
-
 .controls-panel > *{
     margin-bottom: 16px;
 }

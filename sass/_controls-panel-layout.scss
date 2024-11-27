@@ -29,10 +29,6 @@
 //styles for desktop
 @include mixins.pinned_controls_mq{
 	//reset tablet styles
-	.controls{
-		align-items: center;
-	}
-
 	.super-dither-controls-container, .global-controls-panel{
 		border-left: variables.$controls_border;
 		padding: 8px variables.$global_horizontal_padding;
