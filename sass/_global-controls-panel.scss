@@ -1,27 +1,30 @@
 @use './variables';
 
-.global-controls-panel{
-    margin: 0 variables.$controls_gutter 16px 0;
-    fieldset{
+.global-controls-panel {
+    margin: 0 20px 16px 0;
+
+    fieldset {
         padding: 2px 0 12px;
     }
 }
 
-.controls-tab-container{
-    & > *{
+.controls-tab-container {
+    &>* {
         margin-top: 16px;
     }
-    fieldset{
+
+    fieldset {
         padding-left: 0;
         padding-right: 0;
-        & > div{
+
+        &>div {
             margin-bottom: 8px;
         }
     }
 }
 
-.label-align{
-    label{
+.label-align {
+    label {
         min-width: variables.$global_controls_label_min_width;
         display: inline-block;
     }

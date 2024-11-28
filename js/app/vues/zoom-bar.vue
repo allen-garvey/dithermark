@@ -39,6 +39,8 @@
 </template>
 
 <style lang="scss" module>
+    $zoom_bar_button_container_width: 87px;
+    
     .zoomContainer{
         @include mixins.background_color_transition;
         display: flex;
@@ -71,7 +73,7 @@
     .buttonContainer{
         display: flex;
         justify-content: space-between;
-        width: variables.$zoom_bar_button_container_width;
+        width: $zoom_bar_button_container_width;
     }
 
     @include mixins.pinned_controls_mq{
@@ -89,7 +91,7 @@
         }
         .controls{
             // align-items: baseline;
-            flex-basis: calc(100% - #{variables.$zoom_bar_button_container_width});
+            flex-basis: calc(100% - #{$zoom_bar_button_container_width});
             margin-bottom: 0;
         }
         .zoomFitButton{

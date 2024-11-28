@@ -30,17 +30,11 @@ $pinned_dither_controls_min_height: 400px;
 //padding to left and right of canvas when controls are pinned so controls don't overlap 
 $pinned_controls_canvas_padding: $pinned_dither_controls_width + 30px;
 
-//controls variables
-$controls_gutter: 20px;
-
 //controls borders
 $controls_border: 1px solid rgba(var(--main-text-color-rgb), 0.1);
 
 //global controls
 $global_controls_label_min_width: 5em;
-
-//zoom bar
-$zoom_bar_button_container_width: 87px;
 
 //fullscreen mode
 //for some reason chrome doesn't take into account horizontal scrollbars in full screen mode
