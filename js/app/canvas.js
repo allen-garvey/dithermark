@@ -1,4 +1,4 @@
-import Polyfills from '../shared/polyfills.js';
+import { createSharedArrayBuffer } from '../shared/polyfills.js';
 
 const devicePixelRatio = window.devicePixelRatio || 1;
 
@@ -161,7 +161,7 @@ function createSharedImageBuffer(sourceCanvasObject) {
         sourceHeight
     ).data;
 
-    const buffer = new Polyfills.SharedArrayBuffer(pixels.length);
+    const buffer = createSharedArrayBuffer(pixels.length);
     //faster than for loop
     new Uint8ClampedArray(buffer).set(new Uint8ClampedArray(pixels.buffer));
     return buffer;
