@@ -10,8 +10,8 @@ const __dirname = path.dirname(__filename);
 
 const templateName = 'unsplash-download.php';
 
-export const renderUnsplashDownloadApi = () => {
-    const unsplashRandomImagesPromise = fs
+export const renderUnsplashDownloadApi = () =>
+    fs
         .readFile(
             path.join(
                 __dirname,
@@ -40,10 +40,9 @@ export const renderUnsplashDownloadApi = () => {
             const unsplashRandomImageData = JSON.stringify(JSON.parse(s).map((imageData) => imageData.download));
 
             return getTemplate(templateName).then(template => render(template, {
-                UNSPLASH_PHOTO_ID_QUERY_KEY,
+                UNSPLASH_PHOTO_ID_QUERY_KEY: UNSPLASH_API_PHOTO_ID_QUERY_KEY,
                 unsplashRandomImageData,
             }));
 
         }
         );
-};
