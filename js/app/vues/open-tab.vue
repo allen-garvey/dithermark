@@ -63,7 +63,7 @@
 
 <script>
 import Fs from '../fs.js';
-import RandomImage from '../random-image.js';
+import { getRandomImage } from '../random-image.js';
 
 export default { 
     props: {
@@ -141,7 +141,7 @@ export default {
         openRandomImage(){
             this.isCurrentlyLoadingImageUrl = true;
             
-            RandomImage.get(window.innerWidth, window.innerHeight).then(({image, file})=>{
+            getRandomImage(window.innerWidth, window.innerHeight).then(({image, file})=>{
                 this.imageOpened(image, file);
                 this.isCurrentlyLoadingImageUrl = false;
             }).catch(this.openImageFromUrlFailed);

@@ -50,25 +50,6 @@ function getNextRandomImage() {
     return imageData;
 }
 
-//returns promise
-function getRandomImage(imageWidthHint, imageHeightHint) {
-    if (randomImageQueue.length < 1) {
-        return loadRandomImageData().then(() => {
-            return openRandomImage(
-                getNextRandomImage(),
-                imageWidthHint,
-                imageHeightHint
-            );
-        });
-    } else {
-        return openRandomImage(
-            getNextRandomImage(),
-            imageWidthHint,
-            imageHeightHint
-        );
-    }
-}
-
 function randomImageName(randomImage) {
     if (randomImage.description) {
         return randomImage.description;
@@ -99,6 +80,27 @@ function openRandomImage(randomImageData, imageWidthHint, imageHeightHint) {
     });
 }
 
-export default {
-    get: getRandomImage,
-};
+/**
+ * 
+ * @param {number} imageWidthHint 
+ * @param {number} imageHeightHint 
+ * @returns {Promise}
+ */
+export const getRandomImage = (imageWidthHint, imageHeightHint) => {
+    if (randomImageQueue.length < 1) {
+        return loadRandomImageData().then(() => {
+            return openRandomImage(
+                getNextRandomImage(),
+                imageWidthHint,
+                imageHeightHint
+            );
+        });
+    } else {
+        return openRandomImage(
+            getNextRandomImage(),
+            imageWidthHint,
+            imageHeightHint
+        );
+    }
+}
+
