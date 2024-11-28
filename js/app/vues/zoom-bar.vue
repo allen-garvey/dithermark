@@ -147,8 +147,7 @@
         },
         data(){
             return {
-                //has to be static property instead of prop from dither-studio component, because it will not be updated
-                //soon enough when image loades
+                //has to be static property instead of prop from app component, because it will not be updated soon enough when image loades
                 image: null,
                 zoom: 100,
                 //so invalid zoom levels can be incrementally typed into input box, and not immediately validated and changed

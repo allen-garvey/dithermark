@@ -1,5 +1,5 @@
 import { createApp } from 'vue';
-import DitherStudio from './app/vues/dither-studio.vue';
+import App from './app/vues/app.vue';
 
-const app = createApp(DitherStudio);
+const app = createApp(App);
 app.mount('#app');
