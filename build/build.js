@@ -46,11 +46,15 @@ const SERVERLESS_PATH = path.join(__dirname, '..', 'serverless');
 const unsplashDownloadApiPromise = fs
     .mkdir(SERVERLESS_PATH, { recursive: true })
     .then(() => renderUnsplashDownloadApi())
-    .then((unsplashDownloadApi) =>
-        fs.writeFile(
-            path.join(SERVERLESS_PATH, 'unsplash-download.php'),
-            unsplashDownloadApi
-        )
+    .then((unsplashDownloadApi) => {
+        if (unsplashDownloadApi) {
+            return fs.writeFile(
+                path.join(SERVERLESS_PATH, 'unsplash-download.php'),
+                unsplashDownloadApi
+            );
+        }
+        return null;
+    }
     );
 
 Promise.all([homePromise, unsplashDownloadApiPromise]);

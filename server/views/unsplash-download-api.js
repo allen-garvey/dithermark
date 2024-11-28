@@ -8,8 +8,9 @@ import { UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../../constants.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const templateName = 'unsplash-download.php';
+
 export const renderUnsplashDownloadApi = () => {
-    const templatePromise = getTemplate('unsplash-download.php');
     const unsplashRandomImagesPromise = fs
         .readFile(
             path.join(
@@ -22,16 +23,27 @@ export const renderUnsplashDownloadApi = () => {
             ),
             'utf8'
         )
-        .then((s) =>
-            JSON.stringify(JSON.parse(s).map((imageData) => imageData.download))
-        );
+        .catch((e) => {
+            if (e.code === 'ENOENT') {
+                console.log('unsplash.json not found, run npm run seed:unsplash to generate.');
+            }
+            else {
+                console.error(e);
+            }
+            console.log(`Skipping building ${templateName}`);
+            return null;
+        })
+        .then((s) => {
+            if (s === null) {
+                return null;
+            }
+            const unsplashRandomImageData = JSON.stringify(JSON.parse(s).map((imageData) => imageData.download));
 
-    return Promise.all([templatePromise, unsplashRandomImagesPromise]).then(
-        ([template, unsplashRandomImageData]) => {
-            return render(template, {
-                UNSPLASH_PHOTO_ID_QUERY_KEY: UNSPLASH_API_PHOTO_ID_QUERY_KEY,
+            return getTemplate(templateName).then(template => render(template, {
+                UNSPLASH_PHOTO_ID_QUERY_KEY,
                 unsplashRandomImageData,
-            });
+            }));
+
         }
-    );
+        );
 };
