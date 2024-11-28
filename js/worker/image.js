@@ -1,4 +1,4 @@
-import Pixel from '../shared/pixel.js';
+import { createPixel } from '../shared/pixel.js';
 import ColorDitherModeFunctions from './color-dither-mode-functions.js';
 import DitherUtil from '../shared/dither-util.js';
 
@@ -7,9 +7,9 @@ function transformImage(
     imageWidth,
     imageHeight,
     pixelTransformFunc,
-    endRowFunc = () => {}
+    endRowFunc = () => { }
 ) {
-    const pixel = Pixel.create(0, 0, 0);
+    const pixel = createPixel(0, 0, 0);
 
     for (let i = 0, y = 0; y < imageHeight; y++) {
         for (let x = 0; x < imageWidth; x++, i += 4) {
@@ -76,7 +76,7 @@ function colorDitherImage(
         pixel[0] = pixels[i];
         pixel[1] = pixels[i + 1];
         pixel[2] = pixels[i + 2];
-        // pixel[Pixel.A_INDEX] = pixels[i+3]; //not necessary to set alpha
+        // pixel[i + 3] = pixels[i+3]; //not necessary to set alpha
 
         const pixelAdjustmentValue =
             pixelAdjustmentFunc(x, y, pixel) * ditherRCoefficient;
@@ -88,11 +88,11 @@ function colorDitherImage(
         }
         const closestColor =
             colors[
-                findClosestColorIndex(
-                    pixelValueFunc(pixel),
-                    colorValues,
-                    pixelDistanceFunc
-                )
+            findClosestColorIndex(
+                pixelValueFunc(pixel),
+                colorValues,
+                pixelDistanceFunc
+            )
             ];
         //postscriptFunc is for hue-lightness dither
         const outputPixel = postscriptFunc(closestColor, x, y, pixel);

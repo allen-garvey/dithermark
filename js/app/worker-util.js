@@ -1,7 +1,7 @@
 import WorkerHeaders from '../shared/worker-headers.js';
 import ColorPicker from './color-picker.js';
 import ArrayUtil from '../shared/array-util.js';
-import Pixel from '../shared/pixel.js';
+import { createPixel } from '../shared/pixel.js';
 
 function createDitherWorkerHeader(
     imageWidth,
@@ -34,8 +34,8 @@ function createDitherWorkerBwHeader(
         imageHeight,
         algorithmIndex,
         threshold,
-        blackPixel: Pixel.create(0, 0, 0),
-        whitePixel: Pixel.create(255, 255, 255),
+        blackPixel: createPixel(0, 0, 0),
+        whitePixel: createPixel(255, 255, 255),
     };
 }
 

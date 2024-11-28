@@ -1,5 +1,5 @@
 import Image from '../image.js';
-import Pixel from '../../shared/pixel.js';
+import { R_INDEX, G_INDEX, B_INDEX, A_INDEX } from '../../shared/pixel.js';
 import PixelMath from '../../shared/pixel-math.js';
 import DitherUtil from '../../shared/dither-util.js';
 import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
@@ -35,8 +35,8 @@ function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom) {
     const matrixValueAdjustmentFunc = isRandom
         ? Math.random
         : () => {
-              return 1;
-          };
+            return 1;
+        };
 
     return function (
         pixels,
@@ -60,10 +60,10 @@ function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom) {
                     ) * matrixValueAdjustmentFunc();
 
                 if (lightness + rCoefficient * matrixThreshold >= threshold) {
-                    whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                    whitePixel[A_INDEX] = pixel[A_INDEX];
                     return whitePixel;
                 } else {
-                    blackPixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                    blackPixel[A_INDEX] = pixel[A_INDEX];
                     return blackPixel;
                 }
             }
@@ -116,8 +116,8 @@ function createColorOrderedDither(
     const matrixValueAdjustmentFunc = isRandom
         ? Math.random
         : () => {
-              return 1;
-          };
+            return 1;
+        };
 
     return (pixels, imageWidth, imageHeight, colorDitherModeId, colors) => {
         return Image.colorDither(
@@ -243,7 +243,7 @@ function createStarkColorOrderedDither(dimensions, bayerFuncName) {
                         if (
                             currentDistance > greatestAllowedDistance &&
                             (currentDistance / shortestDistance) * bayerValue <
-                                1
+                            1
                         ) {
                             greatestAllowedDistance = currentDistance;
                             greatestAllowedDistanceIndex = i;
@@ -280,8 +280,8 @@ function yliluoma1EvaluateMixingError(
     return (
         pixelDistanceFunc(pixelValue, mixValue) +
         pixelDistanceFunc(color1Value, color2Value) *
-            0.1 *
-            (Math.abs(ratioFraction - 0.5) + 0.5)
+        0.1 *
+        (Math.abs(ratioFraction - 0.5) + 0.5)
     );
 }
 function yliluoma1DeviseMixingPlan(
@@ -294,10 +294,6 @@ function yliluoma1DeviseMixingPlan(
     pixelDistanceFunc,
     mixPixel
 ) {
-    const R_INDEX = 0;
-    const G_INDEX = 1;
-    const B_INDEX = 2;
-
     const colorsLength = colors.length;
     let colorIndex1 = 0;
     let colorIndex2 = 0;
@@ -319,15 +315,15 @@ function yliluoma1DeviseMixingPlan(
                 mixPixel[R_INDEX] =
                     color1[R_INDEX] +
                     (ratio * (color2[R_INDEX] - color1[R_INDEX])) /
-                        matrixLength;
+                    matrixLength;
                 mixPixel[G_INDEX] =
                     color1[G_INDEX] +
                     (ratio * (color2[G_INDEX] - color1[G_INDEX])) /
-                        matrixLength;
+                    matrixLength;
                 mixPixel[B_INDEX] =
                     color1[B_INDEX] +
                     (ratio * (color2[B_INDEX] - color1[B_INDEX])) /
-                        matrixLength;
+                    matrixLength;
                 // Determine how well that matches what we want to accomplish
                 const penalty = yliluoma1EvaluateMixingError(
                     pixelValue,

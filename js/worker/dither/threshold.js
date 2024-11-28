@@ -1,5 +1,5 @@
 import Image from '../image.js';
-import Pixel from '../../shared/pixel.js';
+import { A_INDEX } from '../../shared/pixel.js';
 import PixelMath from '../../shared/pixel-math.js';
 import DitherUtil from '../../shared/dither-util.js';
 import { createNoise2D } from './simplex.js';
@@ -31,10 +31,10 @@ function thresholdGenerator(thresholdFunc) {
                     lightness + rCoefficient * thresholdFunc(x, y, pixel) >=
                     threshold
                 ) {
-                    whitePixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                    whitePixel[A_INDEX] = pixel[A_INDEX];
                     return whitePixel;
                 }
-                blackPixel[Pixel.A_INDEX] = pixel[Pixel.A_INDEX];
+                blackPixel[A_INDEX] = pixel[A_INDEX];
                 return blackPixel;
             }
         );
