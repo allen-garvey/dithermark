@@ -1,9 +1,19 @@
 <template>
-    <div>
+    <div :class="$style.textureCombineContainer">
         <button class="btn btn-default btn-sm" @click="saveTexture">Save texture</button>
-        <button class="btn btn-default btn-sm" v-show="savedTextures.length >= 3" @click="combineDitherTextures">Combine textures</button>
+        <span>{{ savedTextures.length }} / {{ maxTextureLength }} textures saved</span>
+        <button class="btn btn-default btn-sm" v-show="savedTextures.length >= maxTextureLength" @click="combineDitherTextures">Combine textures</button>
     </div>
 </template>
+
+<style lang="scss" module>
+    .textureCombineContainer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1em;
+        align-items: center;
+    }
+</style>
 
 
 <script>
@@ -38,10 +48,16 @@ export default {
             savedTextures: [],
         };
     },
+    computed: {
+        maxTextureLength(){
+            return 3;
+        },
+    },
     methods: {
-        resetTextures(){
-            //technically we should probably actually delete the textures from the GPU here,
-            //rather than merely losing references to them
+        resetTextures(gl){
+            this.savedTextures.forEach(texture => {
+                gl.deleteTexture(texture);
+            });
             this.savedTextures = [];
         },
         saveTexture(){
@@ -53,13 +69,13 @@ export default {
         },
         combineDitherTextures(){
             this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
-                //get last 3 added textures
+
                 const texturesLength = this.savedTextures.length;
-                let textures = this.savedTextures.slice(texturesLength - 3, texturesLength);
-                this.savedTextures = [];
+                const textures = this.savedTextures.slice(texturesLength - this.maxTextureLength, texturesLength);
                 WebGlBwDither.textureCombine(transformCanvasWebGl.gl, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel, textures);
                 transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
                 this.requestDisplayTransformedImage();
+                this.resetTextures(transformCanvasWebGl.gl);
             });
         },
     }
