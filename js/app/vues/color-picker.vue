@@ -1,6 +1,9 @@
 <template>
     <div v-scroll-into-view>
-        <div ref="colorPickerContainer" class="color-picker-container">
+        <div 
+            ref="colorPickerContainer" 
+            :class="$style.colorPickerContainer"
+        ß>
             <photoshop-picker 
                 :modelValue="selectedColor" 
                 :should-live-update="shouldLiveUpdate" 
@@ -8,9 +11,46 @@
                 @ok="bubbleEvent('ok', $event)" 
                 @cancel="bubbleEvent('cancel', $event)" />
         </div>
-        <div class="color-picker-overlay" @click="getAttention"></div>
+        <div :class="$style.colorPickerOverlay" @click="getAttention"></div>
     </div>
 </template>
+
+<style lang="scss" module>
+    @keyframes scaleAnimation {
+        0%   {transform: scale(1, 1);}
+        40%  {transform: scale(1.1, 1.1);}
+        100% {transform: scale(1, 1);}
+    }
+
+    .colorPickerContainer{
+        display: inline-block;
+        position: relative;
+        z-index: 100;
+        background-color: var(--pinned-controls-bg-color);
+        box-shadow: -1px 2px 4px rgba(0,0,0,0.3);
+        margin: 8px 0 16px;
+        border-radius: 2px;
+        border: 1px solid var(--border-color);
+        &.attention-animation{
+            animation-name: scaleAnimation;
+            animation-duration: 0.7s;
+        }
+    }
+
+    //this is so none of the other controls except the color picker are selectable
+    .colorPickerOverlay{
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        opacity: 0.6;
+        //z-index must be higher than .faux-color-input
+        z-index: 2;
+        background-color: var(--pinned-controls-bg-color);
+        cursor: not-allowed;
+    }
+</style>
 
 <script>
 import VueColor from 'dithermark-vue-color';

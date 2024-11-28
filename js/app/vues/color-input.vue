@@ -24,7 +24,7 @@
 <style lang="scss" module>
 
 .colorContainer{
-    //so currently selected color is not hidden by .color-picker-overlay
+    //so currently selected color is not hidden by .colorPickerOverlay
     position: relative;
     display: flex;
     align-items: center;
@@ -35,7 +35,7 @@
     border-radius: 5px;
     padding: 4px;
 
-    //z-index should be higher than .color-picker-overlay
+    //z-index should be higher than .colorPickerOverlay
     &.selected{
         z-index: 3;
     }

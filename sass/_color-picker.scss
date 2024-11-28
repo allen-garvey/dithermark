@@ -1,41 +1,5 @@
 @use './variables';
 
-@keyframes scaleAnimation {
-    0%   {transform: scale(1, 1);}
-    40%  {transform: scale(1.1, 1.1);}
-    100% {transform: scale(1, 1);}
-}
-
-.color-picker-container{
-    display: inline-block;
-    position: relative;
-    z-index: 100;
-    background-color: var(--pinned-controls-bg-color);
-    box-shadow: -1px 2px 4px rgba(0,0,0,0.3);
-    margin: 8px 0 16px;
-    border-radius: 2px;
-    border: 1px solid var(--border-color);
-    &.attention-animation{
-        animation-name: scaleAnimation;
-        animation-duration: 0.7s;
-    }
-}
-//this is so none of the other controls except the color picker are selectable
-.color-picker-overlay{
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    opacity: 0.6;
-    //z-index must be higher than .faux-color-input
-    z-index: 2;
-    background-color: var(--pinned-controls-bg-color);
-    cursor: not-allowed;
-}
-
-
-
 /*
 * Media queries so the color picker doesn't stretch small screens
 */
@@ -43,28 +7,35 @@
 $color_picker_full_version_min_width: 465px;
 
 //unfortunately have to use !important since vue creates style tags after linked css
-@media screen and (min-width: $color_picker_full_version_min_width){
-    .vc-ps-button-container-secondary{
+@media screen and (min-width: $color_picker_full_version_min_width) {
+    .vc-ps-button-container-secondary {
         display: none !important;
     }
 }
 
 //disable things for mobile
-@media screen and (max-width: $color_picker_full_version_min_width - 1px){
-    .vc-ps-body{
+@media screen and (max-width: $color_picker_full_version_min_width - 1px) {
+    .vc-ps-body {
         display: block !important;
     }
-    .vc-ps-button-container-main, .vc-ps-previews, .vc-ps-hsv-fields, .vc-ps-rgb-fields{
+
+    .vc-ps-button-container-main,
+    .vc-ps-previews,
+    .vc-ps-hsv-fields,
+    .vc-ps-rgb-fields {
         display: none !important;
     }
-    .vc-ps-controls{
+
+    .vc-ps-controls {
         margin-left: 0 !important;
     }
-    .vc-ps-fields__hex{
+
+    .vc-ps-fields__hex {
         display: flex;
         justify-content: center;
     }
-    .vc-ps-button-container-secondary{
+
+    .vc-ps-button-container-secondary {
         margin-bottom: 5px;
     }
 }
