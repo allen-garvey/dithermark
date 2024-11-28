@@ -3,7 +3,6 @@
         <div :class="$style.canvasContainer">
             <canvas 
                 ref="sourceCanvasOutput" 
-                :class="$style.sourceOutputCanvas" 
                 v-show="showOriginalImage">
             </canvas>
             <canvas 
@@ -22,11 +21,8 @@
 
 .canvasContainer{
     display: flex;
+    column-gap: 25px;
     margin-top: 12px;
-}
-
-.sourceOutputCanvas{
-    margin-right: variables.$canvasMargin;
 }
 
 @include mixins.pinned_controls_mq{
