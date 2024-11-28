@@ -95,7 +95,7 @@
 
 <script>
 import Canvas from '../canvas.js';
-import ImageFiltersModel from '../image-filters-model.js';
+import ImageFiltersModel from '../models/image-filters.js';
 import WebGlContourFilter from '../webgl-contour-filter.js';
 import ColorPicker from '../color-picker.js';
 import WebGlEdgeFilter from '../webgl-edge-filter.js';

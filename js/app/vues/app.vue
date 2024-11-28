@@ -273,7 +273,7 @@ import EditorThemes from '../editor-themes.js';
 import WebGlSmoothing from '../webgl-smoothing.js';
 import WebGlBilateralFilter from '../webgl-bilateral-filter.js';
 import WebGlCanvasFilters from '../webgl-canvas-filters.js';
-import ImageFiltersModel from '../image-filters-model.js';
+import ImageFiltersModel from '../models/image-filters.js';
 import { getGlobalTabs } from '../models/global-tabs.js'
 import { getDitherTabs } from '../models/dither-tabs.js'
 import Fs from '../fs.js';

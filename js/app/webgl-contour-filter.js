@@ -1,6 +1,6 @@
 import WebGl from './webgl.js';
 import Shader from './webgl-shader.js';
-import ImageFiltersModel from './image-filters-model.js';
+import ImageFiltersModel from './models/image-filters.js';
 
 function createOutlineFunc(gl, filterNumber) {
     const customUniforms = ['u_radius'];
