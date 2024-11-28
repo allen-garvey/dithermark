@@ -1,7 +1,5 @@
 import { createSharedArrayBuffer } from '../shared/polyfills.js';
 
-const devicePixelRatio = window.devicePixelRatio || 1;
-
 function areCanvasFiltersSupported(canvasObject) {
     return 'filter' in canvasObject.context;
 }
@@ -201,6 +199,5 @@ export default {
     createSharedImageBuffer,
     loadImage,
     loadPixels,
-    devicePixelRatio,
     areCanvasFiltersSupported,
 };

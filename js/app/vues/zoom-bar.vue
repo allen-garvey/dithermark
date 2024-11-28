@@ -111,8 +111,7 @@
 </style>
 
 <script>
-    import Canvas from '../canvas.js';
-
+    const devicePixelRatio = window.devicePixelRatio || 1;
 
     //maximum allowed size is largest size in pixels image is allowed to be
     function maxScalePercentageForImage(imageWidth, imageHeight, maximumAllowedSize){
@@ -161,14 +160,14 @@
                 if(!this.isImageLoaded){
                     return 0;
                 }
-                const smallestDimension = Math.floor(Math.min(window.innerHeight, window.innerWidth) / 2 / Canvas.devicePixelRatio);
+                const smallestDimension = Math.floor(Math.min(window.innerHeight, window.innerWidth) / 2 / devicePixelRatio);
                 return minScalePercentageForImage(this.image.width, this.image.height, Math.min(100, smallestDimension));
             },
             zoomMax(){
                 if(!this.isImageLoaded){
                     return 0;
                 }
-                const greatestDimension = Math.max(window.innerHeight, window.innerWidth) * 2 * Canvas.devicePixelRatio;
+                const greatestDimension = Math.max(window.innerHeight, window.innerWidth) * 2 * devicePixelRatio;
                 return maxScalePercentageForImage(this.image.width, this.image.height, greatestDimension);
             },
             isImageLoaded(){
