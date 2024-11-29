@@ -4,9 +4,6 @@
   "version": "1.0.0",
   "description": "Web application to interactively demonstrate image dithering algorithms",
   "main": "js/index.js",
-  "sideEffects": [
-    "./js/app/vues/*.vue"
-  ],
   "scripts": {
     "start": "node server/index.js",
     "watch": "webpack --config build/webpack.config.cjs --watch",

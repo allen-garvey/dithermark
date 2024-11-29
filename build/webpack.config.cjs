@@ -52,15 +52,12 @@ module.exports = {
                 test: /\.css$/,
                 use: [
                     {
-                        loader: MiniCssExtractPlugin.loader,
+                        loader: 'vue-style-loader'
                     },
                     {
-                        loader: 'css-loader',
-                    },
-                    {
-                        loader: 'sass-loader',
-                    },
-                ],
+                        loader: 'css-loader'
+                    }
+                ]
             },
             {
                 test: /\.scss$/,
