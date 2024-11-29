@@ -26,9 +26,9 @@ export const getBwWebglTranslator = (isWebglHighIntPrecisionSupported) => {
 
     return (algorithm) => {
         if (algorithm.orderedOpts) {
-            const { pattern, dimensions, isRandom } = algorithm.orderedOpts;
+            const { pattern, dimensions, variant } = algorithm.orderedOpts;
 
-            return BwDither.orderedDitherBuilder(pattern)(dimensions, isRandom);
+            return BwDither.orderedDitherBuilder(pattern)(dimensions, variant);
         }
 
         return webglMap.get(algorithm.slug) || false;

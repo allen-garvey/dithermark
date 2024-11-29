@@ -1,5 +1,7 @@
 import { YLILUOMA_1_ORDERED_MATRIX_MAX_DIMENSIONS } from '../../../constants.js';
 
+import { ORDERED_DITHER_VARIANT_NORMAL, ORDERED_DITHER_VARIANT_RANDOM, ORDERED_DITHER_VARIANT_SIMPLEX } from './ordered-dither-variants.js';
+
 const getOrderedDitherPatterns = () => [
     { title: 'Bayer 2×2', pattern: 'bayer', dimensions: 2 },
     { title: 'Bayer 4×4', pattern: 'bayer', dimensions: 4 },
@@ -71,7 +73,10 @@ const getBwOrderedModels = () =>
                 {
                     title,
                     slug,
-                    orderedOpts,
+                    orderedOpts: {
+                        ...orderedOpts,
+                        variant: ORDERED_DITHER_VARIANT_NORMAL,
+                    },
                 },
                 {
                     title: `${title} (R)`,
@@ -79,6 +84,16 @@ const getBwOrderedModels = () =>
                     orderedOpts: {
                         ...orderedOpts,
                         isRandom: true,
+                        variant: ORDERED_DITHER_VARIANT_RANDOM,
+                    },
+                },
+                {
+                    title: `${title} (S)`,
+                    slug: `${slug}--s`,
+                    orderedOpts: {
+                        ...orderedOpts,
+                        isRandom: true,
+                        variant: ORDERED_DITHER_VARIANT_SIMPLEX,
                     },
                 },
             ],

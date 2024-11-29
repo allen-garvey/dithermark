@@ -1,5 +1,6 @@
 import WebGl from './webgl.js';
 import Shader from './webgl-shader.js';
+import { ORDERED_DITHER_VARIANT_RANDOM, ORDERED_DITHER_VARIANT_SIMPLEX } from '../shared/models/ordered-dither-variants.js';
 import Bayer from '../shared/bayer-matrix.js';
 import BayerWebgl from './webgl-bayer.js';
 import DitherUtil from '../shared/dither-util.js';
@@ -11,14 +12,15 @@ const RANDOM_THRESHOLD = 2;
 const SIMPLEX_THRESHOLD = 3;
 const ORDERED_DITHER = 4;
 const ORDERED_RANDOM_DITHER = 5;
-const COLOR_REPLACE = 6;
-const TEXTURE_COMBINE = 7;
-const ADITHER_ADD1 = 8;
-const ADITHER_ADD2 = 9;
-const ADITHER_ADD3 = 10;
-const ADITHER_XOR1 = 11;
-const ADITHER_XOR2 = 12;
-const ADITHER_XOR3 = 13;
+const ORDERED_SIMPLEX_DITHER = 6;
+const COLOR_REPLACE = 7;
+const TEXTURE_COMBINE = 8;
+const ADITHER_ADD1 = 9;
+const ADITHER_ADD2 = 10;
+const ADITHER_ADD3 = 11;
+const ADITHER_XOR1 = 12;
+const ADITHER_XOR2 = 13;
+const ADITHER_XOR3 = 14;
 
 /*
  * Actual webgl function creation
@@ -340,7 +342,7 @@ function webGLOrderedDither(
     whitePixel,
     bayerTexture,
     bayerArrayDimensions,
-    isRandom,
+    variant,
     bayerAdjustmentText
 ) {
     let algoKey = ORDERED_DITHER;
@@ -352,10 +354,14 @@ function webGLOrderedDither(
         'u_bayer_texture_dimensions',
         'u_bayer_texture',
     ];
-    if (isRandom) {
+    if (variant === ORDERED_DITHER_VARIANT_RANDOM) {
         algoKey = ORDERED_RANDOM_DITHER;
         customUniformLocations.push('u_random_seed');
         secondCustomDeclarationId = 'webgl-random-dither-declaration-fshader';
+    }
+    else if (variant === ORDERED_DITHER_VARIANT_SIMPLEX) {
+        algoKey = ORDERED_SIMPLEX_DITHER;
+        secondCustomDeclarationId = 'webgl-simplex-declaration-fshader';
     }
     const drawFunc = getDrawFunc(
         algoKey,
@@ -391,7 +397,7 @@ function webGLOrderedDither(
                 bayerArrayDimensions
             );
 
-            if (isRandom) {
+            if (variant === ORDERED_DITHER_VARIANT_RANDOM) {
                 gl.uniform2f(
                     customUniformLocations['u_random_seed'],
                     generateRandomSeed(),
@@ -402,13 +408,21 @@ function webGLOrderedDither(
     );
 }
 
+const getBayerAdjustmentText = (variant) => {
+    switch (variant) {
+        case ORDERED_DITHER_VARIANT_SIMPLEX: return Shader.shaderText(
+            'webgl-simplex-ordered-dither-adjustment-fshader'
+        );
+        case ORDERED_DITHER_VARIANT_RANDOM: return Shader.shaderText(
+            'webgl-random-ordered-dither-adjustment-fshader'
+        );
+        default: return '';
+    }
+};
+
 function orderedDitherBuilder(bayerFuncName) {
-    return function (dimensions, isRandom = false) {
-        const bayerAdjustmentText = isRandom
-            ? Shader.shaderText(
-                  'webgl-random-ordered-dither-adjustment-fshader'
-              )
-            : '';
+    return function (dimensions, variant) {
+        const bayerAdjustmentText = getBayerAdjustmentText(variant);
         return function (
             gl,
             texture,
@@ -438,7 +452,7 @@ function orderedDitherBuilder(bayerFuncName) {
                 whitePixel,
                 bayerTexture,
                 dimensions,
-                isRandom,
+                variant,
                 bayerAdjustmentText
             );
         };
