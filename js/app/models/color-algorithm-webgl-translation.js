@@ -25,7 +25,7 @@ export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
 
     return (algorithm) => {
         if (algorithm.orderedOpts) {
-            const { pattern, dimensions, isRandom, type } =
+            const { pattern, dimensions, variant, type } =
                 algorithm.orderedOpts;
 
             switch (type) {
@@ -33,7 +33,7 @@ export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
                     return ColorDither.createHueLightnessOrderedDither(
                         dimensions,
                         pattern,
-                        isRandom
+                        variant
                     );
                 case 'stark':
                     return ColorDither.createStarkOrderedDither(
@@ -53,7 +53,7 @@ export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
                 default:
                     return ColorDither.orderedDitherBuilder(pattern)(
                         dimensions,
-                        isRandom
+                        variant
                     );
             }
         }

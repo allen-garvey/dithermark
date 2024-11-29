@@ -118,7 +118,6 @@ const getColorOrderedModels = () =>
                 slug: `${slug}--r`,
                 orderedOpts: {
                     ...orderedOpts,
-                    isRandom: true,
                     variant: ORDERED_DITHER_VARIANT_RANDOM,
                 },
             },
@@ -127,7 +126,6 @@ const getColorOrderedModels = () =>
                 slug: `${slug}--s`,
                 orderedOpts: {
                     ...orderedOpts,
-                    isRandom: true,
                     variant: ORDERED_DITHER_VARIANT_SIMPLEX,
                 },
             },
@@ -154,7 +152,6 @@ const getColorOrderedModels = () =>
                 orderedOpts: {
                     ...orderedOpts,
                     type: 'hue-lightness',
-                    isRandom: true,
                     variant: ORDERED_DITHER_VARIANT_RANDOM,
                 },
             },
@@ -164,7 +161,6 @@ const getColorOrderedModels = () =>
                 orderedOpts: {
                     ...orderedOpts,
                     type: 'hue-lightness',
-                    isRandom: true,
                     variant: ORDERED_DITHER_VARIANT_SIMPLEX,
                 },
             },

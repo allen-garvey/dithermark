@@ -5,6 +5,7 @@ import Bayer from '../shared/bayer-matrix.js';
 import BayerWebgl from './webgl-bayer.js';
 import DitherUtil from '../shared/dither-util.js';
 import { generateRandomSeed } from './webgl-random.js';
+import { ORDERED_DITHER_VARIANT_RANDOM, ORDERED_DITHER_VARIANT_SIMPLEX } from '../shared/models/ordered-dither-variants.js';
 
 // when adding algorithm key make sure to add to ALGO_KEYS array below
 const CLOSEST_COLOR = 0;
@@ -12,17 +13,19 @@ const RANDOM_CLOSEST_COLOR = 1;
 const SIMPLEX_CLOSEST_COLOR = 2;
 const ORDERED_DITHER = 3;
 const ORDERED_DITHER_RANDOM = 4;
-const HUE_LIGHTNESS_ORDERED_DITHER = 5;
-const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 6;
-const ADITHER_ADD1 = 7;
-const ADITHER_ADD2 = 8;
-const ADITHER_ADD3 = 9;
-const ADITHER_XOR1 = 10;
-const ADITHER_XOR2 = 11;
-const ADITHER_XOR3 = 12;
-const YLILUOMA1 = 13;
-const YLILUOMA2 = 14;
-const STARK_ORDERED_DITHER = 15;
+const ORDERED_DITHER_SIMPLEX = 5;
+const HUE_LIGHTNESS_ORDERED_DITHER = 6;
+const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 7;
+const HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER = 8;
+const ADITHER_ADD1 = 9;
+const ADITHER_ADD2 = 10;
+const ADITHER_ADD3 = 11;
+const ADITHER_XOR1 = 12;
+const ADITHER_XOR2 = 13;
+const ADITHER_XOR3 = 14;
+const YLILUOMA1 = 15;
+const YLILUOMA2 = 16;
+const STARK_ORDERED_DITHER = 17;
 
 const ALGO_KEYS = [
     CLOSEST_COLOR,
@@ -30,8 +33,10 @@ const ALGO_KEYS = [
     SIMPLEX_CLOSEST_COLOR,
     ORDERED_DITHER,
     ORDERED_DITHER_RANDOM,
+    ORDERED_DITHER_SIMPLEX,
     HUE_LIGHTNESS_ORDERED_DITHER,
     HUE_LIGHTNESS_RANDOM_ORDERED_DITHER,
+    HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER,
     ADITHER_ADD1,
     ADITHER_ADD2,
     ADITHER_ADD3,
@@ -194,6 +199,10 @@ function createFragmentShaderTexts() {
         '#{{bayerValueAdjustment}}',
         shaderText('webgl-random-ordered-dither-adjustment-fshader')
     );
+    const orderedDitherSimplexBodyText = orderedDitherBodyText.replace(
+        '#{{bayerValueAdjustment}}',
+        shaderText('webgl-simplex-ordered-dither-adjustment-fshader')
+    );
     const randomDitherDeclarationText = shaderText(
         'webgl-random-dither-declaration-fshader'
     );
@@ -224,6 +233,10 @@ function createFragmentShaderTexts() {
         orderedDitherDeclarationText + randomDitherDeclarationText,
         orderedDitherRandomBodyText
     );
+    const orderedDitherSimplexBase = generateFragmentShader(
+        orderedDitherDeclarationText + simplexDitherDeclarationText,
+        orderedDitherSimplexBodyText
+    );
     const hueLightnessOrderedDitherBase = generateFragmentShader(
         hueLightnessDeclarationText,
         orderedDitherVanillaBodyText,
@@ -232,6 +245,11 @@ function createFragmentShaderTexts() {
     const hueLightnessRandomOrderedDitherBase = generateFragmentShader(
         hueLightnessDeclarationText + randomDitherDeclarationText,
         orderedDitherRandomBodyText,
+        hueLightnessPostscriptText
+    );
+    const hueLightnessSimplexOrderedDitherBase = generateFragmentShader(
+        hueLightnessDeclarationText + simplexDitherDeclarationText,
+        orderedDitherSimplexBodyText,
         hueLightnessPostscriptText
     );
     const randomDitherShaderBase = generateFragmentShader(
@@ -249,6 +267,7 @@ function createFragmentShaderTexts() {
         [SIMPLEX_CLOSEST_COLOR, shaderTextContainer(simplexDitherShaderBase)],
         [ORDERED_DITHER, shaderTextContainer(orderedDitherBase)],
         [ORDERED_DITHER_RANDOM, shaderTextContainer(orderedDitherRandomBase)],
+        [ORDERED_DITHER_SIMPLEX, shaderTextContainer(orderedDitherSimplexBase)],
         [
             HUE_LIGHTNESS_ORDERED_DITHER,
             shaderTextContainer(hueLightnessOrderedDitherBase),
@@ -256,6 +275,10 @@ function createFragmentShaderTexts() {
         [
             HUE_LIGHTNESS_RANDOM_ORDERED_DITHER,
             shaderTextContainer(hueLightnessRandomOrderedDitherBase),
+        ],
+        [
+            HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER,
+            shaderTextContainer(hueLightnessSimplexOrderedDitherBase),
         ],
         [
             ADITHER_ADD1,
@@ -376,7 +399,7 @@ function simplexClosestColor(
             createWebGLDrawImageFunc(
                 gl,
                 fragmentShaderTexts.get(SIMPLEX_CLOSEST_COLOR)[
-                    colorDitherModeId
+                colorDitherModeId
                 ]
             )
     );
@@ -408,7 +431,7 @@ function randomDither(
             createWebGLDrawImageFunc(
                 gl,
                 fragmentShaderTexts.get(RANDOM_CLOSEST_COLOR)[
-                    colorDitherModeId
+                colorDitherModeId
                 ],
                 ['u_random_seed']
             )
@@ -444,7 +467,7 @@ function orderedDither(
     colorsArrayLength,
     bayerTexture,
     bayerDimensions,
-    isRandom
+    variant
 ) {
     const drawImageFunc = getCachedDrawImageFunc(
         algoKey,
@@ -454,7 +477,7 @@ function orderedDither(
                 'u_bayer_texture_dimensions',
                 'u_bayer_texture',
             ];
-            if (isRandom) {
+            if (variant === ORDERED_DITHER_VARIANT_RANDOM) {
                 customUniforms = customUniforms.concat(['u_random_seed']);
             }
             return createWebGLDrawImageFunc(
@@ -487,7 +510,7 @@ function orderedDither(
                 bayerDimensions
             );
 
-            if (isRandom) {
+            if (variant === ORDERED_DITHER_VARIANT_RANDOM) {
                 gl.uniform2f(
                     customUniformLocations['u_random_seed'],
                     generateRandomSeed(),
@@ -498,7 +521,7 @@ function orderedDither(
     );
 }
 
-function createOrderedDitherBase(dimensions, algoKey, bayerFuncName, isRandom) {
+function createOrderedDitherBase(dimensions, algoKey, bayerFuncName, variant) {
     let bayerKey = `${bayerFuncName}-${dimensions}`;
     return (
         gl,
@@ -529,43 +552,50 @@ function createOrderedDitherBase(dimensions, algoKey, bayerFuncName, isRandom) {
             colorsArrayLength,
             bayerTexture,
             dimensions,
-            isRandom
+            variant
         );
     };
 }
 
-function orderedDitherBuilder(bayerFuncName, algoKey = ORDERED_DITHER) {
-    return function (dimensions, isRandom = false) {
-        let adjustedAlgoKey = algoKey;
-        if (isRandom) {
-            adjustedAlgoKey =
-                algoKey === ORDERED_DITHER
-                    ? ORDERED_DITHER_RANDOM
-                    : HUE_LIGHTNESS_RANDOM_ORDERED_DITHER;
+const getAlgoKey = (algoKey, variant) => {
+    if (algoKey === ORDERED_DITHER) {
+        switch (variant) {
+            case ORDERED_DITHER_VARIANT_RANDOM:
+                return ORDERED_DITHER_RANDOM;
+            case ORDERED_DITHER_VARIANT_SIMPLEX:
+                return ORDERED_DITHER_SIMPLEX;
+            default: return ORDERED_DITHER;
         }
+    }
+    switch (variant) {
+        case ORDERED_DITHER_VARIANT_RANDOM:
+            return HUE_LIGHTNESS_RANDOM_ORDERED_DITHER;
+        case ORDERED_DITHER_VARIANT_SIMPLEX:
+            return HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER;
+        default: return HUE_LIGHTNESS_ORDERED_DITHER;
+    }
+};
+
+function orderedDitherBuilder(bayerFuncName, algoKey = ORDERED_DITHER) {
+    return function (dimensions, variant) {
+        const adjustedAlgoKey = getAlgoKey(algoKey, variant);
         return createOrderedDitherBase(
             dimensions,
             adjustedAlgoKey,
             bayerFuncName,
-            isRandom
+            variant
         );
     };
 }
 
 function orderedDitherBuilder2(algoKey = ORDERED_DITHER) {
-    return function (dimensions, bayerFuncName, isRandom = false) {
-        let adjustedAlgoKey = algoKey;
-        if (isRandom) {
-            adjustedAlgoKey =
-                algoKey === ORDERED_DITHER
-                    ? ORDERED_DITHER_RANDOM
-                    : HUE_LIGHTNESS_RANDOM_ORDERED_DITHER;
-        }
+    return function (dimensions, bayerFuncName, variant) {
+        const adjustedAlgoKey = getAlgoKey(algoKey, variant);
         return createOrderedDitherBase(
             dimensions,
             adjustedAlgoKey,
             bayerFuncName,
-            isRandom
+            variant
         );
     };
 }
