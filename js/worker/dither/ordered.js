@@ -3,11 +3,11 @@ import { R_INDEX, G_INDEX, B_INDEX, A_INDEX } from '../../shared/pixel.js';
 import PixelMath from '../../shared/pixel-math.js';
 import DitherUtil from '../../shared/dither-util.js';
 import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
-import ArrayUtil from '../../shared/array-util.js';
+import { fillArray } from '../../shared/array-util.js';
 import Bayer from '../../shared/bayer-matrix.js';
 import { createNoise2D } from './simplex.js';
 import { ORDERED_DITHER_VARIANT_SIMPLEX, ORDERED_DITHER_VARIANT_RANDOM } from '../../shared/models/ordered-dither-variants.js';
-import { createMatrix, matrixValue } from './ordered-matrix.js';
+import { createMatrix, matrixValue, convertBayerToFloat, calculateFloatMatrixFraction } from './ordered-matrix.js';
 
 const snoise = createNoise2D();
 
@@ -77,21 +77,6 @@ function orderedDitherBuilder(bayerFuncName) {
 /**
  * Color dither stuff
  */
-function calculateFloatMatrixFraction(matrixLength) {
-    return 1 / (matrixLength - 1);
-}
-function convertBayerToFloat(bayerMatrix, fullValue = 1) {
-    const length = bayerMatrix.length;
-    const fraction = calculateFloatMatrixFraction(length);
-
-    return ArrayUtil.create(
-        length,
-        (i) => {
-            return (fraction * bayerMatrix[i] - 0.5) * fullValue;
-        },
-        Float32Array
-    );
-}
 
 function createColorOrderedDither(
     dimensions,
@@ -165,12 +150,9 @@ function createStarkFloatMatrix(matrix, dimensions, ditherRCoefficient) {
     const length = matrix.length;
     const fraction = calculateFloatMatrixFraction(length);
 
-    const matrixData = ArrayUtil.create(
-        length,
-        (i) => {
-            return 1 - matrix[i] * fraction * ditherRCoefficient;
-        },
-        Float32Array
+    const matrixData = fillArray(
+        new Float32Array(length),
+        (i) => 1 - matrix[i] * fraction * ditherRCoefficient
     );
 
     return createMatrix(dimensions, matrixData);
