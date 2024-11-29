@@ -100,7 +100,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .vc-saturation,
 .vc-saturation--white,
 .vc-saturation--black {

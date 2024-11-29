@@ -160,7 +160,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .vc-photoshop {
   box-sizing: initial;
   display: inline-block;

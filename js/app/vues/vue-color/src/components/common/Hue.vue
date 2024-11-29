@@ -138,7 +138,7 @@ export default {
 }
 </script>
 
-<style>
+<style lang="scss">
 .vc-hue {
   position: absolute;
   top: 0px;

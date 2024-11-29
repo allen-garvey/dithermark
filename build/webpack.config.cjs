@@ -47,18 +47,6 @@ module.exports = {
                 test: /\.vue$/,
                 loader: 'vue-loader',
             },
-            //besides the sass files, also extracts css from dithermark-vue-color
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: 'vue-style-loader'
-                    },
-                    {
-                        loader: 'css-loader'
-                    }
-                ]
-            },
             {
                 test: /\.scss$/,
                 oneOf: [
