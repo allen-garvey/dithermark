@@ -27,10 +27,10 @@ const algorithmMap = new Map([
 
 export const getBwDitherAlgorithmForItem = (algorithmModel) => {
     if (algorithmModel.orderedOpts) {
-        const { pattern, dimensions, isRandom } = algorithmModel.orderedOpts;
+        const { pattern, dimensions, variant } = algorithmModel.orderedOpts;
         return OrderedDither.orderedDitherBuilder(pattern)(
             dimensions,
-            isRandom
+            variant
         );
     }
 

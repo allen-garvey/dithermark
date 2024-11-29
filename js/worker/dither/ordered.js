@@ -5,6 +5,10 @@ import DitherUtil from '../../shared/dither-util.js';
 import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
 import ArrayUtil from '../../shared/array-util.js';
 import Bayer from '../../shared/bayer-matrix.js';
+import { createNoise2D } from './simplex.js';
+import { ORDERED_DITHER_VARIANT_SIMPLEX, ORDERED_DITHER_VARIANT_RANDOM } from '../../shared/models/ordered-dither-variants.js';
+
+const snoise = createNoise2D();
 
 function createMatrix(dimensions, data) {
     return {
@@ -25,18 +29,25 @@ function matrixValue(matrix, x, y) {
     return matrix.data[index];
 }
 
-function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom) {
+const getMatrixAdjustmentFunc = (variant) => {
+    switch (variant) {
+        case ORDERED_DITHER_VARIANT_RANDOM:
+            return () => Math.random();
+        case ORDERED_DITHER_VARIANT_SIMPLEX:
+            return snoise;
+        default:
+            return () => 1;
+    }
+};
+
+function createOrderedDitherBase(dimensions, matrixCreationFunc, variant) {
     const matrix = createMatrix(
         dimensions,
         convertBayerToFloat(matrixCreationFunc(dimensions), 255)
     );
     //for some reason we need to use same coefficient as webgl for bw dithers
     const rCoefficient = DitherUtil.ditherRCoefficient(2, true);
-    const matrixValueAdjustmentFunc = isRandom
-        ? Math.random
-        : () => {
-            return 1;
-        };
+    const matrixValueAdjustmentFunc = getMatrixAdjustmentFunc(variant);
 
     return function (
         pixels,
@@ -57,7 +68,7 @@ function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom) {
                         matrix,
                         x % matrix.dimensions,
                         y % matrix.dimensions
-                    ) * matrixValueAdjustmentFunc();
+                    ) * matrixValueAdjustmentFunc(x, y);
 
                 if (lightness + rCoefficient * matrixThreshold >= threshold) {
                     whitePixel[A_INDEX] = pixel[A_INDEX];
@@ -72,11 +83,11 @@ function createOrderedDitherBase(dimensions, matrixCreationFunc, isRandom) {
 }
 
 function orderedDitherBuilder(bayerFuncName) {
-    return function (dimensions, isRandom = false) {
+    return function (dimensions, variant) {
         return createOrderedDitherBase(
             dimensions,
             Bayer[bayerFuncName],
-            isRandom
+            variant
         );
     };
 }

@@ -83,7 +83,6 @@ const getBwOrderedModels = () =>
                     slug: `${slug}--r`,
                     orderedOpts: {
                         ...orderedOpts,
-                        isRandom: true,
                         variant: ORDERED_DITHER_VARIANT_RANDOM,
                     },
                 },
@@ -92,7 +91,6 @@ const getBwOrderedModels = () =>
                     slug: `${slug}--s`,
                     orderedOpts: {
                         ...orderedOpts,
-                        isRandom: true,
                         variant: ORDERED_DITHER_VARIANT_SIMPLEX,
                     },
                 },
