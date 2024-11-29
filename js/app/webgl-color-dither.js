@@ -558,6 +558,9 @@ function createOrderedDitherBase(dimensions, algoKey, bayerFuncName, variant) {
 }
 
 const getAlgoKey = (algoKey, variant) => {
+    if (variant === undefined) {
+        return algoKey;
+    }
     if (algoKey === ORDERED_DITHER) {
         switch (variant) {
             case ORDERED_DITHER_VARIANT_RANDOM:
