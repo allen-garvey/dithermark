@@ -53,7 +53,7 @@
 </style>
 
 <script>
-import VueColor from 'dithermark-vue-color';
+import PhotoshopPicker from './vue-color/src/components/Photoshop.vue';
 import ScrollIntoViewDirective from './directives/scroll-into-view.js';
 
 export default {
@@ -68,7 +68,7 @@ export default {
         },
     },
     components: {
-        'photoshop-picker': VueColor.VueColor.Photoshop,
+        PhotoshopPicker,
     },
     directives: {
         'scroll-into-view': ScrollIntoViewDirective,

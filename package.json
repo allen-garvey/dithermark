@@ -33,7 +33,7 @@
   },
   "homepage": "https://github.com/allen-garvey/dithermark#readme",
   "dependencies": {
-    "dithermark-vue-color": "2.2.0",
+    "lodash.throttle": "^4.1.1",
     "vue": "3.5.12"
   },
   "devDependencies": {
