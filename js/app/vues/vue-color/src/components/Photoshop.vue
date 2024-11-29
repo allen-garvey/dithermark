@@ -261,30 +261,11 @@ export default {
 .vc-ps-fields {
   padding-top: 5px;
 }
-.vc-ps-fields .vc-input__input {
-  width: 3em;
-  border: 1px solid #888888;
-  box-shadow: inset 0 1px 1px rgba(0,0,0,.1), 0 1px 0 0 #ECECEC;
-  margin-bottom: 5px;
-  font-size: 13px;
-  padding-left: 3px;
-}
-.vc-ps-fields .vc-input__label{
-  text-transform: uppercase;
-  font-size: 13px;
-}
-
-.vc-ps-fields__hex .vc-input__input {
-  width: 4em;
-}
 .vc-ps-button-container{
   display: flex;
   justify-content: space-between;
   flex-grow: 1;
   align-items: center;
-}
-.vc-editable-input{
-  white-space: nowrap;
 }
 .vc-ps-first-column{
   display: inline-flex;

@@ -12,6 +12,23 @@
   </div>
 </template>
 
+<style lang="scss">
+  .vc-editable-input{
+    white-space: nowrap;
+  }
+  .vc-input__label{
+    text-transform: uppercase;
+    font-size: 13px;
+  }
+
+  .vc-editable-input .vc-input__input {
+    width: 4em;
+    margin-bottom: 5px;
+    font-size: 13px;
+    padding-left: 3px;
+  }
+</style>
+
 <script>
 export default {
   name: 'editableInput',
