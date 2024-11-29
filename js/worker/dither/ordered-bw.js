@@ -3,22 +3,7 @@ import { A_INDEX } from '../../shared/pixel.js';
 import PixelMath from '../../shared/pixel-math.js';
 import DitherUtil from '../../shared/dither-util.js';
 import Bayer from '../../shared/bayer-matrix.js';
-import { createNoise2D } from './simplex.js';
-import { ORDERED_DITHER_VARIANT_SIMPLEX, ORDERED_DITHER_VARIANT_RANDOM } from '../../shared/models/ordered-dither-variants.js';
-import { createMatrix, matrixValue, convertBayerToFloat } from './ordered-matrix.js';
-
-const snoise = createNoise2D();
-
-const getMatrixAdjustmentFunc = (variant) => {
-    switch (variant) {
-        case ORDERED_DITHER_VARIANT_RANDOM:
-            return () => Math.random();
-        case ORDERED_DITHER_VARIANT_SIMPLEX:
-            return snoise;
-        default:
-            return () => 1;
-    }
-};
+import { createMatrix, matrixValue, convertBayerToFloat, getMatrixAdjustmentFunc } from './ordered-matrix.js';
 
 function createOrderedDitherBase(dimensions, matrixCreationFunc, variant) {
     const matrix = createMatrix(

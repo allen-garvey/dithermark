@@ -1,4 +1,6 @@
 import { fillArray } from '../../shared/array-util.js';
+import { createNoise2D } from './simplex.js';
+import { ORDERED_DITHER_VARIANT_SIMPLEX, ORDERED_DITHER_VARIANT_RANDOM } from '../../shared/models/ordered-dither-variants.js';
 
 /**
  * @typedef {Object} Matrix
@@ -63,3 +65,16 @@ export const convertBayerToFloat = (bayerMatrix, fullValue = 1) => {
         (i) => (fraction * bayerMatrix[i] - 0.5) * fullValue
     );
 }
+
+const snoise = createNoise2D();
+
+export const getMatrixAdjustmentFunc = (variant) => {
+    switch (variant) {
+        case ORDERED_DITHER_VARIANT_RANDOM:
+            return () => Math.random();
+        case ORDERED_DITHER_VARIANT_SIMPLEX:
+            return snoise;
+        default:
+            return () => 1;
+    }
+};

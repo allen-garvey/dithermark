@@ -25,7 +25,7 @@ const algorithmMap = new Map([
 
 export const getColorDitherAlgorithmForItem = (algorithmModel) => {
     if (algorithmModel.orderedOpts) {
-        const { pattern, dimensions, isRandom, type } =
+        const { pattern, dimensions, variant, type } =
             algorithmModel.orderedOpts;
 
         switch (type) {
@@ -33,7 +33,7 @@ export const getColorDitherAlgorithmForItem = (algorithmModel) => {
                 return OrderedDither.createHueLightnessDither(
                     pattern,
                     dimensions,
-                    isRandom
+                    variant
                 );
             case 'stark':
                 return OrderedDither.createStarkColorOrderedDither(
@@ -53,7 +53,7 @@ export const getColorDitherAlgorithmForItem = (algorithmModel) => {
             default:
                 return OrderedDither.colorOrderedDitherBuilder(pattern)(
                     dimensions,
-                    isRandom
+                    variant
                 );
         }
     }

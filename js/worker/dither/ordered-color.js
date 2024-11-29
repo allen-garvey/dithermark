@@ -5,12 +5,12 @@ import DitherUtil from '../../shared/dither-util.js';
 import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
 import { fillArray } from '../../shared/array-util.js';
 import Bayer from '../../shared/bayer-matrix.js';
-import { createMatrix, matrixValue, convertBayerToFloat, calculateFloatMatrixFraction } from './ordered-matrix.js';
+import { createMatrix, matrixValue, convertBayerToFloat, calculateFloatMatrixFraction, getMatrixAdjustmentFunc } from './ordered-matrix.js';
 
 function createColorOrderedDither(
     dimensions,
     bayerCreationFunc,
-    isRandom,
+    variant,
     postscriptFuncBuilder = null
 ) {
     const matrix = createMatrix(
@@ -20,11 +20,7 @@ function createColorOrderedDither(
     const postscriptFunc = postscriptFuncBuilder
         ? postscriptFuncBuilder(matrix)
         : null;
-    const matrixValueAdjustmentFunc = isRandom
-        ? Math.random
-        : () => {
-            return 1;
-        };
+    const matrixValueAdjustmentFunc = getMatrixAdjustmentFunc(variant);
 
     return (pixels, imageWidth, imageHeight, colorDitherModeId, colors) => {
         return Image.colorDither(
@@ -39,7 +35,7 @@ function createColorOrderedDither(
                         matrix,
                         x % matrix.dimensions,
                         y % matrix.dimensions
-                    ) * matrixValueAdjustmentFunc()
+                    ) * matrixValueAdjustmentFunc(x, y)
                 );
             },
             postscriptFunc
@@ -51,22 +47,22 @@ function colorOrderedDitherBuilder(
     bayerFuncName,
     postscriptFuncBuilder = null
 ) {
-    return function (dimensions, isRandom = false) {
+    return function (dimensions, variant) {
         return createColorOrderedDither(
             dimensions,
             Bayer[bayerFuncName],
-            isRandom,
+            variant,
             postscriptFuncBuilder
         );
     };
 }
 
 function colorOrderedDitherBuilder2(postscriptFuncBuilder = null) {
-    return (bayerFuncName, dimensions, isRandom = false) => {
+    return (bayerFuncName, dimensions, variant) => {
         return createColorOrderedDither(
             dimensions,
             Bayer[bayerFuncName],
-            isRandom,
+            variant,
             postscriptFuncBuilder
         );
     };
