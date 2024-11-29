@@ -7,27 +7,9 @@ import ArrayUtil from '../../shared/array-util.js';
 import Bayer from '../../shared/bayer-matrix.js';
 import { createNoise2D } from './simplex.js';
 import { ORDERED_DITHER_VARIANT_SIMPLEX, ORDERED_DITHER_VARIANT_RANDOM } from '../../shared/models/ordered-dither-variants.js';
+import { createMatrix, matrixValue } from './ordered-matrix.js';
 
 const snoise = createNoise2D();
-
-function createMatrix(dimensions, data) {
-    return {
-        dimensions: dimensions,
-        data: data,
-    };
-}
-
-function matrixIndexFor(matrix, x, y) {
-    return matrix.dimensions * y + x;
-}
-
-function matrixValue(matrix, x, y) {
-    if (x >= matrix.dimensions || y >= matrix.dimensions) {
-        return 0;
-    }
-    const index = matrixIndexFor(matrix, x, y);
-    return matrix.data[index];
-}
 
 const getMatrixAdjustmentFunc = (variant) => {
     switch (variant) {
