@@ -1,6 +1,6 @@
 import Threshold from '../dither/threshold.js';
 import AdaptiveThreshold from '../dither/adaptive-threshold.js';
-import OrderedDither from '../dither/ordered.js';
+import { orderedDitherBwBuilder } from '../dither/ordered-bw.js';
 import ErrorPropDither from '../dither/error-prop.js';
 
 const algorithmMap = new Map([
@@ -28,7 +28,7 @@ const algorithmMap = new Map([
 export const getBwDitherAlgorithmForItem = (algorithmModel) => {
     if (algorithmModel.orderedOpts) {
         const { pattern, dimensions, variant } = algorithmModel.orderedOpts;
-        return OrderedDither.orderedDitherBuilder(pattern)(
+        return orderedDitherBwBuilder(pattern)(
             dimensions,
             variant
         );
