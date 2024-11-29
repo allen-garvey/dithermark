@@ -54,7 +54,9 @@ module.exports = {
                     {
                         resourceQuery: /module/,
                         use: [
-                            'vue-style-loader',
+                            {
+                                loader: MiniCssExtractPlugin.loader,
+                            },
                             {
                                 loader: 'css-loader',
                                 options: {
