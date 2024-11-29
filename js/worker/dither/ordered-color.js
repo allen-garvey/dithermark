@@ -7,10 +7,6 @@ import { fillArray } from '../../shared/array-util.js';
 import Bayer from '../../shared/bayer-matrix.js';
 import { createMatrix, matrixValue, convertBayerToFloat, calculateFloatMatrixFraction } from './ordered-matrix.js';
 
-/**
- * Color dither stuff
- */
-
 function createColorOrderedDither(
     dimensions,
     bayerCreationFunc,

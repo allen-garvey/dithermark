@@ -1,5 +1,5 @@
 import Threshold from '../dither/threshold.js';
-import OrderedDither from '../dither/ordered.js';
+import OrderedDither from '../dither/ordered-color.js';
 import ErrorPropColorDither from '../dither/error-prop-color.js';
 
 const algorithmMap = new Map([
