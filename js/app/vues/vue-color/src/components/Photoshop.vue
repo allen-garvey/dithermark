@@ -272,4 +272,43 @@ export default {
   flex-direction: column;
   justify-content: space-between;
 }
+
+/*
+* Media queries so the color picker doesn't stretch small screens
+*/
+
+$color_picker_full_version_min_width: 465px;
+
+@media screen and (min-width: $color_picker_full_version_min_width) {
+    .vc-ps-button-container-secondary {
+        display: none;
+    }
+}
+
+//disable things for mobile
+@media screen and (max-width: $color_picker_full_version_min_width - 1px) {
+    .vc-ps-body {
+        display: block;
+    }
+
+    .vc-ps-button-container-main,
+    .vc-ps-previews,
+    .vc-ps-hsv-fields,
+    .vc-ps-rgb-fields {
+        display: none;
+    }
+
+    .vc-ps-controls {
+        margin-left: 0;
+    }
+
+    .vc-ps-fields__hex {
+        display: flex;
+        justify-content: center;
+    }
+
+    .vc-ps-button-container-secondary {
+        margin-bottom: 5px;
+    }
+}
 </style>
