@@ -181,7 +181,6 @@ export default {
   height: 256px;
   position: relative;
   border: 2px solid #B3B3B3;
-  border-bottom: 2px solid #F0F0F0;
   overflow: hidden;
 }
 .vc-ps-saturation-wrap .vc-saturation-circle {
@@ -195,7 +194,6 @@ export default {
   width: 37px;
   margin-left: 10px;
   border: 2px solid #B3B3B3;
-  border-bottom: 2px solid #F0F0F0;
 }
 .vc-ps-hue-pointer {
   position: relative;
@@ -238,7 +236,6 @@ export default {
 }
 .vc-ps-previews__swatches {
   border: 1px solid #B3B3B3;
-  border-bottom: 1px solid #F0F0F0;
   margin-bottom: 2px;
   margin-top: 1px;
 }
