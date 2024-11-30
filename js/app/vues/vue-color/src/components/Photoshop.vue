@@ -1,5 +1,5 @@
 <template>
-  <div :class="[disableFields ? 'vc-photoshop__disable-fields' : '']">
+  <div>
     <div class="vc-ps-head">{{head}}</div>
     <div class="vc-ps-body">
       <div class="vc-ps-body-main">
@@ -29,7 +29,7 @@
           </div>
           <div class="vc-ps-previews__label">current</div>
         </div>
-        <div class="vc-ps-actions" v-if="!disableFields">
+        <div class="vc-ps-actions">
           <div class="vc-ps-fields">
             <!-- hsv -->
             <div class="vc-ps-fields-group vc-ps-hsv-fields">
@@ -78,10 +78,6 @@ export default {
     head: {
       type: String,
       default: 'Color Picker'
-    },
-    disableFields: {
-      type: Boolean,
-      default: false
     },
     shouldLiveUpdate: {
       type: Boolean,
@@ -160,9 +156,6 @@ export default {
 </script>
 
 <style lang="scss">
-.vc-photoshop__disable-fields {
-  width: 390px;
-}
 .vc-ps-head {
   padding: 6px 0 0;
   font-size: 13px;
