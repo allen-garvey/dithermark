@@ -1,5 +1,5 @@
 <template>
-  <div :class="['vc-photoshop', disableFields ? 'vc-photoshop__disable-fields' : '']">
+  <div :class="[disableFields ? 'vc-photoshop__disable-fields' : '']">
     <div class="vc-ps-head">{{head}}</div>
     <div class="vc-ps-body">
       <div class="vc-ps-body-main">
@@ -160,10 +160,6 @@ export default {
 </script>
 
 <style lang="scss">
-.vc-photoshop {
-  box-sizing: initial;
-  display: inline-block;
-}
 .vc-photoshop__disable-fields {
   width: 390px;
 }
