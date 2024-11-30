@@ -31,14 +31,14 @@
   "homepage": "https://github.com/allen-garvey/dithermark#readme",
   "dependencies": {
     "lodash.throttle": "^4.1.1",
-    "vue": "3.5.12"
+    "vue": "3.5.13"
   },
   "devDependencies": {
-    "@vue/compiler-sfc": "3.5.12",
+    "@vue/compiler-sfc": "3.5.13",
     "css-loader": "^7.1.2",
     "express": "^4.21.1",
     "mini-css-extract-plugin": "^2.9.2",
-    "sass": "^1.80.5",
+    "sass": "^1.81.0",
     "sass-loader": "^16.0.3",
     "sharp": "^0.33.5",
     "vue-loader": "17.4.2",
