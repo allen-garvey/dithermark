@@ -17,7 +17,6 @@
 import throttle from 'lodash.throttle'
 
 export default {
-  name: 'Saturation',
   props: {
     modelValue: Object
   },

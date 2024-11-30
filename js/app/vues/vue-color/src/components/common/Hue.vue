@@ -13,7 +13,6 @@
 
 <script>
 export default {
-  name: 'Hue',
   props: {
     modelValue: Object,
     direction: {

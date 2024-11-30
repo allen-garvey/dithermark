@@ -73,7 +73,6 @@ function wrapHue(hue){
 }
 
 export default {
-  name: 'Photoshop',
   mixins: [colorMixin],
   props: {
     head: {

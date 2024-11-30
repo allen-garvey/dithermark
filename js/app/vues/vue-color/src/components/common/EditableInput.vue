@@ -31,7 +31,6 @@
 
 <script>
 export default {
-  name: 'editableInput',
   props: {
     label: String,
     dataName: String,
