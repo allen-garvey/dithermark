@@ -25,7 +25,7 @@ function distanceHue(item1, item2) {
 
     if (item1[1] < 7) {
         const fraction = item1[1] / 7;
-        const lightnesstDist = (item1[2] - item2[2]) / 255;
+        const lightnesstDist = Math.abs(item1[2] - item2[2]) / 255;
         return 4 * fraction * hueDist * hueDist + (1 - fraction) * lightnesstDist * lightnesstDist;
     }
 
@@ -46,8 +46,8 @@ function distanceHueLightness(item1, item2) {
 
 function distanceHslWeighted(item1, item2) {
     const hueDist = PixelMath.hueDistance(item1[0], item2[0]) / 360;
-    const satDist = (item1[1] - item2[1]) / 100;
-    const lighnesstDist = (item1[2] - item2[2]) / 255;
+    const satDist = Math.abs(item1[1] - item2[1]) / 100;
+    const lighnesstDist = Math.abs(item1[2] - item2[2]) / 255;
 
     return hueDist * hueDist * 8 + satDist * satDist + lighnesstDist * lighnesstDist * 32;
 }
@@ -74,22 +74,14 @@ function distanceLuma(item1, item2) {
  * Functions for error prop dither
 */
 
-function incrementHue(hue, incrementValues) {
-    return Math.abs(Math.round(hue + incrementValues[0]) % 360);
+function incrementHueValue(hue, incrementValue) {
+    return Math.abs(Math.round(hue + incrementValue) % 360);
 }
 
 function incrementHsl(hslValues, incrementValues) {
     return [
-        incrementHue(hslValues[0], incrementValues),
+        incrementHueValue(hslValues[0], incrementValues[0]),
         PixelMath.clamp(hslValues[1] + incrementValues[1], 100),
-        PixelMath.clamp(hslValues[2] + incrementValues[2]),
-    ];
-}
-
-function incrementHl(hslValues, incrementValues) {
-    return [
-        incrementHue(hslValues[0], incrementValues),
-        0,
         PixelMath.clamp(hslValues[2] + incrementValues[2]),
     ];
 }
@@ -121,6 +113,13 @@ function errorAmountHsl(expectedValue, actualValue, buffer) {
     buffer[0] = getHueError(expectedValue[0], actualValue[0]);
     buffer[1] = Math.round(expectedValue[1] - actualValue[1]) % 100;
     buffer[2] = expectedValue[2] - actualValue[2];
+    return buffer;
+}
+
+function errorAmountHue(expectedValue, actualValue, buffer) {
+    buffer[0] = getHueError(expectedValue[0], actualValue[0]);
+    buffer[1] = 0;
+    buffer[2] = 0;
     return buffer;
 }
 
@@ -156,14 +155,14 @@ exports[ColorDitherModes.get('HUE').id] = {
     pixelValue: pixelToHsl,
     distance: distanceHue,
     dimensions: 3, //need 3 dimensions because we are using hsl function
-    incrementValue: incrementHl,
-    errorAmount: errorAmountHl,
+    incrementValue: incrementHsl,
+    errorAmount: errorAmountHue,
 };
 exports[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
     pixelValue: pixelToHsl,
     distance: distanceHueLightness,
     dimensions: 3, //need 3 dimensions because we are using hsl function
-    incrementValue: incrementHl,
+    incrementValue: incrementHsl,
     errorAmount: errorAmountHl,
 };
 exports[ColorDitherModes.get('HSL_WEIGHTED').id] = {
