@@ -55,7 +55,7 @@ const modifierWordsSet = new Set([
 /**
  * @param {string} word
  */
-const isModifierWord = (word) =>
+const isModifierWord = word =>
     /(ly|ed)$/.test(word) || modifierWordsSet.has(word);
 
 /**
@@ -89,7 +89,7 @@ const trimModifierWords = (words, maxDescriptiveWords) => {
  * Trim description and remove spaces, as this is used for the default file name when saving
  * @param {string} description
  */
-const trimDescription = (description) => {
+const trimDescription = description => {
     const maxDescriptiveWords = 4;
     let words = description
         .toLocaleLowerCase()
@@ -110,9 +110,9 @@ const getRandomPhotosJson = () =>
     fetch(
         `https://api.unsplash.com/photos/random?featured=true&count=30&client_id=${UNSPLASH_ACCESS_KEY}`
     )
-        .then((res) => res.json())
-        .then((data) =>
-            data.map((imageData) => {
+        .then(res => res.json())
+        .then(data =>
+            data.map(imageData => {
                 const ret = {
                     urls: {
                         regular: imageData.urls.regular,
@@ -133,9 +133,10 @@ const getRandomPhotosJson = () =>
             })
         );
 
-getRandomPhotosJson().then((data) =>
-    fs.writeFile(
-        path.join(__dirname, '..', 'public_html', 'api', 'unsplash.json'),
-        JSON.stringify(data)
-    )
+const outputDir = path.join(__dirname, '..', 'public_html', 'api');
+
+const mkdirPromise = fs.mkdir(outputDir, { recursive: true });
+
+Promise.all([getRandomPhotosJson(), mkdirPromise]).then(([data]) =>
+    fs.writeFile(path.join(outputDir, 'unsplash.json'), JSON.stringify(data))
 );
