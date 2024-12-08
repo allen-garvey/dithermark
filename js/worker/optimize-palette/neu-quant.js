@@ -23,14 +23,13 @@
  * https://github.com/jnordberg/gif.js/blob/master/src/TypedNeuQuant.js
  */
 
-import ArrayUtil from '../../shared/array-util.js';
-
+import { fillArray } from '../../shared/array-util.js';
 
 // networkSize is number of colors returned - need to reduce this if palette size is less than this
 //reducing to 64 when numColors is <= 64 is 2-4 times faster but generally looks worse
 //reducing to 128 when numColors is <= 128 is 1.5-2 times faster and sometimes looks better, but generally worse
 
-function NeuQuant(networkSize){
+function NeuQuant(networkSize) {
     /**
      * Constants
      */
@@ -40,30 +39,29 @@ function NeuQuant(networkSize){
     // defs for freq and bias
     const netbiasshift = 4; // bias for colour values
     const intbiasshift = 16; // bias for fractions
-    const intbias = (1 << intbiasshift);
+    const intbias = 1 << intbiasshift;
     const gammashift = 10;
     const betashift = 10;
-    const beta = (intbias >> betashift); /* beta = 1/1024 */
-    const betagamma = (intbias << (gammashift - betashift));
+    const beta = intbias >> betashift; /* beta = 1/1024 */
+    const betagamma = intbias << (gammashift - betashift);
 
     // defs for decreasing radius factor
-    const initrad = (networkSize >> 3); // for 256 cols, radius starts
+    const initrad = networkSize >> 3; // for 256 cols, radius starts
     const radiusbiasshift = 6; // at 32.0 biased by 6 bits
-    const radiusbias = (1 << radiusbiasshift);
-    const initradius = (initrad * radiusbias); //and decreases by a
+    const radiusbias = 1 << radiusbiasshift;
+    const initradius = initrad * radiusbias; //and decreases by a
     const radiusdec = 30; // factor of 1/30 each cycle
 
     // defs for decreasing alpha factor
     const alphabiasshift = 10; // alpha starts at 1.0
-    const initalpha = (1 << alphabiasshift);
+    const initalpha = 1 << alphabiasshift;
 
     /* radbias and alpharadbias used for radpower calculation */
     const radbiasshift = 8;
-    const radbias = (1 << radbiasshift);
-    const alpharadbshift = (alphabiasshift + radbiasshift);
-    const alpharadbias = (1 << alpharadbshift);
-    
-    
+    const radbias = 1 << radbiasshift;
+    const alpharadbshift = alphabiasshift + radbiasshift;
+    const alpharadbias = 1 << alpharadbshift;
+
     /**
      * Variables initialized by init
      */
@@ -79,14 +77,14 @@ function NeuQuant(networkSize){
         Private Method: init
         sets up arrays
     */
-    function init(){
+    function init() {
         network = [];
         netindex = new Int32Array(256);
         bias = new Int32Array(networkSize);
         freq = new Int32Array(networkSize);
         radpower = new Int32Array(networkSize >> 3);
 
-        for(let i = 0; i < networkSize; i++){
+        for (let i = 0; i < networkSize; i++) {
             const v = (i << (netbiasshift + 8)) / networkSize;
             network[i] = new Float64Array([v, v, v, 0]);
             freq[i] = intbias / networkSize;
@@ -98,8 +96,8 @@ function NeuQuant(networkSize){
         Private Method: unbiasnet
         unbiases network to give byte values 0..255 and record position i to prepare for sort
     */
-    function unbiasnet(){
-        for(let i = 0; i < networkSize; i++){
+    function unbiasnet() {
+        for (let i = 0; i < networkSize; i++) {
             network[i][0] >>= netbiasshift;
             network[i][1] >>= netbiasshift;
             network[i][2] >>= netbiasshift;
@@ -111,7 +109,7 @@ function NeuQuant(networkSize){
         Private Method: altersingle
         moves neuron *i* towards biased (b,g,r) by factor *alpha*
     */
-    function altersingle(alpha, i, b, g, r){
+    function altersingle(alpha, i, b, g, r) {
         network[i][0] -= (alpha * (network[i][0] - b)) / initalpha;
         network[i][1] -= (alpha * (network[i][1] - g)) / initalpha;
         network[i][2] -= (alpha * (network[i][2] - r)) / initalpha;
@@ -129,7 +127,7 @@ function NeuQuant(networkSize){
         let k = i - 1;
         let m = 1;
 
-        while((j < hi) || (k > lo)){
+        while (j < hi || k > lo) {
             const a = radpower[m++];
 
             if (j < hi) {
@@ -139,7 +137,7 @@ function NeuQuant(networkSize){
                 p[2] -= (a * (p[2] - r)) / alpharadbias;
             }
 
-            if(k > lo){
+            if (k > lo) {
                 const p = network[k--];
                 p[0] -= (a * (p[0] - b)) / alpharadbias;
                 p[1] -= (a * (p[1] - g)) / alpharadbias;
@@ -165,24 +163,25 @@ function NeuQuant(networkSize){
         let bestpos = -1;
         let bestbiaspos = bestpos;
 
-        for(let i = 0; i < networkSize; i++){
+        for (let i = 0; i < networkSize; i++) {
             const n = network[i];
 
-            const dist = Math.abs(n[0] - b) + Math.abs(n[1] - g) + Math.abs(n[2] - r);
-            if(dist < bestd){
+            const dist =
+                Math.abs(n[0] - b) + Math.abs(n[1] - g) + Math.abs(n[2] - r);
+            if (dist < bestd) {
                 bestd = dist;
                 bestpos = i;
             }
 
-            const biasdist = dist - ((bias[i]) >> (intbiasshift - netbiasshift));
-            if(biasdist < bestbiasd){
+            const biasdist = dist - (bias[i] >> (intbiasshift - netbiasshift));
+            if (biasdist < bestbiasd) {
                 bestbiasd = biasdist;
                 bestbiaspos = i;
             }
 
-            const betafreq = (freq[i] >> betashift);
+            const betafreq = freq[i] >> betashift;
             freq[i] -= betafreq;
-            bias[i] += (betafreq << gammashift);
+            bias[i] += betafreq << gammashift;
         }
 
         freq[bestpos] += beta;
@@ -205,25 +204,26 @@ function NeuQuant(networkSize){
             // find smallest in i..netsize-1
             for (let j = i + 1; j < networkSize; j++) {
                 const q = network[j];
-                if (q[1] < smallval) { // index on g
+                if (q[1] < smallval) {
+                    // index on g
                     smallpos = j;
                     smallval = q[1]; // index on g
                 }
             }
             const q = network[smallpos];
 
-            if(i !== smallpos){
+            if (i !== smallpos) {
                 // swap p (i) and q (smallpos) entries
-                for(let j=0;j<4;j++){
+                for (let j = 0; j < 4; j++) {
                     const temp = q[j];
                     q[j] = p[j];
                     p[j] = temp;
                 }
             }
             // smallval entry is now in position i
-            if(smallval !== previouscol){
+            if (smallval !== previouscol) {
                 netindex[previouscol] = (startpos + i) >> 1;
-                for(let j = previouscol + 1; j < smallval; j++){
+                for (let j = previouscol + 1; j < smallval; j++) {
                     netindex[j] = i;
                 }
                 previouscol = smallval;
@@ -231,9 +231,9 @@ function NeuQuant(networkSize){
             }
         }
         netindex[previouscol] = (startpos + maxnetpos) >> 1;
-        for(let j = previouscol + 1; j < 256; j++){
+        for (let j = previouscol + 1; j < 256; j++) {
             netindex[j] = maxnetpos; // really 256
-        }        
+        }
     }
 
     /*
@@ -244,24 +244,25 @@ function NeuQuant(networkSize){
     function learn(pixels, samplefac, progressCallback) {
         //these calculations were done supposing pixels had no alpha, so divide by 4 * 3 to get length of pixels without alpha
         const pixelLength = pixels.length;
-        //originally was divided by 3, but not sure if we should be 
+        //originally was divided by 3, but not sure if we should be
         //dividing by 4 now that we are using rgb instead of rgba
         //however, with samplefac 10 with colors less than 256, divide by 4 gives better results
         //compared to dividing by 3, which gives duller, less saturated result
-        const alphadec = 30 + ((samplefac - 1) / 4);
+        const alphadec = 30 + (samplefac - 1) / 4;
         const samplepixels = pixelLength / (4 * samplefac);
         let delta = ~~(samplepixels / ncycles);
         let alpha = initalpha;
         let radius = initradius;
 
         let rad = radius >> radiusbiasshift;
-        if(rad <= 1){ 
+        if (rad <= 1) {
             rad = 0;
         }
-        for(let i = 0; i < rad; i++){
-            radpower[i] = alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
+        for (let i = 0; i < rad; i++) {
+            radpower[i] =
+                alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
         }
-        
+
         const DEFAULT_STEP = 4;
         let step = DEFAULT_STEP;
 
@@ -271,35 +272,32 @@ function NeuQuant(networkSize){
         const prime2 = 491;
         const prime3 = 487;
         const prime4 = 503;
-        const minpicturebytes = (4 * prime4);
-        if(pixelLength >= minpicturebytes){
-            if((pixelLength % prime1) !== 0){
+        const minpicturebytes = 4 * prime4;
+        if (pixelLength >= minpicturebytes) {
+            if (pixelLength % prime1 !== 0) {
                 step *= prime1;
-            } 
-            else if ((pixelLength % prime2) !== 0){
+            } else if (pixelLength % prime2 !== 0) {
                 step *= prime2;
-            } 
-            else if((pixelLength % prime3) !== 0){
+            } else if (pixelLength % prime3 !== 0) {
                 step *= prime3;
-            } 
-            else{
+            } else {
                 step *= prime4;
             }
         }
-        
+
         let pixelIndex = 0; // current pixel
         let i = 0;
         let hasTransparentPixels = false;
         let hasUsedProgressCallback = samplefac > 5;
         const halfDone = Math.floor(samplepixels / 2);
-        while(i < samplepixels){
+        while (i < samplepixels) {
             //skip transparent pixels
-            if(pixels[pixelIndex+3] === 0){
+            if (pixels[pixelIndex + 3] === 0) {
                 hasTransparentPixels = true;
                 pixelIndex += step;
 
                 //to avoid infinite loops
-                if(pixelIndex >= pixelLength){
+                if (pixelIndex >= pixelLength) {
                     pixelIndex = 0;
                     step = DEFAULT_STEP;
                 }
@@ -311,32 +309,33 @@ function NeuQuant(networkSize){
             const j = contest(b, g, r);
 
             altersingle(alpha, j, b, g, r);
-            if (rad !== 0){
+            if (rad !== 0) {
                 alterneigh(rad, j, b, g, r); // alter neighbours
             }
 
             i++;
             delta = delta === 0 ? 1 : delta;
-            if(i % delta === 0){
+            if (i % delta === 0) {
                 alpha -= alpha / alphadec;
                 radius -= radius / radiusdec;
                 rad = radius >> radiusbiasshift;
                 rad = rad <= 1 ? 0 : rad;
 
-                for(let j = 0; j < rad; j++){
-                    radpower[j] = alpha * (((rad * rad - j * j) * radbias) / (rad * rad));
+                for (let j = 0; j < rad; j++) {
+                    radpower[j] =
+                        alpha * (((rad * rad - j * j) * radbias) / (rad * rad));
                 }
             }
             pixelIndex += step;
-            if(pixelIndex >= pixelLength){
+            if (pixelIndex >= pixelLength) {
                 pixelIndex = 0;
                 //if we get past the end of pixels array, and there are transparent pixels reset step to every pixel,
                 //so we don't get caught in a potentially infinite loop if there are transparent pixels
                 //don't do this unless we have to, since this leads to worse results
-                if(hasTransparentPixels){
+                if (hasTransparentPixels) {
                     step = DEFAULT_STEP;
                 }
-                if(!hasUsedProgressCallback && i >= halfDone){
+                if (!hasUsedProgressCallback && i >= halfDone) {
                     hasUsedProgressCallback = true;
                     progressCallback(50);
                 }
@@ -355,7 +354,7 @@ function NeuQuant(networkSize){
         pixels - array of pixels in RGBA format; e.g. [r, g, b, a, r, g, b, a]
         samplefac - sampling factor 1 to 30 where lower is better quality
     */
-    this.buildColormap = function(pixels, samplefac, progressCallback){
+    this.buildColormap = function (pixels, samplefac, progressCallback) {
         init();
         learn(pixels, samplefac, progressCallback);
         unbiasnet();
@@ -371,15 +370,15 @@ function NeuQuant(networkSize){
         > [r, g, b, r, g, b, r, g, b, ..]
         >
     */
-    function getColormap(){
-        const map = new Uint8Array(networkSize*3);
+    function getColormap() {
+        const map = new Uint8Array(networkSize * 3);
         const index = [];
 
-        for(let i = 0; i < networkSize; i++){
+        for (let i = 0; i < networkSize; i++) {
             index[network[i][3]] = i;
         }
 
-        for(let i = 0, k=0; i < networkSize; i++){
+        for (let i = 0, k = 0; i < networkSize; i++) {
             const j = index[i];
             map[k++] = network[j][0];
             map[k++] = network[j][1];
@@ -391,29 +390,34 @@ function NeuQuant(networkSize){
 
 //while rgb and luma distance look similar at high number of colors,
 //when the number of colors is low luma distance has much better results
-function lumaDistance(r1, g1, b1, r2, g2, b2){
+function lumaDistance(r1, g1, b1, r2, g2, b2) {
     const redDistance = r1 - r2;
     const greenDistance = g1 - g2;
     const blueDistance = b1 - b2;
 
-    return redDistance * redDistance * 0.299 + greenDistance * greenDistance * 0.587 + blueDistance * blueDistance * 0.114;
+    return (
+        redDistance * redDistance * 0.299 +
+        greenDistance * greenDistance * 0.587 +
+        blueDistance * blueDistance * 0.114
+    );
 }
 
 //palette reduction suggestion from: https://scientificgems.wordpress.com/stuff/neuquant-fast-high-quality-image-quantization/
 //find the most similar colors and discard one
-function reducePaletteSize(palette, numColors){
+function reducePaletteSize(palette, numColors) {
     const numPaletteColors = palette.length / 3;
     const numColorsToCut = numPaletteColors - numColors;
 
-    const colorIndexes = ArrayUtil.create(numPaletteColors, (i)=>{
-        return i * 3;
-    }, Uint16Array);
+    const colorIndexes = fillArray(
+        new Uint16Array(numPaletteColors),
+        i => i * 3
+    );
     let colorIndexesLength = colorIndexes.length;
     //keep track of color total distances, so when culling colors, we keep the color that has the greatest total
     //distance from everything, as it will be the most unique
     const colorTotalDistances = new Float32Array(colorIndexesLength);
 
-    for(let i=0;i<numColorsToCut;i++){
+    for (let i = 0; i < numColorsToCut; i++) {
         let shortestDistance = Infinity;
         //shortestIndex1 only needed if we are reducing by averaging 2 closest indexes, instead of just discarding second
         let shortestIndex1 = -1;
@@ -421,44 +425,56 @@ function reducePaletteSize(palette, numColors){
 
         //technically this has a bug, in that not all the distances are calculated
         //(e.g. the last index total distance will always be 0), but somehow fixing this causes the results to be worse for images with wide ranges of color (most images), though slightly better on images with a reduced color palette
-        for(let j=0;j<colorIndexesLength-1;j++){
+        for (let j = 0; j < colorIndexesLength - 1; j++) {
             const color1Index = colorIndexes[j];
             const color1Red = palette[color1Index];
-            const color1Green = palette[color1Index+1];
-            const color1Blue = palette[color1Index+2];
+            const color1Green = palette[color1Index + 1];
+            const color1Blue = palette[color1Index + 2];
             let totalDistance = 0;
-            for(let k=j+1;k<colorIndexesLength;k++){
+            for (let k = j + 1; k < colorIndexesLength; k++) {
                 const color2Index = colorIndexes[k];
                 const color2Red = palette[color2Index];
-                const color2Green = palette[color2Index+1];
-                const color2Blue = palette[color2Index+2];
+                const color2Green = palette[color2Index + 1];
+                const color2Blue = palette[color2Index + 2];
 
-                const distance = lumaDistance(color1Red, color1Green, color1Blue, color2Red, color2Green, color2Blue);
+                const distance = lumaDistance(
+                    color1Red,
+                    color1Green,
+                    color1Blue,
+                    color2Red,
+                    color2Green,
+                    color2Blue
+                );
                 totalDistance += distance;
-                if(distance < shortestDistance){
+                if (distance < shortestDistance) {
                     shortestDistance = distance;
                     shortestIndex1 = j;
                     shortestIndex2 = k;
 
-                    if(distance === 0){
+                    if (distance === 0) {
                         break;
                     }
                 }
             }
             colorTotalDistances[j] = totalDistance;
-            if(shortestDistance === 0){
+            if (shortestDistance === 0) {
                 break;
             }
         }
         //delete the index with shortest distance, as it is less unique
-        const keyToDelete = shortestDistance > 0 && colorTotalDistances[shortestIndex2] > colorTotalDistances[shortestIndex1] ? shortestIndex1 : shortestIndex2;
+        const keyToDelete =
+            shortestDistance > 0 &&
+            colorTotalDistances[shortestIndex2] >
+                colorTotalDistances[shortestIndex1]
+                ? shortestIndex1
+                : shortestIndex2;
         //delete key by swapping the last value with value at the index to be deleted
         colorIndexesLength--;
         colorIndexes[keyToDelete] = colorIndexes[colorIndexesLength];
         //don't need to swap colorTotalDistances, since we reset it at each iteration of the loop
     }
     const reducedPalette = new Uint8Array(numColors * 3);
-    for(let i=0,reducedPaletteIndex=0;i<colorIndexesLength;i++){
+    for (let i = 0, reducedPaletteIndex = 0; i < colorIndexesLength; i++) {
         let colorIndex = colorIndexes[i];
         reducedPalette[reducedPaletteIndex++] = palette[colorIndex++];
         reducedPalette[reducedPaletteIndex++] = palette[colorIndex++];
@@ -467,19 +483,33 @@ function reducePaletteSize(palette, numColors){
     return reducedPalette;
 }
 
-function getNetworkSize(numColors, startingSize){
+function getNetworkSize(numColors, startingSize) {
     let currentSize = startingSize;
-    while(currentSize < numColors){
+    while (currentSize < numColors) {
         currentSize *= 2;
     }
     return currentSize;
 }
 
-function neuQuant(pixels, numColors, colorQuantization, _imageWidth, _imageHeight, progressCallback){
-    const networkSize = getNetworkSize(numColors, colorQuantization.networkSize || 256);
+function neuQuant(
+    pixels,
+    numColors,
+    colorQuantization,
+    _imageWidth,
+    _imageHeight,
+    progressCallback
+) {
+    const networkSize = getNetworkSize(
+        numColors,
+        colorQuantization.networkSize || 256
+    );
     const quantizer = new NeuQuant(networkSize);
-    let palette = quantizer.buildColormap(pixels, colorQuantization.sample, progressCallback);
-    if(numColors < networkSize){
+    let palette = quantizer.buildColormap(
+        pixels,
+        colorQuantization.sample,
+        progressCallback
+    );
+    if (numColors < networkSize) {
         palette = reducePaletteSize(palette, numColors);
     }
     return palette;
