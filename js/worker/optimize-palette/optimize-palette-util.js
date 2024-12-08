@@ -2,7 +2,7 @@
  * Shared functions used by optimize palette algorithms
  */
 
-import ArrayUtil from '../../shared/array-util.js';
+import { createArray } from '../../shared/array-util.js';
 import PixelMath from '../../shared/pixel-math.js';
 
 //turns JavaScript array of pixels into a single Uint8Array
@@ -22,7 +22,7 @@ function pixelArrayToBuffer(pixelArray, paletteCount = 0) {
 
 //sorts Float32Array of pixels using counting sort algorithm
 function countingSort32(array, valueFunc) {
-    const valueMap = ArrayUtil.create(256, () => []);
+    const valueMap = createArray(256, () => []);
     array.forEach(value => {
         valueMap[valueFunc(value)].push(value);
     });

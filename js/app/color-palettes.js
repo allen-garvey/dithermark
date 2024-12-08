@@ -1,4 +1,4 @@
-import ArrayUtil from '../shared/array-util.js';
+import { createArray } from '../shared/array-util.js';
 
 /**
  * Note that color hex codes must be in 6 digit format, and not 3 digit format to work properly
@@ -711,7 +711,7 @@ function padPaletteColorsToMinimumLength(palettes, minimumColorsLength) {
     return palettes.map(palette => {
         if (!palette.isCustom && palette.colors.length < minimumColorsLength) {
             palette.colors = palette.colors.concat(
-                ArrayUtil.create(
+                createArray(
                     minimumColorsLength - palette.colors.length,
                     () => '#000000'
                 )

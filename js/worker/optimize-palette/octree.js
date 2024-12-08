@@ -25,7 +25,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import ArrayUtil from '../../shared/array-util.js';
+import { createArray } from '../../shared/array-util.js';
 import PixelMath from '../../shared/pixel-math.js';
 import Util from './optimize-palette-util.js';
 
@@ -122,7 +122,7 @@ OctreeNode.prototype.getColor = function () {
  * Octree Quantizer Class
  */
 function OctreeQuantizer() {
-    this.levels = ArrayUtil.create(MAX_DEPTH, () => []);
+    this.levels = createArray(MAX_DEPTH, () => []);
     this.root = new OctreeNode(0, this);
 }
 OctreeQuantizer.prototype.getLeaves = function () {

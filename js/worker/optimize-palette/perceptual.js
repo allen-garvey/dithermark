@@ -3,7 +3,7 @@
  */
 
 import Image from '../image.js';
-import ArrayUtil from '../../shared/array-util.js';
+import { createArray } from '../../shared/array-util.js';
 import PixelMath from '../../shared/pixel-math.js';
 
 function createPopularityMap(pixels, numDistinctValues, pixelValueFunc) {
@@ -153,7 +153,7 @@ function sortHuesByClosestLightness(hues, pixels) {
         hueAverageLigtnessMap[i] =
             hueAverageLigtnessMap[i] / hueAverageLigtnessMap[i + 1];
     }
-    let sortedHues = ArrayUtil.create(hues.length, i => ({
+    let sortedHues = createArray(hues.length, i => ({
         hue: hues[i],
         lightness: hueAverageLigtnessMap[i * 2],
     })).sort((a, b) => {
@@ -588,7 +588,7 @@ function sortHues(hues, hueLightnessPopularities) {
         lightnessMap[i] = Math.floor(totalLightness / total);
     });
     return new Uint16Array(
-        ArrayUtil.create(hues.length, i => [hues[i], lightnessMap[i]])
+        createArray(hues.length, i => [hues[i], lightnessMap[i]])
             .sort((a, b) => {
                 return a[1] - b[1];
             })

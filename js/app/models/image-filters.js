@@ -1,6 +1,6 @@
 //values used in global settings- Image tab
 
-import ArrayUtil from '../../shared/array-util.js';
+import { createArray } from '../../shared/array-util.js';
 
 //imageDimensions = height * width
 //percentage is 0-100
@@ -25,9 +25,9 @@ function pixelationValues(imageDimensions) {
 
 function outlineContourRadiusPercentages() {
     const step = 0.25;
-    return ArrayUtil.create(48, i => i * step + step)
-        .concat(ArrayUtil.create(36, i => (i + 1) * 0.5 + 12))
-        .concat(ArrayUtil.create(10, i => i + 1 + 30));
+    return createArray(48, i => i * step + step)
+        .concat(createArray(36, i => (i + 1) * 0.5 + 12))
+        .concat(createArray(10, i => i + 1 + 30));
 }
 
 function outlineEdgeStrengths() {
@@ -35,7 +35,7 @@ function outlineEdgeStrengths() {
 }
 
 function outlineEdgeThicknesses() {
-    return ArrayUtil.create(10, i => {
+    return createArray(10, i => {
         return i + 1;
     });
 }

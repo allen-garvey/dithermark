@@ -1,6 +1,6 @@
 import WorkerHeaders from '../shared/worker-headers.js';
 import ColorPicker from './color-picker.js';
-import ArrayUtil from '../shared/array-util.js';
+import { createArray } from '../shared/array-util.js';
 import { createPixel } from '../shared/pixel.js';
 
 function createDitherWorkerHeader(
@@ -109,7 +109,7 @@ function createWorkers() {
     const numWorkers = hardwareConcurrency
         ? Math.min(hardwareConcurrency * 2, 8)
         : 1;
-    const workers = ArrayUtil.create(numWorkers, () => {
+    const workers = createArray(numWorkers, () => {
         return new Worker(new URL('../worker/worker-main.js', import.meta.url));
     });
 
