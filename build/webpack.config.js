@@ -1,9 +1,13 @@
-const webpack = require('webpack');
-const path = require('path');
-const { VueLoaderPlugin } = require('vue-loader');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import webpack from 'webpack';
+import { VueLoaderPlugin } from 'vue-loader';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const getConfig = () => ({
     mode: 'development',
     entry: [`${__dirname}/../js/index.js`, `${__dirname}/../sass/style.scss`],
     output: {
@@ -108,4 +112,6 @@ module.exports = {
             __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
         }),
     ],
-};
+});
+
+export default getConfig();
