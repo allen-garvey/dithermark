@@ -15,15 +15,15 @@ export const createArray = (length, fillFunc) => {
 
 /**
  * @template {Uint16Array|Uint8Array|Uint8ClampedArray|Float32Array} T
- * @param {T} arrayLike
+ * @param {T} typedArray
  * @param {Function} fillFunc
  * @returns {T}
  */
-export const fillArray = (arrayLike, fillFunc) => {
-    const length = arrayLike.length;
+export const fillArray = (typedArray, fillFunc) => {
+    const length = typedArray.length;
 
     for (let i = 0; i < length; i++) {
-        arrayLike[i] = fillFunc(i);
+        typedArray[i] = fillFunc(i);
     }
-    return arrayLike;
+    return typedArray;
 };
