@@ -1,6 +1,12 @@
 import path from 'path';
 import webpack from 'webpack';
 
+/**
+ *
+ * @param {import('memfs/lib/node/types').FsPromisesApi} fs
+ * @param {import('webpack').WebpackOptionsNormalized} config
+ * @returns
+ */
 export const createWebpackCompiler = (fs, config) => {
     const compiler = webpack(config);
     compiler.outputFileSystem = fs;

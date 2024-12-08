@@ -11,6 +11,10 @@ export const PUBLIC_HTML_DIR = path.resolve(__dirname, '../public_html');
 export const ASSETS_DIR = 'assets';
 export const PUBLIC_ASSETS_DIR = path.resolve(PUBLIC_HTML_DIR, ASSETS_DIR);
 
+/**
+ *
+ * @returns {import('webpack').WebpackOptionsNormalized}
+ */
 export const getConfig = () => ({
     mode: 'development',
     entry: [`${__dirname}/../js/index.js`, `${__dirname}/../sass/style.scss`],
