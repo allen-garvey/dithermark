@@ -26,7 +26,7 @@ function pixelHue(pixel) {
         rawHue = (pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
     }
     //convert to 360 degrees
-    let ret = Math.round(rawHue * 60);
+    const ret = Math.round(rawHue * 60);
     if (ret < 0) {
         return ret + 360;
     }
