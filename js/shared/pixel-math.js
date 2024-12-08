@@ -2,7 +2,9 @@ import { R_INDEX, G_INDEX, B_INDEX, createPixel } from './pixel.js';
 import { lightness } from './pixel-math-lite.js';
 
 function pixelLuma(pixel) {
-    return Math.round(pixel[R_INDEX] * 0.299 + pixel[G_INDEX] * 0.587 + pixel[B_INDEX] * 0.114);
+    return Math.round(
+        pixel[R_INDEX] * 0.299 + pixel[G_INDEX] * 0.587 + pixel[B_INDEX] * 0.114
+    );
 }
 
 //based on wikipedia formulas: https://en.wikipedia.org/wiki/HSL_and_HSV#Hue_and_chroma
@@ -17,12 +19,10 @@ function pixelHue(pixel) {
     }
     let rawHue;
     if (pixel[R_INDEX] === max) {
-        rawHue = (pixel[G_INDEX] - pixel[B_INDEX]) / diff % 6;
-    }
-    else if (pixel[G_INDEX] === max) {
+        rawHue = ((pixel[G_INDEX] - pixel[B_INDEX]) / diff) % 6;
+    } else if (pixel[G_INDEX] === max) {
         rawHue = (pixel[B_INDEX] - pixel[R_INDEX]) / diff + 2;
-    }
-    else {
+    } else {
         rawHue = (pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
     }
     //convert to 360 degrees
@@ -52,8 +52,7 @@ function pixelSaturation(pixel) {
     let saturation;
     if (c > 0.5) {
         saturation = diff / (2 - diff);
-    }
-    else {
+    } else {
         saturation = diff / (max + min);
     }
 
@@ -103,21 +102,18 @@ function hslToPixel(hsl, pixel = null) {
     function hue2rgb(p, q, t) {
         if (t < 0) {
             t += 1;
-        }
-        else if (t > 1) {
+        } else if (t > 1) {
             t -= 1;
         }
         if (t < 1 / 6) {
             return p + (q - p) * 6 * t;
-        }
-        else if (t < 0.5) {
+        } else if (t < 0.5) {
             return q;
-        }
-        else if (t < 2 / 3) {
+        } else if (t < 2 / 3) {
             return p + (q - p) * (2 / 3 - t) * 6;
         }
         return p;
-    };
+    }
 
     const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
     const p = 2 * l - q;
@@ -135,22 +131,15 @@ function hslToPixel(hsl, pixel = null) {
 //returns value clamped between 0 and valueMax, inclusive
 function clamp(value, valueMax = 255) {
     const valueMin = 0;
-    if (value > valueMax) {
-        return valueMax;
-    }
-    else if (value < valueMin) {
-        return valueMin;
-    }
-
-    return value;
+    return Math.min(Math.max(valueMin, value), valueMax);
 }
 
 /**
- * 
+ *
  * 32 bit pixel value manipulation
  */
 function color32Red(color32) {
-    return (color32 & 0xff);
+    return color32 & 0xff;
 }
 function color32Green(color32) {
     return (color32 & 0xff00) >> 8;
@@ -161,7 +150,6 @@ function color32Blue(color32) {
 function color32Alpha(color32) {
     return (color32 & 0xff000000) >> 24;
 }
-
 
 export default {
     lightness,
