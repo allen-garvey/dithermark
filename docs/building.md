@@ -16,8 +16,8 @@ This is a guide for installing and building the project directly on you computer
 ## Developing locally
 
 * Run `npm start`
-* In another terminal window or tab run `npm run watch`
 * Open your browser to [localhost:3000](http://localhost:3000)
+* If the page looks broken, you might have loaded the page before webpack compilation has completed. Check your console output to see if the webpack compilation completed message is there, and try reloading the page.
 
 ## Creating a static development build
 

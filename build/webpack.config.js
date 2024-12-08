@@ -7,12 +7,16 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+export const PUBLIC_HTML_DIR = path.resolve(__dirname, '../public_html');
+export const ASSETS_DIR = 'assets';
+export const PUBLIC_ASSETS_DIR = path.resolve(PUBLIC_HTML_DIR, ASSETS_DIR);
+
 export const getConfig = () => ({
     mode: 'development',
     entry: [`${__dirname}/../js/index.js`, `${__dirname}/../sass/style.scss`],
     output: {
         filename: 'app.js',
-        path: path.resolve(__dirname, '../public_html/assets'),
+        path: PUBLIC_ASSETS_DIR,
     },
     resolve: {
         alias: {

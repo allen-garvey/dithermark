@@ -37,6 +37,7 @@
     "@vue/compiler-sfc": "3.5.13",
     "css-loader": "^7.1.2",
     "express": "^4.21.1",
+    "memfs": "^4.14.1",
     "mini-css-extract-plugin": "^2.9.2",
     "sass": "^1.81.0",
     "sass-loader": "^16.0.3",
