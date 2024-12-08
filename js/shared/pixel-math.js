@@ -28,7 +28,7 @@ function pixelHue(pixel) {
     //convert to 360 degrees
     let ret = Math.round(rawHue * 60);
     if (ret < 0) {
-        return ret + 359;
+        return ret + 360;
     }
     return ret;
 }
