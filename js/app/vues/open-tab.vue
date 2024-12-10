@@ -30,7 +30,6 @@
                 v-show="false" 
                 multiple
             />
-            <!-- TODO: Create component for batch image file input with onBatchFileInputChange method -->
         </fieldset>
         <fieldset>
             <legend>Web</legend>
