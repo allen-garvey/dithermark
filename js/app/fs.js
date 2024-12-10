@@ -1,5 +1,3 @@
-import Canvas from './canvas.js';
-
 const imageElement = new Image();
 //need to store reference so we can free it when a new one is created
 let currentImageObjectUrl = null;
@@ -27,9 +25,9 @@ class FetchError extends Error {
     }
 }
 
-const isImageFile = (file) => file.type.startsWith('image/');
+const isImageFile = file => file.type.startsWith('image/');
 
-const openImageFile = (file) =>
+const openImageFile = file =>
     new Promise((resolve, reject) => {
         if (!file) {
             return reject('No files selected');
@@ -57,7 +55,7 @@ function openImageUrl(imageUrl) {
 
     //based on: https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
     return fetch(imageUrl)
-        .then((res) => {
+        .then(res => {
             //error in response code will not throw error
             if (!res.ok) {
                 throw new HttpRequestError(
@@ -69,7 +67,7 @@ function openImageUrl(imageUrl) {
             }
             return res.blob();
         })
-        .catch((error) => {
+        .catch(error => {
             if (error instanceof TypeError) {
                 throw new FetchError(
                     'Problem fetching image, probably due to CORS'
@@ -77,7 +75,7 @@ function openImageUrl(imageUrl) {
             }
             throw error;
         })
-        .then((blob) => {
+        .then(blob => {
             if (!blob.type.startsWith('image')) {
                 throw new UnsupportedFileTypeError(
                     'File does not appear to be an image',
@@ -155,7 +153,7 @@ function processSaveImageBlob(blob, callback) {
 
 function saveImage(canvas, fileType, callback) {
     canvas.toBlob(
-        (blob) => {
+        blob => {
             processSaveImageBlob(blob, callback);
         },
         fileType,
