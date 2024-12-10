@@ -318,6 +318,9 @@ let ditherOutputWebglTexture;
 //this is because originally, only the active tab when an image is loaded will register it as new
 const tabsThatHaveSeenImageSet = new Set();
 
+const BATCH_IMAGE_MODE_EXPORT_IMAGES = 1;
+const BATCH_IMAGE_MODE_EXPORT_VIDEO = 2;
+
 export default {
     components: {
         CyclePropertyList,
@@ -389,6 +392,7 @@ export default {
             loadedImage: null,
             batchImageQueue: [],
             batchImageCount: 0,
+            batchImageMode: BATCH_IMAGE_MODE_EXPORT_IMAGES,
             isLivePreviewEnabled: true,
             isColorPickerLivePreviewEnabledSetting: false,
             automaticallyResizeLargeImages: true,
@@ -633,12 +637,19 @@ export default {
             callback(exportCanvas, this.loadedImage.unsplash);
         },
         loadBatchImages(files){
+            this.batchImageMode = BATCH_IMAGE_MODE_EXPORT_IMAGES;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
             this.loadNextBatchImage();
         },
+        batchProcessingCompleted(){
+            if(this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO){
+
+            }
+        },
         loadNextBatchImage(){
             if(this.batchImageQueue.length === 0){
+                this.batchProcessingCompleted();
                 return;
             }
             Fs.openImageFile(this.batchImageQueue[0]).then(([image, file]) => {
