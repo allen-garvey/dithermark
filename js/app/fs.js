@@ -192,6 +192,15 @@ export const canvasToArray = (canvas, mimeType) => {
     });
 };
 
+/**
+ *
+ * @param {Uint8Array} array
+ * @param {Function} callback
+ */
+export const arrayToObjectUrl = (array, callback) => {
+    blobToObjectUrl(new Blob([array]), callback);
+};
+
 export default {
     isImageFile,
     openImageFile,
