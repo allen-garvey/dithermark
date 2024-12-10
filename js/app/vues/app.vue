@@ -269,7 +269,7 @@ import Canvas from '../canvas.js';
 import WorkerHeaders from '../../shared/worker-headers.js';
 import WorkerUtil from '../worker-util.js';
 import WebGl from '../webgl/webgl.js';
-import EditorThemes from '../editor-themes.js';
+import EditorThemes from '../models/editor-themes.js';
 import WebGlSmoothing from '../webgl/webgl-smoothing.js';
 import WebGlBilateralFilter from '../webgl/webgl-bilateral-filter.js';
 import WebGlCanvasFilters from '../webgl/webgl-canvas-filters.js';
