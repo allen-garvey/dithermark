@@ -45,7 +45,7 @@
 <script>
 import { APP_NAME, UNSPLASH_DOWNLOAD_URL, UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../../../constants.js';
 import Canvas from '../canvas.js'
-import Fs from '../fs.js';
+import {saveImage} from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import  userSettings from '../user-settings.js';
 
@@ -131,7 +131,7 @@ export default {
                 }
                 this.isCurrentlySavingImage = true;
                 this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
-                    Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl)=>{
+                    saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl)=>{
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
                         saveImageLink.click();

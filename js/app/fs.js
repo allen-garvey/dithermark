@@ -49,7 +49,7 @@ const openImageFile = file =>
         imageElement.src = currentImageObjectUrl;
     });
 
-function openImageUrl(imageUrl) {
+const openImageUrl = imageUrl => {
     const urlSplit = imageUrl.split('/');
     const imageName = urlSplit[urlSplit.length - 1];
 
@@ -102,11 +102,11 @@ function openImageUrl(imageUrl) {
 
             return promise;
         });
-}
+};
 //so that urls are escaped properly, message is divided into beforeUrl, url and afterUrl parts
 //assembled message will read:
 //{{message.beforeUrl}} <a :href="message.url">{{message.url}}</a> {{message.afterUrl}}
-function messageForOpenImageUrlError(error, imageUrl) {
+const messageForOpenImageUrlError = (error, imageUrl) => {
     let url = imageUrl;
     let beforeUrl = url ? 'Could not open' : '';
     let afterUrl =
@@ -139,9 +139,14 @@ function messageForOpenImageUrlError(error, imageUrl) {
         url,
         afterUrl,
     };
-}
+};
 
-export const blobToObjectUrl = (blob, callback) => {
+/**
+ *
+ * @param {Blob} blob
+ * @param {Function} callback
+ */
+const blobToObjectUrl = (blob, callback) => {
     const objectUrl = URL.createObjectURL(blob);
     callback(objectUrl);
     //add timeout before revoking for iOS
@@ -151,20 +156,45 @@ export const blobToObjectUrl = (blob, callback) => {
     }, 0);
 };
 
-export const saveImage = (canvas, fileType, callback) => {
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} mimeType
+ * @param {Function} callback
+ */
+export const saveImage = (canvas, mimeType, callback) => {
     canvas.toBlob(
         blob => {
             blobToObjectUrl(blob, callback);
         },
-        fileType,
+        mimeType,
         1
     );
+};
+
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} mimeType
+ * @returns {Promise<Uint8Array>}
+ */
+export const canvasToArray = (canvas, mimeType) => {
+    return new Promise(resolve => {
+        canvas.toBlob(
+            blob => {
+                resolve(
+                    blob.arrayBuffer().then(buffer => new Uint8Array(buffer))
+                );
+            },
+            mimeType,
+            1
+        );
+    });
 };
 
 export default {
     isImageFile,
     openImageFile,
     openImageUrl,
-    saveImage,
     messageForOpenImageUrlError,
 };
