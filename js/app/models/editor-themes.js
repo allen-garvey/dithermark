@@ -7,7 +7,7 @@ class EditorTheme {
 }
 
 /**
- *
+ * Don't change theme keys, as it will break user's saved settings
  * @returns {EditorTheme[]}
  */
 const themes = () => [
