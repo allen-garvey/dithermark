@@ -36,15 +36,15 @@
   "devDependencies": {
     "@vue/compiler-sfc": "3.5.13",
     "css-loader": "^7.1.2",
-    "express": "^4.21.1",
-    "memfs": "^4.14.1",
+    "express": "^4.21.2",
+    "memfs": "^4.15.0",
     "mini-css-extract-plugin": "^2.9.2",
-    "sass": "^1.81.0",
-    "sass-loader": "^16.0.3",
+    "sass": "^1.82.0",
+    "sass-loader": "^16.0.4",
     "sharp": "^0.33.5",
     "vue-loader": "17.4.2",
     "vue-style-loader": "^4.1.3",
-    "webpack": "^5.96.1",
+    "webpack": "^5.97.1",
     "webpack-cli": "^5.1.4"
   }
 }
