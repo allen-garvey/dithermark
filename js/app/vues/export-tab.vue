@@ -46,7 +46,7 @@
 import { APP_NAME, UNSPLASH_DOWNLOAD_URL, UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../../../constants.js';
 import Canvas from '../canvas.js'
 import Fs from '../fs.js';
-import { getSaveImageFileTypes } from '../export-model.js';
+import { getSaveImageFileTypes } from '../models/export-model.js';
 import  userSettings from '../user-settings.js';
 
 let saveImageCanvas;

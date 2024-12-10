@@ -1,4 +1,4 @@
-import { isiOs } from './cross-platform.js';
+import { isiOs } from '../cross-platform.js';
 
 export const getSaveImageFileTypes = () => {
     const types = [

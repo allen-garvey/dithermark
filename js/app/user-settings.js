@@ -1,7 +1,7 @@
 //module for saving and retrieving user settings in localStorage
 
 import ColorPalettes from './color-palettes.js';
-import { getSaveImageFileTypes } from './export-model.js';
+import { getSaveImageFileTypes } from './models/export-model.js';
 
 const localStorage = window.localStorage;
 const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
@@ -22,7 +22,7 @@ function getExportSettings() {
     if (
         !exportSettings.fileType ||
         !saveImageFileTypes.find(
-            (fileType) => fileType.value === exportSettings.fileType
+            fileType => fileType.value === exportSettings.fileType
         )
     ) {
         exportSettings.fileType = saveImageFileTypes[0].value;
