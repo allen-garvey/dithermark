@@ -1,6 +1,6 @@
 //module for saving and retrieving user settings in localStorage
 
-import ColorPalettes from './color-palettes.js';
+import ColorPalettes from './models/color-palettes.js';
 import { getSaveImageFileTypes } from './models/export-model.js';
 
 const localStorage = window.localStorage;

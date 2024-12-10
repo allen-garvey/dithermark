@@ -112,7 +112,7 @@ import { COLOR_DITHER_MAX_COLORS } from '../../../constants.js';
 import { getColorQuantizationGroups } from '../models/color-quantization-modes.js';
 import { getColorQuantizationModes } from '../../shared/models/color-quantization-modes.js';
 import { getColorGroups, getColorDitherAlgorithms } from '../models/dither-algorithms.js';
-import Palettes from '../color-palettes.js';
+import Palettes from '../models/color-palettes.js';
 import UserSettings from '../user-settings.js'
 import ColorDitherModes from '../../shared/color-dither-modes.js'
 import Canvas from '../canvas.js';
