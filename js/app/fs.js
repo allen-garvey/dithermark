@@ -141,7 +141,7 @@ function messageForOpenImageUrlError(error, imageUrl) {
     };
 }
 
-function processSaveImageBlob(blob, callback) {
+export const blobToObjectUrl = (blob, callback) => {
     const objectUrl = URL.createObjectURL(blob);
     callback(objectUrl);
     //add timeout before revoking for iOS
@@ -149,17 +149,17 @@ function processSaveImageBlob(blob, callback) {
     setTimeout(() => {
         URL.revokeObjectURL(objectUrl);
     }, 0);
-}
+};
 
-function saveImage(canvas, fileType, callback) {
+export const saveImage = (canvas, fileType, callback) => {
     canvas.toBlob(
         blob => {
-            processSaveImageBlob(blob, callback);
+            blobToObjectUrl(blob, callback);
         },
         fileType,
         1
     );
-}
+};
 
 export default {
     isImageFile,
