@@ -81,6 +81,7 @@ export default {
     },
     created(){
         saveImageCanvas = Canvas.create();
+        saveImageLink = createSaveImageLink();
     },
     data(){
         return {
@@ -130,14 +131,10 @@ export default {
                 }
                 this.isCurrentlySavingImage = true;
                 this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
-                    Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl=null)=>{
-                        //objectUrl will be null if we are using toBlob polyfill, which opens image in new tab
-                        if(objectUrl){
-                            saveImageLink = saveImageLink || createSaveImageLink();
-                            saveImageLink.href = objectUrl;
-                            saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
-                            saveImageLink.click();
-                        }
+                    Fs.saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl)=>{
+                        saveImageLink.href = objectUrl;
+                        saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
+                        saveImageLink.click();
 
                         //clear the canvas to free up memory
                         Canvas.clear(saveImageCanvas);
