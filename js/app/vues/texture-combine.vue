@@ -17,8 +17,8 @@
 
 
 <script>
-import WebGl from '../webgl.js';
-import WebGlBwDither from '../webgl-bw-dither.js';
+import WebGl from '../webgl/webgl.js';
+import WebGlBwDither from '../webgl/webgl-bw-dither.js';
 
 export default {
     props: {

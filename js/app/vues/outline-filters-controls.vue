@@ -96,10 +96,10 @@
 <script>
 import Canvas from '../canvas.js';
 import ImageFiltersModel from '../models/image-filters.js';
-import WebGlContourFilter from '../webgl-contour-filter.js';
+import WebGlContourFilter from '../webgl/webgl-contour-filter.js';
 import ColorPicker from '../color-picker.js';
-import WebGlEdgeFilter from '../webgl-edge-filter.js';
-import WebGl from '../webgl.js';
+import WebGlEdgeFilter from '../webgl/webgl-edge-filter.js';
+import WebGl from '../webgl/webgl.js';
 
 import CyclePropertyList from './cycle-property-list.vue';
 import ColorPickerComponent from './color-picker.vue';

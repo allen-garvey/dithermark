@@ -31,10 +31,10 @@ import { nextTick } from 'vue';
 import Timer from 'app-performance-timer'; //symbol resolved in webpack config
 import Canvas from '../canvas.js';
 import Histogram from '../histogram.js';
-import WebGl from '../webgl.js';
+import WebGl from '../webgl/webgl.js';
 import WorkerHeaders from '../../shared/worker-headers.js';
 import ColorPicker from '../color-picker.js';
-import WebGlBwDither from '../webgl-bw-dither.js';
+import WebGlBwDither from '../webgl/webgl-bw-dither.js';
 import WorkerUtil from '../worker-util.js';
 
 import DitherButton from './dither-button.vue';

@@ -268,11 +268,11 @@ import UserSettings from '../user-settings.js'
 import Canvas from '../canvas.js';
 import WorkerHeaders from '../../shared/worker-headers.js';
 import WorkerUtil from '../worker-util.js';
-import WebGl from '../webgl.js';
+import WebGl from '../webgl/webgl.js';
 import EditorThemes from '../editor-themes.js';
-import WebGlSmoothing from '../webgl-smoothing.js';
-import WebGlBilateralFilter from '../webgl-bilateral-filter.js';
-import WebGlCanvasFilters from '../webgl-canvas-filters.js';
+import WebGlSmoothing from '../webgl/webgl-smoothing.js';
+import WebGlBilateralFilter from '../webgl/webgl-bilateral-filter.js';
+import WebGlCanvasFilters from '../webgl/webgl-canvas-filters.js';
 import ImageFiltersModel from '../models/image-filters.js';
 import { getGlobalTabs } from '../models/global-tabs.js'
 import { getDitherTabs } from '../models/dither-tabs.js'

@@ -1,11 +1,14 @@
 import WebGl from './webgl.js';
 import Shader from './webgl-shader.js';
-import ColorDitherModes from '../shared/color-dither-modes.js';
-import Bayer from '../shared/bayer-matrix.js';
+import ColorDitherModes from '../../shared/color-dither-modes.js';
+import Bayer from '../../shared/bayer-matrix.js';
 import BayerWebgl from './webgl-bayer.js';
-import DitherUtil from '../shared/dither-util.js';
+import DitherUtil from '../../shared/dither-util.js';
 import { generateRandomSeed } from './webgl-random.js';
-import { ORDERED_DITHER_VARIANT_RANDOM, ORDERED_DITHER_VARIANT_SIMPLEX } from '../shared/models/ordered-dither-variants.js';
+import {
+    ORDERED_DITHER_VARIANT_RANDOM,
+    ORDERED_DITHER_VARIANT_SIMPLEX,
+} from '../../shared/models/ordered-dither-variants.js';
 
 // when adding algorithm key make sure to add to ALGO_KEYS array below
 const CLOSEST_COLOR = 0;
@@ -174,7 +177,7 @@ function createFragmentShaderTexts() {
 
         let ret = {};
 
-        modeDistances.forEach((item) => {
+        modeDistances.forEach(item => {
             ret[ColorDitherModes.get(item.key).id] = fragmentShaderText(
                 baseText,
                 item.distanceFunc
@@ -331,7 +334,7 @@ function createFragmentShaderTexts() {
 const fragmentShaderTexts = createFragmentShaderTexts();
 
 //draw image compiled functions
-const drawImageFuncs = new Map(ALGO_KEYS.map((key) => [key, new Map()]));
+const drawImageFuncs = new Map(ALGO_KEYS.map(key => [key, new Map()]));
 
 //saved bayer textures
 const bayerTextures = new Map();
@@ -399,7 +402,7 @@ function simplexClosestColor(
             createWebGLDrawImageFunc(
                 gl,
                 fragmentShaderTexts.get(SIMPLEX_CLOSEST_COLOR)[
-                colorDitherModeId
+                    colorDitherModeId
                 ]
             )
     );
@@ -431,7 +434,7 @@ function randomDither(
             createWebGLDrawImageFunc(
                 gl,
                 fragmentShaderTexts.get(RANDOM_CLOSEST_COLOR)[
-                colorDitherModeId
+                    colorDitherModeId
                 ],
                 ['u_random_seed']
             )
@@ -567,7 +570,8 @@ const getAlgoKey = (algoKey, variant) => {
                 return ORDERED_DITHER_RANDOM;
             case ORDERED_DITHER_VARIANT_SIMPLEX:
                 return ORDERED_DITHER_SIMPLEX;
-            default: return ORDERED_DITHER;
+            default:
+                return ORDERED_DITHER;
         }
     }
     switch (variant) {
@@ -575,7 +579,8 @@ const getAlgoKey = (algoKey, variant) => {
             return HUE_LIGHTNESS_RANDOM_ORDERED_DITHER;
         case ORDERED_DITHER_VARIANT_SIMPLEX:
             return HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER;
-        default: return HUE_LIGHTNESS_ORDERED_DITHER;
+        default:
+            return HUE_LIGHTNESS_ORDERED_DITHER;
     }
 };
 

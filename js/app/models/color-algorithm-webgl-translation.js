@@ -1,9 +1,9 @@
-import ColorDither from '../webgl-color-dither.js';
+import ColorDither from '../webgl/webgl-color-dither.js';
 
 /**
  * @param {boolean} isWebglHighIntPrecisionSupported
  */
-export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
+export const getColorWebglTranslator = isWebglHighIntPrecisionSupported => {
     const webglMap = new Map([
         ['closest-color', ColorDither.closestColor],
         ['random', ColorDither.randomClosestColor],
@@ -23,7 +23,7 @@ export const getColorWebglTranslator = (isWebglHighIntPrecisionSupported) => {
         arithmeticEntries.forEach(([key, value]) => webglMap.set(key, value));
     }
 
-    return (algorithm) => {
+    return algorithm => {
         if (algorithm.orderedOpts) {
             const { pattern, dimensions, variant, type } =
                 algorithm.orderedOpts;

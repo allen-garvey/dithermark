@@ -1,6 +1,6 @@
 import WebGl from './webgl.js';
 import Shader from './webgl-shader.js';
-import ImageFiltersModel from './models/image-filters.js';
+import ImageFiltersModel from '../models/image-filters.js';
 
 function sharedUniforms() {
     return ['u_strength', 'u_image_dimensions'];
@@ -171,7 +171,7 @@ function edgeBackground(
 ) {
     const cacheIndex =
         (Math.max(outlineColorModes.length, edgeThicknesses.length) + 1) *
-        colorModeIndex +
+            colorModeIndex +
         outlineThicknessIndex;
     if (!cachedEdgeFuncs[cacheIndex]) {
         cachedEdgeFuncs[cacheIndex] = createEdgeBackgroundFunc(

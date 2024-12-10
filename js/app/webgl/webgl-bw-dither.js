@@ -1,9 +1,12 @@
 import WebGl from './webgl.js';
 import Shader from './webgl-shader.js';
-import { ORDERED_DITHER_VARIANT_RANDOM, ORDERED_DITHER_VARIANT_SIMPLEX } from '../shared/models/ordered-dither-variants.js';
-import Bayer from '../shared/bayer-matrix.js';
+import {
+    ORDERED_DITHER_VARIANT_RANDOM,
+    ORDERED_DITHER_VARIANT_SIMPLEX,
+} from '../../shared/models/ordered-dither-variants.js';
+import Bayer from '../../shared/bayer-matrix.js';
 import BayerWebgl from './webgl-bayer.js';
-import DitherUtil from '../shared/dither-util.js';
+import DitherUtil from '../../shared/dither-util.js';
 import { generateRandomSeed } from './webgl-random.js';
 
 const THRESHOLD = 1;
@@ -142,7 +145,7 @@ function generateFragmentShader(
         .replace('#{{customDeclaration}}', customDeclaration)
         .replace('#{{customBody}}', customBody);
 
-    customReplacements.forEach((replacement) => {
+    customReplacements.forEach(replacement => {
         fragmentShader = fragmentShader.replace(
             replacement.find,
             replacement.replace
@@ -358,8 +361,7 @@ function webGLOrderedDither(
         algoKey = ORDERED_RANDOM_DITHER;
         customUniformLocations.push('u_random_seed');
         secondCustomDeclarationId = 'webgl-random-dither-declaration-fshader';
-    }
-    else if (variant === ORDERED_DITHER_VARIANT_SIMPLEX) {
+    } else if (variant === ORDERED_DITHER_VARIANT_SIMPLEX) {
         algoKey = ORDERED_SIMPLEX_DITHER;
         secondCustomDeclarationId = 'webgl-simplex-declaration-fshader';
     }
@@ -408,15 +410,18 @@ function webGLOrderedDither(
     );
 }
 
-const getBayerAdjustmentText = (variant) => {
+const getBayerAdjustmentText = variant => {
     switch (variant) {
-        case ORDERED_DITHER_VARIANT_SIMPLEX: return Shader.shaderText(
-            'webgl-simplex-ordered-dither-adjustment-fshader'
-        );
-        case ORDERED_DITHER_VARIANT_RANDOM: return Shader.shaderText(
-            'webgl-random-ordered-dither-adjustment-fshader'
-        );
-        default: return '';
+        case ORDERED_DITHER_VARIANT_SIMPLEX:
+            return Shader.shaderText(
+                'webgl-simplex-ordered-dither-adjustment-fshader'
+            );
+        case ORDERED_DITHER_VARIANT_RANDOM:
+            return Shader.shaderText(
+                'webgl-random-ordered-dither-adjustment-fshader'
+            );
+        default:
+            return '';
     }
 };
 

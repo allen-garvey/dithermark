@@ -1,9 +1,9 @@
-import BwDither from '../webgl-bw-dither.js';
+import BwDither from '../webgl/webgl-bw-dither.js';
 
 /**
  * @param {boolean} isWebglHighIntPrecisionSupported
  */
-export const getBwWebglTranslator = (isWebglHighIntPrecisionSupported) => {
+export const getBwWebglTranslator = isWebglHighIntPrecisionSupported => {
     const webglMap = new Map([
         ['threshold', BwDither.threshold],
         ['adaptive-threshold', BwDither.adaptiveThreshold],
@@ -24,7 +24,7 @@ export const getBwWebglTranslator = (isWebglHighIntPrecisionSupported) => {
         arithmeticEntries.forEach(([key, value]) => webglMap.set(key, value));
     }
 
-    return (algorithm) => {
+    return algorithm => {
         if (algorithm.orderedOpts) {
             const { pattern, dimensions, variant } = algorithm.orderedOpts;
 
