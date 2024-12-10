@@ -35,7 +35,7 @@ import Modal from './modal.vue';
 
 export default {
     directives: {
-        'focus': FocusDirective,
+        focus: FocusDirective,
     },
     components: {
         Modal,
