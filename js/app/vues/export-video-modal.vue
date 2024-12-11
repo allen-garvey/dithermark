@@ -27,6 +27,7 @@
                 />
             </label>
             <input 
+                tabindex="3"
                 type="file"
                 @change="onBatchFileInputChange($event)"
                 ref="batchFileInput" 
