@@ -1,5 +1,5 @@
 <template>
-    <div v-if="showModal" @keyup.esc="cancelAction" :class="$style.modal">
+    <div @keyup.esc="cancelAction" :class="$style.modal">
         <div :class="$style.overlay" @click="cancelAction"></div>
         <div :class="$style.contents">
             <slot></slot>
@@ -81,10 +81,6 @@
 <script>
 export default {
     props: {
-        showModal: {
-            type: Boolean,
-            required: true,
-        },
         cancelAction: {
             type: Function,
             required: true,

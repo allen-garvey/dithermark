@@ -1,6 +1,6 @@
 <template>
     <modal
-        :showModal="showModal"
+        v-if="showModal"
         :cancelAction="cancelAction"
         :okAction="okAction"
         :okButtonText="okButtonValue"
