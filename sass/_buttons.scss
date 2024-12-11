@@ -14,20 +14,20 @@
     box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), 0 1px 1px rgba(0,0,0,0.075);
     background-repeat: repeat-x;
 
-    &:hover, &:focus{
+    &:hover:enabled, &:focus:enabled{
         background-position: 0 -15px;
     }
-    &:focus{
+    &:focus:enabled{
         outline: 5px auto -webkit-focus-ring-color;
         outline-offset: -2px;
     }
-    &:active{
+    &:active:enabled{
         background-image: none;
         box-shadow: inset 0 3px 5px rgba(0,0,0,0.125);
     }
     &:disabled{
         cursor: not-allowed;
-        opacity: 0.65;
+        opacity: 0.6;
     }
 }
 .btn-sm, .btn-xs{
@@ -45,12 +45,12 @@
     background-image: linear-gradient(to bottom, #fff 0%, #e0e0e0 100%);
     border-color: #ccc;
 
-    &:hover, &:focus{
+    &:hover:enabled, &:focus:enabled{
         background-color: #d4d4d4;
         border-color: #8c8c8c;
     }
 
-    &:active{
+    &:active:enabled{
         background-color: #e0e0e0;
         border-color: #dbdbdb;
     }
@@ -62,6 +62,11 @@
         background-color: #333;
         background-image: linear-gradient(to bottom, #2a2a2a 0%, #444 100%);
         border-color: #777;
+        
+        &:hover:enabled, &:focus:enabled, &:active:enabled{
+            background-color: #333;
+            border-color: #777;
+        }
     }
 }
 
@@ -71,6 +76,11 @@
         background-color: #333;
         background-image: linear-gradient(to bottom, #2a2a2a 0%, #444 100%);
         border-color: #555;
+
+        &:hover:enabled, &:focus:enabled, &:active:enabled{
+            background-color: #333;
+            border-color: #555;
+        }
     }
 }
 
@@ -79,14 +89,14 @@
     background-image: linear-gradient(to bottom, #337ab7 0%, #265a88 100%);
     border-color: #245580;
 
-    &:hover, &:focus{
+    &:hover:enabled, &:focus:enabled{
         background-color: #265a88;
         border-color: #204d74;
     }
-    &:focus{
+    &:focus:enabled{
         border-color: #122b40;
     }
-    &:active{
+    &:active:enabled{
         background-color: #265a88;
         border-color: #245580;
     }
@@ -96,17 +106,17 @@
     background-image: linear-gradient(to bottom, #5cb85c 0%, #419641 100%);
     border-color: #3e8f3e;
 
-    &:hover, &:focus{
+    &:hover:enabled, &:focus:enabled{
         background-color: #419641;
         border-color: #255625;
     }
-    &:hover{
+    &:hover:enabled{
         border-color: #398439;
     }
-    &:focus{
+    &:focus:enabled{
         border-color: #255625;
     }
-    &:active{
+    &:active:enabled{
         background-color: #419641;
         border-color: #3e8f3e;
     }
@@ -116,14 +126,14 @@
     background-image: linear-gradient(to bottom, #d9534f 0%, #c12e2a 100%);
     border-color: #b92c28;
 
-    &:hover, &:focus{
+    &:hover:enabled, &:focus:enabled{
         background-color: #c12e2a;
         border-color: #ac2925;
     }
-    &:focus{
+    &:focus:enabled{
         border-color: #761c19;
     }
-    &:active{
+    &:active:enabled{
         background-color: #c12e2a;
         border-color: #b92c28;
     }
