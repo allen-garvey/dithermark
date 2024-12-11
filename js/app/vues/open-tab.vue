@@ -17,6 +17,14 @@
             >
                 Batch convert image files
             </button>
+            <button 
+                class="btn btn-default" 
+                @click="openVideoModal" 
+                title="Automatically dither multiple files and export video"
+                v-if="isBatchConvertEnabled"
+            >
+                Convert images to video
+            </button>
             <input 
                 type="file"
                 @change.prevent="onFileInputChange($event)"
@@ -49,7 +57,11 @@
             >
                 Random image
             </button>
-        </fieldset>    
+        </fieldset>
+        <export-video-modal
+            :onSubmit="onVideoModalSubmitted"
+            ref="videoModal"
+        />    
     </div>
 </template>
 
@@ -64,6 +76,7 @@
 <script>
 import Fs, { isImageFile } from '../fs.js';
 import { getRandomImage } from '../random-image.js';
+import ExportVideoModal from './export-video-modal.vue';
 
 export default { 
     props: {
@@ -87,6 +100,9 @@ export default {
             type: Boolean,
             required: true,
         },
+    },
+    components: {
+        ExportVideoModal,
     },
     data(){
         return {
@@ -145,6 +161,12 @@ export default {
                 this.imageOpened(image, file);
                 this.isCurrentlyLoadingImageUrl = false;
             }).catch(this.openImageFromUrlFailed);
+        },
+        openVideoModal(){
+            this.$refs.videoModal.show();
+        },
+        onVideoModalSubmitted(){
+
         },
     },
 };
