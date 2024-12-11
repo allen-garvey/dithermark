@@ -20,10 +20,10 @@
             <button 
                 class="btn btn-default" 
                 @click="openVideoModal" 
-                title="Automatically dither multiple files and export video"
+                title="Dither multiple images and save as a video"
                 v-if="isBatchConvertEnabled"
             >
-                Convert images to video
+                Images to video
             </button>
             <input 
                 type="file"
