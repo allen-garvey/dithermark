@@ -12,7 +12,7 @@
             <button 
                 class="btn btn-default" 
                 @click="batchOpenDeviceImages" 
-                title="Automatically dither multiple files"
+                title="Dither and save multiple images"
                 v-if="isBatchConvertEnabled"
             >
                 Batch convert image files
