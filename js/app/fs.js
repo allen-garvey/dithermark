@@ -25,8 +25,18 @@ class FetchError extends Error {
     }
 }
 
-const isImageFile = file => file.type.startsWith('image/');
+/**
+ *
+ * @param {File} file
+ * @returns {boolean}
+ */
+export const isImageFile = file => file.type.startsWith('image/');
 
+/**
+ *
+ * @param {File} file
+ * @returns {Promise<[HTMLImageElement, File]>}
+ */
 const openImageFile = file =>
     new Promise((resolve, reject) => {
         if (!file) {
@@ -202,7 +212,6 @@ export const arrayToObjectUrl = (array, callback) => {
 };
 
 export default {
-    isImageFile,
     openImageFile,
     openImageUrl,
     messageForOpenImageUrlError,

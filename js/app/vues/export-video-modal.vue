@@ -26,6 +26,7 @@
 </style>
 
 <script>
+import { isImageFile } from '../fs.js';
 import FocusDirective from './directives/focus.js';
 import Modal from './modal.vue';
 

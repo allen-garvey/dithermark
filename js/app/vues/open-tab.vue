@@ -62,7 +62,7 @@
 </style>
 
 <script>
-import Fs from '../fs.js';
+import Fs, { isImageFile } from '../fs.js';
 import { getRandomImage } from '../random-image.js';
 
 export default { 
@@ -102,7 +102,7 @@ export default {
         },
         onBatchFileInputChange($event){
             const fileInput = $event.target;
-            const files = Array.from(fileInput.files).filter(file => Fs.isImageFile(file));
+            const files = Array.from(fileInput.files).filter(file => isImageFile(file));
             if(files.length === 0){
                 return this.openImageError('No image files selected');
             }
