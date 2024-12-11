@@ -54,10 +54,10 @@
 </template>
 
 <style lang="scss" module>
-    .container {
-        button + button {
-            margin-left: 0.5rem;
-        }
+    .container fieldset {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
     }
 </style>
 
