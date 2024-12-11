@@ -6,7 +6,7 @@
             <div :class="$style.buttonsContainer">
                 <button 
                     class="btn btn-default" 
-                    tabindex="2" 
+                    :tabindex="tabIndexOffset+1" 
                     @click="cancelAction"
                 >
                     Cancel
@@ -14,7 +14,7 @@
                 <button 
                     class="btn btn-primary" 
                     :class="$style.okButton"
-                    tabindex="3" 
+                    :tabindex="tabIndexOffset+2" 
                     @click="okAction" 
                     :disabled="isOkButtonDisabled"
                 >
@@ -100,6 +100,10 @@ export default {
         isOkButtonDisabled: {
             type: Boolean,
             required: true,
+        },
+        tabIndexOffset: {
+            type: Number,
+            default: 0,
         },
     },
 };

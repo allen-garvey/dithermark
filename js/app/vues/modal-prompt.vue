@@ -5,6 +5,7 @@
         :okAction="okAction"
         :okButtonText="okButtonValue"
         :isOkButtonDisabled="!inputValue"
+        :tabIndexOffset="1"
     >
         <label>{{labelValue}}
             <!-- //trigger needs to be keydown and not keyup, since otherwise it will be triggered if modal is opened via enter key on button -->

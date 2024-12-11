@@ -5,6 +5,7 @@
         :okAction="okAction"
         :okButtonText="okButtonValue"
         :isOkButtonDisabled="!inputValue"
+        :tabIndexOffset="3"
     >
         <label>File name
             <input  
@@ -12,10 +13,11 @@
                 tabindex="1" 
                 type="text" 
                 placeholder="video" 
-                v-model="inputValue"
+                v-model="filename"
             />
+            .mp4
         </label>
-        <!-- TODO: Fix tab index in modal component-->
+        
     </modal>
 </template>
 
