@@ -14,6 +14,9 @@ body{
     --disabled-text-color: #ddd;
     --border-color: #dee2e6;
     --pinned-controls-border-color: #dee2e6;
+    --form-control-color: black;
+    --form-control-bg-color: white;
+    --form-control-color-scheme: light;
 }
 .editor-white{
     color: black;
@@ -50,6 +53,9 @@ body{
     --disabled-text-color: #666;
     --border-color: #6a6a6a;
     --pinned-controls-border-color: #6a6a6a;
+    --form-control-color: white;
+    --form-control-bg-color: #222;
+    --form-control-color-scheme: dark;
 }
 
 .editor-black{
@@ -63,6 +69,9 @@ body{
     --disabled-text-color: #666;
     --border-color: #7a7a7a;
     --pinned-controls-border-color: #7a7a7a;
+    --form-control-color: white;
+    --form-control-bg-color: #222;
+    --form-control-color-scheme: dark;
 }
 
 //colors links in dark and black themes

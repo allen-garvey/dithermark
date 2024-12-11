@@ -55,6 +55,25 @@
         border-color: #dbdbdb;
     }
 }
+
+.editor-dark {
+    .btn-default{
+        color: #fff;
+        background-color: #333;
+        background-image: linear-gradient(to bottom, #2a2a2a 0%, #444 100%);
+        border-color: #777;
+    }
+}
+
+.editor-black {
+    .btn-default{
+        color: #fff;
+        background-color: #333;
+        background-image: linear-gradient(to bottom, #2a2a2a 0%, #444 100%);
+        border-color: #555;
+    }
+}
+
 .btn-primary{
     background-color: #337ab7;
     background-image: linear-gradient(to bottom, #337ab7 0%, #265a88 100%);
