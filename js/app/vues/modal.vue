@@ -13,7 +13,6 @@
                 </button>
                 <button 
                     class="btn btn-primary" 
-                    :class="$style.okButton"
                     :tabindex="tabIndexOffset+2" 
                     @click="okAction" 
                     :disabled="isOkButtonDisabled"
@@ -57,24 +56,20 @@
     max-width: 100vw;
     padding: 3.5em 3em;
     border-radius: 4px;
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
 }
 
 .buttonsContainer{
     margin-top: 1.5em;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1em;
 }
 
 .input {
     margin-left: 0.5rem;
     width: 20em;
     max-width: 100%;
-}
-
-.okButton {
-    margin-left: 0.5rem;
 }
 </style>
 
