@@ -60,7 +60,7 @@
     .btn-default{
         color: #fff;
         background-color: #333;
-        background-image: linear-gradient(to bottom, #2a2a2a 0%, #444 100%);
+        background-image: linear-gradient(to bottom, #4a4a4a 0%, #2a2a2a 100%);
         border-color: #777;
         
         &:hover:enabled, &:focus:enabled, &:active:enabled{
@@ -74,11 +74,11 @@
     .btn-default{
         color: #fff;
         background-color: #333;
-        background-image: linear-gradient(to bottom, #2a2a2a 0%, #444 100%);
+        background-image: linear-gradient(to bottom, #333 0%, #111 100%);
         border-color: #555;
 
         &:hover:enabled, &:focus:enabled, &:active:enabled{
-            background-color: #333;
+            background-color: #1a1a1a;
             border-color: #555;
         }
     }
