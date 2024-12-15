@@ -13,6 +13,7 @@
             <div ref="controlsContainer" :class="$style.controlsContainer">
                 <batch-convert-overlay 
                     v-if="isBatchConverting" 
+                    :batch-convert-state="batchConvertState"
                     :current-file-name="loadedImage.fileName"
                     :batch-images-left="batchImageQueue.length"
                     :batch-image-count="batchImageCount"
@@ -297,6 +298,7 @@ import BatchConvertOverlay from './batch-convert-overlay.vue';
 import Checkbox from './checkbox.vue';
 import { isiOs } from '../cross-platform.js';
 import { BATCH_IMAGE_MODE_EXPORT_IMAGES, BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
+import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = new FFmpeg();
@@ -395,12 +397,22 @@ export default {
             activeControlsTab: 0,
             //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
             loadedImage: null,
+            /**
+             * Batch convert
+             */
             batchImageQueue: [],
             batchImageCount: 0,
             batchImageMode: BATCH_IMAGE_MODE_EXPORT_IMAGES,
+            batchConvertState: BATCH_CONVERT_STATE.NONE,
+            /**
+             * Color picker
+             */
             isLivePreviewEnabled: true,
             isColorPickerLivePreviewEnabledSetting: false,
             automaticallyResizeLargeImages: true,
+            /**
+             * Webgl
+             */
             isWebglSupported: false,
             isWebglEnabled: false,
             isWebglHighpFloatSupported: false,
@@ -441,7 +453,7 @@ export default {
             return this.isImageLoaded && !isiOs();
         },
         isBatchConverting(){
-            return this.batchImageQueue.length > 0;
+            return this.batchConvertState !== BATCH_CONVERT_STATE.NONE;
         },
         globalControlsTabs(){
             const clicked = (tabIndex) => this.activeControlsTab = tabIndex;
@@ -642,6 +654,7 @@ export default {
             callback(exportCanvas, this.loadedImage.unsplash);
         },
         loadBatchImages(files, batchImageMode){
+            this.batchConvertState = BATCH_CONVERT_STATE.PROCESSING_FRAMES;
             this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
@@ -649,8 +662,15 @@ export default {
         },
         batchProcessingCompleted(){
             if(this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO){
+                this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
                 // ffmpeg.listDir('.').then(contents => console.log(contents));
-                this.$refs.exportTab.exportVideoFromFrames(ffmpeg);
+                this.$refs.exportTab.exportVideoFromFrames(ffmpeg)
+                .then(() => {
+                    this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                });
+            }
+            else {
+                this.batchConvertState = BATCH_CONVERT_STATE.NONE;
             }
         },
         loadNextBatchImage(){
