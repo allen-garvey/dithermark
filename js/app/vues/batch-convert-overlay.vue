@@ -5,7 +5,7 @@
             <div>{{ currentImageIndex }}/{{ batchImageCount }}</div>
         </div>
         <div v-if="batchConvertState === batchConvertStates.FRAMES_TO_VIDEO">
-            <div>Converting images to video&hellip;</div>
+            <div>Converting images to video <span v-if="videoConvertPercentage">{{ videoConvertPercentage }}%</span></div>
             <spinner />
         </div>
     </div>
@@ -47,6 +47,10 @@ export default {
             required: true,
         },
         batchConvertState: {
+            type: Number,
+            required: true,
+        },
+        videoConvertPercentage: {
             type: Number,
             required: true,
         },

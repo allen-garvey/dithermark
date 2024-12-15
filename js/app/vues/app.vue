@@ -17,6 +17,7 @@
                     :current-file-name="loadedImage.fileName"
                     :batch-images-left="batchImageQueue.length"
                     :batch-image-count="batchImageCount"
+                    :video-convert-percentage="ffmpegPercentage"
                 />
                 <div :class="{'no-image': !isImageLoaded}" class="global-controls-panel controls-panel">
                     <tabs 
@@ -302,9 +303,6 @@ import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = new FFmpeg();
-ffmpeg.on('log', ({ message }) => {
-    console.log(message);
-});
 ffmpeg.load();
 
 
@@ -366,6 +364,16 @@ export default {
             this.isWebglHighpFloatSupported = transformCanvasWebGl.supportsHighFloatPrecision;
             this.isWebglHighIntPrecisionSupported = transformCanvasWebGl.supportsHighIntPrecision;
         }
+
+        ffmpeg.on('log', ({ message }) => {
+            console.log(message);
+            if(/^frame=\s+\d+/.test(message)){
+                const currentFrame = parseInt(message.replace(/^frame=\s+/, '').replace(/\s.*$/, ''));
+                const percentage = isNaN(currentFrame) ? 0 : Math.floor(currentFrame / this.batchImageCount * 100);
+                // don't show 100%, because even on the last frame ffmpeg still has work to do
+                this.ffmpegPercentage = percentage === 100 ? 99.9 : percentage;
+            }
+        });
     },
     mounted(){
         const refs = this.$refs;
@@ -404,6 +412,7 @@ export default {
             batchImageCount: 0,
             batchImageMode: BATCH_IMAGE_MODE_EXPORT_IMAGES,
             batchConvertState: BATCH_CONVERT_STATE.NONE,
+            ffmpegPercentage: 0,
             /**
              * Color picker
              */
@@ -658,6 +667,7 @@ export default {
             this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
+            this.ffmpegPercentage = 0;
             this.loadNextBatchImage();
         },
         batchProcessingCompleted(){
