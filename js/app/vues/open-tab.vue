@@ -77,6 +77,7 @@
 import Fs, { isImageFile } from '../fs.js';
 import { getRandomImage } from '../random-image.js';
 import ExportVideoModal from './export-video-modal.vue';
+import { BATCH_IMAGE_MODE_EXPORT_IMAGES, BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
 
 export default { 
     props: {
@@ -122,7 +123,7 @@ export default {
             if(files.length === 0){
                 return this.openImageError('No image files selected');
             }
-            this.onBatchFilesSelected(files);
+            this.onBatchFilesSelected(files, BATCH_IMAGE_MODE_EXPORT_IMAGES);
             // clear input so the same files can be re-selected
             $event.target.value = '';
         },
@@ -165,8 +166,8 @@ export default {
         openVideoModal(){
             this.$refs.videoModal.show();
         },
-        onVideoModalSubmitted(){
-
+        onVideoModalSubmitted(files){
+            this.onBatchFilesSelected(files, BATCH_IMAGE_MODE_EXPORT_VIDEO);
         },
     },
 };

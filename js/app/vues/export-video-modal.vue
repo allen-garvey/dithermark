@@ -4,7 +4,7 @@
         :cancelAction="cancelAction"
         :okAction="onOk"
         okButtonText="Export video"
-        :isOkButtonDisabled="isOkAllowed"
+        :isOkButtonDisabled="!isSubmitEnabled"
         :tabIndexOffset="3"
     >
         <div :class="$style.container">
@@ -76,8 +76,8 @@ export default {
         };
     },
     computed: {
-        isOkAllowed(){
-            return true;
+        isSubmitEnabled(){
+            return this.files?.length > 0 && this.filename && this.fps >= 1;
         },
     },
     methods: {
@@ -90,7 +90,7 @@ export default {
         },
         onOk(){
             this.showModal = false;
-            this.onSubmit();
+            this.onSubmit(this.files);
         },
         onBatchFileInputChange($event){
             const fileInput = $event.target;
@@ -98,7 +98,6 @@ export default {
             if(files.length === 0){
                 return this.openImageError('No image files selected');
             }
-            console.log(files);
             this.files = files;
         },
     }

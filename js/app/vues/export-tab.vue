@@ -45,7 +45,7 @@
 <script>
 import { APP_NAME, UNSPLASH_DOWNLOAD_URL, UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../../../constants.js';
 import Canvas from '../canvas.js'
-import {saveImage} from '../fs.js';
+import {saveImage, canvasToArray, arrayToObjectUrl} from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import  userSettings from '../user-settings.js';
 
@@ -150,6 +150,55 @@ export default {
                 });
             });
         },
+        saveImageToFfmpeg(ffmpeg){
+            return new Promise((resolve) => {
+                if(this.isCurrentlySavingImage){
+                    return resolve();
+                }
+                this.isCurrentlySavingImage = true;
+                this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
+                    canvasToArray(sourceCanvas.canvas, this.saveImageFileType.mime)
+                    .then(array => ffmpeg.writeFile(this.saveImageFileName + this.saveImageFileType.extension, array))
+                    .then(() => {
+                        //clear the canvas to free up memory
+                        Canvas.clear(saveImageCanvas);
+                        this.isCurrentlySavingImage = false;
+                        resolve();
+                    });
+
+                });
+            });
+        },
+        exportVideoFromFrames(ffmpeg){
+            const exportFilename = 'out.mp4';
+
+            return new Promise((resolve) => {
+                ffmpeg.exec([
+                    '-framerate', 
+                    '24', 
+                    '-f', 
+                    'image2', 
+                    '-i', 
+                    `./%4d${this.saveImageFileType.extension}`, 
+                    exportFilename
+                ])
+                .then((errorCode) => {
+                    console.log(`ffmpeg return value ${errorCode}`);
+                    return ffmpeg.listDir('.');
+                })
+                .then(contents => console.log(contents))
+                .then(() => ffmpeg.readFile(exportFilename))
+                .then((data) => {
+                    arrayToObjectUrl(data, (objectUrl) => {
+                        saveImageLink.href = objectUrl;
+                        saveImageLink.download = exportFilename;
+                        saveImageLink.click();
+                        resolve();
+                    });
+                });
+            });
+        },
+
     },
 };
 </script>

@@ -1,0 +1,2 @@
+export const BATCH_IMAGE_MODE_EXPORT_IMAGES = 1;
+export const BATCH_IMAGE_MODE_EXPORT_VIDEO = 2;

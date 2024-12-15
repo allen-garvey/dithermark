@@ -296,6 +296,14 @@ import SettingsTab from './settings-tab.vue';
 import BatchConvertOverlay from './batch-convert-overlay.vue';
 import Checkbox from './checkbox.vue';
 import { isiOs } from '../cross-platform.js';
+import { BATCH_IMAGE_MODE_EXPORT_IMAGES, BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
+import { FFmpeg } from '@ffmpeg/ffmpeg';
+
+const ffmpeg = new FFmpeg();
+ffmpeg.on('log', ({ message }) => {
+    console.log(message);
+});
+ffmpeg.load();
 
 
 //webworker stuff
@@ -317,9 +325,6 @@ let ditherOutputWebglTexture;
 //used to keep track of which tabs have loaded a new image to them, after an image is loaded
 //this is because originally, only the active tab when an image is loaded will register it as new
 const tabsThatHaveSeenImageSet = new Set();
-
-const BATCH_IMAGE_MODE_EXPORT_IMAGES = 1;
-const BATCH_IMAGE_MODE_EXPORT_VIDEO = 2;
 
 export default {
     components: {
@@ -636,15 +641,16 @@ export default {
 
             callback(exportCanvas, this.loadedImage.unsplash);
         },
-        loadBatchImages(files){
-            this.batchImageMode = BATCH_IMAGE_MODE_EXPORT_IMAGES;
+        loadBatchImages(files, batchImageMode){
+            this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
             this.loadNextBatchImage();
         },
         batchProcessingCompleted(){
             if(this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO){
-
+                // ffmpeg.listDir('.').then(contents => console.log(contents));
+                this.$refs.exportTab.exportVideoFromFrames(ffmpeg);
             }
         },
         loadNextBatchImage(){
@@ -661,8 +667,10 @@ export default {
             if(this.batchImageQueue.length === 0){
                 return;
             }
-            this.$refs.exportTab.saveImage()
-            .then(() => sleep(100))
+            const action = this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO ? () => this.$refs.exportTab.saveImageToFfmpeg(ffmpeg) : () => this.$refs.exportTab.saveImage()
+            .then(() => sleep(100));
+            
+            action()
             .then(() => {
                 this.batchImageQueue = this.batchImageQueue.slice(1);
                 this.loadNextBatchImage();
