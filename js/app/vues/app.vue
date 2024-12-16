@@ -304,6 +304,7 @@ import { isiOs } from '../cross-platform.js';
 import { BATCH_IMAGE_MODE_EXPORT_IMAGES, BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
+import { initializeFfmpeg } from '../ffmpeg.js';
 
 const FFMPEG_STATES = {
     NEW: 0,
@@ -730,7 +731,7 @@ export default {
                 return;
             }
             this.ffmpegState = FFMPEG_STATES.LOADING;
-            ffmpeg.load()
+            initializeFfmpeg(ffmpeg)
             .then(() => this.ffmpegState = FFMPEG_STATES.READY);
         },
         loadImage(image, file){

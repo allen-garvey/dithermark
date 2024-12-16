@@ -48,6 +48,7 @@ import Canvas from '../canvas.js'
 import {saveImage, canvasToArray, arrayToObjectUrl} from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import  userSettings from '../user-settings.js';
+import { exportFramesToVideo, saveImageFrame } from '../ffmpeg.js';
 
 let saveImageCanvas;
 let saveImageLink;
@@ -158,7 +159,9 @@ export default {
                 this.isCurrentlySavingImage = true;
                 this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
                     canvasToArray(sourceCanvas.canvas, this.saveImageFileType.mime)
-                    .then(array => ffmpeg.writeFile(this.saveImageFileName + this.saveImageFileType.extension, array))
+                    .then(array => 
+                        saveImageFrame(ffmpeg, this.saveImageFileName + this.saveImageFileType.extension, array)
+                    )
                     .then(() => {
                         //clear the canvas to free up memory
                         Canvas.clear(saveImageCanvas);
@@ -173,21 +176,7 @@ export default {
             const exportFilename = videoExportOptions.filename;
 
             return new Promise((resolve) => {
-                ffmpeg.exec([
-                    '-framerate', 
-                    `${videoExportOptions.fps}`, // for some reason ffmpeg will fail if fps is not a string 
-                    '-f', 
-                    'image2', 
-                    '-i', 
-                    `./%4d${this.saveImageFileType.extension}`, 
-                    exportFilename
-                ])
-                .then((errorCode) => {
-                    console.log(`ffmpeg return value ${errorCode}`);
-                    return ffmpeg.listDir('.');
-                })
-                .then(contents => console.log(contents))
-                .then(() => ffmpeg.readFile(exportFilename))
+                exportFramesToVideo(ffmpeg, exportFilename, videoExportOptions.fps, this.saveImageFileType.extension)
                 .then((data) => {
                     arrayToObjectUrl(data, (objectUrl) => {
                         saveImageLink.href = objectUrl;
