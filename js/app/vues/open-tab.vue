@@ -176,8 +176,8 @@ export default {
             this.getFfmpegReady();
             this.$refs.videoModal.show();
         },
-        onVideoModalSubmitted(files){
-            this.onBatchFilesSelected(files, BATCH_IMAGE_MODE_EXPORT_VIDEO);
+        onVideoModalSubmitted(files, videoExportOptions){
+            this.onBatchFilesSelected(files, BATCH_IMAGE_MODE_EXPORT_VIDEO, videoExportOptions);
         },
     },
 };

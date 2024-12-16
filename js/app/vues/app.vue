@@ -422,6 +422,7 @@ export default {
             batchConvertState: BATCH_CONVERT_STATE.NONE,
             ffmpegPercentage: 0,
             ffmpegState: FFMPEG_STATES.NEW,
+            videoExportOptions: null,
             /**
              * Color picker
              */
@@ -680,18 +681,19 @@ export default {
 
             callback(exportCanvas, this.loadedImage.unsplash);
         },
-        loadBatchImages(files, batchImageMode){
+        loadBatchImages(files, batchImageMode, videoExportOptions=null){
             this.batchConvertState = BATCH_CONVERT_STATE.PROCESSING_FRAMES;
             this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
+            this.videoExportOptions = videoExportOptions;
             this.ffmpegPercentage = 0;
             this.loadNextBatchImage();
         },
         batchProcessingCompleted(){
             if(this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO){
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
-                this.$refs.exportTab.exportVideoFromFrames(ffmpeg)
+                this.$refs.exportTab.exportVideoFromFrames(ffmpeg, this.videoExportOptions)
                 .then(() => {
                     this.batchConvertState = BATCH_CONVERT_STATE.NONE;
                 });

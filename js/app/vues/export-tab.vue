@@ -169,13 +169,13 @@ export default {
                 });
             });
         },
-        exportVideoFromFrames(ffmpeg){
-            const exportFilename = 'out.mp4';
+        exportVideoFromFrames(ffmpeg, videoExportOptions){
+            const exportFilename = videoExportOptions.filename;
 
             return new Promise((resolve) => {
                 ffmpeg.exec([
                     '-framerate', 
-                    '24', 
+                    `${videoExportOptions.fps}`, // for some reason ffmpeg will fail if fps is not a string 
                     '-f', 
                     'image2', 
                     '-i', 

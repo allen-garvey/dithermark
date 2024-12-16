@@ -16,14 +16,14 @@
                     placeholder="video" 
                     v-model="filename"
                 />
-                .mp4
+                {{ fileExtension }}
             </label>
             <label>FPS
                 <input  
                     tabindex="2" 
                     type="number" 
                     min="1"
-                    v-model="fps"
+                    v-model.number="fps"
                 />
             </label>
             <input 
@@ -74,6 +74,7 @@ export default {
     data(){
         return {
             filename: 'video',
+            fileExtension: '.mp4',
             fps: 24,
             files: null,
             showModal: false,
@@ -94,7 +95,10 @@ export default {
         },
         onOk(){
             this.showModal = false;
-            this.onSubmit(this.files);
+            this.onSubmit(this.files, {
+                fps: this.fps,
+                filename: this.filename + this.fileExtension,
+            });
         },
         onBatchFileInputChange($event){
             const fileInput = $event.target;
