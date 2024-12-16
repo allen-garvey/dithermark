@@ -42,6 +42,9 @@ export const exportFramesToVideo = (
             'image2',
             '-i',
             `${FFMPEG_EXPORT_DIRECTORY}/%4d${imageFileExtension}`,
+            // filter has to be after image source
+            '-filter:v',
+            `format=pix_fmts='yuv420p'`,
             exportFilePath,
         ])
         .then(errorCode => {
