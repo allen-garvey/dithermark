@@ -367,7 +367,7 @@ export default {
 
         ffmpeg.on('log', ({ message }) => {
             console.log(message);
-            if(/^frame=\s+\d+/.test(message)){
+            if(this.batchConvertState === BATCH_CONVERT_STATE.FRAMES_TO_VIDEO && /^frame=\s+\d+/.test(message)){
                 const currentFrame = parseInt(message.replace(/^frame=\s+/, '').replace(/\s.*$/, ''));
                 const percentage = isNaN(currentFrame) ? 0 : Math.floor(currentFrame / this.batchImageCount * 100);
                 // don't show 100%, because even on the last frame ffmpeg still has work to do
