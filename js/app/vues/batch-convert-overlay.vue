@@ -1,5 +1,8 @@
 <template>
     <div :class="$style.container">
+        <div v-if="progressStagesCount > 1">
+           {{ currentProgressStage }} / {{ progressStagesCount }}
+        </div>
         <div v-if="batchConvertState === batchConvertStates.PROCESSING_FRAMES">
             <div>Processing image {{ currentFileName }}</div>
             <div>{{ currentImageIndex }}/{{ batchImageCount }}</div>
@@ -30,6 +33,7 @@
 
 <script>
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
+import { BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
 import spinner from './widgets/spinner.vue';
 
 export default {
@@ -50,6 +54,10 @@ export default {
             type: Number,
             required: true,
         },
+        batchImageMode: {
+            type: Number,
+            required: true,
+        },
         videoConvertPercentage: {
             type: Number,
             required: true,
@@ -59,6 +67,18 @@ export default {
         spinner,
     },
     computed: {
+        currentProgressStage(){
+            switch(this.batchConvertState){
+                case BATCH_CONVERT_STATE.FRAMES_TO_VIDEO: return 2;
+                default: return 1;
+            };
+        },
+        progressStagesCount(){
+            switch(this.batchImageMode){
+                case BATCH_IMAGE_MODE_EXPORT_VIDEO: return 2;
+                default: return 1;
+            };
+        },
         batchConvertStates(){
             return BATCH_CONVERT_STATE;
         },

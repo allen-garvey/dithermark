@@ -14,6 +14,7 @@
                 <batch-convert-overlay 
                     v-if="isBatchConverting" 
                     :batch-convert-state="batchConvertState"
+                    :batchImageMode="batchImageMode"
                     :current-file-name="loadedImage.fileName"
                     :batch-images-left="batchImageQueue.length"
                     :batch-image-count="batchImageCount"
