@@ -92,7 +92,6 @@ export default {
         cancelAction(){
             this.files = null;
             this.showModal = false;
-            this.$refs.batchFileInput.value = '';
         },
         onOk(){
             this.showModal = false;
