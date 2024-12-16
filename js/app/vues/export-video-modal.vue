@@ -1,6 +1,6 @@
 <template>
     <modal
-        v-if="showModal"
+        v-show="showModal"
         :cancelAction="cancelAction"
         :okAction="onOk"
         okButtonText="Export video"
@@ -99,14 +99,11 @@ export default {
                 fps: this.fps,
                 filename: this.filename + this.fileExtension,
             });
+            this.files = null;
         },
         onBatchFileInputChange($event){
             const fileInput = $event.target;
-            const files = Array.from(fileInput.files).filter(file => isImageFile(file));
-            if(files.length === 0){
-                return this.openImageError('No image files selected');
-            }
-            this.files = files;
+            this.files = Array.from(fileInput.files).filter(file => isImageFile(file));
         },
     }
 };
