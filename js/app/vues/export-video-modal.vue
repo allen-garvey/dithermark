@@ -1,6 +1,6 @@
 <template>
     <modal
-        v-show="showModal"
+        v-if="showModal"
         :cancelAction="cancelAction"
         :okAction="onOk"
         okButtonText="Export video"
