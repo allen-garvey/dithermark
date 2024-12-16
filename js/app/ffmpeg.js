@@ -49,5 +49,20 @@ export const exportFramesToVideo = (
             return ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY);
         })
         .then(contents => console.log(contents))
-        .then(() => ffmpeg.readFile(exportFilePath));
+        .then(() => ffmpeg.readFile(exportFilePath))
+        .then(data =>
+            ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY).then(files => {
+                const promises = files
+                    .filter(file => !file.isDir)
+                    .map(file =>
+                        ffmpeg.deleteFile(
+                            `${FFMPEG_EXPORT_DIRECTORY}/${file.name}`
+                        )
+                    );
+                return Promise.all(promises)
+                    .then(() => ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY))
+                    .then(contents => console.log(contents))
+                    .then(() => data);
+            })
+        );
 };
