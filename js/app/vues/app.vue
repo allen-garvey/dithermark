@@ -33,6 +33,8 @@
                         :open-image-error="onOpenImageError" 
                         :request-modal="showModalPrompt" 
                         :is-batch-convert-enabled="isBatchConvertEnabled"
+                        :getFfmpegReady="getFfmpegReady"
+                        :isFfmpegReady="isFfmpegReady"
                         v-show="activeControlsTab === 0"
                     />
                     <!-- Image tab -->
@@ -303,8 +305,13 @@ import { BATCH_IMAGE_MODE_EXPORT_IMAGES, BATCH_IMAGE_MODE_EXPORT_VIDEO } from '.
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 
+const FFMPEG_STATES = {
+    NEW: 0,
+    LOADING: 1,
+    READY: 2,
+};
+
 const ffmpeg = new FFmpeg();
-ffmpeg.load();
 
 
 //webworker stuff
@@ -414,6 +421,7 @@ export default {
             batchImageMode: BATCH_IMAGE_MODE_EXPORT_IMAGES,
             batchConvertState: BATCH_CONVERT_STATE.NONE,
             ffmpegPercentage: 0,
+            ffmpegState: FFMPEG_STATES.NEW,
             /**
              * Color picker
              */
@@ -459,12 +467,21 @@ export default {
         };
     },
     computed: {
+        /**
+         * Batch convert
+         */
         isBatchConvertEnabled(){
             return this.isImageLoaded && !isiOs();
         },
         isBatchConverting(){
             return this.batchConvertState !== BATCH_CONVERT_STATE.NONE;
         },
+        isFfmpegReady(){
+            return this.ffmpegState === FFMPEG_STATES.READY;
+        },
+        /**
+         * Tabs
+         */
         globalControlsTabs(){
             const clicked = (tabIndex) => this.activeControlsTab = tabIndex;
 
@@ -674,7 +691,6 @@ export default {
         batchProcessingCompleted(){
             if(this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO){
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
-                // ffmpeg.listDir('.').then(contents => console.log(contents));
                 this.$refs.exportTab.exportVideoFromFrames(ffmpeg)
                 .then(() => {
                     this.batchConvertState = BATCH_CONVERT_STATE.NONE;
@@ -706,6 +722,14 @@ export default {
                 this.batchImageQueue = this.batchImageQueue.slice(1);
                 this.loadNextBatchImage();
             });
+        },
+        getFfmpegReady(){
+            if(this.ffmpegState !== FFMPEG_STATES.NEW){
+                return;
+            }
+            this.ffmpegState = FFMPEG_STATES.LOADING;
+            ffmpeg.load()
+            .then(() => this.ffmpegState = FFMPEG_STATES.READY);
         },
         loadImage(image, file){
             const loadedImage = {

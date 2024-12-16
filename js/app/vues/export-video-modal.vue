@@ -58,6 +58,10 @@ export default {
             type: Function,
             required: true,
         },
+        canSubmit: {
+            type: Boolean,
+            required: true,
+        },
     },
     directives: {
         focus: FocusDirective,
@@ -77,7 +81,7 @@ export default {
     },
     computed: {
         isSubmitEnabled(){
-            return this.files?.length > 0 && this.filename && this.fps >= 1;
+            return this.canSubmit && this.files?.length > 0 && this.filename && this.fps >= 1;
         },
     },
     methods: {

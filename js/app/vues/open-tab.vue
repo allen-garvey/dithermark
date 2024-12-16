@@ -60,6 +60,7 @@
         </fieldset>
         <export-video-modal
             :onSubmit="onVideoModalSubmitted"
+            :canSubmit="isFfmpegReady"
             ref="videoModal"
         />    
     </div>
@@ -99,6 +100,14 @@ export default {
         },
         isBatchConvertEnabled: {
             type: Boolean,
+            required: true,
+        },
+        isFfmpegReady: {
+            type: Boolean,
+            required: true,
+        },
+        getFfmpegReady: {
+            type: Function,
             required: true,
         },
     },
@@ -164,6 +173,7 @@ export default {
             }).catch(this.openImageFromUrlFailed);
         },
         openVideoModal(){
+            this.getFfmpegReady();
             this.$refs.videoModal.show();
         },
         onVideoModalSubmitted(files){
