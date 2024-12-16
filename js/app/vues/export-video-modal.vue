@@ -90,6 +90,7 @@ export default {
             this.showModal = true;
         },
         cancelAction(){
+            this.files = null;
             this.showModal = false;
             this.$refs.batchFileInput.value = '';
         },
