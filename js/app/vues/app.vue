@@ -158,6 +158,8 @@
                         :source-file-name="exportFileNameSource"
                         :save-requested="onSaveRequested" 
                         :is-image-pixelated="isImagePixelated"
+                        :shouldUpsample="shouldUpsample"
+                        :setShouldUpsample="(value) => this.shouldUpsample = value"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />
@@ -438,7 +440,11 @@ export default {
             isWebglEnabled: false,
             isWebglHighpFloatSupported: false,
             isWebglHighIntPrecisionSupported: false,
+            /**
+             * Export settings
+             */
             exportFileNameSource: '',
+            shouldUpsample: true,
             /**
              * Filters
              */
@@ -673,9 +679,9 @@ export default {
         /*
         * Loading and saving image stuff
         */
-        onSaveRequested(exportCanvas, shouldUpsample, callback){
+        onSaveRequested(exportCanvas, callback){
             //scale canvas if pixelated
-            const scale = this.isImagePixelated && shouldUpsample ? 100 / this.pixelateImageZoom : 1;
+            const scale = this.isImagePixelated && this.shouldUpsample ? 100 / this.pixelateImageZoom : 1;
             //while technicaly we can just use transformedSourceCanvas directly if there is no pixelation
             //it makes the logic for clearing the canvas in export component easier
             //since we don't need to check if we are using transform canvas directly

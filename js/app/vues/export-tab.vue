@@ -13,10 +13,10 @@
         <div v-if="isImagePixelated">
             <label :class="$style.exportLabel">Size</label>
             <label :class="$style.radioLabel">Upsampled
-                <input type="radio" v-model.number="shouldUpsample" :value="1" />
+                <input type="radio" @change="setShouldUpsample(true)" :checked="shouldUpsample" />
             </label>
             <label :class="$style.radioLabel">Actual
-                <input type="radio" v-model.number="shouldUpsample" :value="0" />
+                <input type="radio" @change="setShouldUpsample(false)" :checked="!shouldUpsample" />
             </label>
         </div>
         <div>
@@ -80,6 +80,14 @@ export default {
             type: String,
             required: true,
         },
+        shouldUpsample: {
+            type: Boolean,
+            required: true,
+        },
+        setShouldUpsample: {
+            type: Function,
+            required: true,
+        },
     },
     created(){
         saveImageCanvas = Canvas.create();
@@ -90,9 +98,6 @@ export default {
             saveImageFileName: '',
             saveImageFileTypeValue: userSettings.getExportSettings().fileType,
             isCurrentlySavingImage: false,
-            //should be boolean, but v-model only supports numbers
-            //only used if image is pixelated
-            shouldUpsample: 1,
         };
     },
     computed: {
@@ -134,7 +139,7 @@ export default {
                     return resolve();
                 }
                 this.isCurrentlySavingImage = true;
-                this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
+                this.saveRequested(saveImageCanvas, (sourceCanvas, unsplash)=>{
                     saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl)=>{
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
@@ -160,7 +165,7 @@ export default {
                     return resolve();
                 }
                 this.isCurrentlySavingImage = true;
-                this.saveRequested(saveImageCanvas, !!this.shouldUpsample, (sourceCanvas, unsplash)=>{
+                this.saveRequested(saveImageCanvas, (sourceCanvas, unsplash)=>{
                     canvasToArray(sourceCanvas.canvas, this.saveImageFileType.mime)
                     .then(array => 
                         saveImageFrame(ffmpeg, this.saveImageFileName + this.saveImageFileType.extension, array)
