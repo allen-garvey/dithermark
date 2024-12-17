@@ -1,6 +1,9 @@
 <template>
     <div :class="$style.alertsContainer">
-        <div :class="[$style.alert, $style.danger]" v-if="showOpenImageErrorMessage && openImageErrorMessage" role="alert">
+        <div 
+            class="alert danger" v-if="showOpenImageErrorMessage && openImageErrorMessage" 
+            role="alert"
+        >
             <div :class="$style.closeButtonContainer">
                 <button @click="showOpenImageErrorMessage=false" :class="$style.closeButton">×</button>
             </div>
@@ -11,7 +14,10 @@
                 {{openImageErrorMessage}}
             </template>
         </div>
-        <div :class="[$style.alert, $style.warning]" v-if="showWebglWarningMessage && webglWarningMessage" role="alert">
+        <div 
+            class="alert warning" 
+            v-if="showWebglWarningMessage && webglWarningMessage" role="alert"
+        >
             <div :class="$style.closeButtonContainer">
                 <button @click="showWebglWarningMessage=false" :class="$style.closeButton">×</button>
             </div>
@@ -58,30 +64,6 @@
         font-weight: bold;
     }
 }
-
-.alert{
-    display: inline-block;
-    padding: 0.75em 1.25em;
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-
-.danger{
-    color: variables.$danger_text_color;
-    border-color: variables.$danger_border_color;
-    background-color: variables.$danger_background_color;
-
-    .link{
-        color: variables.$danger_link_color;
-    }
-}
-
-.warning{
-    color: variables.$warning_text_color;
-    border-color: variables.$warning_border_color;
-    background-color: variables.$warning_background_color;
-}
-
 </style>
 
 <script>
