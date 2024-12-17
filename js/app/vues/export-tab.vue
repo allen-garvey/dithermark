@@ -49,6 +49,7 @@ import {saveImage, canvasToArray, arrayToObjectUrl} from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import  userSettings from '../user-settings.js';
 import { exportFramesToVideo, saveImageFrame } from '../ffmpeg.js';
+import { getFilenameWithoutExtension } from '../path.js';
 
 let saveImageCanvas;
 let saveImageLink;
@@ -106,7 +107,7 @@ export default {
         // needs to be watch instead of computed value,
         // since saveImageFileName needs to be data property for v-model
         sourceFileName(newValue){
-            this.saveImageFileName = newValue.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
+            this.saveImageFileName = getFilenameWithoutExtension(newValue);
         },
         saveImageFileName(newValue, oldValue){
             if(newValue === oldValue){
