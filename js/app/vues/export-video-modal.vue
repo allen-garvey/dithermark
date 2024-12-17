@@ -8,7 +8,7 @@
         :tabIndexOffset="4"
     >
         <div :class="$style.container">
-            <label>File name
+            <label :class="$style.label"><span>File name</span>
                 <input  
                     v-focus
                     tabindex="1" 
@@ -19,13 +19,13 @@
                 />
                 {{ fileExtension }}
             </label>
-            <label>Frames per second
+            <label :class="$style.label"><span>Frames per second</span>
                 <input  
                     tabindex="2" 
                     type="number" 
                     min="1"
                     v-model.number="fps"
-                    :class="{[$style.invalid]: hasFpsError}"
+                    :class="{[$style.invalid]: hasFpsError, [$style.fpsInput]: true}"
                 />
             </label>
             <input 
@@ -86,11 +86,23 @@
         border-color: variables.$danger_input_border_color;
     }
 
+    .label {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1em;
+        max-width: 100%;
+    }
+
     .fileInputContainer {
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         gap: 1em;
+    }
+
+    .fpsInput {
+        width: 11em;
     }
 
     .hint {
