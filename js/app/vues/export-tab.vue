@@ -86,7 +86,6 @@ export default {
     },
     data(){
         return {
-            saveImageFileName: '',
             saveImageFileTypeValue: userSettings.getExportSettings().fileType,
             isCurrentlySavingImage: false,
             //should be boolean, but v-model only supports numbers
@@ -101,11 +100,11 @@ export default {
         saveImageFileType(){
             return this.saveImageFileTypes.find(fileType => fileType.value === this.saveImageFileTypeValue);
         },
+        saveImageFileName(){
+            return this.sourceFileName.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
+        },
     },
     watch: {
-        sourceFileName(newValue){
-            this.saveImageFileName = newValue.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
-        },
         saveImageFileName(newValue, oldValue){
             if(newValue === oldValue){
                 return;
