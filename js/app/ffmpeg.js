@@ -50,11 +50,9 @@ export const exportFramesToVideo = (
             exportFilePath,
         ])
         .then(errorCode => {
-            console.log(`ffmpeg return value ${errorCode}`);
-            return ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY);
+            // console.log(`ffmpeg return value ${errorCode}`);
+            return ffmpeg.readFile(exportFilePath);
         })
-        .then(contents => console.log(contents))
-        .then(() => ffmpeg.readFile(exportFilePath))
         .then(data =>
             ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY).then(files => {
                 const promises = files
@@ -64,10 +62,12 @@ export const exportFramesToVideo = (
                             `${FFMPEG_EXPORT_DIRECTORY}/${file.name}`
                         )
                     );
-                return Promise.all(promises)
-                    .then(() => ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY))
-                    .then(contents => console.log(contents))
-                    .then(() => data);
+                return (
+                    Promise.all(promises)
+                        // .then(() => ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY))
+                        // .then(contents => console.log(contents))
+                        .then(() => data)
+                );
             })
         );
 };
