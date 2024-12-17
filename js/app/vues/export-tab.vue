@@ -101,9 +101,6 @@ export default {
         saveImageFileType(){
             return this.saveImageFileTypes.find(fileType => fileType.value === this.saveImageFileTypeValue);
         },
-        saveImageFileName(){
-            return this.sourceFileName.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
-        },
     },
     watch: {
         // needs to be watch instead of computed value,
