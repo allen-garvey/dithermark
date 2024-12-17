@@ -278,7 +278,7 @@ import Canvas from '../canvas.js';
 import WorkerHeaders from '../../shared/worker-headers.js';
 import WorkerUtil from '../worker-util.js';
 import WebGl from '../webgl/webgl.js';
-import EditorThemes from '../models/editor-themes.js';
+import EditorThemes, { DEFAULT_EDITOR_THEME_KEY } from '../models/editor-themes.js';
 import WebGlSmoothing from '../webgl/webgl-smoothing.js';
 import WebGlBilateralFilter from '../webgl/webgl-bilateral-filter.js';
 import WebGlCanvasFilters from '../webgl/webgl-canvas-filters.js';
@@ -599,10 +599,10 @@ export default {
             return this.areCanvasFiltersSupported || this.isWebglEnabled; 
         },
         serializedGlobalSettings(){
-            const editorThemeKey = this.currentEditorThemeIndex === null ? '' : this.editorThemes[this.currentEditorThemeIndex].key;
+            const editorThemeKey = this.currentEditorThemeIndex === null ? DEFAULT_EDITOR_THEME_KEY : this.editorThemes[this.currentEditorThemeIndex].key;
 
             return {
-                editorThemeKey: editorThemeKey,
+                editorThemeKey,
                 isWebglEnabled: this.isWebglEnabled,
                 isLivePreviewEnabled: this.isLivePreviewEnabled,
                 isColorPickerLivePreviewEnabled: this.isColorPickerLivePreviewEnabledSetting,

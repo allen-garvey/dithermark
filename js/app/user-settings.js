@@ -2,6 +2,7 @@
 
 import ColorPalettes from './models/color-palettes.js';
 import { getSaveImageFileTypes } from './models/export-model.js';
+import { DEFAULT_EDITOR_THEME_KEY } from './models/editor-themes.js';
 
 const localStorage = window.localStorage;
 const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
@@ -57,6 +58,7 @@ function defaultGlobalSettings(areControlsPinned) {
     return {
         isWebglEnabled: true,
         isLivePreviewEnabled: true,
+        editorThemeKey: DEFAULT_EDITOR_THEME_KEY,
         //disable color picker live preview for mobile, since it slows down performance
         //and they can't see the benefits anyway
         isColorPickerLivePreviewEnabled: areControlsPinned,
