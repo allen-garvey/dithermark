@@ -2,6 +2,7 @@
     <div @keyup.esc="cancelAction" :class="$style.modal">
         <div :class="$style.overlay" @click="cancelAction"></div>
         <div :class="$style.contents">
+            <h4 :class="$style.title">{{ title }}</h4>
             <slot></slot>
             <div :class="$style.buttonsContainer">
                 <button 
@@ -54,8 +55,15 @@
     box-sizing: border-box;
     max-height: 100vh;
     max-width: 100vw;
-    padding: 3.5em 3em;
+    padding: 1em 3.5em 3em;
     border-radius: 4px;
+}
+
+.title {
+    font-size: 0.8rem;
+    font-weight: normal;
+    margin-bottom: 3rem;
+    text-align: center;
 }
 
 .buttonsContainer{
@@ -76,6 +84,10 @@
 <script>
 export default {
     props: {
+        title: {
+            type: String,
+            required: true,
+        },
         cancelAction: {
             type: Function,
             required: true,

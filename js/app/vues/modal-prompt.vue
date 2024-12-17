@@ -1,6 +1,7 @@
 <template>
     <modal
         v-if="showModal"
+        title="Open image from url"
         :cancelAction="cancelAction"
         :okAction="okAction"
         :okButtonText="okButtonValue"

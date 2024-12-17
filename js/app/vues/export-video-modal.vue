@@ -1,6 +1,7 @@
 <template>
     <modal
         v-if="showModal"
+        title="Convert images to video"
         :cancelAction="cancelAction"
         :okAction="onOk"
         okButtonText="Export video"
