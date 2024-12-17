@@ -15,15 +15,17 @@
                     type="text" 
                     placeholder="video" 
                     v-model="filename"
+                    :class="{[$style.invalid]: hasFilenameError}"
                 />
                 {{ fileExtension }}
             </label>
-            <label>FPS
+            <label>Frames per second
                 <input  
                     tabindex="2" 
                     type="number" 
                     min="1"
                     v-model.number="fps"
+                    :class="{[$style.invalid]: hasFpsError}"
                 />
             </label>
             <input 
@@ -34,6 +36,19 @@
                 multiple
             />
         </div>
+        <div :class="$style.alertsContainer">
+            <div 
+                v-if="errorMessages.length > 0" 
+                class="alert danger" 
+                role="alert"
+            >
+                <ul :class="$style.alertList">
+                    <li v-for="errorMessage in errorMessages">
+                        {{ errorMessage }}
+                    </li>
+                </ul>
+            </div>
+        </div>
     </modal>
 </template>
 
@@ -43,6 +58,18 @@
         flex-wrap: wrap;
         flex-direction: column;
         gap: 1em;
+    }
+
+    .alertsContainer {
+        margin: 1rem 0;
+    }
+
+    .alertList {
+        padding: 0.5em 2em;
+    }
+
+    .invalid, .invalid:focus {
+        border-color: variables.$danger_input_border_color;
     }
     
 </style>
@@ -69,8 +96,6 @@ export default {
     components: {
         Modal,
     },
-    created(){
-    },
     data(){
         return {
             filename: 'video',
@@ -82,7 +107,22 @@ export default {
     },
     computed: {
         isSubmitEnabled(){
-            return this.canSubmit && this.files?.length > 0 && this.filename && this.fps >= 1;
+            return this.canSubmit && this.files?.length > 0 && this.errorMessages.length === 0 && !this.hasFilenameError;
+        },
+        hasFpsError(){
+            return !this.fps > 0;
+        },
+        hasFilenameError(){
+            return !this.filename;
+        },
+        errorMessages(){
+            const errorMessages = [];
+            
+            if(this.hasFpsError){
+                errorMessages.push('Frames per second must be greater than 0.');
+            }
+
+            return errorMessages;
         },
     },
     methods: {
