@@ -86,13 +86,14 @@ select, input{
     }
 }
 //text inputs
+input{
+    max-width: 100%;
+}
 input:not([type]), input[type="text"], input[type="url"]{
     width: 16em;
-    max-width: 100%;
 }
 input[type="range"]{
     flex-basis: 50%;
-    max-width: 100%;
 }
 
 .spread-content{
