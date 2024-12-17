@@ -49,6 +49,9 @@
                 </ul>
             </div>
         </div>
+        <div :class="$style.hint">
+            For more information on how to convert a video to images, <a href="https://www.bannerbear.com/blog/how-to-extract-images-from-a-video-using-ffmpeg/" target="_blank" rel="noreferrer noopener">see this guide.</a>
+        </div>
     </modal>
 </template>
 
@@ -70,6 +73,10 @@
 
     .invalid, .invalid:focus {
         border-color: variables.$danger_input_border_color;
+    }
+
+    .hint {
+        font-size: 0.8rem;
     }
     
 </style>
