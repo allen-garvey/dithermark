@@ -35,6 +35,7 @@
                         :is-batch-convert-enabled="isBatchConvertEnabled"
                         :getFfmpegReady="getFfmpegReady"
                         :isFfmpegReady="isFfmpegReady"
+                        :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                         v-show="activeControlsTab === 0"
                     />
                     <!-- Image tab -->

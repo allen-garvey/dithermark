@@ -8,66 +8,82 @@
         :tabIndexOffset="4"
     >
         <div :class="$style.container">
-            <label :class="$style.label"><span>File name</span>
-                <input  
-                    v-focus
-                    tabindex="1" 
-                    type="text" 
-                    placeholder="video" 
-                    v-model="filename"
-                    :class="{[$style.invalid]: hasFilenameError}"
+            <div :class="$style.form">
+                <label :class="$style.label"><span>File name</span>
+                    <input  
+                        v-focus
+                        tabindex="1" 
+                        type="text" 
+                        placeholder="video" 
+                        v-model="filename"
+                        :class="{[$style.invalid]: hasFilenameError}"
+                    />
+                    {{ fileExtension }}
+                </label>
+                <label :class="$style.label"><span>Frames per second</span>
+                    <input  
+                        tabindex="2" 
+                        type="number" 
+                        min="1"
+                        v-model.number="fps"
+                        :class="{[$style.invalid]: hasFpsError, [$style.fpsInput]: true}"
+                    />
+                </label>
+                <input 
+                    type="file"
+                    @change="onBatchFileInputChange($event)"
+                    ref="batchFileInput" 
+                    multiple
+                    v-show="false"
                 />
-                {{ fileExtension }}
-            </label>
-            <label :class="$style.label"><span>Frames per second</span>
-                <input  
-                    tabindex="2" 
-                    type="number" 
-                    min="1"
-                    v-model.number="fps"
-                    :class="{[$style.invalid]: hasFpsError, [$style.fpsInput]: true}"
-                />
-            </label>
-            <input 
-                type="file"
-                @change="onBatchFileInputChange($event)"
-                ref="batchFileInput" 
-                multiple
-                v-show="false"
-            />
-            <div :class="$style.fileInputContainer">
-                <button 
-                    tabindex="3"
-                    class="btn btn-default" 
-                    @click="openDeviceImages"
-                    title="Select image files to convert to video"
+                <div :class="$style.fileInputContainer">
+                    <button 
+                        tabindex="3"
+                        class="btn btn-default" 
+                        @click="openDeviceImages"
+                        title="Select image files to convert to video"
+                    >
+                        Add image files
+                    </button>
+                    <span>{{ imagesSelectedText }}</span>
+                </div>
+            </div>
+            <div :class="$style.alertsContainer">
+                <div 
+                    v-if="errorMessages.length > 0" 
+                    class="alert danger" 
+                    role="alert"
                 >
-                    Add image files
-                </button>
-                <span>{{ imagesSelectedText }}</span>
+                    <ul :class="$style.alertList">
+                        <li v-for="message in errorMessages">
+                            {{ message }}
+                        </li>
+                    </ul>
+                </div>
+                <div 
+                    v-if="warningMessages.length > 0" 
+                    class="alert warning" 
+                    role="alert"
+                >
+                    <ul :class="$style.alertList">
+                        <li v-for="message in warningMessages">
+                            {{ message }}
+                        </li>
+                    </ul>
+                </div>
             </div>
-        </div>
-        <div :class="$style.alertsContainer">
-            <div 
-                v-if="errorMessages.length > 0" 
-                class="alert danger" 
-                role="alert"
-            >
-                <ul :class="$style.alertList">
-                    <li v-for="errorMessage in errorMessages">
-                        {{ errorMessage }}
-                    </li>
-                </ul>
+            <div :class="$style.hint">
+                For more information on how to convert video to images, <a href="https://www.bannerbear.com/blog/how-to-extract-images-from-a-video-using-ffmpeg/" target="_blank" rel="noreferrer noopener" tabindex="4">see this guide.</a>
             </div>
-        </div>
-        <div :class="$style.hint">
-            For more information on how to convert video to images, <a href="https://www.bannerbear.com/blog/how-to-extract-images-from-a-video-using-ffmpeg/" target="_blank" rel="noreferrer noopener" tabindex="4">see this guide.</a>
         </div>
     </modal>
 </template>
 
 <style lang="scss" module>
     .container {
+        max-width: 600px;
+    }
+    .form {
         display: flex;
         flex-wrap: wrap;
         flex-direction: column;
@@ -76,6 +92,9 @@
 
     .alertsContainer {
         margin: 1rem 0;
+        display: flex;
+        flex-direction: column;
+        gap: 1em;
     }
 
     .alertList {
@@ -126,6 +145,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        automaticallyResizeLargeImages: {
+            type: Boolean,
+            required: true,
+        },
     },
     directives: {
         focus: FocusDirective,
@@ -168,6 +191,15 @@ export default {
 
             return errorMessages;
         },
+        warningMessages(){
+            const messages = [];
+
+            if(this.automaticallyResizeLargeImages){
+                messages.push('Automatically resize large images is checked in the settings tab. You may want to uncheck this, as this will reduce the video resolution.');
+            }
+
+            return messages;
+        }
     },
     methods: {
         show(){

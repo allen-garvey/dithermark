@@ -61,6 +61,7 @@
         <export-video-modal
             :onSubmit="onVideoModalSubmitted"
             :canSubmit="isFfmpegReady"
+            :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
             ref="videoModal"
         />    
     </div>
@@ -108,6 +109,10 @@ export default {
         },
         getFfmpegReady: {
             type: Function,
+            required: true,
+        },
+        automaticallyResizeLargeImages: {
+            type: Boolean,
             required: true,
         },
     },
