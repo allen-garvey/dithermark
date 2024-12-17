@@ -6,17 +6,19 @@
 }
 
 .danger{
-    color: variables.$danger_text_color;
-    border-color: variables.$danger_border_color;
-    background-color: variables.$danger_background_color;
+    color: #721c24;
+    border-color: #f5c6cb;
+    background-color: #f8d7da;
+}
 
-    .link{
-        color: variables.$danger_link_color;
+.alert.danger {
+    a:link {
+        color: #491217;
     }
 }
 
 .warning{
-    color: variables.$warning_text_color;
-    border-color: variables.$warning_border_color;
-    background-color: variables.$warning_background_color;
+    color: #856404;
+    border-color: #ffeeba;
+    background-color: #fff3cd;
 }

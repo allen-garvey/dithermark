@@ -10,7 +10,7 @@
                 <button @click="showOpenImageErrorMessage=false" :class="$style.closeButton">×</button>
             </div>
             <template v-if="typeof openImageErrorMessage === 'object'">
-                {{openImageErrorMessage.beforeUrl}} <a :href="openImageErrorMessage.url" :class="$style.link">{{openImageErrorMessage.url}}</a> {{openImageErrorMessage.afterUrl}}
+                {{openImageErrorMessage.beforeUrl}} <a :href="openImageErrorMessage.url" target="_blank" rel="noopener noreferrer">{{openImageErrorMessage.url}}</a> {{openImageErrorMessage.afterUrl}}
             </template>
             <template v-else>
                 {{openImageErrorMessage}}
