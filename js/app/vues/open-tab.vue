@@ -62,6 +62,7 @@
             :onSubmit="onVideoModalSubmitted"
             :canSubmit="isFfmpegReady"
             :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
+            :isPixelatedActualSize="isPixelatedActualSize"
             ref="videoModal"
         />    
     </div>
@@ -112,6 +113,10 @@ export default {
             required: true,
         },
         automaticallyResizeLargeImages: {
+            type: Boolean,
+            required: true,
+        },
+        isPixelatedActualSize: {
             type: Boolean,
             required: true,
         },

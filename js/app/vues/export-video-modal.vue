@@ -149,6 +149,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        isPixelatedActualSize: {
+            type: Boolean,
+            required: true,
+        },
     },
     directives: {
         focus: FocusDirective,
@@ -195,7 +199,11 @@ export default {
             const messages = [];
 
             if(this.automaticallyResizeLargeImages){
-                messages.push('Automatically resize large images is checked in the settings tab. You may want to uncheck this, as this will reduce the video resolution.');
+                messages.push('‘Shrink large images’ is checked in the settings tab. This will reduce the output video resolution.');
+            }
+
+            if(this.isPixelatedActualSize){
+                messages.push('‘Actual size’ is selected in the export tab. This will reduce the output video resolution.');
             }
 
             return messages;
