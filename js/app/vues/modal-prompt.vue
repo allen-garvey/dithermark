@@ -1,7 +1,7 @@
 <template>
     <modal
         v-if="showModal"
-        title="Open image from url"
+        :title="title"
         :cancelAction="cancelAction"
         :okAction="okAction"
         :okButtonText="okButtonValue"
@@ -44,6 +44,7 @@ export default {
     },
     data(){
         return {
+            title: '',
             labelValue: '',
             inputValue: '',
             placeholder: '',
@@ -59,7 +60,8 @@ export default {
             this.inputType = options.inputType || 'text';
             this.placeholder = options.placeholder || '';
         },
-        show(labelValue, inputValue, okCallback, options={}){
+        show(title, labelValue, inputValue, okCallback, options={}){
+            this.title = title;
             this.inputValue = inputValue;
             this.labelValue = labelValue;
             this.okCallback = okCallback;

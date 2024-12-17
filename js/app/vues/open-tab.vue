@@ -160,7 +160,7 @@ export default {
             this.isCurrentlyLoadingImageUrl = false;
         },
         showOpenImageUrlPrompt(){
-            this.requestModal('Image Url', '', this.openImageUrl, {okButtonValue: 'Open', inputType: 'url', placeholder: 'http://example.com/image.jpg'});
+            this.requestModal('Open image from url', 'Image Url', '', this.openImageUrl, {okButtonValue: 'Open', inputType: 'url', placeholder: 'http://example.com/image.jpg'});
         },
         openImageUrl(imageUrl){
             if(!imageUrl){

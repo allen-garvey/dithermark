@@ -451,7 +451,7 @@ export default {
             this.saveUserPalettes();
         },
         showRenamePalette(){
-            this.$emit('request-modal-prompt', 'Palette name', this.currentPalette.title, this.renamePalette, {okButtonValue: 'Save'});
+            this.$emit('request-modal-prompt', 'Rename palette', 'Palette name', this.currentPalette.title, this.renamePalette, {okButtonValue: 'Save'});
         },
         renamePalette(newTitle){
             this.currentPalette.title = newTitle;
