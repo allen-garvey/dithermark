@@ -1,7 +1,9 @@
 <template>
     <div :class="$style.alertsContainer">
         <div 
-            class="alert danger" v-if="showOpenImageErrorMessage && openImageErrorMessage" 
+            class="alert danger"
+            :class="$style.alert" 
+            v-if="showOpenImageErrorMessage && openImageErrorMessage" 
             role="alert"
         >
             <div :class="$style.closeButtonContainer">
@@ -16,6 +18,7 @@
         </div>
         <div 
             class="alert warning" 
+            :class="$style.alert"
             v-if="showWebglWarningMessage && webglWarningMessage" role="alert"
         >
             <div :class="$style.closeButtonContainer">
@@ -46,6 +49,11 @@
         top: 0;
         max-width: calc(100vw - #{variables.$pinned_dither_controls_width});
     }
+}
+
+.alert{
+    display: inline-block;
+    padding: 0.75em 1.25em;
 }
 
 .closeButtonContainer {
