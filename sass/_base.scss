@@ -42,6 +42,8 @@ body:-moz-full-screen .total-page{
 
 a{
     text-decoration: none;
+    color: var(--link-text-color);
+    
     &:hover{
         text-decoration: underline;
     }

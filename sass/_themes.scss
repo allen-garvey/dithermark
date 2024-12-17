@@ -10,6 +10,7 @@ body{
     --pinned-controls-bg-color: white;
     --main-text-color: black;
     --hint-text-color: #777;
+    --link-text-color: #777;
     --main-text-color-rgb: 0, 0, 0;
     --disabled-text-color: #ddd;
     --border-color: #dee2e6;
@@ -35,6 +36,7 @@ body{
     --main-bg-color: #ccc;
     --pinned-controls-bg-color: #ddd; //this is intentionally different from the background color, so controls are slightly lighter
     --main-text-color: black;
+    --link-text-color: #555;
     --disabled-text-color: #aaa;
     --main-text-color-rgb: 0, 0, 0;
     --border-color: #aaa;
@@ -49,6 +51,7 @@ body{
     --main-bg-color: #444;
     --pinned-controls-bg-color: #555; //this is intentionally different from the background color, so controls are slightly lighter
     --main-text-color: #f0eff0;
+    --link-text-color: #cbc3cb;
     --main-text-color-rgb: 240, 239, 240;
     --disabled-text-color: #666;
     --border-color: #6a6a6a;
@@ -65,6 +68,7 @@ body{
     --main-bg-color: black;
     --pinned-controls-bg-color: black;
     --main-text-color: #f0eff0;
+    --link-text-color: #c1b8c1;
     --main-text-color-rgb: 240, 239, 240;
     --disabled-text-color: #666;
     --border-color: #7a7a7a;
@@ -72,16 +76,4 @@ body{
     --form-control-color: white;
     --form-control-bg-color: #222;
     --form-control-color-scheme: dark;
-}
-
-//colors links in dark and black themes
-//can't use variables since we want to use default link colors
-//for light themes
-.editor-black, .editor-dark{
-    a{
-        //tints of magenta #FF00FF
-        &:link{
-            color: #c1b8c1
-        }
-    }
 }
