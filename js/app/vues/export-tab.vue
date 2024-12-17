@@ -86,6 +86,7 @@ export default {
     },
     data(){
         return {
+            saveImageFileName: '',
             saveImageFileTypeValue: userSettings.getExportSettings().fileType,
             isCurrentlySavingImage: false,
             //should be boolean, but v-model only supports numbers
@@ -105,6 +106,11 @@ export default {
         },
     },
     watch: {
+        // needs to be watch instead of computed value,
+        // since saveImageFileName needs to be data property for v-model
+        sourceFileName(newValue){
+            this.saveImageFileName = newValue.replace(/\.(png|bmp|jpg|jpeg|webp|tiff)$/i, '');
+        },
         saveImageFileName(newValue, oldValue){
             if(newValue === oldValue){
                 return;
