@@ -40,8 +40,10 @@ export const exportFramesToVideo = (
             `${fps}`, // for some reason ffmpeg will fail if fps is not a string
             '-f',
             'image2',
+            '-pattern_type',
+            'glob',
             '-i',
-            `${FFMPEG_EXPORT_DIRECTORY}/%4d${imageFileExtension}`,
+            `${FFMPEG_EXPORT_DIRECTORY}/*${imageFileExtension}`,
             // filter has to be after image source
             '-filter:v',
             `format=pix_fmts='yuv420p'`,
