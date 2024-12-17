@@ -5,7 +5,7 @@
         :okAction="onOk"
         okButtonText="Export video"
         :isOkButtonDisabled="!isSubmitEnabled"
-        :tabIndexOffset="3"
+        :tabIndexOffset="4"
     >
         <div :class="$style.container">
             <label>File name
@@ -29,12 +29,23 @@
                 />
             </label>
             <input 
-                tabindex="3"
                 type="file"
                 @change="onBatchFileInputChange($event)"
                 ref="batchFileInput" 
                 multiple
+                v-show="false"
             />
+            <div :class="$style.fileInputContainer">
+                <button 
+                    tabindex="3"
+                    class="btn btn-default" 
+                    @click="openDeviceImages"
+                    title="Select image files to convert to video"
+                >
+                    Add image files
+                </button>
+                <span>{{ imagesSelectedText }}</span>
+            </div>
         </div>
         <div :class="$style.alertsContainer">
             <div 
@@ -50,7 +61,7 @@
             </div>
         </div>
         <div :class="$style.hint">
-            For more information on how to convert a video to images, <a href="https://www.bannerbear.com/blog/how-to-extract-images-from-a-video-using-ffmpeg/" target="_blank" rel="noreferrer noopener">see this guide.</a>
+            For more information on how to convert a video to images, <a href="https://www.bannerbear.com/blog/how-to-extract-images-from-a-video-using-ffmpeg/" target="_blank" rel="noreferrer noopener" tabindex="4">see this guide.</a>
         </div>
     </modal>
 </template>
@@ -73,6 +84,13 @@
 
     .invalid, .invalid:focus {
         border-color: variables.$danger_input_border_color;
+    }
+
+    .fileInputContainer {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1em;
     }
 
     .hint {
@@ -113,6 +131,13 @@ export default {
         };
     },
     computed: {
+        imagesSelectedText(){
+            const length = this.files?.length;
+            if(!length){
+                return '';
+            }
+            return `${length} image${length === 1 ? '' : 's'} selected`;
+        },
         isSubmitEnabled(){
             return this.canSubmit && this.files?.length > 0 && this.errorMessages.length === 0 && !this.hasFilenameError;
         },
@@ -147,6 +172,9 @@ export default {
                 filename: this.filename + this.fileExtension,
             });
             this.files = null;
+        },
+        openDeviceImages(){
+            this.$refs.batchFileInput.click();
         },
         onBatchFileInputChange($event){
             const fileInput = $event.target;
