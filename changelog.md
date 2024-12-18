@@ -24,6 +24,8 @@
 
 * Fix hue, hue & lightness and weighted hsl color comparison modes in color dither not working correctly.
 
+* Fix zoom range control growing too wide at phone and tablet sizes.
+
 ### Technical
 
 * Change to dart-sass from node-sass for scss compilation.

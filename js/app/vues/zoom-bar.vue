@@ -48,6 +48,8 @@
         justify-content: space-between;
         align-items: flex-end;
         padding: 4px variables.$global_horizontal_padding;
+        width: variables.$mobile_controls_width;
+        max-width: 100%;
     }
 
     .controls{
@@ -55,10 +57,11 @@
         align-items: flex-end;
         flex-basis: 100%;
         margin-bottom: 12px;
+        gap: 0.5rem;
         //max width required for Microsoft Edge at small screen sizes, otherwise it keeps expanding
         max-width: calc(100vw - #{variables.$chrome_fullscreen_horizontal_scrollbar_height});
         input[type="range"]{
-            flex-basis: calc(100% - 138px);
+            flex-grow: 1;
             vertical-align: bottom;
         }
         label{
@@ -93,6 +96,11 @@
             // align-items: baseline;
             flex-basis: calc(100% - #{$zoom_bar_button_container_width});
             margin-bottom: 0;
+
+            input[type="range"]{
+                flex-basis: calc(100% - 138px);
+                flex-grow: 0;
+            }
         }
         .zoomFitButton{
             margin-right: 0;

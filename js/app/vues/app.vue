@@ -221,7 +221,7 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        width: 900px;
+        width: variables.$mobile_controls_width;
         max-width: 100%;
         padding: 0 variables.$global_horizontal_padding;
     }
