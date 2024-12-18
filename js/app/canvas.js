@@ -201,7 +201,7 @@ function loadPixels(targetCanvasObject, imageWidth, imageHeight, pixels) {
 /**
  *
  * @param {CanvasObject} canvasObject
- * @param {HTMLImageElement} image
+ * @param {ImageBitmap} image
  * @param {number} scale percentage to resize image: 1 is 100 percent (unchanged)
  */
 function loadImage(canvasObject, image, scale = 1) {

@@ -40,6 +40,8 @@
 
 * Move dithermark-vue-color directly into project, instead of loading via npm to simplify development.
 
+* Refactor opening images to use ImageBitmap instead of ObjectURL. This means opening images uses less memory, however it also means the [lowest supported iOS version is 15.](https://caniuse.com/?search=createImageBitmap)
+
 ## 2024-03-03 [Commit cd1d5c3](https://github.com/allen-garvey/dithermark/commit/cd1d5c3f9b3189b06edbf9f1d473a36bc9224073)
 
 ### Bugs

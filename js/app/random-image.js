@@ -28,10 +28,10 @@ function shuffle(array) {
 
 function loadRandomImageData() {
     return fetch('/api/unsplash.json')
-        .then((res) => {
+        .then(res => {
             return res.json();
         })
-        .then((imageArray) => {
+        .then(imageArray => {
             randomImageQueue = shuffle(
                 imageArray.map((image, i) => {
                     image.id = i;
@@ -70,7 +70,7 @@ function openRandomImage(randomImageData, imageWidthHint, imageHeightHint) {
         imageWidthHint > 800
             ? randomImageData.urls.regular
             : randomImageData.urls.small;
-    return Fs.openImageUrl(imageUrl).then(({ image, file }) => {
+    return Fs.openImageUrl(imageUrl).then(([image, file]) => {
         file.name = randomImageName(randomImageData);
         file.unsplash = randomImageData;
         return {
@@ -81,9 +81,9 @@ function openRandomImage(randomImageData, imageWidthHint, imageHeightHint) {
 }
 
 /**
- * 
- * @param {number} imageWidthHint 
- * @param {number} imageHeightHint 
+ *
+ * @param {number} imageWidthHint
+ * @param {number} imageHeightHint
  * @returns {Promise}
  */
 export const getRandomImage = (imageWidthHint, imageHeightHint) => {
@@ -102,5 +102,4 @@ export const getRandomImage = (imageWidthHint, imageHeightHint) => {
             imageHeightHint
         );
     }
-}
-
+};

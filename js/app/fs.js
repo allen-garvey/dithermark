@@ -1,6 +1,8 @@
-const imageElement = new Image();
-//need to store reference so we can free it when a new one is created
-let currentImageObjectUrl = null;
+/**
+ * @typedef {Object} FileInfo
+ * @property {string} name
+ * @property {string} type
+ */
 
 class HttpRequestError extends Error {
     constructor(message, statusCode, statusMessage, url) {
@@ -35,31 +37,29 @@ export const isImageFile = file => file.type.startsWith('image/');
 /**
  *
  * @param {File} file
- * @returns {Promise<[HTMLImageElement, File|string]>}
+ * @returns {Promise<[ImageBitmap, File|string]>}
  */
-const openImageFile = file =>
-    new Promise((resolve, reject) => {
-        if (!file) {
-            return resolve([null, 'No files selected']);
-        }
+const openImageFile = file => {
+    if (!file) {
+        return Promise.resolve([null, 'No files selected']);
+    }
 
-        if (!isImageFile(file)) {
-            const fileType = file.type || 'folder';
-            return resolve([
-                null,
-                `${file.name} appears to be of type ${fileType} rather than an image`,
-            ]);
-        }
-        imageElement.onload = () => {
-            resolve([imageElement, file]);
-        };
-        if (currentImageObjectUrl) {
-            URL.revokeObjectURL(currentImageObjectUrl);
-        }
-        currentImageObjectUrl = URL.createObjectURL(file);
-        imageElement.src = currentImageObjectUrl;
-    });
+    if (!isImageFile(file)) {
+        const fileType = file.type || 'folder';
+        return Promise.resolve([
+            null,
+            `${file.name} appears to be of type ${fileType} rather than an image`,
+        ]);
+    }
 
+    return createImageBitmap(file).then(imageBitmap => [imageBitmap, file]);
+};
+
+/**
+ *
+ * @param {string} imageUrl
+ * @returns {Promise<[ImageBitmap, FileInfo]>}
+ */
 const openImageUrl = imageUrl => {
     const urlSplit = imageUrl.split('/');
     const imageName = urlSplit[urlSplit.length - 1];
@@ -94,24 +94,13 @@ const openImageUrl = imageUrl => {
                     blob.type
                 );
             }
-            const promise = new Promise((resolve, reject) => {
-                imageElement.onload = () => {
-                    resolve({
-                        image: imageElement,
-                        file: {
-                            name: imageName,
-                            type: blob.type,
-                        },
-                    });
-                };
-            });
-            if (currentImageObjectUrl) {
-                URL.revokeObjectURL(currentImageObjectUrl);
-            }
-            currentImageObjectUrl = URL.createObjectURL(blob);
-            imageElement.src = currentImageObjectUrl;
-
-            return promise;
+            return createImageBitmap(blob).then(imageBitmap => [
+                imageBitmap,
+                {
+                    name: imageName,
+                    type: blob.type,
+                },
+            ]);
         });
 };
 //so that urls are escaped properly, message is divided into beforeUrl, url and afterUrl parts

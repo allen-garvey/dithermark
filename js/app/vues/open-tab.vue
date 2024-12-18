@@ -171,7 +171,7 @@ export default {
                 return;
             }
             this.isCurrentlyLoadingImageUrl = true;
-            Fs.openImageUrl(imageUrl).then(({image, file})=>{
+            Fs.openImageUrl(imageUrl).then(([image, file])=>{
                 this.imageOpened(image, file);
                 this.isCurrentlyLoadingImageUrl = false;
             }).catch((error)=>{
