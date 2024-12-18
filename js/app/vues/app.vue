@@ -29,7 +29,7 @@
                     <!-- Open tab -->
                     <open-tab 
                         :image-opened="loadImage" 
-                        :on-batch-files-selected="loadBatchImages"
+                        :onBatchFilesSelected="loadBatchImages"
                         :open-image-error="onOpenImageError" 
                         :request-modal="showModalPrompt" 
                         :is-batch-convert-enabled="isBatchConvertEnabled"
