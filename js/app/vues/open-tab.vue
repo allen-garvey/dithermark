@@ -13,6 +13,7 @@
                 tooltip="Dither and save multiple images"
                 :onFilesChanged="onBatchFilesOpened"
                 :multiple="true"
+                v-if="isBatchConvertEnabled"
             />
             <button 
                 class="btn btn-default" 
