@@ -25,10 +25,11 @@ const themes = () => [
  * @param {string} key
  * @returns {number}
  */
-const indexForKey = (themes, key) => {
-    const index = themes.findIndex(theme => theme.key === key);
-    return index < 0 ? 0 : index;
-};
+const indexForKey = (themes, key) =>
+    Math.max(
+        0,
+        themes.findIndex(theme => theme.key === key)
+    );
 
 export default {
     get: themes,
