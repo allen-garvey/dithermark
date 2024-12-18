@@ -69,6 +69,7 @@ export default {
                     .catch(this.openImageError)
                     .then(([imageElement, file]) => this.imageOpened(imageElement, file));
             }
+            this.isDraggedOver = false;
         },
     }
 };
