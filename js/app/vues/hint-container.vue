@@ -70,7 +70,7 @@ export default {
                     if(!image){
                         return this.openImageError(data);
                     }
-                    this.imageOpened(image, data);
+                    this.imageOpened(image, data, {width: image.width, height: image.height});
                 });
             }
             this.isDraggedOver = false;

@@ -7,6 +7,12 @@ import { createSharedArrayBuffer } from '../shared/polyfills.js';
  */
 
 /**
+ * @typedef {Object} Dimensions
+ * @property {number} width
+ * @property {number} height
+ */
+
+/**
  *
  * @param {CanvasObject} canvasObject
  * @returns {boolean}
@@ -201,12 +207,13 @@ function loadPixels(targetCanvasObject, imageWidth, imageHeight, pixels) {
 /**
  *
  * @param {CanvasObject} canvasObject
- * @param {ImageBitmap} image
+ * @param {ImageBitmap|HTMLVideoElement} image
+ * @param {Dimensions} dimensions
  * @param {number} scale percentage to resize image: 1 is 100 percent (unchanged)
  */
-function loadImage(canvasObject, image, scale = 1) {
-    let scaledWidth = image.width;
-    let scaledHeight = image.height;
+function loadImage(canvasObject, image, dimensions, scale = 1) {
+    let scaledWidth = dimensions.width;
+    let scaledHeight = dimensions.height;
     if (scale !== 1) {
         scaledWidth = Math.round(scaledWidth * scale);
         scaledHeight = Math.round(scaledHeight * scale);

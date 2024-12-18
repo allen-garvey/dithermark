@@ -37,6 +37,13 @@ export const isImageFile = file => file.type.startsWith('image/');
 /**
  *
  * @param {File} file
+ * @returns {boolean}
+ */
+export const isVideoFile = file => file.type.startsWith('video/');
+
+/**
+ *
+ * @param {File} file
  * @returns {Promise<[ImageBitmap, File|string]>}
  */
 const openImageFile = file => {

@@ -721,7 +721,7 @@ export default {
                 if(!image){
                     return this.onOpenImageError(data);
                 }
-                this.loadImage(image, data);
+                this.loadImage(image, data, {height: image.height, width: image.width});
             });
         },
         imageProcessingCompleted(){
@@ -746,10 +746,15 @@ export default {
             initializeFfmpeg(ffmpeg)
             .then(() => this.ffmpegState = FFMPEG_STATES.READY);
         },
-        loadImage(image, file){
+        /**
+         * 
+         * @param {ImageBitmap | HTMLVideoElement} image 
+         * @param {Object} file 
+         * @param {import('../canvas.js').Dimensions} dimensions
+         */
+        loadImage(image, file, dimensions){
             const loadedImage = {
-                width: image.width,
-                height: image.height,
+                ...dimensions,
                 fileName: file.name,
                 fileSize: file.size,
                 fileType: file.type,
@@ -762,12 +767,12 @@ export default {
             const largestImageDimension = Math.max(loadedImage.width, loadedImage.height);
             if(this.automaticallyResizeLargeImages && largestImageDimension > largeImageDimensionThreshold){
                 const resizePercentage = largeImageDimensionThreshold / largestImageDimension;
-                Canvas.loadImage(originalImageCanvas, image, resizePercentage);
+                Canvas.loadImage(originalImageCanvas, image, dimensions, resizePercentage);
                 loadedImage.width = originalImageCanvas.canvas.width;
                 loadedImage.height = originalImageCanvas.canvas.height;
             }
             else{
-                Canvas.loadImage(originalImageCanvas, image);
+                Canvas.loadImage(originalImageCanvas, image, dimensions);
             }
             originalImageCanvas.context.drawImage(originalImageCanvas.canvas, 0, 0);
             //finish loading image
