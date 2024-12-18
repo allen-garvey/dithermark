@@ -54,9 +54,9 @@
                     :messages="errorMessages"
                     type="danger"
                 />
-                <banner-messages 
-                    :messages="warningMessages"
-                    type="warning"
+                <video-warning-banner 
+                    :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
+                    :isPixelatedActualSize="isPixelatedActualSize"
                 />
             </div>
             <div :class="$style.hint">
@@ -118,6 +118,7 @@ import { isImageFile } from '../fs.js';
 import FocusDirective from './directives/focus.js';
 import Modal from './modal.vue';
 import BannerMessages from './widgets/banner-messages.vue';
+import VideoWarningBanner from './widgets/video-warning-banner.vue';
 
 export default {
     props: {
@@ -144,6 +145,7 @@ export default {
     components: {
         Modal,
         BannerMessages,
+        VideoWarningBanner,
     },
     data(){
         return {
@@ -178,19 +180,6 @@ export default {
 
             return errorMessages;
         },
-        warningMessages(){
-            const messages = [];
-
-            if(this.automaticallyResizeLargeImages){
-                messages.push('‘Shrink large images’ is checked in the settings tab. This will reduce the output video resolution.');
-            }
-
-            if(this.isPixelatedActualSize){
-                messages.push('‘Actual size’ is selected in the export tab. This will reduce the output video resolution.');
-            }
-
-            return messages;
-        }
     },
     methods: {
         show(){
