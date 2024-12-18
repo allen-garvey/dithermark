@@ -172,10 +172,8 @@ export default {
     },
     computed: {
         imagesSelectedText(){
-            const length = this.files?.length;
-            if(!length){
-                return '';
-            }
+            const length = this.files?.length || 0;
+            
             return `${length} image${length === 1 ? '' : 's'} selected`;
         },
         isSubmitEnabled(){
