@@ -173,7 +173,7 @@ export default {
     computed: {
         imagesSelectedText(){
             const length = this.files?.length || 0;
-            
+
             return `${length} image${length === 1 ? '' : 's'} selected`;
         },
         isSubmitEnabled(){
@@ -229,7 +229,12 @@ export default {
         },
         onBatchFileInputChange($event){
             const fileInput = $event.target;
-            this.files = Array.from(fileInput.files).filter(file => isImageFile(file));
+            const files = Array.from(fileInput.files);
+            // so files don't get removed if you open the file picker and don't select anything
+            if(files.length === 0){
+                return;
+            }
+            this.files = files.filter(file => isImageFile(file));
         },
     }
 };
