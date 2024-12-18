@@ -1,12 +1,29 @@
 import { createSharedArrayBuffer } from '../shared/polyfills.js';
 
+/**
+ * @typedef {Object} CanvasObject
+ * @property {HTMLCanvasElement} canvas
+ * @property {CanvasRenderingContext2D} context
+ */
+
+/**
+ *
+ * @param {CanvasObject} canvasObject
+ * @returns {boolean}
+ */
 function areCanvasFiltersSupported(canvasObject) {
     return 'filter' in canvasObject.context;
 }
 
-//globalCompositeOperation from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
-//otherwise known as blend mode
-//test for support from: https://stackoverflow.com/questions/26123588/test-if-browser-supports-multiply-for-globalcompositeoperation-canvas-property
+/**
+ * globalCompositeOperation from: https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/globalCompositeOperation
+ *
+ * test for support from: https://stackoverflow.com/questions/26123588/test-if-browser-supports-multiply-for-globalcompositeoperation-canvas-property
+ *
+ * @param {CanvasObject} canvasObject
+ * @param {GlobalCompositeOperation} globalCompositeOperation
+ * @returns {boolean}
+ */
 function isBlendModeSupported(canvasObject, globalCompositeOperation) {
     canvasObject.context.globalCompositeOperation = globalCompositeOperation;
     return (
@@ -16,6 +33,12 @@ function isBlendModeSupported(canvasObject, globalCompositeOperation) {
 }
 
 //alpha optimization based on: https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {Object} contextOpts
+ * @returns {CanvasObject}
+ */
 function createCanvas(canvas = null, contextOpts = {}) {
     canvas = canvas || document.createElement('canvas');
     return {
@@ -175,7 +198,12 @@ function loadPixels(targetCanvasObject, imageWidth, imageHeight, pixels) {
     targetCanvasObject.context.putImageData(imageData, 0, 0);
 }
 
-//scale is percentage to resize image - 1 is 100 percent (unchanged)
+/**
+ *
+ * @param {CanvasObject} canvasObject
+ * @param {HTMLImageElement} image
+ * @param {number} scale percentage to resize image: 1 is 100 percent (unchanged)
+ */
 function loadImage(canvasObject, image, scale = 1) {
     let scaledWidth = image.width;
     let scaledHeight = image.height;
