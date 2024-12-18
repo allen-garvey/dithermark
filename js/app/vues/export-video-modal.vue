@@ -50,28 +50,14 @@
                 </div>
             </div>
             <div :class="$style.alertsContainer">
-                <div 
-                    v-if="errorMessages.length > 0" 
-                    class="alert danger" 
-                    role="alert"
-                >
-                    <ul :class="$style.alertList">
-                        <li v-for="message in errorMessages">
-                            {{ message }}
-                        </li>
-                    </ul>
-                </div>
-                <div 
-                    v-if="warningMessages.length > 0" 
-                    class="alert warning" 
-                    role="alert"
-                >
-                    <ul :class="$style.alertList">
-                        <li v-for="message in warningMessages">
-                            {{ message }}
-                        </li>
-                    </ul>
-                </div>
+                <banner-messages 
+                    :messages="errorMessages"
+                    type="danger"
+                />
+                <banner-messages 
+                    :messages="warningMessages"
+                    type="warning"
+                />
             </div>
             <div :class="$style.hint">
                 For more information on how to convert video to images, <a href="https://www.bannerbear.com/blog/how-to-extract-images-from-a-video-using-ffmpeg/" target="_blank" rel="noreferrer noopener" tabindex="4">see this guide.</a>
@@ -96,10 +82,6 @@
         display: flex;
         flex-direction: column;
         gap: 1em;
-    }
-
-    .alertList {
-        padding: 0.5em 2em;
     }
 
     .invalid, .invalid:focus {
@@ -135,6 +117,7 @@
 import { isImageFile } from '../fs.js';
 import FocusDirective from './directives/focus.js';
 import Modal from './modal.vue';
+import BannerMessages from './widgets/banner-messages.vue';
 
 export default {
     props: {
@@ -160,6 +143,7 @@ export default {
     },
     components: {
         Modal,
+        BannerMessages,
     },
     data(){
         return {
