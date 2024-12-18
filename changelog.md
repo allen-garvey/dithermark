@@ -26,6 +26,8 @@
 
 * Fix zoom range control growing too wide at phone and tablet sizes.
 
+* Fix exception when trying to open non-image file from device.
+
 ### Technical
 
 * Change to dart-sass from node-sass for scss compilation.

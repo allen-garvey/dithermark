@@ -66,8 +66,12 @@ export default {
             if($event.dataTransfer.files.length > 0){
                 const file = $event.dataTransfer.files[0];
                 Fs.openImageFile(file)
-                    .catch(this.openImageError)
-                    .then(([imageElement, file]) => this.imageOpened(imageElement, file));
+                .then(([image, data]) => {
+                    if(!image){
+                        return this.openImageError(data);
+                    }
+                    this.imageOpened(image, data);
+                });
             }
             this.isDraggedOver = false;
         },

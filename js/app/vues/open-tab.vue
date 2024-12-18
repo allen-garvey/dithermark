@@ -150,8 +150,12 @@ export default {
             const fileInput = $event.target;
 
             Fs.openImageFile(fileInput.files[0])
-                .catch(this.openImageError)
-                .then(([imageElement, file]) => this.imageOpened(imageElement, file));
+                .then(([image, data]) => {
+                    if(!image){
+                        return this.openImageError(data);
+                    }
+                    this.imageOpened(image, data);
+                });
 
             fileInput.value = '';
         },

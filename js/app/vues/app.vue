@@ -716,8 +716,12 @@ export default {
                 this.batchProcessingCompleted();
                 return;
             }
-            Fs.openImageFile(this.batchImageQueue[0]).then(([image, file]) => {
-                this.loadImage(image, file);
+
+            Fs.openImageFile(this.batchImageQueue[0]).then(([image, data]) => {
+                if(!image){
+                    return this.onOpenImageError(data);
+                }
+                this.loadImage(image, data);
             });
         },
         imageProcessingCompleted(){

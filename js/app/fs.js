@@ -35,19 +35,20 @@ export const isImageFile = file => file.type.startsWith('image/');
 /**
  *
  * @param {File} file
- * @returns {Promise<[HTMLImageElement, File]>}
+ * @returns {Promise<[HTMLImageElement, File|string]>}
  */
 const openImageFile = file =>
     new Promise((resolve, reject) => {
         if (!file) {
-            return reject('No files selected');
+            return resolve([null, 'No files selected']);
         }
 
         if (!isImageFile(file)) {
             const fileType = file.type || 'folder';
-            return reject(
-                `${file.name} appears to be of type ${fileType} rather than an image`
-            );
+            return resolve([
+                null,
+                `${file.name} appears to be of type ${fileType} rather than an image`,
+            ]);
         }
         imageElement.onload = () => {
             resolve([imageElement, file]);
