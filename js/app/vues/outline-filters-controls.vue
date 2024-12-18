@@ -239,9 +239,7 @@ export default {
         initializeOutlineFilterCanvas(){
             outlineFilterCanvas = Canvas.create();
             //remove unsupported canvas blend modes
-            this.imageOutlineFixedColorBlendModes = this.imageOutlineFixedColorBlendModes.filter((blendMode)=>{
-                return Canvas.isBlendModeSupported(outlineFilterCanvas, blendMode.value);
-            });
+            this.imageOutlineFixedColorBlendModes = this.imageOutlineFixedColorBlendModes.filter((blendMode)=>Canvas.isBlendModeSupported(outlineFilterCanvas, blendMode.value));
             //reset to default blend mode
             Canvas.resetBlendMode(outlineFilterCanvas);
         },
