@@ -30,22 +30,14 @@
                         :class="{[$style.invalid]: hasFpsError, [$style.fpsInput]: true}"
                     />
                 </label>
-                <input 
-                    type="file"
-                    @change="onBatchFileInputChange($event)"
-                    ref="batchFileInput" 
-                    multiple
-                    v-show="false"
-                />
                 <div :class="$style.fileInputContainer">
-                    <button 
-                        tabindex="3"
-                        class="btn btn-default" 
-                        @click="openDeviceImages"
-                        title="Select image files to convert to video"
-                    >
-                        Add image files
-                    </button>
+                    <file-input-button 
+                        :tabindex="3"
+                        label="Add image files"
+                        tooltip="Select image files to convert to video"
+                        :onFilesChanged="onBatchFilesOpened"
+                        :multiple="true"
+                    />
                     <span>{{ imagesSelectedText }}</span>
                 </div>
             </div>
@@ -119,6 +111,7 @@ import FocusDirective from './directives/focus.js';
 import Modal from './modal.vue';
 import BannerMessages from './widgets/banner-messages.vue';
 import VideoWarningBanner from './widgets/video-warning-banner.vue';
+import FileInputButton from './widgets/file-input-button.vue';
 
 export default {
     props: {
@@ -146,6 +139,7 @@ export default {
         Modal,
         BannerMessages,
         VideoWarningBanner,
+        FileInputButton,
     },
     data(){
         return {
@@ -197,12 +191,8 @@ export default {
             });
             this.files = null;
         },
-        openDeviceImages(){
-            this.$refs.batchFileInput.click();
-        },
-        onBatchFileInputChange($event){
-            const fileInput = $event.target;
-            const files = Array.from(fileInput.files);
+        onBatchFilesOpened(filesRaw){
+            const files = Array.from(filesRaw);
             // so files don't get removed if you open the file picker and don't select anything
             if(files.length === 0){
                 return;

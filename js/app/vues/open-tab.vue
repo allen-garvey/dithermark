@@ -2,21 +2,18 @@
     <div class="controls-tab-container" :class="$style.container">
         <fieldset>
             <legend>Device</legend>
-            <button 
-                class="btn btn-primary" 
-                @click="openDeviceImage" 
-                title="Open local image file"
-            >
-                Image file
-            </button>
-            <button 
-                class="btn btn-default" 
-                @click="batchOpenDeviceImages" 
-                title="Dither and save multiple images"
-                v-if="isBatchConvertEnabled"
-            >
-                Batch convert image files
-            </button>
+            <file-input-button 
+                buttonClass="btn-primary"
+                label="Image file"
+                tooltip="Open local image file"
+                :onFilesChanged="onDeviceImageOpened"
+            />
+            <file-input-button 
+                label="Batch convert image files"
+                tooltip="Dither and save multiple images"
+                :onFilesChanged="onBatchFilesOpened"
+                :multiple="true"
+            />
             <button 
                 class="btn btn-default" 
                 @click="openVideoModal" 
@@ -25,19 +22,6 @@
             >
                 Images to video
             </button>
-            <input 
-                type="file"
-                @change.prevent="onFileInputChange($event)"
-                ref="fileInput" 
-                v-show="false" 
-            />
-            <input 
-                type="file"
-                @change.prevent="onBatchFileInputChange($event)"
-                ref="batchFileInput" 
-                v-show="false" 
-                multiple
-            />
         </fieldset>
         <fieldset>
             <legend>Web</legend>
@@ -80,6 +64,7 @@
 import Fs, { isImageFile } from '../fs.js';
 import { getRandomImage } from '../random-image.js';
 import ExportVideoModal from './export-video-modal.vue';
+import FileInputButton from './widgets/file-input-button.vue';
 import { BATCH_IMAGE_MODE_EXPORT_IMAGES, BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
 
 export default { 
@@ -123,6 +108,7 @@ export default {
     },
     components: {
         ExportVideoModal,
+        FileInputButton,
     },
     data(){
         return {
@@ -130,34 +116,21 @@ export default {
         };
     },
     methods: {
-        openDeviceImage(){
-            this.$refs.fileInput.click();
-        },
-        batchOpenDeviceImages(){
-            this.$refs.batchFileInput.click();
-        },
-        onBatchFileInputChange($event){
-            const fileInput = $event.target;
-            const files = Array.from(fileInput.files).filter(file => isImageFile(file));
+        onBatchFilesOpened(rawFiles){
+            const files = Array.from(rawFiles).filter(file => isImageFile(file));
             if(files.length === 0){
                 return this.openImageError('No image files selected');
             }
             this.onBatchFilesSelected(files, BATCH_IMAGE_MODE_EXPORT_IMAGES);
-            // clear input so the same files can be re-selected
-            $event.target.value = '';
         },
-        onFileInputChange($event){
-            const fileInput = $event.target;
-
-            Fs.openImageFile(fileInput.files[0])
+        onDeviceImageOpened(files){
+            Fs.openImageFile(files[0])
                 .then(([image, data]) => {
                     if(!image){
                         return this.openImageError(data);
                     }
                     this.imageOpened(image, data);
                 });
-
-            fileInput.value = '';
         },
         openImageFromUrlFailed(error, imageUrl){
             this.openImageError(Fs.messageForOpenImageUrlError(error, imageUrl));
