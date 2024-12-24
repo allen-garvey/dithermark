@@ -1,9 +1,8 @@
 @use './variables';
 @use './mixins';
 
-.header{
+.header {
     padding: 8px variables.$global_horizontal_padding 4px;
-    position: -webkit-sticky;
     position: sticky;
     left: 0;
 
@@ -11,34 +10,29 @@
         display: inline-block;
     }
 }
-.nav{
+
+.nav {
     display: flex;
-    justify-content: space-between;
-    ul{
+    gap: 1rem;
+
+    ul {
         list-style-type: none;
         display: flex;
         flex-wrap: wrap;
-        margin: 0 0 0 1em;
+        gap: 1rem;
+        margin: 0;
         padding: 0;
         align-self: center;
     }
-    li:first-of-type{
-        margin-right: 1.5em;
-    }
 }
 
-.brand{
+.brand {
     font-size: 20px;
 }
 
-@include mixins.pinned_controls_mq{
-    .header{
+@include mixins.pinned_controls_mq {
+    .header {
         //so position sticky works
         display: inline-block;
-    }
-    .nav{
-        li:first-of-type{
-            margin-right: 0.5em;
-        }
     }
 }
