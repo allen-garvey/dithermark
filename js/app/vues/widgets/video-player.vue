@@ -2,9 +2,12 @@
     <div :class="$style.container">
         <h4>Video Controls</h4>
         <p>{{ videoFile.name }}</p>
-        <input type="range" id="seek" min="0" :max="duration" step="0.5" :disabled="!isVideoLoaded"
-            v-model.number="seekValue" />
-        <input type="number" min="0" :max="duration" step="1" v-model.number="seekValue" :disabled="!isVideoLoaded" />
+        <div :class="$style.controlsContainer">
+            <input type="range" id="seek" min="0" :max="duration" step="0.5" :disabled="!isVideoLoaded"
+                v-model.number="seekValue" :class="$style.videoRange" />
+            <input type="number" min="0" :max="duration" step="1" v-model.number="seekValue"
+                :disabled="!isVideoLoaded" />
+        </div>
         <video v-show="false" ref="video" @seeked="onSeeked" @loadedmetadata="onMetadataLoaded"
             @canplaythrough="onVideoReady">
         </video>
@@ -13,6 +16,17 @@
 
 <style lang="scss" module>
 .container {}
+
+.controlsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+}
+
+.videoRange {
+    flex-grow: 1;
+    flex-basis: auto;
+}
 </style>
 
 <script>
