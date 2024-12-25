@@ -171,6 +171,9 @@ export default {
         },
     },
     methods: {
+        getImageFiles() {
+            return this.imageFiles.slice();
+        },
         batchConvertImages() {
             this.onBatchFilesSelected(
                 this.imageFiles,
@@ -184,6 +187,7 @@ export default {
             if (files.length === 0) {
                 return this.openImageError('No image files selected');
             }
+            this.getFfmpegReady();
             this.imageFiles = files;
             this.$emit('update:openFileMode', OPEN_FILE_MODE_BATCH_IMAGES);
         },
@@ -284,6 +288,7 @@ export default {
                     `${videoFile.name} does not appear to be a video file.`
                 );
             }
+            this.getFfmpegReady();
             this.$emit('update:openFileMode', OPEN_FILE_MODE_VIDEO);
             this.videoFile = videoFile;
         },

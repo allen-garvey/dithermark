@@ -46,6 +46,7 @@
                             isImagePixelated && !shouldUpsample
                         "
                         v-show="activeControlsTab === 0"
+                        ref="openTab"
                     />
                     <!-- Image tab -->
                     <div v-show="activeControlsTab === 1">
@@ -433,6 +434,7 @@
                             value => (this.shouldUpsample = value)
                         "
                         v-show="activeControlsTab === 3"
+                        :onSubmitBatchConvertImages="loadBatchImages"
                         ref="exportTab"
                     />
                 </div>
@@ -1084,7 +1086,8 @@ export default {
 
             callback(exportCanvas, this.loadedImage.unsplash);
         },
-        loadBatchImages(files, batchImageMode, videoExportOptions = null) {
+        loadBatchImages(batchImageMode, videoExportOptions = null) {
+            const files = this.$refs.openTab.getImageFiles();
             this.batchConvertState = BATCH_CONVERT_STATE.PROCESSING_FRAMES;
             this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;

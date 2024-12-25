@@ -59,7 +59,7 @@
             <input
                 placeholder="File name"
                 v-model="saveImageFileName"
-                @keyup.enter="saveImage"
+                @keyup.enter="submit"
                 id="export-tab-filename"
             /><span>{{ displayedOutputFileExtension }}</span>
         </div>
@@ -109,7 +109,7 @@
         <div>
             <button
                 class="btn btn-success"
-                @click="saveImage"
+                @click="submit"
                 :disabled="isCurrentlySavingImage"
                 title="Save image to downloads folder"
             >
@@ -152,6 +152,10 @@ import {
     OPEN_FILE_MODE_SINGLE_IMAGE,
     OPEN_FILE_MODE_VIDEO,
 } from '../models/open-file-modes.js';
+import {
+    BATCH_IMAGE_MODE_EXPORT_IMAGES,
+    BATCH_IMAGE_MODE_EXPORT_VIDEO,
+} from '../models/batch-export-modes.js';
 
 // needs to be here, otherwise data() will fail since computed properties don't exist yet
 const outputFileOptions = {
@@ -196,6 +200,10 @@ export default {
             required: true,
         },
         setShouldUpsample: {
+            type: Function,
+            required: true,
+        },
+        onSubmitBatchConvertImages: {
             type: Function,
             required: true,
         },
@@ -244,9 +252,12 @@ export default {
         },
         displayedOutputFileExtension() {
             if (this.currentOutputFileOption === this.outputFileOptions.VIDEO) {
-                return '.mp4';
+                return this.videoFileExtension;
             }
             return this.saveImageFileType.extension;
+        },
+        videoFileExtension() {
+            return '.mp4';
         },
     },
     watch: {
@@ -287,6 +298,26 @@ export default {
         },
     },
     methods: {
+        submit() {
+            switch (this.currentOutputFileOption) {
+                case outputFileOptions.BATCH_CONVERT_IMAGES:
+                    return this.onSubmitBatchConvertImages(
+                        BATCH_IMAGE_MODE_EXPORT_IMAGES
+                    );
+                case outputFileOptions.VIDEO:
+                    return this.onSubmitBatchConvertImages(
+                        BATCH_IMAGE_MODE_EXPORT_VIDEO,
+                        {
+                            fps: this.videoFps,
+                            filename:
+                                this.saveImageFileName +
+                                this.videoFileExtension,
+                        }
+                    );
+                default:
+                    return this.saveImage();
+            }
+        },
         //downloads image
         //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
         saveImage() {
