@@ -47,6 +47,8 @@ export const exportFramesToVideo = (
             // filter has to be after image source
             '-filter:v',
             `format=pix_fmts='yuv420p'`,
+            '-vf',
+            'pad=ceil(iw/2)*2:ceil(ih/2)*2',
             exportFilePath,
         ])
         .then(errorCode => {
