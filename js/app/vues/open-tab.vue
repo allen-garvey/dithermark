@@ -48,7 +48,7 @@
             </button>
         </fieldset>
         <batch-image-selector
-            v-if="imageFiles?.length > 0"
+            v-if="imageFiles?.length > 1"
             v-model:fileIndex="currentImageFileIndex"
             :fileCount="imageFiles.length"
             :currentFilename="imageFiles[currentImageFileIndex].name"
@@ -189,7 +189,11 @@ export default {
             }
             this.getFfmpegReady();
             this.imageFiles = files;
-            this.$emit('update:openFileMode', OPEN_FILE_MODE_BATCH_IMAGES);
+            const mode =
+                files.length > 1
+                    ? OPEN_FILE_MODE_BATCH_IMAGES
+                    : OPEN_FILE_MODE_SINGLE_IMAGE;
+            this.$emit('update:openFileMode', mode);
         },
         onDeviceImageOpened(files) {
             this.openImageFile(files[0]).then(() => {
