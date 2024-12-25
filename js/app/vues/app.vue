@@ -424,6 +424,7 @@
                     </div>
                     <!-- Export tab -->
                     <export-tab
+                        :openFileMode="openFileMode"
                         :source-file-name="exportFileNameSource"
                         :save-requested="onSaveRequested"
                         :is-image-pixelated="isImagePixelated"

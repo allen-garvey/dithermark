@@ -1,26 +1,110 @@
 <template>
     <div class="controls-tab-container">
-        <div>
-            <label :class="$style.exportLabel" for="export-tab-filename">File name</label>
-            <input placeholder="File name" v-model="saveImageFileName" @keyup.enter="saveImage" id="export-tab-filename" /><span>{{saveImageFileType.extension}}</span>
+        <div v-if="currentInputFileType === inputFileTypes.MULTIPLE_IMAGES">
+            <label :class="$style.exportLabel">Export type</label>
+            <label :class="$style.radioLabel"
+                >Current image
+                <input
+                    type="radio"
+                    v-model="currentOutputFileOption"
+                    :value="outputFileOptions.CURRENT_IMAGE"
+                />
+            </label>
+            <label :class="$style.radioLabel"
+                >Batch export images
+                <input
+                    type="radio"
+                    v-model="currentOutputFileOption"
+                    :value="outputFileOptions.BATCH_CONVERT_IMAGES"
+                />
+            </label>
+            <label :class="$style.radioLabel"
+                >Images to video
+                <input
+                    type="radio"
+                    v-model="currentOutputFileOption"
+                    :value="outputFileOptions.VIDEO"
+                />
+            </label>
+        </div>
+
+        <div v-if="currentInputFileType === inputFileTypes.VIDEO">
+            <label :class="$style.exportLabel">Export type</label>
+            <label :class="$style.radioLabel"
+                >Current image
+                <input
+                    type="radio"
+                    v-model="currentOutputFileOption"
+                    :value="outputFileOptions.CURRENT_IMAGE"
+                />
+            </label>
+            <label :class="$style.radioLabel"
+                >Video
+                <input
+                    type="radio"
+                    v-model="currentOutputFileOption"
+                    :value="outputFileOptions.VIDEO"
+                />
+            </label>
+        </div>
+        <div
+            v-if="
+                currentOutputFileOption !==
+                outputFileOptions.BATCH_CONVERT_IMAGES
+            "
+        >
+            <label :class="$style.exportLabel" for="export-tab-filename"
+                >File name</label
+            >
+            <input
+                placeholder="File name"
+                v-model="saveImageFileName"
+                @keyup.enter="saveImage"
+                id="export-tab-filename"
+            /><span>{{ displayedOutputFileExtension }}</span>
         </div>
         <div>
-            <label :class="$style.exportLabel" for="export-tab-filetype">File type</label>
+            <label :class="$style.exportLabel" for="export-tab-filetype"
+                >File type</label
+            >
             <select v-model="saveImageFileTypeValue" id="export-tab-filetype">
-                <option v-for="fileType of saveImageFileTypes" :key="fileType.value" :value="fileType.value">{{ fileType.label }}</option>
+                <option
+                    v-for="fileType of saveImageFileTypes"
+                    :key="fileType.value"
+                    :value="fileType.value"
+                >
+                    {{ fileType.label }}
+                </option>
             </select>
         </div>
         <div v-if="isImagePixelated">
             <label :class="$style.exportLabel">Size</label>
-            <label :class="$style.radioLabel">Upsampled
-                <input type="radio" @change="setShouldUpsample(true)" :checked="shouldUpsample" />
+            <label :class="$style.radioLabel">
+                Upsampled
+                <input
+                    type="radio"
+                    @change="setShouldUpsample(true)"
+                    :checked="!shouldUpsample"
+                />
             </label>
-            <label :class="$style.radioLabel">Actual
-                <input type="radio" @change="setShouldUpsample(false)" :checked="!shouldUpsample" />
+            <label :class="$style.radioLabel">
+                Actual
+                <input
+                    type="radio"
+                    @change="setShouldUpsample(false)"
+                    :checked="!shouldUpsample"
+                />
             </label>
         </div>
         <div>
-            <button class="btn btn-success" @click="saveImage" :disabled="isCurrentlySavingImage" title="Save image to downloads folder">Save</button>
+            <button
+                class="btn btn-success"
+                @click="saveImage"
+                :disabled="isCurrentlySavingImage"
+                title="Save image to downloads folder"
+            >
+                Save
+            </button>
         </div>
     </div>
 </template>
@@ -32,30 +116,44 @@
     margin-right: 0.8em;
 }
 
-.radioLabel{
+.radioLabel {
     font-size: 0.8rem;
 
     & + & {
         margin-left: 0.5em;
     }
 }
-
 </style>
 
 <script>
-import { APP_NAME, UNSPLASH_DOWNLOAD_URL, UNSPLASH_API_PHOTO_ID_QUERY_KEY } from '../../../constants.js';
-import Canvas from '../canvas.js'
-import {saveImage, canvasToArray, arrayToObjectUrl} from '../fs.js';
+import {
+    APP_NAME,
+    UNSPLASH_DOWNLOAD_URL,
+    UNSPLASH_API_PHOTO_ID_QUERY_KEY,
+} from '../../../constants.js';
+import Canvas from '../canvas.js';
+import { saveImage, canvasToArray, arrayToObjectUrl } from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
-import  userSettings from '../user-settings.js';
+import userSettings from '../user-settings.js';
 import { exportFramesToVideo, saveImageFrame } from '../ffmpeg.js';
 import { getFilenameWithoutExtension } from '../path.js';
+import {
+    OPEN_FILE_MODE_BATCH_IMAGES,
+    OPEN_FILE_MODE_SINGLE_IMAGE,
+    OPEN_FILE_MODE_VIDEO,
+} from '../models/open-file-modes.js';
+
+// needs to be here, otherwise data() will fail since computed properties don't exist yet
+const outputFileOptions = {
+    CURRENT_IMAGE: 1,
+    BATCH_CONVERT_IMAGES: 2,
+    VIDEO: 3,
+};
 
 let saveImageCanvas;
 let saveImageLink;
 
-
-function createSaveImageLink(){
+function createSaveImageLink() {
     const link = document.createElement('a');
     //firefox needs the link attached to the body in order for downloads to work
     //so display none in order to hide it
@@ -65,9 +163,12 @@ function createSaveImageLink(){
     return link;
 }
 
-
 export default {
     props: {
+        openFileMode: {
+            type: Number,
+            required: true,
+        },
         saveRequested: {
             type: Function,
             required: true,
@@ -89,104 +190,173 @@ export default {
             required: true,
         },
     },
-    created(){
+    created() {
         saveImageCanvas = Canvas.create();
         saveImageLink = createSaveImageLink();
     },
-    data(){
+    data() {
         return {
             saveImageFileName: '',
             saveImageFileTypeValue: userSettings.getExportSettings().fileType,
             isCurrentlySavingImage: false,
+            currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
         };
     },
     computed: {
-        saveImageFileTypes(){
+        saveImageFileTypes() {
             return getSaveImageFileTypes();
         },
-        saveImageFileType(){
-            return this.saveImageFileTypes.find(fileType => fileType.value === this.saveImageFileTypeValue);
+        saveImageFileType() {
+            return this.saveImageFileTypes.find(
+                fileType => fileType.value === this.saveImageFileTypeValue
+            );
+        },
+        inputFileTypes() {
+            return {
+                SINGLE_IMAGE: 1,
+                MULTIPLE_IMAGES: 2,
+                VIDEO: 3,
+            };
+        },
+        outputFileOptions() {
+            return outputFileOptions;
+        },
+        currentInputFileType() {
+            switch (this.openFileMode) {
+                case OPEN_FILE_MODE_VIDEO:
+                    return this.inputFileTypes.VIDEO;
+                case OPEN_FILE_MODE_BATCH_IMAGES:
+                    return this.inputFileTypes.MULTIPLE_IMAGES;
+                default:
+                    return this.inputFileTypes.SINGLE_IMAGE;
+            }
+        },
+        displayedOutputFileExtension() {
+            if (this.currentOutputFileOption === this.outputFileOptions.VIDEO) {
+                return '.mp4';
+            }
+            return this.saveImageFileType.extension;
         },
     },
     watch: {
         // needs to be watch instead of computed value,
         // since saveImageFileName needs to be data property for v-model
-        sourceFileName(newValue){
+        sourceFileName(newValue) {
             this.saveImageFileName = getFilenameWithoutExtension(newValue);
         },
-        saveImageFileName(newValue, oldValue){
-            if(newValue === oldValue){
+        saveImageFileName(newValue, oldValue) {
+            if (newValue === oldValue) {
                 return;
             }
             let title = APP_NAME;
-            if(newValue){
+            if (newValue) {
                 title = `${title} | ${newValue}`;
             }
             document.title = title;
         },
-        saveImageFileTypeValue(newValue){
+        saveImageFileTypeValue(newValue) {
             userSettings.saveExportSettings({
                 fileType: newValue,
             });
+        },
+        openFileMode(newValue) {
+            switch (newValue) {
+                case OPEN_FILE_MODE_VIDEO:
+                    this.currentOutputFileOption = this.outputFileOptions.VIDEO;
+                    break;
+                case OPEN_FILE_MODE_BATCH_IMAGES:
+                    this.currentOutputFileOption =
+                        this.outputFileOptions.BATCH_CONVERT_IMAGES;
+                    break;
+                default:
+                    this.currentOutputFileOption =
+                        this.outputFileOptions.CURRENT_IMAGE;
+                    break;
+            }
         },
     },
     methods: {
         //downloads image
         //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
-        saveImage(){
-            return new Promise((resolve) => {
-                if(this.isCurrentlySavingImage){
+        saveImage() {
+            return new Promise(resolve => {
+                if (this.isCurrentlySavingImage) {
                     return resolve();
                 }
                 this.isCurrentlySavingImage = true;
-                this.saveRequested(saveImageCanvas, (sourceCanvas, unsplash)=>{
-                    saveImage(sourceCanvas.canvas, this.saveImageFileType.mime, (objectUrl)=>{
-                        saveImageLink.href = objectUrl;
-                        saveImageLink.download = this.saveImageFileName + this.saveImageFileType.extension;
-                        saveImageLink.click();
+                this.saveRequested(
+                    saveImageCanvas,
+                    (sourceCanvas, unsplash) => {
+                        saveImage(
+                            sourceCanvas.canvas,
+                            this.saveImageFileType.mime,
+                            objectUrl => {
+                                saveImageLink.href = objectUrl;
+                                saveImageLink.download =
+                                    this.saveImageFileName +
+                                    this.saveImageFileType.extension;
+                                saveImageLink.click();
 
-                        //clear the canvas to free up memory
-                        Canvas.clear(saveImageCanvas);
-                        //follow Unsplash API guidelines for triggering download
-                        //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
-                        if(unsplash){
-                            //arguably should be POST request here, but much easier to just use GET
-                            fetch(`${UNSPLASH_DOWNLOAD_URL}?${UNSPLASH_API_PHOTO_ID_QUERY_KEY}=${unsplash.id}`);
-                        }
-                        this.isCurrentlySavingImage = false;
-                        resolve();
-                    });
-                });
+                                //clear the canvas to free up memory
+                                Canvas.clear(saveImageCanvas);
+                                //follow Unsplash API guidelines for triggering download
+                                //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
+                                if (unsplash) {
+                                    //arguably should be POST request here, but much easier to just use GET
+                                    fetch(
+                                        `${UNSPLASH_DOWNLOAD_URL}?${UNSPLASH_API_PHOTO_ID_QUERY_KEY}=${unsplash.id}`
+                                    );
+                                }
+                                this.isCurrentlySavingImage = false;
+                                resolve();
+                            }
+                        );
+                    }
+                );
             });
         },
-        saveImageToFfmpeg(ffmpeg){
-            return new Promise((resolve) => {
-                if(this.isCurrentlySavingImage){
+        saveImageToFfmpeg(ffmpeg) {
+            return new Promise(resolve => {
+                if (this.isCurrentlySavingImage) {
                     return resolve();
                 }
                 this.isCurrentlySavingImage = true;
-                this.saveRequested(saveImageCanvas, (sourceCanvas, unsplash)=>{
-                    canvasToArray(sourceCanvas.canvas, this.saveImageFileType.mime)
-                    .then(array => 
-                        saveImageFrame(ffmpeg, this.saveImageFileName + this.saveImageFileType.extension, array)
-                    )
-                    .then(() => {
-                        //clear the canvas to free up memory
-                        Canvas.clear(saveImageCanvas);
-                        this.isCurrentlySavingImage = false;
-                        resolve();
-                    });
-
-                });
+                this.saveRequested(
+                    saveImageCanvas,
+                    (sourceCanvas, unsplash) => {
+                        canvasToArray(
+                            sourceCanvas.canvas,
+                            this.saveImageFileType.mime
+                        )
+                            .then(array =>
+                                saveImageFrame(
+                                    ffmpeg,
+                                    this.saveImageFileName +
+                                        this.saveImageFileType.extension,
+                                    array
+                                )
+                            )
+                            .then(() => {
+                                //clear the canvas to free up memory
+                                Canvas.clear(saveImageCanvas);
+                                this.isCurrentlySavingImage = false;
+                                resolve();
+                            });
+                    }
+                );
             });
         },
-        exportVideoFromFrames(ffmpeg, videoExportOptions){
+        exportVideoFromFrames(ffmpeg, videoExportOptions) {
             const exportFilename = videoExportOptions.filename;
 
-            return new Promise((resolve) => {
-                exportFramesToVideo(ffmpeg, exportFilename, videoExportOptions.fps, this.saveImageFileType.extension)
-                .then((data) => {
-                    arrayToObjectUrl(data, (objectUrl) => {
+            return new Promise(resolve => {
+                exportFramesToVideo(
+                    ffmpeg,
+                    exportFilename,
+                    videoExportOptions.fps,
+                    this.saveImageFileType.extension
+                ).then(data => {
+                    arrayToObjectUrl(data, objectUrl => {
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = exportFilename;
                         saveImageLink.click();
@@ -195,7 +365,6 @@ export default {
                 });
             });
         },
-
     },
 };
 </script>
