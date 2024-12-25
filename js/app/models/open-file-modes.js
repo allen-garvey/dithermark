@@ -1,0 +1,3 @@
+export const OPEN_FILE_MODE_SINGLE_IMAGE = 1;
+export const OPEN_FILE_MODE_BATCH_IMAGES = 2;
+export const OPEN_FILE_MODE_VIDEO = 3;

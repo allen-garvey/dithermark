@@ -2,28 +2,26 @@
     <div class="controls-tab-container" :class="$style.container">
         <fieldset>
             <legend>Device</legend>
-            <file-input-button 
+            <file-input-button
                 buttonClass="btn-primary"
                 label="Image file"
                 tooltip="Open local image file"
                 :onFilesChanged="onDeviceImageOpened"
             />
-            <file-input-button 
+            <file-input-button
                 label="Batch convert image files"
                 tooltip="Dither and save multiple images"
                 :onFilesChanged="onBatchFilesOpened"
                 :multiple="true"
-                v-if="isBatchConvertEnabled"
             />
-            <button 
-                class="btn btn-default" 
-                @click="openVideoModal" 
+            <button
+                class="btn btn-default"
+                @click="openVideoModal"
                 title="Dither multiple images and save as a video"
-                v-if="isBatchConvertEnabled"
             >
                 Images to video
             </button>
-            <file-input-button 
+            <file-input-button
                 buttonClass="btn-primary"
                 label="Video file"
                 tooltip="Open local video file"
@@ -32,27 +30,33 @@
         </fieldset>
         <fieldset>
             <legend>Web</legend>
-            <button 
-                class="btn btn-default" 
-                @click="showOpenImageUrlPrompt" 
-                :disabled="isCurrentlyLoadingImageUrl" 
+            <button
+                class="btn btn-default"
+                @click="showOpenImageUrlPrompt"
+                :disabled="isCurrentlyLoadingImageUrl"
                 title="Open image from Url"
             >
                 Image url
             </button>
-            <button 
-                class="btn btn-default" 
-                @click="openRandomImage" 
-                :disabled="isCurrentlyLoadingImageUrl" 
+            <button
+                class="btn btn-default"
+                @click="openRandomImage"
+                :disabled="isCurrentlyLoadingImageUrl"
                 title="Open random image from Unsplash"
             >
                 Random image
             </button>
         </fieldset>
+        <batch-image-selector
+            v-if="imageFiles?.length > 0"
+            v-model:fileIndex="currentImageFileIndex"
+            :fileCount="imageFiles.length"
+            :currentFilename="imageFiles[currentImageFileIndex].name"
+        />
         <video-player
             v-if="videoFile"
             :videoFile="videoFile"
-            :onSeekChange="onVideoSeekChange" 
+            :onSeekChange="onVideoSeekChange"
         />
         <export-video-modal
             :onSubmit="onVideoModalSubmitted"
@@ -60,16 +64,16 @@
             :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
             :isPixelatedActualSize="isPixelatedActualSize"
             ref="videoModal"
-        />    
+        />
     </div>
 </template>
 
 <style lang="scss" module>
-    .container fieldset {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-    }
+.container fieldset {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
 </style>
 
 <script>
@@ -78,10 +82,23 @@ import { getRandomImage } from '../random-image.js';
 import ExportVideoModal from './export-video-modal.vue';
 import FileInputButton from './widgets/file-input-button.vue';
 import VideoPlayer from './widgets/video-player.vue';
-import { BATCH_IMAGE_MODE_EXPORT_IMAGES, BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
+import BatchImageSelector from './widgets/batch-image-selector.vue';
+import {
+    BATCH_IMAGE_MODE_EXPORT_IMAGES,
+    BATCH_IMAGE_MODE_EXPORT_VIDEO,
+} from '../models/batch-export-modes.js';
+import {
+    OPEN_FILE_MODE_BATCH_IMAGES,
+    OPEN_FILE_MODE_SINGLE_IMAGE,
+    OPEN_FILE_MODE_VIDEO,
+} from '../models/open-file-modes.js';
 
-export default { 
+export default {
     props: {
+        openFileMode: {
+            type: Number,
+            required: true,
+        },
         imageOpened: {
             type: Function,
             required: true,
@@ -96,10 +113,6 @@ export default {
         },
         requestModal: {
             type: Function,
-            required: true,
-        },
-        isBatchConvertEnabled: {
-            type: Boolean,
             required: true,
         },
         isFfmpegReady: {
@@ -119,82 +132,166 @@ export default {
             required: true,
         },
     },
+    emits: ['update:openFileMode'],
     components: {
         ExportVideoModal,
         FileInputButton,
         VideoPlayer,
+        BatchImageSelector,
     },
-    data(){
+    data() {
         return {
             isCurrentlyLoadingImageUrl: false,
             videoFile: null,
+            imageFiles: null,
+            currentImageFileIndex: 0,
         };
     },
-    methods: {
-        onBatchFilesOpened(rawFiles){
-            this.videoFile = null;
-            const files = Array.from(rawFiles).filter(file => isImageFile(file));
-            if(files.length === 0){
-                return this.openImageError('No image files selected');
+    watch: {
+        openFileMode(newValue) {
+            if (newValue !== OPEN_FILE_MODE_BATCH_IMAGES) {
+                this.imageFiles = null;
             }
-            this.onBatchFilesSelected(files, BATCH_IMAGE_MODE_EXPORT_IMAGES);
+            if (newValue !== OPEN_FILE_MODE_VIDEO) {
+                this.videoFile = null;
+            }
         },
-        onDeviceImageOpened(files){
-            this.videoFile = null;
-            Fs.openImageFile(files[0])
-                .then(([image, data]) => {
-                    if(!image){
-                        return this.openImageError(data);
-                    }
-                    this.imageOpened(image, data, {height: image.height, width: image.width});
-                });
+        imageFiles(newValue) {
+            if (newValue && newValue.length > 0) {
+                this.openImageFile(newValue[0]);
+            }
         },
-        openImageFromUrlFailed(error, imageUrl){
-            this.openImageError(Fs.messageForOpenImageUrlError(error, imageUrl));
-            this.isCurrentlyLoadingImageUrl = false;
-        },
-        showOpenImageUrlPrompt(){
-            this.requestModal('Open image from url', 'Image Url', '', this.openImageUrl, {okButtonValue: 'Open', inputType: 'url', placeholder: 'http://example.com/image.jpg'});
-        },
-        openImageUrl(imageUrl){
-            if(!imageUrl){
+        currentImageFileIndex(newValue) {
+            if (this.openFileMode !== OPEN_FILE_MODE_BATCH_IMAGES) {
                 return;
             }
-            this.videoFile = null;
-            this.isCurrentlyLoadingImageUrl = true;
-            Fs.openImageUrl(imageUrl).then(([image, file])=>{
-                this.imageOpened(image, file, {height: image.height, width: image.width});
-                this.isCurrentlyLoadingImageUrl = false;
-            }).catch((error)=>{
-                this.openImageFromUrlFailed(error, imageUrl);
+            if (newValue >= 0 && newValue < this.imageFiles.length) {
+                this.openImageFile(this.imageFiles[newValue]);
+            }
+        },
+    },
+    methods: {
+        batchConvertImages() {
+            this.onBatchFilesSelected(
+                this.imageFiles,
+                BATCH_IMAGE_MODE_EXPORT_IMAGES
+            );
+        },
+        onBatchFilesOpened(rawFiles) {
+            const files = Array.from(rawFiles).filter(file =>
+                isImageFile(file)
+            );
+            if (files.length === 0) {
+                return this.openImageError('No image files selected');
+            }
+            this.imageFiles = files;
+            this.$emit('update:openFileMode', OPEN_FILE_MODE_BATCH_IMAGES);
+        },
+        onDeviceImageOpened(files) {
+            this.openImageFile(files[0]).then(() => {
+                this.$emit('update:openFileMode', OPEN_FILE_MODE_SINGLE_IMAGE);
             });
         },
-        openRandomImage(){
-            this.videoFile = null;
-            this.isCurrentlyLoadingImageUrl = true;
-            
-            getRandomImage(window.innerWidth, window.innerHeight).then(({image, file})=>{
-                this.imageOpened(image, file, {height: image.height, width: image.width});
-                this.isCurrentlyLoadingImageUrl = false;
-            }).catch(this.openImageFromUrlFailed);
+        /**
+         *
+         * @param {File} file
+         * @returns {Promise}
+         */
+        openImageFile(file) {
+            return Fs.openImageFile(file).then(([image, data]) => {
+                if (!image) {
+                    return this.openImageError(data);
+                }
+                this.imageOpened(image, data, {
+                    height: image.height,
+                    width: image.width,
+                });
+            });
         },
-        openVideoModal(){
+        openImageFromUrlFailed(error, imageUrl) {
+            this.openImageError(
+                Fs.messageForOpenImageUrlError(error, imageUrl)
+            );
+            this.isCurrentlyLoadingImageUrl = false;
+        },
+        showOpenImageUrlPrompt() {
+            this.requestModal(
+                'Open image from url',
+                'Image Url',
+                '',
+                this.openImageUrl,
+                {
+                    okButtonValue: 'Open',
+                    inputType: 'url',
+                    placeholder: 'http://example.com/image.jpg',
+                }
+            );
+        },
+        openImageUrl(imageUrl) {
+            if (!imageUrl) {
+                return;
+            }
+            this.isCurrentlyLoadingImageUrl = true;
+            Fs.openImageUrl(imageUrl)
+                .then(([image, file]) => {
+                    this.imageOpened(image, file, {
+                        height: image.height,
+                        width: image.width,
+                    });
+                    this.isCurrentlyLoadingImageUrl = false;
+                    this.$emit(
+                        'update:openFileMode',
+                        OPEN_FILE_MODE_SINGLE_IMAGE
+                    );
+                })
+                .catch(error => {
+                    this.openImageFromUrlFailed(error, imageUrl);
+                });
+        },
+        openRandomImage() {
+            this.isCurrentlyLoadingImageUrl = true;
+
+            getRandomImage(window.innerWidth, window.innerHeight)
+                .then(({ image, file }) => {
+                    this.imageOpened(image, file, {
+                        height: image.height,
+                        width: image.width,
+                    });
+                    this.isCurrentlyLoadingImageUrl = false;
+                    this.$emit(
+                        'update:openFileMode',
+                        OPEN_FILE_MODE_SINGLE_IMAGE
+                    );
+                })
+                .catch(this.openImageFromUrlFailed);
+        },
+        openVideoModal() {
             this.videoFile = null;
             this.getFfmpegReady();
             this.$refs.videoModal.show();
         },
-        onVideoModalSubmitted(files, videoExportOptions){
-            this.onBatchFilesSelected(files, BATCH_IMAGE_MODE_EXPORT_VIDEO, videoExportOptions);
+        onVideoModalSubmitted(files, videoExportOptions) {
+            this.onBatchFilesSelected(
+                files,
+                BATCH_IMAGE_MODE_EXPORT_VIDEO,
+                videoExportOptions
+            );
         },
-        onVideoFileOpened(videoFiles){
+        onVideoFileOpened(videoFiles) {
             const videoFile = videoFiles[0];
-            if(!isVideoFile(videoFile)){
-                return this.openImageError(`${videoFile.name} does not appear to be a video file.`);
+            if (!isVideoFile(videoFile)) {
+                return this.openImageError(
+                    `${videoFile.name} does not appear to be a video file.`
+                );
             }
+            this.$emit('update:openFileMode', OPEN_FILE_MODE_VIDEO);
             this.videoFile = videoFile;
         },
-        onVideoSeekChange(video){
-            this.imageOpened(video, this.videoFile, {height: video.videoHeight, width: video.videoWidth});
+        onVideoSeekChange(video) {
+            this.imageOpened(video, this.videoFile, {
+                height: video.videoHeight,
+                width: video.videoWidth,
+            });
         },
     },
 };
