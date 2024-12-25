@@ -70,6 +70,8 @@
             <input
                 v-model.number="videoFps"
                 type="number"
+                min="1"
+                step="1"
                 id="export-tab-fps"
             />
         </div>
