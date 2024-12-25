@@ -63,6 +63,16 @@
                 id="export-tab-filename"
             /><span>{{ displayedOutputFileExtension }}</span>
         </div>
+        <div v-if="currentOutputFileOption === outputFileOptions.VIDEO">
+            <label :class="$style.exportLabel" for="export-tab-fps"
+                >Frames per second</label
+            >
+            <input
+                v-model.number="videoFps"
+                type="number"
+                id="export-tab-fps"
+            />
+        </div>
         <div>
             <label :class="$style.exportLabel" for="export-tab-filetype"
                 >File type</label
@@ -200,6 +210,7 @@ export default {
             saveImageFileTypeValue: userSettings.getExportSettings().fileType,
             isCurrentlySavingImage: false,
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
+            videoFps: 24,
         };
     },
     computed: {
