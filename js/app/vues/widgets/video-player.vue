@@ -3,19 +3,37 @@
         <h4>Video Controls</h4>
         <p>{{ videoFile.name }}</p>
         <div :class="$style.controlsContainer">
-            <input type="range" id="seek" min="0" :max="duration" step="0.5" :disabled="!isVideoLoaded"
-                v-model.number="seekValue" :class="$style.videoRange" />
-            <input type="number" min="0" :max="duration" step="1" v-model.number="seekValue"
-                :disabled="!isVideoLoaded" />
+            <input
+                type="range"
+                min="0"
+                :max="duration"
+                step="0.5"
+                :disabled="!isVideoLoaded"
+                v-model.number="seekValue"
+                :class="$style.videoRange"
+            />
+            <input
+                type="number"
+                min="0"
+                :max="duration"
+                step="1"
+                v-model.number="seekValue"
+                :disabled="!isVideoLoaded"
+            />
         </div>
-        <video v-show="false" ref="video" @seeked="onSeeked" @loadedmetadata="onMetadataLoaded"
-            @canplaythrough="onVideoReady">
-        </video>
+        <video
+            v-show="false"
+            ref="video"
+            @seeked="onSeeked"
+            @loadedmetadata="onMetadataLoaded"
+            @canplaythrough="onVideoReady"
+        ></video>
     </div>
 </template>
 
 <style lang="scss" module>
-.container {}
+.container {
+}
 
 .controlsContainer {
     display: flex;
@@ -33,14 +51,13 @@
 export default {
     props: {
         videoFile: {
-            type: Object,
+            type: File,
             required: true,
         },
         onSeekChange: {
             type: Function,
             required: true,
         },
-
     },
     created() {
         this.objectUrl = null;
@@ -60,17 +77,20 @@ export default {
             objectUrl: null,
         };
     },
-    computed: {
-    },
+    computed: {},
     watch: {
         videoFile() {
             this.loadVideoFile();
         },
         seekValue(newValue) {
-            if (this.isVideoLoaded && newValue >= 0 && newValue <= this.duration) {
+            if (
+                this.isVideoLoaded &&
+                newValue >= 0 &&
+                newValue <= this.duration
+            ) {
                 this.$refs.video.currentTime = newValue;
             }
-        }
+        },
     },
     methods: {
         loadVideoFile() {
@@ -94,6 +114,6 @@ export default {
                 this.seekValue = 0;
             }
         },
-    }
+    },
 };
 </script>
