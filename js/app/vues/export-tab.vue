@@ -96,7 +96,7 @@
                 <input
                     type="radio"
                     @change="setShouldUpsample(true)"
-                    :checked="!shouldUpsample"
+                    :checked="shouldUpsample"
                 />
             </label>
             <label :class="$style.radioLabel">
