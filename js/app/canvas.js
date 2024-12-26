@@ -194,7 +194,13 @@ function createSharedImageBuffer(sourceCanvasObject) {
     return buffer;
 }
 
-//pixels should be UInt8ClampedArray
+/**
+ *
+ * @param {CanvasObject} targetCanvasObject
+ * @param {number} imageWidth
+ * @param {number} imageHeight
+ * @param {Uint8ClampedArray} pixels
+ */
 function loadPixels(targetCanvasObject, imageWidth, imageHeight, pixels) {
     const imageData = targetCanvasObject.context.createImageData(
         imageWidth,
