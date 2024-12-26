@@ -785,7 +785,7 @@ export default {
             activeControlsTab: 0,
             openFileMode: -1,
             videoFile: null,
-            //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
+            //loadedImage has properties: width, height, fileName, and optionally unsplash info
             loadedImage: null,
             /**
              * Batch convert
@@ -1176,8 +1176,6 @@ export default {
             const loadedImage = {
                 ...dimensions,
                 fileName: file.name,
-                fileSize: file.size,
-                fileType: file.type,
                 unsplash: file.unsplash || null,
             };
             this.exportFileNameSource = file.name;
