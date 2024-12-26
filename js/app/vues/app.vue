@@ -33,6 +33,7 @@
                     <!-- Open tab -->
                     <open-tab
                         v-model:openFileMode="openFileMode"
+                        v-model:videoFile="videoFile"
                         :image-opened="loadImage"
                         :onBatchFilesSelected="loadBatchImages"
                         :open-image-error="onOpenImageError"
@@ -782,6 +783,7 @@ export default {
             activeDitherComponentId: 1,
             activeControlsTab: 0,
             openFileMode: -1,
+            videoFile: null,
             //loadedImage has properties: width, height, fileName, fileType, and optionally unsplash info
             loadedImage: null,
             /**

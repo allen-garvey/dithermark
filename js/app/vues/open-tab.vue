@@ -95,6 +95,9 @@ import {
 
 export default {
     props: {
+        videoFile: {
+            type: File,
+        },
         openFileMode: {
             type: Number,
             required: true,
@@ -132,7 +135,7 @@ export default {
             required: true,
         },
     },
-    emits: ['update:openFileMode'],
+    emits: ['update:openFileMode', 'update:videoFile'],
     components: {
         ExportVideoModal,
         FileInputButton,
@@ -142,7 +145,6 @@ export default {
     data() {
         return {
             isCurrentlyLoadingImageUrl: false,
-            videoFile: null,
             imageFiles: null,
             currentImageFileIndex: 0,
         };
@@ -153,7 +155,7 @@ export default {
                 this.imageFiles = null;
             }
             if (newValue !== OPEN_FILE_MODE_VIDEO) {
-                this.videoFile = null;
+                this.$emit('update:videoFile', null);
             }
         },
         imageFiles(newValue) {
@@ -274,7 +276,7 @@ export default {
                 .catch(this.openImageFromUrlFailed);
         },
         openVideoModal() {
-            this.videoFile = null;
+            this.$emit('update:videoFile', null);
             this.getFfmpegReady();
             this.$refs.videoModal.show();
         },
@@ -294,7 +296,7 @@ export default {
             }
             this.getFfmpegReady();
             this.$emit('update:openFileMode', OPEN_FILE_MODE_VIDEO);
-            this.videoFile = videoFile;
+            this.$emit('update:videoFile', videoFile);
         },
         onVideoSeekChange(video) {
             this.imageOpened(video, this.videoFile, {
