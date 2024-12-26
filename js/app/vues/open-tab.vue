@@ -208,11 +208,11 @@ export default {
          * @returns {Promise}
          */
         openImageFile(file) {
-            return Fs.openImageFile(file).then(([image, data]) => {
+            return Fs.openImageFile(file).then(([image, file]) => {
                 if (!image) {
-                    return this.openImageError(data);
+                    return this.openImageError(file);
                 }
-                this.imageOpened(image, data, {
+                this.imageOpened(image, file, {
                     height: image.height,
                     width: image.width,
                 });

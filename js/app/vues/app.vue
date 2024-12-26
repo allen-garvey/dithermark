@@ -1129,11 +1129,11 @@ export default {
                 return;
             }
 
-            Fs.openImageFile(this.batchImageQueue[0]).then(([image, data]) => {
+            Fs.openImageFile(this.batchImageQueue[0]).then(([image, file]) => {
                 if (!image) {
-                    return this.onOpenImageError(data);
+                    return this.onOpenImageError(file);
                 }
-                this.loadImage(image, data, {
+                this.loadImage(image, file, {
                     height: image.height,
                     width: image.width,
                 });
