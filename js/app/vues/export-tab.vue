@@ -268,6 +268,11 @@ export default {
         sourceFileName(newValue) {
             this.saveImageFileName = getFilenameWithoutExtension(newValue);
         },
+        videoFps(newValue) {
+            if (isNaN(newValue) || newValue <= 0) {
+                this.videoFps = 1;
+            }
+        },
         saveImageFileName(newValue, oldValue) {
             if (newValue === oldValue) {
                 return;
