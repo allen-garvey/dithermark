@@ -185,6 +185,10 @@ export default {
             type: Number,
             required: true,
         },
+        videoExportRequested: {
+            type: Function,
+            required: true,
+        },
         saveRequested: {
             type: Function,
             required: true,
@@ -312,15 +316,24 @@ export default {
                         BATCH_IMAGE_MODE_EXPORT_IMAGES
                     );
                 case outputFileOptions.VIDEO:
-                    return this.onSubmitBatchConvertImages(
-                        BATCH_IMAGE_MODE_EXPORT_VIDEO,
-                        {
-                            fps: this.videoFps,
-                            filename:
-                                this.saveImageFileName +
-                                this.videoFileExtension,
-                        }
-                    );
+                    if (
+                        this.currentInputFileType === this.inputFileTypes.VIDEO
+                    ) {
+                        return this.videoExportRequested(
+                            this.videoFps,
+                            this.saveImageFileType.extension
+                        );
+                    } else {
+                        return this.onSubmitBatchConvertImages(
+                            BATCH_IMAGE_MODE_EXPORT_VIDEO,
+                            {
+                                fps: this.videoFps,
+                                filename:
+                                    this.saveImageFileName +
+                                    this.videoFileExtension,
+                            }
+                        );
+                    }
                 default:
                     return this.saveImage();
             }

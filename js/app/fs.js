@@ -201,6 +201,14 @@ export const canvasToArray = (canvas, mimeType) => {
 
 /**
  *
+ * @param {File} file
+ * @returns {Promise<Uint8Array>}
+ */
+export const fileToArray = file =>
+    file.arrayBuffer().then(buffer => new Uint8Array(buffer));
+
+/**
+ *
  * @param {Uint8Array} array
  * @param {Function} callback
  */

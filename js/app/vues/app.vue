@@ -429,6 +429,7 @@
                         :openFileMode="openFileMode"
                         :source-file-name="exportFileNameSource"
                         :save-requested="onSaveRequested"
+                        :videoExportRequested="onVideoExportRequested"
                         :is-image-pixelated="isImagePixelated"
                         :shouldUpsample="shouldUpsample"
                         :setShouldUpsample="
@@ -651,7 +652,7 @@ import {
 } from '../models/batch-export-modes.js';
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { initializeFfmpeg } from '../ffmpeg.js';
+import { initializeFfmpeg, videoToFrames } from '../ffmpeg.js';
 
 const FFMPEG_STATES = {
     NEW: 0,
@@ -1087,6 +1088,18 @@ export default {
             Canvas.copy(this.transformedSourceCanvas, exportCanvas, scale);
 
             callback(exportCanvas, this.loadedImage.unsplash);
+        },
+        /**
+         *
+         * @param {number} fps
+         * @param {string} imageFileExtension
+         */
+        onVideoExportRequested(fps, imageFileExtension) {
+            videoToFrames(ffmpeg, this.videoFile, fps, imageFileExtension).then(
+                files => {
+                    console.log(files);
+                }
+            );
         },
         loadBatchImages(batchImageMode, videoExportOptions = null) {
             const files = this.$refs.openTab.getImageFiles();

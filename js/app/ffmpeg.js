@@ -1,4 +1,7 @@
-const FFMPEG_EXPORT_DIRECTORY = '/tmp/export';
+import { fileToArray } from './fs.js';
+
+const FFMPEG_RAW_DIRECTORY = '/tmp/raw';
+const FFMPEG_DITHERED_DIRECTORY = '/tmp/dithered';
 
 /**
  *
@@ -6,7 +9,14 @@ const FFMPEG_EXPORT_DIRECTORY = '/tmp/export';
  * @returns {Promise<boolean>}
  */
 export const initializeFfmpeg = ffmpeg =>
-    ffmpeg.load().then(() => ffmpeg.createDir(FFMPEG_EXPORT_DIRECTORY));
+    ffmpeg
+        .load()
+        .then(() =>
+            Promise.all([
+                ffmpeg.createDir(FFMPEG_DITHERED_DIRECTORY),
+                ffmpeg.createDir(FFMPEG_RAW_DIRECTORY),
+            ]).then(results => results.every(value => value))
+        );
 
 /**
  *
@@ -16,7 +26,41 @@ export const initializeFfmpeg = ffmpeg =>
  * @returns {Promise}
  */
 export const saveImageFrame = (ffmpeg, filename, data) =>
-    ffmpeg.writeFile(`${FFMPEG_EXPORT_DIRECTORY}/${filename}`, data);
+    ffmpeg.writeFile(`${FFMPEG_DITHERED_DIRECTORY}/${filename}`, data);
+
+/**
+ *
+ * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
+ * @param {File} file
+ * @param {number} fps
+ * @param {string} imageFileExtension
+ * @returns {Promise<string[]>}
+ */
+export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
+    const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
+    return fileToArray(file)
+        .then(data => ffmpeg.writeFile(importedVideoPath, data))
+        .then(() =>
+            ffmpeg.exec([
+                '-i',
+                importedVideoPath,
+                '-vf',
+                `fps=${fps}`,
+                // TODO use video duration to figure how many digits in filename pattern
+                `${FFMPEG_RAW_DIRECTORY}/%04d${imageFileExtension}`,
+            ])
+        )
+        .then(errorCode => {
+            console.log(`ffmpeg return value ${errorCode}`);
+            return ffmpeg.deleteFile(importedVideoPath);
+        })
+        .then(() => ffmpeg.listDir(FFMPEG_RAW_DIRECTORY))
+        .then(files =>
+            files
+                .filter(file => !file.isDir)
+                .map(file => `${FFMPEG_RAW_DIRECTORY}/${file.name}`)
+        );
+};
 
 /**
  *
@@ -32,7 +76,7 @@ export const exportFramesToVideo = (
     fps,
     imageFileExtension
 ) => {
-    const exportFilePath = `${FFMPEG_EXPORT_DIRECTORY}/${exportFilename}`;
+    const exportFilePath = `${FFMPEG_DITHERED_DIRECTORY}/${exportFilename}`;
 
     return ffmpeg
         .exec([
@@ -43,7 +87,7 @@ export const exportFramesToVideo = (
             '-pattern_type',
             'glob',
             '-i',
-            `${FFMPEG_EXPORT_DIRECTORY}/*${imageFileExtension}`,
+            `${FFMPEG_DITHERED_DIRECTORY}/*${imageFileExtension}`,
             // filter has to be after image source
             '-filter:v',
             `format=pix_fmts='yuv420p'`,
@@ -56,12 +100,12 @@ export const exportFramesToVideo = (
             return ffmpeg.readFile(exportFilePath);
         })
         .then(data =>
-            ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY).then(files => {
+            ffmpeg.listDir(FFMPEG_DITHERED_DIRECTORY).then(files => {
                 const promises = files
                     .filter(file => !file.isDir)
                     .map(file =>
                         ffmpeg.deleteFile(
-                            `${FFMPEG_EXPORT_DIRECTORY}/${file.name}`
+                            `${FFMPEG_DITHERED_DIRECTORY}/${file.name}`
                         )
                     );
                 return (
