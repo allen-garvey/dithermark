@@ -94,10 +94,12 @@ export const exportFramesToVideo = (
             '-i',
             `${FFMPEG_DITHERED_DIRECTORY}/*${imageFileExtension}`,
             // filter has to be after image source
-            '-filter:v',
-            `format=pix_fmts='yuv420p'`,
             '-vf',
-            'pad=ceil(iw/2)*2:ceil(ih/2)*2',
+            `format=yuv420p, pad=ceil(iw/2)*2:ceil(ih/2)*2`,
+            '-vcodec',
+            'libx264',
+            '-acodec',
+            'aac',
             exportFilePath,
         ])
         .then(errorCode => {
