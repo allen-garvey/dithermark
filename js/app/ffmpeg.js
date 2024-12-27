@@ -1,7 +1,12 @@
 import { fileToArray } from './fs.js';
+import { getSaveImageFileTypes } from './models/export-model.js';
 
 const FFMPEG_RAW_DIRECTORY = '/tmp/raw';
 const FFMPEG_DITHERED_DIRECTORY = '/tmp/dithered';
+
+const imageMimeMap = new Map(
+    getSaveImageFileTypes().map(entry => [entry.extension, entry.mime])
+);
 
 /**
  *
@@ -117,3 +122,20 @@ export const exportFramesToVideo = (
             })
         );
 };
+
+/**
+ *
+ * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
+ * @param {string} imagePath
+ * @param {string} imageFileExtension
+ * @returns {Promise<File>}
+ */
+export const getImageFromFfmpeg = (ffmpeg, imagePath, imageFileExtension) =>
+    ffmpeg.readFile(imagePath).then(data => {
+        const type = imageMimeMap.get(imageFileExtension);
+        // have to have image name only, as otherwise when saving to dithered directory the slashes are interpreted as subdirectories
+        const imageName = imagePath.slice(FFMPEG_RAW_DIRECTORY.length + 1);
+        const file = new File([data], imageName, { type });
+
+        return ffmpeg.deleteFile(imagePath).then(() => file);
+    });

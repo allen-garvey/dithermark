@@ -34,6 +34,7 @@
                     <open-tab
                         v-model:openFileMode="openFileMode"
                         v-model:videoFile="videoFile"
+                        v-model:videoDimensions="videoDimensions"
                         :image-opened="loadImage"
                         :onBatchFilesSelected="loadBatchImages"
                         :open-image-error="onOpenImageError"
@@ -645,14 +646,17 @@ import ImageCanvasSupercontainer from './image-canvas-supercontainer.vue';
 import SettingsTab from './settings-tab.vue';
 import BatchConvertOverlay from './batch-convert-overlay.vue';
 import Checkbox from './checkbox.vue';
-import { isiOs } from '../cross-platform.js';
 import {
     BATCH_IMAGE_MODE_EXPORT_IMAGES,
     BATCH_IMAGE_MODE_EXPORT_VIDEO,
 } from '../models/batch-export-modes.js';
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { initializeFfmpeg, videoToFrames } from '../ffmpeg.js';
+import {
+    initializeFfmpeg,
+    videoToFrames,
+    getImageFromFfmpeg,
+} from '../ffmpeg.js';
 
 const FFMPEG_STATES = {
     NEW: 0,
@@ -785,6 +789,7 @@ export default {
             activeControlsTab: 0,
             openFileMode: -1,
             videoFile: null,
+            videoDimensions: null,
             //loadedImage has properties: width, height, fileName, and optionally unsplash info
             loadedImage: null,
             /**
@@ -796,7 +801,6 @@ export default {
             batchConvertState: BATCH_CONVERT_STATE.NONE,
             ffmpegPercentage: 0,
             ffmpegState: FFMPEG_STATES.NEW,
-            videoExportOptions: null,
             /**
              * Color picker
              */
@@ -1096,29 +1100,37 @@ export default {
          */
         onVideoExportRequested(fps, imageFileExtension) {
             videoToFrames(ffmpeg, this.videoFile, fps, imageFileExtension).then(
-                files => {
-                    console.log(files);
+                imagePaths => {
+                    console.log(imagePaths);
+                    const images = imagePaths.map(path => ({
+                        path,
+                        extension: imageFileExtension,
+                    }));
+                    this.loadBatchImageFiles(
+                        images,
+                        BATCH_IMAGE_MODE_EXPORT_VIDEO
+                    );
                 }
             );
         },
-        loadBatchImages(batchImageMode, videoExportOptions = null) {
+        loadBatchImages(batchImageMode) {
             const files = this.$refs.openTab.getImageFiles();
+            this.loadBatchImageFiles(files, batchImageMode);
+        },
+        loadBatchImageFiles(files, batchImageMode) {
             this.batchConvertState = BATCH_CONVERT_STATE.PROCESSING_FRAMES;
             this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
-            this.videoExportOptions = videoExportOptions;
             this.ffmpegPercentage = 0;
             this.loadNextBatchImage();
         },
         batchProcessingCompleted() {
             if (this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
-                this.$refs.exportTab
-                    .exportVideoFromFrames(ffmpeg, this.videoExportOptions)
-                    .then(() => {
-                        this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                    });
+                this.$refs.exportTab.exportVideoFromFrames(ffmpeg).then(() => {
+                    this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                });
             } else {
                 this.batchConvertState = BATCH_CONVERT_STATE.NONE;
             }
@@ -1129,15 +1141,23 @@ export default {
                 return;
             }
 
-            Fs.openImageFile(this.batchImageQueue[0]).then(([image, file]) => {
-                if (!image) {
-                    return this.onOpenImageError(file);
-                }
-                this.loadImage(image, file, {
-                    height: image.height,
-                    width: image.width,
+            const item = this.batchImageQueue[0];
+            const filePromise =
+                item instanceof File
+                    ? Promise.resolve(item)
+                    : getImageFromFfmpeg(ffmpeg, item.path, item.extension);
+
+            filePromise
+                .then(file => Fs.openImageFile(file))
+                .then(([image, file]) => {
+                    if (!image) {
+                        return this.onOpenImageError(file);
+                    }
+                    this.loadImage(image, file, {
+                        height: image.height,
+                        width: image.width,
+                    });
                 });
-            });
         },
         imageProcessingCompleted() {
             // export image if we are in batch processing mode
@@ -1192,7 +1212,7 @@ export default {
             ) {
                 const resizePercentage =
                     largeImageDimensionThreshold / largestImageDimension;
-                Canvas.loadImage(
+                Canvas.initializeCanvasWithImage(
                     originalImageCanvas,
                     image,
                     dimensions,
@@ -1201,7 +1221,11 @@ export default {
                 loadedImage.width = originalImageCanvas.canvas.width;
                 loadedImage.height = originalImageCanvas.canvas.height;
             } else {
-                Canvas.loadImage(originalImageCanvas, image, dimensions);
+                Canvas.initializeCanvasWithImage(
+                    originalImageCanvas,
+                    image,
+                    dimensions
+                );
             }
             originalImageCanvas.context.drawImage(
                 originalImageCanvas.canvas,

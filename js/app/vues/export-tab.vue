@@ -408,14 +408,15 @@ export default {
                 );
             });
         },
-        exportVideoFromFrames(ffmpeg, videoExportOptions) {
-            const exportFilename = videoExportOptions.filename;
+        exportVideoFromFrames(ffmpeg) {
+            const exportFilename =
+                this.saveImageFileName + this.videoFileExtension;
 
             return new Promise(resolve => {
                 exportFramesToVideo(
                     ffmpeg,
                     exportFilename,
-                    videoExportOptions.fps,
+                    this.videoFps,
                     this.saveImageFileType.extension
                 ).then(data => {
                     arrayToObjectUrl(data, objectUrl => {

@@ -45,13 +45,13 @@ function isBlendModeSupported(canvasObject, globalCompositeOperation) {
  * @param {Object} contextOpts
  * @returns {CanvasObject}
  */
-function createCanvas(canvas = null, contextOpts = {}) {
+const createCanvas = (canvas = null, contextOpts = {}) => {
     canvas = canvas || document.createElement('canvas');
     return {
         canvas,
         context: canvas.getContext('2d', contextOpts),
     };
-}
+};
 
 //premultipliedAlpha is from https://webglfundamentals.org/webgl/lessons/webgl-and-alpha.html
 //used to fix semi-transparent pixels being weird colors
@@ -201,14 +201,14 @@ function createSharedImageBuffer(sourceCanvasObject) {
  * @param {number} imageHeight
  * @param {Uint8ClampedArray} pixels
  */
-function loadPixels(targetCanvasObject, imageWidth, imageHeight, pixels) {
+const loadPixels = (targetCanvasObject, imageWidth, imageHeight, pixels) => {
     const imageData = targetCanvasObject.context.createImageData(
         imageWidth,
         imageHeight
     );
     imageData.data.set(pixels);
     targetCanvasObject.context.putImageData(imageData, 0, 0);
-}
+};
 
 /**
  *
@@ -217,7 +217,12 @@ function loadPixels(targetCanvasObject, imageWidth, imageHeight, pixels) {
  * @param {Dimensions} dimensions
  * @param {number} scale percentage to resize image: 1 is 100 percent (unchanged)
  */
-function loadImage(canvasObject, image, dimensions, scale = 1) {
+const initializeCanvasWithImage = (
+    canvasObject,
+    image,
+    dimensions,
+    scale = 1
+) => {
     let scaledWidth = dimensions.width;
     let scaledHeight = dimensions.height;
     if (scale !== 1) {
@@ -227,7 +232,7 @@ function loadImage(canvasObject, image, dimensions, scale = 1) {
     canvasObject.canvas.width = scaledWidth;
     canvasObject.canvas.height = scaledHeight;
     canvasObject.context.drawImage(image, 0, 0, scaledWidth, scaledHeight);
-}
+};
 
 export default {
     create: createCanvas,
@@ -238,7 +243,7 @@ export default {
     isBlendModeSupported,
     resetBlendMode,
     createSharedImageBuffer,
-    loadImage,
+    initializeCanvasWithImage,
     loadPixels,
     areCanvasFiltersSupported,
 };

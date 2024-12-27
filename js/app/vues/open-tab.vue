@@ -98,6 +98,9 @@ export default {
         videoFile: {
             type: File,
         },
+        videoDimensions: {
+            type: Object,
+        },
         openFileMode: {
             type: Number,
             required: true,
@@ -135,7 +138,11 @@ export default {
             required: true,
         },
     },
-    emits: ['update:openFileMode', 'update:videoFile'],
+    emits: [
+        'update:openFileMode',
+        'update:videoFile',
+        'update:videoDimensions',
+    ],
     components: {
         ExportVideoModal,
         FileInputButton,
@@ -299,10 +306,12 @@ export default {
             this.$emit('update:videoFile', videoFile);
         },
         onVideoSeekChange(video) {
-            this.imageOpened(video, this.videoFile, {
+            const dimensions = {
                 height: video.videoHeight,
                 width: video.videoWidth,
-            });
+            };
+            this.$emit('update:videoDimensions', dimensions);
+            this.imageOpened(video, this.videoFile, dimensions);
         },
     },
 };
