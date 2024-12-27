@@ -225,6 +225,7 @@ export default {
             isCurrentlySavingImage: false,
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
             videoFps: 24,
+            videoExportFilename: '',
         };
     },
     computed: {
@@ -316,6 +317,8 @@ export default {
                         BATCH_IMAGE_MODE_EXPORT_IMAGES
                     );
                 case outputFileOptions.VIDEO:
+                    this.videoExportFilename =
+                        this.saveImageFileName + this.videoFileExtension;
                     if (
                         this.currentInputFileType === this.inputFileTypes.VIDEO
                     ) {
@@ -325,13 +328,7 @@ export default {
                         );
                     } else {
                         return this.onSubmitBatchConvertImages(
-                            BATCH_IMAGE_MODE_EXPORT_VIDEO,
-                            {
-                                fps: this.videoFps,
-                                filename:
-                                    this.saveImageFileName +
-                                    this.videoFileExtension,
-                            }
+                            BATCH_IMAGE_MODE_EXPORT_VIDEO
                         );
                     }
                 default:
@@ -409,8 +406,7 @@ export default {
             });
         },
         exportVideoFromFrames(ffmpeg) {
-            const exportFilename =
-                this.saveImageFileName + this.videoFileExtension;
+            const exportFilename = this.videoExportFilename;
 
             return new Promise(resolve => {
                 exportFramesToVideo(
