@@ -14,13 +14,6 @@
                 :onFilesChanged="onBatchFilesOpened"
                 :multiple="true"
             />
-            <button
-                class="btn btn-default"
-                @click="openVideoModal"
-                title="Dither multiple images and save as a video"
-            >
-                Images to video
-            </button>
             <file-input-button
                 buttonClass="btn-primary"
                 label="Video file"
@@ -58,13 +51,6 @@
             :videoFile="videoFile"
             :onSeekChange="onVideoSeekChange"
         />
-        <export-video-modal
-            :onSubmit="onVideoModalSubmitted"
-            :canSubmit="isFfmpegReady"
-            :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
-            :isPixelatedActualSize="isPixelatedActualSize"
-            ref="videoModal"
-        />
     </div>
 </template>
 
@@ -79,14 +65,10 @@
 <script>
 import Fs, { isImageFile, isVideoFile } from '../fs.js';
 import { getRandomImage } from '../random-image.js';
-import ExportVideoModal from './export-video-modal.vue';
 import FileInputButton from './widgets/file-input-button.vue';
 import VideoPlayer from './widgets/video-player.vue';
 import BatchImageSelector from './widgets/batch-image-selector.vue';
-import {
-    BATCH_IMAGE_MODE_EXPORT_IMAGES,
-    BATCH_IMAGE_MODE_EXPORT_VIDEO,
-} from '../models/batch-export-modes.js';
+import { BATCH_IMAGE_MODE_EXPORT_IMAGES } from '../models/batch-export-modes.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
     OPEN_FILE_MODE_SINGLE_IMAGE,
@@ -121,20 +103,8 @@ export default {
             type: Function,
             required: true,
         },
-        isFfmpegReady: {
-            type: Boolean,
-            required: true,
-        },
         getFfmpegReady: {
             type: Function,
-            required: true,
-        },
-        automaticallyResizeLargeImages: {
-            type: Boolean,
-            required: true,
-        },
-        isPixelatedActualSize: {
-            type: Boolean,
             required: true,
         },
     },
@@ -144,7 +114,6 @@ export default {
         'update:videoDimensions',
     ],
     components: {
-        ExportVideoModal,
         FileInputButton,
         VideoPlayer,
         BatchImageSelector,
@@ -281,18 +250,6 @@ export default {
                     );
                 })
                 .catch(this.openImageFromUrlFailed);
-        },
-        openVideoModal() {
-            this.$emit('update:videoFile', null);
-            this.getFfmpegReady();
-            this.$refs.videoModal.show();
-        },
-        onVideoModalSubmitted(files, videoExportOptions) {
-            this.onBatchFilesSelected(
-                files,
-                BATCH_IMAGE_MODE_EXPORT_VIDEO,
-                videoExportOptions
-            );
         },
         onVideoFileOpened(videoFiles) {
             const videoFile = videoFiles[0];

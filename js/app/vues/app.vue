@@ -40,13 +40,6 @@
                         :open-image-error="onOpenImageError"
                         :request-modal="showModalPrompt"
                         :getFfmpegReady="getFfmpegReady"
-                        :isFfmpegReady="isFfmpegReady"
-                        :automaticallyResizeLargeImages="
-                            automaticallyResizeLargeImages
-                        "
-                        :isPixelatedActualSize="
-                            isImagePixelated && !shouldUpsample
-                        "
                         v-show="activeControlsTab === 0"
                         ref="openTab"
                     />
