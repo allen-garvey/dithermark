@@ -60,6 +60,7 @@
                 placeholder="File name"
                 v-model="saveImageFileName"
                 @keyup.enter="submit"
+                :class="{ [$style.invalid]: hasFilenameError }"
                 id="export-tab-filename"
             /><span>{{ displayedOutputFileExtension }}</span>
         </div>
@@ -119,9 +120,10 @@
                 Save
             </button>
         </div>
-        <div :class="$style.alertsContainer" v-if="isOutputtingVideo">
-            <banner-messages :messages="videoErrorMessages" type="danger" />
+        <div :class="$style.alertsContainer">
+            <banner-messages :messages="errorMessages" type="danger" />
             <video-warning-banner
+                v-if="isOutputtingVideo"
                 :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                 :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
             />
@@ -259,14 +261,26 @@ export default {
         };
     },
     computed: {
-        hasFpsError() {
-            return isNaN(this.videoFps) || this.videoFps <= 0;
+        hasFilenameError() {
+            return !this.saveImageFileName;
         },
-        videoErrorMessages() {
+        hasFpsError() {
+            return (
+                this.isOutputtingVideo &&
+                (isNaN(this.videoFps) || this.videoFps <= 0)
+            );
+        },
+        errorMessages() {
             const errorMessages = [];
 
+            if (this.hasFilenameError) {
+                errorMessages.push(`File name can't be blank.`);
+            }
+
             if (this.hasFpsError) {
-                errorMessages.push('Frames per second must be greater than 0.');
+                errorMessages.push(
+                    'Frames per second must be a number greater than 0.'
+                );
             }
 
             return errorMessages;
@@ -276,11 +290,12 @@ export default {
                 return (
                     this.isCurrentlySavingImage ||
                     this.hasFpsError ||
+                    this.hasFilenameError ||
                     !this.isFfmpegReady
                 );
             }
 
-            return this.isCurrentlySavingImage;
+            return this.isCurrentlySavingImage || this.hasFilenameError;
         },
         saveImageFileTypes() {
             return getSaveImageFileTypes();
