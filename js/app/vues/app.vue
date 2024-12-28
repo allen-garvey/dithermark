@@ -1103,6 +1103,7 @@ export default {
             this.batchConvertState = BATCH_CONVERT_STATE.VIDEO_TO_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             this.videoTotalFrames = Math.floor(fps * this.videoDuration);
+            this.ffmpegPercentage = 0;
             videoToFrames(ffmpeg, this.videoFile, fps, imageFileExtension).then(
                 files => {
                     this.loadBatchImageFiles(
