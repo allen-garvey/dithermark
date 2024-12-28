@@ -6,7 +6,7 @@
             <input
                 type="range"
                 min="0"
-                :max="duration"
+                :max="videoDuration"
                 step="0.5"
                 :disabled="!isVideoLoaded"
                 v-model.number="seekValue"
@@ -15,7 +15,7 @@
             <input
                 type="number"
                 min="0"
-                :max="duration"
+                :max="videoDuration"
                 step="1"
                 v-model.number="seekValue"
                 :disabled="!isVideoLoaded"
@@ -58,7 +58,11 @@ export default {
             type: Function,
             required: true,
         },
+        videoDuration: {
+            type: Number,
+        },
     },
+    emits: ['update:videoDuration'],
     created() {
         this.objectUrl = null;
     },
@@ -71,7 +75,6 @@ export default {
     },
     data() {
         return {
-            duration: 0,
             isVideoLoaded: false,
             seekValue: 0,
             objectUrl: null,
@@ -86,7 +89,7 @@ export default {
             if (
                 this.isVideoLoaded &&
                 newValue >= 0 &&
-                newValue <= this.duration
+                newValue <= this.videoDuration
             ) {
                 this.$refs.video.currentTime = newValue;
             }
@@ -106,7 +109,7 @@ export default {
             this.onSeekChange(this.$refs.video);
         },
         onMetadataLoaded() {
-            this.duration = this.$refs.video.duration;
+            this.$emit('update:videoDuration', this.$refs.video.duration);
         },
         onVideoReady() {
             if (!this.isVideoLoaded) {

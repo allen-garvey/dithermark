@@ -35,6 +35,7 @@
                         v-model:openFileMode="openFileMode"
                         v-model:videoFile="videoFile"
                         v-model:videoDimensions="videoDimensions"
+                        v-model:videoDuration="videoDuration"
                         :image-opened="loadImage"
                         :onBatchFilesSelected="loadBatchImages"
                         :open-image-error="onOpenImageError"
@@ -721,16 +722,24 @@ export default {
         ffmpeg.on('log', ({ message }) => {
             console.log(message);
             if (
-                this.batchConvertState ===
-                    BATCH_CONVERT_STATE.FRAMES_TO_VIDEO &&
+                (this.batchConvertState ===
+                    BATCH_CONVERT_STATE.FRAMES_TO_VIDEO ||
+                    this.batchConvertState ===
+                        BATCH_CONVERT_STATE.VIDEO_TO_FRAMES) &&
                 /^frame=\s+\d+/.test(message)
             ) {
                 const currentFrame = parseInt(
                     message.replace(/^frame=\s+/, '').replace(/\s.*$/, '')
                 );
+                const total =
+                    this.batchConvertState ===
+                    BATCH_CONVERT_STATE.VIDEO_TO_FRAMES
+                        ? this.videoTotalFrames
+                        : this.batchImageCount;
+
                 const percentage = isNaN(currentFrame)
                     ? 0
-                    : Math.floor((currentFrame / this.batchImageCount) * 100);
+                    : Math.floor((currentFrame / total) * 100);
                 // don't show 100%, because even on the last frame ffmpeg still has work to do
                 this.ffmpegPercentage = percentage === 100 ? 99.9 : percentage;
             }
@@ -780,6 +789,8 @@ export default {
             openFileMode: -1,
             videoFile: null,
             videoDimensions: null,
+            videoDuration: 0,
+            videoTotalFrames: 0,
             //loadedImage has properties: width, height, fileName, and optionally unsplash info
             loadedImage: null,
             /**
@@ -1091,6 +1102,7 @@ export default {
         onVideoExportRequested(fps, imageFileExtension) {
             this.batchConvertState = BATCH_CONVERT_STATE.VIDEO_TO_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
+            this.videoTotalFrames = Math.floor(fps * this.videoDuration);
             videoToFrames(ffmpeg, this.videoFile, fps, imageFileExtension).then(
                 files => {
                     this.loadBatchImageFiles(

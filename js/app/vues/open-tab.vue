@@ -48,6 +48,10 @@
         />
         <video-player
             v-if="videoFile"
+            :videoDuration="videoDuration"
+            @update:videoDuration="
+                value => $emit('update:videoDuration', value)
+            "
             :videoFile="videoFile"
             :onSeekChange="onVideoSeekChange"
         />
@@ -107,11 +111,15 @@ export default {
             type: Function,
             required: true,
         },
+        videoDuration: {
+            type: Number,
+        },
     },
     emits: [
         'update:openFileMode',
         'update:videoFile',
         'update:videoDimensions',
+        'update:videoDuration',
     ],
     components: {
         FileInputButton,
