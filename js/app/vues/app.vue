@@ -421,17 +421,17 @@
                     </div>
                     <!-- Export tab -->
                     <export-tab
+                        v-model:shouldUpsample="shouldUpsample"
                         :openFileMode="openFileMode"
                         :source-file-name="exportFileNameSource"
                         :save-requested="onSaveRequested"
                         :videoExportRequested="onVideoExportRequested"
                         :is-image-pixelated="isImagePixelated"
-                        :shouldUpsample="shouldUpsample"
-                        :setShouldUpsample="
-                            value => (this.shouldUpsample = value)
+                        :automaticallyResizeLargeImages="
+                            automaticallyResizeLargeImages
                         "
-                        v-show="activeControlsTab === 3"
                         :onSubmitBatchConvertImages="loadBatchImages"
+                        v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />
                 </div>

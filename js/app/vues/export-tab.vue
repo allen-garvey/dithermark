@@ -95,7 +95,7 @@
                 Upsampled
                 <input
                     type="radio"
-                    @change="setShouldUpsample(true)"
+                    @change="$emit('update:shouldUpsample', true)"
                     :checked="shouldUpsample"
                 />
             </label>
@@ -103,7 +103,7 @@
                 Actual
                 <input
                     type="radio"
-                    @change="setShouldUpsample(false)"
+                    @change="$emit('update:shouldUpsample', false)"
                     :checked="!shouldUpsample"
                 />
             </label>
@@ -117,6 +117,12 @@
             >
                 Save
             </button>
+        </div>
+        <div :class="$style.alertsContainer" v-if="isOutputtingVideo">
+            <video-warning-banner
+                :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
+                :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
+            />
         </div>
     </div>
 </template>
@@ -135,6 +141,13 @@
         margin-left: 0.5em;
     }
 }
+
+.alertsContainer {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
 </style>
 
 <script>
@@ -151,13 +164,13 @@ import { exportFramesToVideo, saveImageFrame } from '../ffmpeg.js';
 import { getFilenameWithoutExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
-    OPEN_FILE_MODE_SINGLE_IMAGE,
     OPEN_FILE_MODE_VIDEO,
 } from '../models/open-file-modes.js';
 import {
     BATCH_IMAGE_MODE_EXPORT_IMAGES,
     BATCH_IMAGE_MODE_EXPORT_VIDEO,
 } from '../models/batch-export-modes.js';
+import VideoWarningBanner from './widgets/video-warning-banner.vue';
 
 // needs to be here, otherwise data() will fail since computed properties don't exist yet
 const outputFileOptions = {
@@ -197,6 +210,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        automaticallyResizeLargeImages: {
+            type: Boolean,
+            required: true,
+        },
         sourceFileName: {
             type: String,
             required: true,
@@ -205,14 +222,14 @@ export default {
             type: Boolean,
             required: true,
         },
-        setShouldUpsample: {
-            type: Function,
-            required: true,
-        },
         onSubmitBatchConvertImages: {
             type: Function,
             required: true,
         },
+    },
+    emits: ['update:shouldUpsample'],
+    components: {
+        VideoWarningBanner,
     },
     created() {
         saveImageCanvas = Canvas.create();
@@ -257,8 +274,13 @@ export default {
                     return this.inputFileTypes.SINGLE_IMAGE;
             }
         },
+        isOutputtingVideo() {
+            return (
+                this.currentOutputFileOption === this.outputFileOptions.VIDEO
+            );
+        },
         displayedOutputFileExtension() {
-            if (this.currentOutputFileOption === this.outputFileOptions.VIDEO) {
+            if (this.isOutputtingVideo) {
                 return this.videoFileExtension;
             }
             return this.saveImageFileType.extension;
