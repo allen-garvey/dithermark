@@ -19,7 +19,7 @@
                     {{ videoConvertPercentage }}%
                 </span>
             </div>
-            <spinner />
+            <spinner :class="$style.spinner" />
         </div>
     </div>
 </template>
@@ -38,6 +38,9 @@
     align-items: center;
     flex-direction: column;
     font-size: 1.25rem;
+}
+.spinner {
+    margin-top: 0.5rem;
 }
 </style>
 

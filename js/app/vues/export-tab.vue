@@ -113,11 +113,13 @@
         <div>
             <button
                 class="btn btn-success"
+                :class="$style.submitButton"
                 @click="submit"
                 :disabled="isSaveDisabled"
                 title="Save image to downloads folder"
             >
-                Save
+                {{ saveButtonText }}
+                <spinner v-if="isLoadingFfmpeg" />
             </button>
         </div>
         <div :class="$style.alertsContainer">
@@ -157,6 +159,12 @@
 .invalid:focus {
     border-color: variables.$danger_input_border_color;
 }
+
+.submitButton {
+    display: flex;
+    align-items: center;
+    gap: 1em;
+}
 </style>
 
 <script>
@@ -181,6 +189,7 @@ import {
 } from '../models/batch-export-modes.js';
 import VideoWarningBanner from './widgets/video-warning-banner.vue';
 import BannerMessages from './widgets/banner-messages.vue';
+import Spinner from './widgets/spinner.vue';
 
 // needs to be here, otherwise data() will fail since computed properties don't exist yet
 const outputFileOptions = {
@@ -245,6 +254,7 @@ export default {
     components: {
         VideoWarningBanner,
         BannerMessages,
+        Spinner,
     },
     created() {
         saveImageCanvas = Canvas.create();
@@ -284,6 +294,12 @@ export default {
             }
 
             return errorMessages;
+        },
+        isLoadingFfmpeg() {
+            return this.isOutputtingVideo && !this.isFfmpegReady;
+        },
+        saveButtonText() {
+            return this.isLoadingFfmpeg ? 'Loading FFmpeg…' : 'Save';
         },
         isSaveDisabled() {
             if (this.isOutputtingVideo) {
