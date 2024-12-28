@@ -364,6 +364,9 @@ export default {
     },
     methods: {
         submit() {
+            if (this.isSaveDisabled) {
+                return;
+            }
             switch (this.currentOutputFileOption) {
                 case outputFileOptions.BATCH_CONVERT_IMAGES:
                     return this.onSubmitBatchConvertImages(
