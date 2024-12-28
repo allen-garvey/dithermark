@@ -645,11 +645,7 @@ import {
 } from '../models/batch-export-modes.js';
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
-import {
-    initializeFfmpeg,
-    videoToFrames,
-    getImageFromFfmpeg,
-} from '../ffmpeg.js';
+import { initializeFfmpeg, videoToFrames } from '../ffmpeg.js';
 
 const FFMPEG_STATES = {
     NEW: 0,
@@ -1093,14 +1089,9 @@ export default {
          */
         onVideoExportRequested(fps, imageFileExtension) {
             videoToFrames(ffmpeg, this.videoFile, fps, imageFileExtension).then(
-                imagePaths => {
-                    console.log(imagePaths);
-                    const images = imagePaths.map(path => ({
-                        path,
-                        extension: imageFileExtension,
-                    }));
+                files => {
                     this.loadBatchImageFiles(
-                        images,
+                        files,
                         BATCH_IMAGE_MODE_EXPORT_VIDEO
                     );
                 }
@@ -1134,23 +1125,15 @@ export default {
                 return;
             }
 
-            const item = this.batchImageQueue[0];
-            const filePromise =
-                item instanceof File
-                    ? Promise.resolve(item)
-                    : getImageFromFfmpeg(ffmpeg, item.path, item.extension);
-
-            filePromise
-                .then(file => Fs.openImageFile(file))
-                .then(([image, file]) => {
-                    if (!image) {
-                        return this.onOpenImageError(file);
-                    }
-                    this.loadImage(image, file, {
-                        height: image.height,
-                        width: image.width,
-                    });
+            Fs.openImageFile(this.batchImageQueue[0]).then(([image, file]) => {
+                if (!image) {
+                    return this.onOpenImageError(file);
+                }
+                this.loadImage(image, file, {
+                    height: image.height,
+                    width: image.width,
                 });
+            });
         },
         imageProcessingCompleted() {
             // export image if we are in batch processing mode

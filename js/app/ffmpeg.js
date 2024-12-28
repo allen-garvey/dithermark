@@ -39,7 +39,7 @@ export const saveImageFrame = (ffmpeg, filename, data) =>
  * @param {File} file
  * @param {number} fps
  * @param {string} imageFileExtension
- * @returns {Promise<string[]>}
+ * @returns {Promise<File[]>}
  */
 export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
     const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
@@ -60,11 +60,21 @@ export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
             return ffmpeg.deleteFile(importedVideoPath);
         })
         .then(() => ffmpeg.listDir(FFMPEG_RAW_DIRECTORY))
-        .then(files =>
-            files
+        .then(files => {
+            const type = imageMimeMap.get(imageFileExtension);
+            const filesPromises = files
                 .filter(file => !file.isDir)
-                .map(file => `${FFMPEG_RAW_DIRECTORY}/${file.name}`)
-        );
+                .map(file => {
+                    const imagePath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
+
+                    return ffmpeg.readFile(imagePath).then(data => {
+                        const retFile = new File([data], file.name, { type });
+
+                        return ffmpeg.deleteFile(imagePath).then(() => retFile);
+                    });
+                });
+            return Promise.all(filesPromises);
+        });
 };
 
 /**
@@ -124,20 +134,3 @@ export const exportFramesToVideo = (
             })
         );
 };
-
-/**
- *
- * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
- * @param {string} imagePath
- * @param {string} imageFileExtension
- * @returns {Promise<File>}
- */
-export const getImageFromFfmpeg = (ffmpeg, imagePath, imageFileExtension) =>
-    ffmpeg.readFile(imagePath).then(data => {
-        const type = imageMimeMap.get(imageFileExtension);
-        // have to have image name only, as otherwise when saving to dithered directory the slashes are interpreted as subdirectories
-        const imageName = imagePath.slice(FFMPEG_RAW_DIRECTORY.length + 1);
-        const file = new File([data], imageName, { type });
-
-        return ffmpeg.deleteFile(imagePath).then(() => file);
-    });
