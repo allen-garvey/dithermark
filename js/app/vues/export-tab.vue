@@ -72,6 +72,7 @@
                 type="number"
                 min="1"
                 step="1"
+                :class="{ [$style.invalid]: hasFpsError }"
                 id="export-tab-fps"
             />
         </div>
@@ -112,13 +113,14 @@
             <button
                 class="btn btn-success"
                 @click="submit"
-                :disabled="isCurrentlySavingImage"
+                :disabled="isSaveDisabled"
                 title="Save image to downloads folder"
             >
                 Save
             </button>
         </div>
         <div :class="$style.alertsContainer" v-if="isOutputtingVideo">
+            <banner-messages :messages="videoErrorMessages" type="danger" />
             <video-warning-banner
                 :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                 :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
@@ -148,6 +150,11 @@
     flex-direction: column;
     gap: 1em;
 }
+
+.invalid,
+.invalid:focus {
+    border-color: variables.$danger_input_border_color;
+}
 </style>
 
 <script>
@@ -171,6 +178,7 @@ import {
     BATCH_IMAGE_MODE_EXPORT_VIDEO,
 } from '../models/batch-export-modes.js';
 import VideoWarningBanner from './widgets/video-warning-banner.vue';
+import BannerMessages from './widgets/banner-messages.vue';
 
 // needs to be here, otherwise data() will fail since computed properties don't exist yet
 const outputFileOptions = {
@@ -222,6 +230,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        isFfmpegReady: {
+            type: Boolean,
+            required: true,
+        },
         onSubmitBatchConvertImages: {
             type: Function,
             required: true,
@@ -230,6 +242,7 @@ export default {
     emits: ['update:shouldUpsample'],
     components: {
         VideoWarningBanner,
+        BannerMessages,
     },
     created() {
         saveImageCanvas = Canvas.create();
@@ -246,6 +259,29 @@ export default {
         };
     },
     computed: {
+        hasFpsError() {
+            return isNaN(this.videoFps) || this.videoFps <= 0;
+        },
+        videoErrorMessages() {
+            const errorMessages = [];
+
+            if (this.hasFpsError) {
+                errorMessages.push('Frames per second must be greater than 0.');
+            }
+
+            return errorMessages;
+        },
+        isSaveDisabled() {
+            if (this.isOutputtingVideo) {
+                return (
+                    this.isCurrentlySavingImage ||
+                    this.hasFpsError ||
+                    !this.isFfmpegReady
+                );
+            }
+
+            return this.isCurrentlySavingImage;
+        },
         saveImageFileTypes() {
             return getSaveImageFileTypes();
         },
@@ -294,11 +330,6 @@ export default {
         // since saveImageFileName needs to be data property for v-model
         sourceFileName(newValue) {
             this.saveImageFileName = getFilenameWithoutExtension(newValue);
-        },
-        videoFps(newValue) {
-            if (isNaN(newValue) || newValue <= 0) {
-                this.videoFps = 1;
-            }
         },
         saveImageFileName(newValue, oldValue) {
             if (newValue === oldValue) {

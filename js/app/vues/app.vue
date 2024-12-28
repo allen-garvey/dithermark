@@ -431,6 +431,7 @@
                             automaticallyResizeLargeImages
                         "
                         :onSubmitBatchConvertImages="loadBatchImages"
+                        :isFfmpegReady="isFfmpegReady"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />
