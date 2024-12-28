@@ -642,6 +642,7 @@ import Checkbox from './checkbox.vue';
 import {
     BATCH_IMAGE_MODE_EXPORT_IMAGES,
     BATCH_IMAGE_MODE_EXPORT_VIDEO,
+    BATCH_IMAGE_MODE_VIDEO_TO_VIDEO,
 } from '../models/batch-export-modes.js';
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
@@ -1088,11 +1089,13 @@ export default {
          * @param {string} imageFileExtension
          */
         onVideoExportRequested(fps, imageFileExtension) {
+            this.batchConvertState = BATCH_CONVERT_STATE.VIDEO_TO_FRAMES;
+            this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             videoToFrames(ffmpeg, this.videoFile, fps, imageFileExtension).then(
                 files => {
                     this.loadBatchImageFiles(
                         files,
-                        BATCH_IMAGE_MODE_EXPORT_VIDEO
+                        BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
                     );
                 }
             );
@@ -1110,7 +1113,10 @@ export default {
             this.loadNextBatchImage();
         },
         batchProcessingCompleted() {
-            if (this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
+            if (
+                this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO ||
+                this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
+            ) {
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
                 this.$refs.exportTab.exportVideoFromFrames(ffmpeg).then(() => {
                     this.batchConvertState = BATCH_CONVERT_STATE.NONE;
@@ -1141,6 +1147,7 @@ export default {
                 return;
             }
             const action =
+                this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO ||
                 this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
                     ? () => this.$refs.exportTab.saveImageToFfmpeg(ffmpeg)
                     : () =>

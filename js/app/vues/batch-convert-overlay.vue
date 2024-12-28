@@ -1,39 +1,49 @@
 <template>
     <div :class="$style.container">
         <div v-if="progressStagesCount > 1">
-           {{ currentProgressStage }} / {{ progressStagesCount }}
+            {{ currentProgressStage }} / {{ progressStagesCount }}
         </div>
         <div v-if="batchConvertState === batchConvertStates.PROCESSING_FRAMES">
             <div>Processing image {{ currentFileName }}</div>
             <div>{{ currentImageIndex }}/{{ batchImageCount }}</div>
         </div>
-        <div v-if="batchConvertState === batchConvertStates.FRAMES_TO_VIDEO">
-            <div>Converting images to video <span v-if="videoConvertPercentage">{{ videoConvertPercentage }}%</span></div>
+        <div
+            v-if="
+                batchConvertState === batchConvertStates.FRAMES_TO_VIDEO ||
+                batchConvertState === batchConvertStates.VIDEO_TO_FRAMES
+            "
+        >
+            <div>
+                {{ progressMessage }}
+                <span v-if="videoConvertPercentage">
+                    {{ videoConvertPercentage }}%
+                </span>
+            </div>
             <spinner />
         </div>
     </div>
 </template>
 
 <style lang="scss" module>
-    .container {
-        position: absolute;
-        z-index: 100;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: var(--main-bg-color);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        font-size: 1.25rem;
-    }
+.container {
+    position: absolute;
+    z-index: 100;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--main-bg-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1.25rem;
+}
 </style>
 
 <script>
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
-import { BATCH_IMAGE_MODE_EXPORT_VIDEO } from '../models/batch-export-modes.js';
+import { stagesMap } from '../models/batch-export-modes.js';
 import spinner from './widgets/spinner.vue';
 
 export default {
@@ -67,23 +77,27 @@ export default {
         spinner,
     },
     computed: {
-        currentProgressStage(){
-            switch(this.batchConvertState){
-                case BATCH_CONVERT_STATE.FRAMES_TO_VIDEO: return 2;
-                default: return 1;
-            };
+        currentProgressStage() {
+            return stagesMap
+                .get(this.batchImageMode)
+                .get(this.batchConvertState);
         },
-        progressStagesCount(){
-            switch(this.batchImageMode){
-                case BATCH_IMAGE_MODE_EXPORT_VIDEO: return 2;
-                default: return 1;
-            };
+        progressStagesCount() {
+            return stagesMap.get(this.batchImageMode).size;
         },
-        batchConvertStates(){
+        batchConvertStates() {
             return BATCH_CONVERT_STATE;
         },
-        currentImageIndex(){
+        currentImageIndex() {
             return this.batchImageCount - this.batchImagesLeft + 1;
+        },
+        progressMessage() {
+            if (
+                this.batchConvertState === BATCH_CONVERT_STATE.VIDEO_TO_FRAMES
+            ) {
+                return 'Converting video to images';
+            }
+            return 'Converting images to video';
         },
     },
 };
