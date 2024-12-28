@@ -12,6 +12,10 @@
 
 * Add ability to batch convert images to video.
 
+* Add ability to open video and either export current image or entire video.
+
+* Add ability to preview opened batch images before exporting, instead of exporting immediately.
+
 ### UI / UX
 
 * Add alert role to alerts to improve accessibility
@@ -27,6 +31,8 @@
 * Fix zoom range control growing too wide at phone and tablet sizes.
 
 * Fix exception when trying to open non-image file from device.
+
+* Fix exporting on enter key pressed in export file name input when it shouldn't be allowed.
 
 ### Technical
 
