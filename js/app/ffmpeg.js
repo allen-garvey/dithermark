@@ -4,9 +4,11 @@ import { getSaveImageFileTypes } from './models/export-model.js';
 const FFMPEG_RAW_DIRECTORY = '/tmp/raw';
 const FFMPEG_DITHERED_DIRECTORY = '/tmp/dithered';
 
-const imageMimeMap = new Map(
-    getSaveImageFileTypes().map(entry => [entry.extension, entry.mime])
+export const ffmpegImageFileType = getSaveImageFileTypes().find(
+    fileType => fileType.value === 'png'
 );
+const IMAGE_FILE_EXTENSION = ffmpegImageFileType.extension;
+const IMAGE_MIME = ffmpegImageFileType.mime;
 
 /**
  *
@@ -49,10 +51,9 @@ const getFileExtension = path => {
  * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
  * @param {File} file
  * @param {number} fps
- * @param {string} imageFileExtension
  * @returns {Promise<File[]>}
  */
-export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
+export const videoToFrames = (ffmpeg, file, fps) => {
     const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/movie${getFileExtension(
         file.name
     )}`;
@@ -65,7 +66,7 @@ export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
                 '-vf',
                 `fps=${fps}`,
                 // TODO use video duration to figure how many digits in filename pattern
-                `${FFMPEG_RAW_DIRECTORY}/%04d${imageFileExtension}`,
+                `${FFMPEG_RAW_DIRECTORY}/%04d${IMAGE_FILE_EXTENSION}`,
             ])
         )
         .then(errorCode => {
@@ -74,14 +75,15 @@ export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
         })
         .then(() => ffmpeg.listDir(FFMPEG_RAW_DIRECTORY))
         .then(files => {
-            const type = imageMimeMap.get(imageFileExtension);
             const filesPromises = files
                 .filter(file => !file.isDir)
                 .map(file => {
                     const imagePath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
 
                     return ffmpeg.readFile(imagePath).then(data => {
-                        const retFile = new File([data], file.name, { type });
+                        const retFile = new File([data], file.name, {
+                            type: IMAGE_MIME,
+                        });
 
                         return ffmpeg.deleteFile(imagePath).then(() => retFile);
                     });
@@ -95,15 +97,9 @@ export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
  * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
  * @param {string} exportFilename
  * @param {number} fps
- * @param {string} imageFileExtension
  * @returns {Promise<import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/types").FileData>}
  */
-export const exportFramesToVideo = (
-    ffmpeg,
-    exportFilename,
-    fps,
-    imageFileExtension
-) => {
+export const exportFramesToVideo = (ffmpeg, exportFilename, fps) => {
     const exportFilePath = `${FFMPEG_DITHERED_DIRECTORY}/${exportFilename}`;
 
     return ffmpeg
@@ -115,7 +111,7 @@ export const exportFramesToVideo = (
             '-pattern_type',
             'glob',
             '-i',
-            `${FFMPEG_DITHERED_DIRECTORY}/*${imageFileExtension}`,
+            `${FFMPEG_DITHERED_DIRECTORY}/*${IMAGE_FILE_EXTENSION}`,
             // filter has to be after image source
             '-vf',
             `format=yuv420p, pad=ceil(iw/2)*2:ceil(ih/2)*2`,

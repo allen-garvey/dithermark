@@ -77,7 +77,7 @@
                 id="export-tab-fps"
             />
         </div>
-        <div>
+        <div v-if="!isOutputtingVideo">
             <label :class="$style.exportLabel" for="export-tab-filetype"
                 >File type</label
             >
@@ -177,7 +177,11 @@ import Canvas from '../canvas.js';
 import { saveImage, canvasToArray, arrayToObjectUrl } from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import userSettings from '../user-settings.js';
-import { exportFramesToVideo, saveImageFrame } from '../ffmpeg.js';
+import {
+    exportFramesToVideo,
+    saveImageFrame,
+    ffmpegImageFileType,
+} from '../ffmpeg.js';
 import { getFilenameWithoutExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
@@ -318,7 +322,7 @@ export default {
             return this.isCurrentlySavingImage || this.hasFilenameError;
         },
         saveImageFileTypes() {
-            return getSaveImageFileTypes(this.isOutputtingVideo);
+            return getSaveImageFileTypes();
         },
         saveImageFileType() {
             return this.saveImageFileTypes.find(
@@ -376,9 +380,6 @@ export default {
             }
             document.title = title;
         },
-        saveImageFileTypes() {
-            this.correctSaveImageFileTypeValue();
-        },
         saveImageFileTypeValue(newValue) {
             userSettings.saveExportSettings({
                 fileType: newValue,
@@ -425,10 +426,7 @@ export default {
                     if (
                         this.currentInputFileType === this.inputFileTypes.VIDEO
                     ) {
-                        return this.videoExportRequested(
-                            this.videoFps,
-                            this.saveImageFileType.extension
-                        );
+                        return this.videoExportRequested(this.videoFps);
                     } else {
                         return this.onSubmitBatchConvertImages(
                             BATCH_IMAGE_MODE_EXPORT_VIDEO
@@ -488,13 +486,13 @@ export default {
                     (sourceCanvas, unsplash) => {
                         canvasToArray(
                             sourceCanvas.canvas,
-                            this.saveImageFileType.mime
+                            ffmpegImageFileType.mime
                         )
                             .then(array =>
                                 saveImageFrame(
                                     ffmpeg,
                                     this.saveImageFileName +
-                                        this.saveImageFileType.extension,
+                                        ffmpegImageFileType.extension,
                                     array
                                 )
                             )
@@ -512,19 +510,16 @@ export default {
             const exportFilename = this.videoExportFilename;
 
             return new Promise(resolve => {
-                exportFramesToVideo(
-                    ffmpeg,
-                    exportFilename,
-                    this.videoFps,
-                    this.saveImageFileType.extension
-                ).then(data => {
-                    arrayToObjectUrl(data, objectUrl => {
-                        saveImageLink.href = objectUrl;
-                        saveImageLink.download = exportFilename;
-                        saveImageLink.click();
-                        resolve();
-                    });
-                });
+                exportFramesToVideo(ffmpeg, exportFilename, this.videoFps).then(
+                    data => {
+                        arrayToObjectUrl(data, objectUrl => {
+                            saveImageLink.href = objectUrl;
+                            saveImageLink.download = exportFilename;
+                            saveImageLink.click();
+                            resolve();
+                        });
+                    }
+                );
             });
         },
     },

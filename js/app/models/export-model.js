@@ -10,10 +10,9 @@ import { isiOs } from '../cross-platform.js';
 
 /**
  *
- * @param {boolean} isVideo
  * @returns {FileType[]}
  */
-export const getSaveImageFileTypes = isVideo => {
+export const getSaveImageFileTypes = () => {
     const types = [
         {
             label: 'png',
@@ -30,7 +29,7 @@ export const getSaveImageFileTypes = isVideo => {
     ];
 
     // https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp
-    if (!isVideo && !isiOs()) {
+    if (!isiOs()) {
         types.push({
             label: 'webp\xa0(lossless)',
             mime: 'image/webp',
