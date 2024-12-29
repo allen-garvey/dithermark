@@ -35,6 +35,17 @@ export const saveImageFrame = (ffmpeg, filename, data) =>
 
 /**
  *
+ * @param {string} path
+ * @returns {string}
+ */
+const getFileExtension = path => {
+    const split = path.split('.');
+    const extension = split[split.length - 1];
+    return extension ? `.${extension}` : '';
+};
+
+/**
+ *
  * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
  * @param {File} file
  * @param {number} fps
@@ -42,7 +53,9 @@ export const saveImageFrame = (ffmpeg, filename, data) =>
  * @returns {Promise<File[]>}
  */
 export const videoToFrames = (ffmpeg, file, fps, imageFileExtension) => {
-    const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
+    const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/movie${getFileExtension(
+        file.name
+    )}`;
     return fileToArray(file)
         .then(data => ffmpeg.writeFile(importedVideoPath, data))
         .then(() =>
