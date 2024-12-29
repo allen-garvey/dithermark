@@ -1,5 +1,6 @@
 import { fileToArray } from './fs.js';
 import { getSaveImageFileTypes } from './models/export-model.js';
+import { getFileExtension } from './path.js';
 
 const FFMPEG_RAW_DIRECTORY = '/tmp/raw';
 const FFMPEG_DITHERED_DIRECTORY = '/tmp/dithered';
@@ -34,17 +35,6 @@ export const initializeFfmpeg = ffmpeg =>
  */
 export const saveImageFrame = (ffmpeg, filename, data) =>
     ffmpeg.writeFile(`${FFMPEG_DITHERED_DIRECTORY}/${filename}`, data);
-
-/**
- *
- * @param {string} path
- * @returns {string}
- */
-const getFileExtension = path => {
-    const split = path.split('.');
-    const extension = split[split.length - 1];
-    return extension ? `.${extension}` : '';
-};
 
 /**
  *
