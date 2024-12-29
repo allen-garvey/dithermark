@@ -259,6 +259,7 @@ export default {
     created() {
         saveImageCanvas = Canvas.create();
         saveImageLink = createSaveImageLink();
+        this.correctSaveImageFileTypeValue();
     },
     data() {
         return {
@@ -317,7 +318,7 @@ export default {
             return this.isCurrentlySavingImage || this.hasFilenameError;
         },
         saveImageFileTypes() {
-            return getSaveImageFileTypes();
+            return getSaveImageFileTypes(this.isOutputtingVideo);
         },
         saveImageFileType() {
             return this.saveImageFileTypes.find(
@@ -375,6 +376,9 @@ export default {
             }
             document.title = title;
         },
+        saveImageFileTypes() {
+            this.correctSaveImageFileTypeValue();
+        },
         saveImageFileTypeValue(newValue) {
             userSettings.saveExportSettings({
                 fileType: newValue,
@@ -397,6 +401,15 @@ export default {
         },
     },
     methods: {
+        correctSaveImageFileTypeValue() {
+            const fileType = this.saveImageFileTypes.find(
+                fileType => fileType.value === this.saveImageFileTypeValue
+            );
+
+            if (!fileType) {
+                this.saveImageFileTypeValue = this.saveImageFileTypes[0].value;
+            }
+        },
         submit() {
             if (this.isSaveDisabled) {
                 return;
