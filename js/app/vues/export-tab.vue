@@ -119,7 +119,7 @@
                 title="Save image to downloads folder"
             >
                 {{ saveButtonText }}
-                <spinner v-if="isLoadingFfmpeg" />
+                <spinner v-if="isLoadingFfmpeg || isCurrentlySavingImage" />
             </button>
         </div>
         <div :class="$style.alertsContainer">
@@ -299,6 +299,9 @@ export default {
             return this.isOutputtingVideo && !this.isFfmpegReady;
         },
         saveButtonText() {
+            if (this.isCurrentlySavingImage) {
+                return 'Saving…';
+            }
             return this.isLoadingFfmpeg ? 'Loading FFmpeg…' : 'Save';
         },
         isSaveDisabled() {
