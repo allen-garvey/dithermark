@@ -47,22 +47,29 @@
                 />
             </label>
         </div>
-        <div
-            v-if="
-                currentOutputFileOption !==
-                outputFileOptions.BATCH_CONVERT_IMAGES
-            "
-        >
-            <label :class="$style.exportLabel" for="export-tab-filename"
-                >File name</label
-            >
-            <input
-                placeholder="File name"
-                v-model="saveImageFileName"
-                @keyup.enter="submit"
-                :class="{ [$style.invalid]: hasFilenameError }"
-                id="export-tab-filename"
-            /><span>{{ displayedOutputFileExtension }}</span>
+        <div v-if="currentOutputFileOption === outputFileOptions.CURRENT_IMAGE">
+            <label :class="$style.exportLabel"
+                ><span>File name</span>
+                <input
+                    placeholder="File name"
+                    v-model="saveImageFileName"
+                    @keyup.enter="submit"
+                    :class="{ [$style.invalid]: hasFilenameError }"
+                    id="export-tab-filename"
+                /><span>{{ displayedOutputFileExtension }}</span>
+            </label>
+        </div>
+        <div v-if="isOutputtingVideo">
+            <label :class="$style.exportLabel"
+                ><span>File name</span>
+                <input
+                    placeholder="File name"
+                    v-model="videoExportFilename"
+                    @keyup.enter="submit"
+                    :class="{ [$style.invalid]: hasFilenameError }"
+                    id="export-tab-filename"
+                /><span>{{ displayedOutputFileExtension }}</span>
+            </label>
         </div>
         <div v-if="currentOutputFileOption === outputFileOptions.VIDEO">
             <label :class="$style.exportLabel" for="export-tab-fps"
@@ -182,7 +189,7 @@ import {
     saveImageFrame,
     ffmpegImageFileType,
 } from '../ffmpeg.js';
-import { getFilenameWithoutExtension } from '../path.js';
+import { getFilenameWithoutExtension, getFileExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
     OPEN_FILE_MODE_VIDEO,
@@ -268,16 +275,21 @@ export default {
     data() {
         return {
             saveImageFileName: '',
+            videoExportFilename: '',
             saveImageFileTypeValue: userSettings.getExportSettings().fileType,
             isCurrentlySavingImage: false,
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
             videoFps: 24,
-            videoExportFilename: '',
         };
     },
     computed: {
         hasFilenameError() {
-            return !this.saveImageFileName;
+            return (
+                (this.currentOutputFileOption ===
+                    outputFileOptions.CURRENT_IMAGE &&
+                    !this.saveImageFileName) ||
+                (this.isOutputtingVideo && !this.videoExportFilename)
+            );
         },
         hasFpsError() {
             return (
@@ -365,10 +377,16 @@ export default {
         },
     },
     watch: {
-        // needs to be watch instead of computed value,
-        // since saveImageFileName needs to be data property for v-model
         sourceFileName(newValue) {
-            this.saveImageFileName = getFilenameWithoutExtension(newValue);
+            const filename = getFilenameWithoutExtension(newValue);
+            this.saveImageFileName = filename;
+
+            if (
+                this.currentInputFileType === this.inputFileTypes.VIDEO &&
+                getFileExtension(newValue) !== ffmpegImageFileType.extension
+            ) {
+                this.videoExportFilename = filename;
+            }
         },
         saveImageFileName(newValue, oldValue) {
             if (newValue === oldValue) {
@@ -421,8 +439,6 @@ export default {
                         BATCH_IMAGE_MODE_EXPORT_IMAGES
                     );
                 case outputFileOptions.VIDEO:
-                    this.videoExportFilename =
-                        this.saveImageFileName + this.videoFileExtension;
                     if (
                         this.currentInputFileType === this.inputFileTypes.VIDEO
                     ) {
@@ -507,7 +523,8 @@ export default {
             });
         },
         exportVideoFromFrames(ffmpeg) {
-            const exportFilename = this.videoExportFilename;
+            const exportFilename =
+                this.videoExportFilename + this.videoFileExtension;
 
             return new Promise(resolve => {
                 exportFramesToVideo(ffmpeg, exportFilename, this.videoFps).then(
