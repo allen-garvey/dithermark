@@ -212,6 +212,8 @@ const outputFileOptions = {
 let saveImageCanvas;
 let saveImageLink;
 
+let saveFpsTimeout = null;
+
 function createSaveImageLink() {
     const link = document.createElement('a');
     //firefox needs the link attached to the body in order for downloads to work
@@ -272,13 +274,15 @@ export default {
         saveImageLink = createSaveImageLink();
     },
     data() {
+        const exportSettings = userSettings.getExportSettings();
+
         return {
             saveImageFileName: '',
             videoExportFilename: '',
-            saveImageFileTypeValue: userSettings.getExportSettings().fileType,
+            saveImageFileTypeValue: exportSettings.fileType,
             isCurrentlySavingImage: false,
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
-            videoFps: 24,
+            videoFps: exportSettings.videoFps,
         };
     },
     computed: {
@@ -397,9 +401,21 @@ export default {
             }
             document.title = title;
         },
+        videoFps(newValue) {
+            if (this.isOutputtingVideo && !this.hasFpsError) {
+                clearTimeout(saveFpsTimeout);
+                saveFpsTimeout = setTimeout(() => {
+                    userSettings.saveExportSettings({
+                        fileType: this.saveImageFileTypeValue,
+                        videoFps: newValue,
+                    });
+                }, 2000);
+            }
+        },
         saveImageFileTypeValue(newValue) {
             userSettings.saveExportSettings({
                 fileType: newValue,
+                videoFps: this.videoFps,
             });
         },
         openFileMode(newValue) {

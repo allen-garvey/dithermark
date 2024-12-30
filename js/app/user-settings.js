@@ -9,6 +9,16 @@ const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
 const USER_GLOBAL_SETTINGS_KEY = 'user-global-settings';
 const USER_EXPORT_SETTINGS_KEY = 'user-export-settings';
 
+/**
+ * @typedef {Object} ExportSettings
+ * @property {string} fileType
+ * @property {number} videoFps
+ */
+
+/**
+ *
+ * @param {ExportSettings} exportSettings
+ */
 function saveExportSettings(exportSettings) {
     localStorage.setItem(
         USER_EXPORT_SETTINGS_KEY,
@@ -16,6 +26,10 @@ function saveExportSettings(exportSettings) {
     );
 }
 
+/**
+ *
+ * @returns {ExportSettings}
+ */
 function getExportSettings() {
     const exportSettings = getSettingOrDefault(USER_EXPORT_SETTINGS_KEY, {});
     const saveImageFileTypes = getSaveImageFileTypes();
@@ -27,6 +41,13 @@ function getExportSettings() {
         )
     ) {
         exportSettings.fileType = saveImageFileTypes[0].value;
+    }
+    if (
+        typeof exportSettings.videoFps !== 'number' ||
+        isNaN(exportSettings.videoFps) ||
+        exportSettings.videoFps <= 0
+    ) {
+        exportSettings.videoFps = 24;
     }
     return exportSettings;
 }
