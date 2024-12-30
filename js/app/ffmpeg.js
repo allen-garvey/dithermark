@@ -10,8 +10,14 @@ const FFMPEG_VIDEO_OUTPUT_FILE = `${FFMPEG_DITHERED_DIRECTORY}/movie.mp4`;
 export const ffmpegImageFileType = getSaveImageFileTypes().find(
     fileType => fileType.value === 'png'
 );
+
+const rawImageFileType = getSaveImageFileTypes().find(
+    fileType => fileType.value === 'jpeg'
+);
+
 const IMAGE_FILE_EXTENSION = ffmpegImageFileType.extension;
-const IMAGE_MIME = ffmpegImageFileType.mime;
+const RAW_IMAGE_FILE_EXTENSION = rawImageFileType.extension;
+const RAW_IMAGE_MIME = rawImageFileType.mime;
 
 /**
  *
@@ -58,7 +64,7 @@ export const videoToFrames = (ffmpeg, file, fps) => {
                 '-vf',
                 `fps=${fps}`,
                 // TODO use video duration to figure how many digits in filename pattern
-                `${FFMPEG_RAW_DIRECTORY}/%04d${IMAGE_FILE_EXTENSION}`,
+                `${FFMPEG_RAW_DIRECTORY}/%04d${RAW_IMAGE_FILE_EXTENSION}`,
             ])
         )
         .then(errorCode => {
@@ -86,7 +92,7 @@ export const videoToFrames = (ffmpeg, file, fps) => {
 
                     return ffmpeg.readFile(imagePath).then(data => {
                         const retFile = new File([data], file.name, {
-                            type: IMAGE_MIME,
+                            type: RAW_IMAGE_MIME,
                         });
 
                         return ffmpeg.deleteFile(imagePath).then(() => retFile);
