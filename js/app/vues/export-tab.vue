@@ -188,6 +188,7 @@ import {
     exportFramesToVideo,
     saveImageFrame,
     ffmpegImageFileType,
+    ffmpegRawImageFileType,
 } from '../ffmpeg.js';
 import { getFilenameWithoutExtension, getFileExtension } from '../path.js';
 import {
@@ -386,7 +387,7 @@ export default {
 
             if (
                 this.currentInputFileType === this.inputFileTypes.VIDEO &&
-                getFileExtension(newValue) !== ffmpegImageFileType.extension
+                getFileExtension(newValue) !== ffmpegRawImageFileType.extension
             ) {
                 this.videoExportFilename = filename;
             }

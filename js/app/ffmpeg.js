@@ -11,13 +11,13 @@ export const ffmpegImageFileType = getSaveImageFileTypes().find(
     fileType => fileType.value === 'png'
 );
 
-const rawImageFileType = getSaveImageFileTypes().find(
+export const ffmpegRawImageFileType = getSaveImageFileTypes().find(
     fileType => fileType.value === 'jpeg'
 );
 
 const IMAGE_FILE_EXTENSION = ffmpegImageFileType.extension;
-const RAW_IMAGE_FILE_EXTENSION = rawImageFileType.extension;
-const RAW_IMAGE_MIME = rawImageFileType.mime;
+const RAW_IMAGE_FILE_EXTENSION = ffmpegRawImageFileType.extension;
+const RAW_IMAGE_MIME = ffmpegRawImageFileType.mime;
 
 /**
  *
