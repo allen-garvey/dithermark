@@ -4,6 +4,8 @@ import { getFileExtension } from './path.js';
 
 const FFMPEG_RAW_DIRECTORY = '/tmp/raw';
 const FFMPEG_DITHERED_DIRECTORY = '/tmp/dithered';
+const FFMPEG_AUDIO_FILE = `${FFMPEG_DITHERED_DIRECTORY}/audio.m4a`;
+const FFMPEG_VIDEO_OUTPUT_FILE = `${FFMPEG_DITHERED_DIRECTORY}/movie.mp4`;
 
 export const ffmpegImageFileType = getSaveImageFileTypes().find(
     fileType => fileType.value === 'png'
@@ -60,7 +62,19 @@ export const videoToFrames = (ffmpeg, file, fps) => {
             ])
         )
         .then(errorCode => {
-            console.log(`ffmpeg return value ${errorCode}`);
+            console.log(`ffmpeg video to frames return value ${errorCode}`);
+
+            return ffmpeg.exec([
+                '-i',
+                importedVideoPath,
+                '-vn',
+                '-acodec',
+                'copy',
+                FFMPEG_AUDIO_FILE,
+            ]);
+        })
+        .then(errorCode => {
+            console.log(`ffmpeg extract audio return value ${errorCode}`);
             return ffmpeg.deleteFile(importedVideoPath);
         })
         .then(() => ffmpeg.listDir(FFMPEG_RAW_DIRECTORY))
@@ -85,35 +99,39 @@ export const videoToFrames = (ffmpeg, file, fps) => {
 /**
  *
  * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
- * @param {string} exportFilename
  * @param {number} fps
+ * @param {boolean} hasAudio
  * @returns {Promise<import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/types").FileData>}
  */
-export const exportFramesToVideo = (ffmpeg, exportFilename, fps) => {
-    const exportFilePath = `${FFMPEG_DITHERED_DIRECTORY}/${exportFilename}`;
+export const exportFramesToVideo = (ffmpeg, fps, hasAudio) => {
+    let args = [
+        '-framerate',
+        `${fps}`, // for some reason ffmpeg will fail if fps is not a string
+        '-f',
+        'image2',
+        '-pattern_type',
+        'glob',
+        '-i',
+        `${FFMPEG_DITHERED_DIRECTORY}/*${IMAGE_FILE_EXTENSION}`,
+        // filter has to be after image source
+        '-vf',
+        `format=yuv420p, pad=ceil(iw/2)*2:ceil(ih/2)*2`,
+        '-vcodec',
+        'libx264',
+        // '-acodec',
+        // 'aac',
+        FFMPEG_VIDEO_OUTPUT_FILE,
+    ];
+
+    if (hasAudio) {
+        args = args.concat(['-i', FFMPEG_AUDIO_FILE, '-c:a', 'copy']);
+    }
 
     return ffmpeg
-        .exec([
-            '-framerate',
-            `${fps}`, // for some reason ffmpeg will fail if fps is not a string
-            '-f',
-            'image2',
-            '-pattern_type',
-            'glob',
-            '-i',
-            `${FFMPEG_DITHERED_DIRECTORY}/*${IMAGE_FILE_EXTENSION}`,
-            // filter has to be after image source
-            '-vf',
-            `format=yuv420p, pad=ceil(iw/2)*2:ceil(ih/2)*2`,
-            '-vcodec',
-            'libx264',
-            '-acodec',
-            'aac',
-            exportFilePath,
-        ])
+        .exec(args)
         .then(errorCode => {
-            // console.log(`ffmpeg return value ${errorCode}`);
-            return ffmpeg.readFile(exportFilePath);
+            console.log(`ffmpeg frames to video return value ${errorCode}`);
+            return ffmpeg.readFile(FFMPEG_VIDEO_OUTPUT_FILE);
         })
         .then(data =>
             ffmpeg.listDir(FFMPEG_DITHERED_DIRECTORY).then(files => {

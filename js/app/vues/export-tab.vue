@@ -528,12 +528,12 @@ export default {
                 );
             });
         },
-        exportVideoFromFrames(ffmpeg) {
+        exportVideoFromFrames(ffmpeg, hasAudio) {
             const exportFilename =
                 this.videoExportFilename + this.videoFileExtension;
 
             return new Promise(resolve => {
-                exportFramesToVideo(ffmpeg, exportFilename, this.videoFps).then(
+                exportFramesToVideo(ffmpeg, this.videoFps, hasAudio).then(
                     data => {
                         arrayToObjectUrl(data, objectUrl => {
                             saveImageLink.href = objectUrl;
