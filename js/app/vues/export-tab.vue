@@ -270,7 +270,6 @@ export default {
     created() {
         saveImageCanvas = Canvas.create();
         saveImageLink = createSaveImageLink();
-        this.correctSaveImageFileTypeValue();
     },
     data() {
         return {
@@ -420,15 +419,6 @@ export default {
         },
     },
     methods: {
-        correctSaveImageFileTypeValue() {
-            const fileType = this.saveImageFileTypes.find(
-                fileType => fileType.value === this.saveImageFileTypeValue
-            );
-
-            if (!fileType) {
-                this.saveImageFileTypeValue = this.saveImageFileTypes[0].value;
-            }
-        },
         submit() {
             if (this.isSaveDisabled) {
                 return;
