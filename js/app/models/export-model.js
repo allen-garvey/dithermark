@@ -8,6 +8,9 @@ import { isiOs } from '../cross-platform.js';
  * @property {string} value unique key
  */
 
+// https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp
+export const isWebpExportSupported = !isiOs();
+
 /**
  *
  * @returns {FileType[]}
@@ -28,8 +31,7 @@ export const getSaveImageFileTypes = () => {
         },
     ];
 
-    // https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp
-    if (!isiOs()) {
+    if (isWebpExportSupported) {
         types.push({
             label: 'webp\xa0(lossless)',
             mime: 'image/webp',

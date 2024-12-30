@@ -1,5 +1,8 @@
 import { fileToArray } from './fs.js';
-import { getSaveImageFileTypes } from './models/export-model.js';
+import {
+    getSaveImageFileTypes,
+    isWebpExportSupported,
+} from './models/export-model.js';
 import { getFileExtension } from './path.js';
 
 const FFMPEG_RAW_DIRECTORY = '/tmp/raw';
@@ -7,8 +10,9 @@ const FFMPEG_DITHERED_DIRECTORY = '/tmp/dithered';
 const FFMPEG_AUDIO_FILE = `${FFMPEG_DITHERED_DIRECTORY}/audio.m4a`;
 const FFMPEG_VIDEO_OUTPUT_FILE = `${FFMPEG_DITHERED_DIRECTORY}/movie.mp4`;
 
+const exportFileTypeValue = isWebpExportSupported ? 'webp_lossless' : 'png';
 export const ffmpegImageFileType = getSaveImageFileTypes().find(
-    fileType => fileType.value === 'png'
+    fileType => fileType.value === exportFileTypeValue
 );
 
 export const ffmpegRawImageFileType = getSaveImageFileTypes().find(
