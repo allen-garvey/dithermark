@@ -1126,18 +1126,14 @@ export default {
             this.loadNextBatchImage();
         },
         batchProcessingCompleted() {
-            const isVideoToVideo =
-                this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             if (
-                isVideoToVideo ||
+                this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO ||
                 this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
             ) {
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
-                this.$refs.exportTab
-                    .exportVideoFromFrames(ffmpeg, isVideoToVideo)
-                    .then(() => {
-                        this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                    });
+                this.$refs.exportTab.exportVideoFromFrames(ffmpeg).then(() => {
+                    this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                });
             } else {
                 this.batchConvertState = BATCH_CONVERT_STATE.NONE;
             }

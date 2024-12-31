@@ -529,21 +529,19 @@ export default {
                 );
             });
         },
-        exportVideoFromFrames(ffmpeg, hasAudio) {
+        exportVideoFromFrames(ffmpeg) {
             const exportFilename =
                 this.videoExportFilename + this.videoFileExtension;
 
             return new Promise(resolve => {
-                exportFramesToVideo(ffmpeg, this.videoFps, hasAudio).then(
-                    data => {
-                        arrayToObjectUrl(data, objectUrl => {
-                            saveImageLink.href = objectUrl;
-                            saveImageLink.download = exportFilename;
-                            saveImageLink.click();
-                            resolve();
-                        });
-                    }
-                );
+                exportFramesToVideo(ffmpeg, this.videoFps).then(data => {
+                    arrayToObjectUrl(data, objectUrl => {
+                        saveImageLink.href = objectUrl;
+                        saveImageLink.download = exportFilename;
+                        saveImageLink.click();
+                        resolve();
+                    });
+                });
             });
         },
     },
