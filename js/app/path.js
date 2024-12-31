@@ -12,7 +12,6 @@ export const getFilenameWithoutExtension = filename =>
  * @returns {string}
  */
 export const getFileExtension = path => {
-    const split = path.split('.');
-    const extension = split[split.length - 1];
-    return extension ? `.${extension}` : '';
+    const dotIndex = path.lastIndexOf('.');
+    return dotIndex === -1 ? '' : path.slice(dotIndex);
 };
