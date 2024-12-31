@@ -1104,12 +1104,14 @@ export default {
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             this.videoTotalFrames = Math.floor(fps * this.videoDuration);
             this.ffmpegPercentage = 0;
-            videoToFrames(ffmpeg, this.videoFile, fps).then(files => {
-                this.loadBatchImageFiles(
-                    files,
-                    BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
-                );
-            });
+            videoToFrames(ffmpeg, this.videoFile, fps, this.videoDuration).then(
+                files => {
+                    this.loadBatchImageFiles(
+                        files,
+                        BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
+                    );
+                }
+            );
         },
         loadBatchImages(batchImageMode) {
             const files = this.$refs.openTab.getImageFiles();

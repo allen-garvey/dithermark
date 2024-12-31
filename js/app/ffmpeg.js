@@ -53,12 +53,18 @@ export const saveImageFrame = (ffmpeg, filename, data) =>
  * @param {import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/classes").FFmpeg} ffmpeg
  * @param {File} file
  * @param {number} fps
+ * @param {number} duration video duration in seconds
  * @returns {Promise<File[]>}
  */
-export const videoToFrames = (ffmpeg, file, fps) => {
+export const videoToFrames = (ffmpeg, file, fps, duration) => {
     const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/movie${getFileExtension(
         file.name
     )}`;
+    const framesPattern = Math.max(
+        Math.ceil(Math.log10(Math.ceil(fps * duration))),
+        2
+    );
+
     return fileToArray(file)
         .then(data => ffmpeg.writeFile(importedVideoPath, data))
         .then(() =>
@@ -67,8 +73,7 @@ export const videoToFrames = (ffmpeg, file, fps) => {
                 importedVideoPath,
                 '-vf',
                 `fps=${fps}`,
-                // TODO use video duration to figure how many digits in filename pattern
-                `${FFMPEG_RAW_DIRECTORY}/%04d${RAW_IMAGE_FILE_EXTENSION}`,
+                `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${RAW_IMAGE_FILE_EXTENSION}`,
             ])
         )
         .then(errorCode => {
