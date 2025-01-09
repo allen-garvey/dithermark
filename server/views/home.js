@@ -235,16 +235,16 @@ export const renderHome = ({ isProduction = false, isElectron = false }) => {
     }
 
     const shaderPromises = Promise.all(
-        shaders.map((shader) =>
+        shaders.map(shader =>
             getTemplate(path.join('shaders', shader.path)).then(
-                (shaderText) =>
+                shaderText =>
                     `<script type="webgl/shader" id="${shader.id}">${render(
                         shaderText,
                         shader.context || {}
                     )}</script>`
             )
         )
-    ).then((shaderTexts) => shaderTexts.join(''));
+    ).then(shaderTexts => shaderTexts.join(''));
 
     const URL_ROOT = isElectron ? '.' : '';
 
@@ -255,7 +255,8 @@ export const renderHome = ({ isProduction = false, isElectron = false }) => {
                 APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
                 GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
                 URL_ROOT,
-                shaderContent: shaderContent,
+                FFMPEG_SERVER: !isProduction,
+                shaderContent,
             })
     );
 };

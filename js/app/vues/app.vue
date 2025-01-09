@@ -680,6 +680,12 @@ let ditherOutputWebglTexture;
 const tabsThatHaveSeenImageSet = new Set();
 
 export default {
+    props: {
+        useFfmpegServer: {
+            type: Boolean,
+            required: true,
+        },
+    },
     components: {
         CyclePropertyList,
         HintContainer,
@@ -1105,14 +1111,29 @@ export default {
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             this.videoTotalFrames = Math.floor(fps * this.videoDuration);
             this.ffmpegPercentage = 0;
-            videoToFrames(ffmpeg, this.videoFile, fps, this.videoDuration).then(
-                files => {
+
+            if (this.useFfmpegServer) {
+                const formData = new FormData();
+                formData.append('video', this.videoFile);
+                formData.append('fps', `${fps}`);
+                formData.append('videoDuration', `${this.videoDuration}`);
+                fetch('/api/ffmpeg/video-to-frames', {
+                    method: 'POST',
+                    body: formData,
+                });
+            } else {
+                videoToFrames(
+                    ffmpeg,
+                    this.videoFile,
+                    fps,
+                    this.videoDuration
+                ).then(files => {
                     this.loadBatchImageFiles(
                         files,
                         BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
                     );
-                }
-            );
+                });
+            }
         },
         loadBatchImages(batchImageMode) {
             const files = this.$refs.openTab.getImageFiles();
@@ -1175,6 +1196,10 @@ export default {
             });
         },
         getFfmpegReady() {
+            if (this.useFfmpegServer) {
+                this.ffmpegState = FFMPEG_STATES.READY;
+                return;
+            }
             if (this.ffmpegState !== FFMPEG_STATES.NEW) {
                 return;
             }

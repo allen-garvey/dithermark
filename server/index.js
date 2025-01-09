@@ -1,4 +1,7 @@
+import realFs from 'fs';
 import express from 'express';
+import multer from 'multer';
+const upload = multer({ dest: 'uploads/' });
 import { createFsFromVolume, Volume } from 'memfs';
 const fs = createFsFromVolume(new Volume()).promises;
 
@@ -12,6 +15,7 @@ import {
 } from '../build/webpack.config.js';
 import { createWebpackCompiler, startWebpackCompiler } from './webpack.js';
 import { serveFile } from './routes.js';
+import { videoToFrames } from './ffmpeg.js';
 
 const app = express();
 const port = 3000;
@@ -23,6 +27,13 @@ app.get('/', (req, res) => {
 app.get(`/${ASSETS_DIR}/:filename`, (req, res) => {
     const { filename } = req.params;
     return serveFile(res, fs, PUBLIC_ASSETS_DIR, filename);
+});
+
+app.post(`/api/ffmpeg/video-to-frames`, upload.single('video'), (req, res) => {
+    // const videoStream = realFs.createReadStream(req.file.path);
+    videoToFrames(req.file.path, req.body.fps, req.body.videoDuration).then(
+        statusCode => {}
+    );
 });
 
 app.use(express.static(PUBLIC_HTML_DIR, { index: false }));
