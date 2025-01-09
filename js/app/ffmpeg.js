@@ -16,7 +16,7 @@ export const ffmpegImageFileType = getSaveImageFileTypes().find(
     fileType => fileType.value === exportFileTypeValue
 );
 
-export const ffmpegRawImageFileType = getSaveImageFileTypes().find(
+const ffmpegRawImageFileType = getSaveImageFileTypes().find(
     fileType => fileType.value === 'jpeg'
 );
 

@@ -188,9 +188,8 @@ import {
     exportFramesToVideo,
     saveImageFrame,
     ffmpegImageFileType,
-    ffmpegRawImageFileType,
 } from '../ffmpeg.js';
-import { getFilenameWithoutExtension, getFileExtension } from '../path.js';
+import { getFilenameWithoutExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
     OPEN_FILE_MODE_VIDEO,
@@ -256,6 +255,10 @@ export default {
             required: true,
         },
         isFfmpegReady: {
+            type: Boolean,
+            required: true,
+        },
+        isBatchConverting: {
             type: Boolean,
             required: true,
         },
@@ -387,7 +390,7 @@ export default {
 
             if (
                 this.currentInputFileType === this.inputFileTypes.VIDEO &&
-                getFileExtension(newValue) !== ffmpegRawImageFileType.extension
+                !this.isBatchConverting
             ) {
                 this.videoExportFilename = filename;
             }

@@ -432,6 +432,7 @@
                         "
                         :onSubmitBatchConvertImages="loadBatchImages"
                         :isFfmpegReady="isFfmpegReady"
+                        :isBatchConverting="isBatchConverting"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />
