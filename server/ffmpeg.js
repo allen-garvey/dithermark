@@ -8,6 +8,8 @@ const __dirname = path.dirname(__filename);
 
 export const FFMPEG_RAW_DIRECTORY = path.join(__dirname, '..', 'tmp');
 const IMAGE_EXTENSION = '.jpg';
+const RAW_AUDIO_NAME = 'audio.m4a';
+const RAW_AUDIO_PATH = path.join(FFMPEG_RAW_DIRECTORY, RAW_AUDIO_NAME);
 
 /**
  *
@@ -38,13 +40,20 @@ const ffmpegExecute = args =>
 /**
  * @returns {Promise}
  */
-const cleanUpRawImages = fs.readdir(FFMPEG_RAW_DIRECTORY).then(filePaths => {
-    const cleanUpFilesPromises = filePaths
-        .filter(filePath => filePath.endsWith(IMAGE_EXTENSION))
-        .map(filePath => fs.unlink(path.join(FFMPEG_RAW_DIRECTORY, filePath)));
+const cleanUpRawFiles = () =>
+    fs.readdir(FFMPEG_RAW_DIRECTORY).then(filePaths => {
+        const cleanUpFilesPromises = filePaths
+            .filter(
+                filePath =>
+                    filePath.endsWith(IMAGE_EXTENSION) ||
+                    filePath === RAW_AUDIO_NAME
+            )
+            .map(filePath =>
+                fs.unlink(path.join(FFMPEG_RAW_DIRECTORY, filePath))
+            );
 
-    return Promise.all(cleanUpFilesPromises);
-});
+        return Promise.all(cleanUpFilesPromises);
+    });
 
 /**
  *
@@ -61,7 +70,7 @@ export const videoToFrames = (videoPath, fps, duration) => {
 
     const videoInputPath = path.join(__dirname, '..', videoPath);
 
-    return cleanUpRawImages()
+    return cleanUpRawFiles()
         .then(() =>
             ffmpegExecute([
                 '-i',
@@ -71,6 +80,18 @@ export const videoToFrames = (videoPath, fps, duration) => {
                 `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${IMAGE_EXTENSION}`,
             ])
         )
+        .then(code => {
+            if (code === 0) {
+                return ffmpegExecute([
+                    '-i',
+                    videoInputPath,
+                    '-vn',
+                    '-acodec',
+                    'copy',
+                    RAW_AUDIO_PATH,
+                ]);
+            }
+        })
         .then(code => {
             if (code === 0) {
                 return fs.unlink(videoInputPath);
