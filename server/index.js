@@ -51,7 +51,7 @@ app.post('/api/ffmpge/image', uploadDithered.single('image'), (req, res) => {
 });
 
 app.post('/api/ffmpeg/frames-to-video', (req, res) => {
-    framesToVideo(req.body.fps).then(videoName =>
+    framesToVideo(req.body.fps, req.body.imageExtension).then(videoName =>
         res.json({
             name: videoName,
             url: `${FFMPEG_OUTPUT_URL_BASE}/${videoName}`,

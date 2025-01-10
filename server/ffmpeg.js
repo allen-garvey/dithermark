@@ -66,6 +66,21 @@ const cleanUpRawFiles = () =>
     });
 
 /**
+ * @param {string} fileExtension
+ * @returns {Promise}
+ */
+const cleanUpDitheredImages = fileExtension =>
+    fs.readdir(DITHERED_IMAGES_DIRECTORY_PATH).then(filePaths => {
+        const cleanUpFilesPromises = filePaths
+            .filter(filePath => filePath.endsWith(fileExtension))
+            .map(filePath =>
+                fs.unlink(path.join(DITHERED_IMAGES_DIRECTORY_PATH, filePath))
+            );
+
+        return Promise.all(cleanUpFilesPromises);
+    });
+
+/**
  *
  * @returns {Promise<boolean>}
  */
@@ -124,9 +139,10 @@ export const videoToFrames = (videoPath, fps, duration) => {
 /**
  *
  * @param {number} fps
+ * @param {string} imageExtension
  * @returns {Promise<string>}
  */
-export const framesToVideo = fps =>
+export const framesToVideo = (fps, imageExtension) =>
     fs
         .unlink(OUTPUT_VIDEO_PATH)
         .then(() => doesAudioFileExist())
@@ -139,7 +155,7 @@ export const framesToVideo = fps =>
                 '-pattern_type',
                 'glob',
                 '-i',
-                `${DITHERED_IMAGES_DIRECTORY_PATH}/*${IMAGE_EXTENSION}`,
+                `${DITHERED_IMAGES_DIRECTORY_PATH}/*${imageExtension}`,
             ];
 
             if (hasAudio) {
@@ -159,7 +175,8 @@ export const framesToVideo = fps =>
             return ffmpegExecute(args);
         })
         .then(code => {
-            return cleanUpRawFiles().then(() =>
-                code === 0 ? OUTPUT_VIDEO_NAME : ''
-            );
+            return Promise.all([
+                cleanUpRawFiles(),
+                cleanUpDitheredImages(),
+            ]).then(() => (code === 0 ? OUTPUT_VIDEO_NAME : ''));
         });
