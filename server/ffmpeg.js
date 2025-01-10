@@ -9,6 +9,32 @@ const __dirname = path.dirname(__filename);
 export const FFMPEG_RAW_DIRECTORY = path.join(__dirname, '..', 'tmp');
 const IMAGE_EXTENSION = '.jpg';
 
+/**
+ *
+ * @param {string[]} args
+ * @returns {Promise<number>}
+ */
+const ffmpegExecute = args =>
+    new Promise((resolve, reject) => {
+        const ffmpeg = spawn('ffmpeg', args, {
+            cwd: path.join(__dirname, '..', 'tmp'),
+        });
+
+        ffmpeg.stdout.on('data', data => {
+            console.log(data.toString());
+        });
+
+        ffmpeg.stderr.on('data', data => {
+            console.error(data.toString());
+        });
+
+        ffmpeg.on('close', code => {
+            console.log(`ffmpeg exited with code ${code}`);
+
+            resolve(code);
+        });
+    });
+
 export const videoToFrames = (videoPath, fps, duration) => {
     const framesPattern = Math.max(
         Math.ceil(Math.log10(Math.ceil(parseInt(fps) * parseInt(duration)))),
@@ -28,36 +54,16 @@ export const videoToFrames = (videoPath, fps, duration) => {
 
             return Promise.all(cleanUpFilesPromises);
         })
-        .then(() => {
-            return new Promise((resolve, reject) => {
-                const ffmpeg = spawn(
-                    'ffmpeg',
-                    [
-                        '-i',
-                        videoInputPath,
-                        '-vf',
-                        `fps=${fps}`,
-                        `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${IMAGE_EXTENSION}`,
-                    ],
-                    { cwd: path.join(__dirname, '..', 'tmp') }
-                );
-
-                ffmpeg.stdout.on('data', data => {
-                    console.log(data.toString());
-                });
-
-                ffmpeg.stderr.on('data', data => {
-                    console.error(data.toString());
-                });
-
-                ffmpeg.on('close', code => {
-                    console.log(`ffmpeg exited with code ${code}`);
-
-                    resolve([code, videoInputPath]);
-                });
-            });
-        })
-        .then(([code, videoInputPath]) => {
+        .then(() =>
+            ffmpegExecute([
+                '-i',
+                videoInputPath,
+                '-vf',
+                `fps=${fps}`,
+                `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${IMAGE_EXTENSION}`,
+            ])
+        )
+        .then(code => {
             if (code === 0) {
                 return fs.unlink(videoInputPath);
             }
