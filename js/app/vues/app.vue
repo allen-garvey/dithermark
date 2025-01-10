@@ -1196,10 +1196,6 @@ export default {
             });
         },
         getFfmpegReady() {
-            if (this.useFfmpegServer) {
-                this.ffmpegState = FFMPEG_STATES.READY;
-                return;
-            }
             if (this.ffmpegState !== FFMPEG_STATES.NEW) {
                 return;
             }
