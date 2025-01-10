@@ -650,6 +650,7 @@ import {
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
 import { FFmpeg } from '@ffmpeg/ffmpeg';
 import { initializeFfmpeg, videoToFrames } from '../ffmpeg.js';
+import { ffmpegClientVideoToImages } from '../ffmpeg-client.js';
 
 const FFMPEG_STATES = {
     NEW: 0,
@@ -1113,13 +1114,15 @@ export default {
             this.ffmpegPercentage = 0;
 
             if (this.useFfmpegServer) {
-                const formData = new FormData();
-                formData.append('video', this.videoFile);
-                formData.append('fps', `${fps}`);
-                formData.append('videoDuration', `${this.videoDuration}`);
-                fetch('/api/ffmpeg/video-to-frames', {
-                    method: 'POST',
-                    body: formData,
+                ffmpegClientVideoToImages(
+                    this.videoFile,
+                    fps,
+                    this.videoDuration
+                ).then(files => {
+                    this.loadBatchImageFiles(
+                        files,
+                        BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
+                    );
                 });
             } else {
                 videoToFrames(

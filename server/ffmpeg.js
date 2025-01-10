@@ -1,11 +1,13 @@
 import path from 'path';
+import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { spawn } from 'node:child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const FFMPEG_RAW_DIRECTORY = path.join(__dirname, '..', 'tmp2');
+export const FFMPEG_RAW_DIRECTORY = path.join(__dirname, '..', 'tmp');
+const IMAGE_EXTENSION = '.jpg';
 
 export const videoToFrames = (videoPath, fps, duration) => {
     const framesPattern = Math.max(
@@ -13,31 +15,53 @@ export const videoToFrames = (videoPath, fps, duration) => {
         2
     );
 
-    return new Promise((resolve, reject) => {
-        const ffmpeg = spawn(
-            'ffmpeg',
-            [
-                '-i',
-                path.join(__dirname, '..', videoPath),
-                '-vf',
-                `fps=${fps}`,
-                `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d.jpg`,
-            ],
-            { cwd: path.join(__dirname, '..', 'tmp') }
-        );
+    const videoInputPath = path.join(__dirname, '..', videoPath);
 
-        ffmpeg.stdout.on('data', data => {
-            console.log(data.toString());
-        });
+    return fs
+        .readdir(FFMPEG_RAW_DIRECTORY)
+        .then(filePaths => {
+            const cleanUpFilesPromises = filePaths
+                .filter(filePath => filePath.endsWith(IMAGE_EXTENSION))
+                .map(filePath =>
+                    fs.unlink(path.join(FFMPEG_RAW_DIRECTORY, filePath))
+                );
 
-        ffmpeg.stderr.on('data', data => {
-            console.error(data.toString());
-        });
+            return Promise.all(cleanUpFilesPromises);
+        })
+        .then(() => {
+            return new Promise((resolve, reject) => {
+                const ffmpeg = spawn(
+                    'ffmpeg',
+                    [
+                        '-i',
+                        videoInputPath,
+                        '-vf',
+                        `fps=${fps}`,
+                        `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${IMAGE_EXTENSION}`,
+                    ],
+                    { cwd: path.join(__dirname, '..', 'tmp') }
+                );
 
-        ffmpeg.on('close', code => {
-            console.log(`ffmpeg exited with code ${code}`);
+                ffmpeg.stdout.on('data', data => {
+                    console.log(data.toString());
+                });
 
-            resolve(code);
-        });
-    });
+                ffmpeg.stderr.on('data', data => {
+                    console.error(data.toString());
+                });
+
+                ffmpeg.on('close', code => {
+                    console.log(`ffmpeg exited with code ${code}`);
+
+                    resolve([code, videoInputPath]);
+                });
+            });
+        })
+        .then(([code, videoInputPath]) => {
+            if (code === 0) {
+                return fs.unlink(videoInputPath);
+            }
+        })
+        .then(() => fs.readdir(FFMPEG_RAW_DIRECTORY))
+        .then(files => files.filter(file => file.endsWith(IMAGE_EXTENSION)));
 };
