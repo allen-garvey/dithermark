@@ -35,6 +35,24 @@ const ffmpegExecute = args =>
         });
     });
 
+/**
+ * @returns {Promise}
+ */
+const cleanUpRawImages = fs.readdir(FFMPEG_RAW_DIRECTORY).then(filePaths => {
+    const cleanUpFilesPromises = filePaths
+        .filter(filePath => filePath.endsWith(IMAGE_EXTENSION))
+        .map(filePath => fs.unlink(path.join(FFMPEG_RAW_DIRECTORY, filePath)));
+
+    return Promise.all(cleanUpFilesPromises);
+});
+
+/**
+ *
+ * @param {string} videoPath
+ * @param {number} fps
+ * @param {number} duration
+ * @returns {Promise<string[]>}
+ */
 export const videoToFrames = (videoPath, fps, duration) => {
     const framesPattern = Math.max(
         Math.ceil(Math.log10(Math.ceil(parseInt(fps) * parseInt(duration)))),
@@ -43,17 +61,7 @@ export const videoToFrames = (videoPath, fps, duration) => {
 
     const videoInputPath = path.join(__dirname, '..', videoPath);
 
-    return fs
-        .readdir(FFMPEG_RAW_DIRECTORY)
-        .then(filePaths => {
-            const cleanUpFilesPromises = filePaths
-                .filter(filePath => filePath.endsWith(IMAGE_EXTENSION))
-                .map(filePath =>
-                    fs.unlink(path.join(FFMPEG_RAW_DIRECTORY, filePath))
-                );
-
-            return Promise.all(cleanUpFilesPromises);
-        })
+    return cleanUpRawImages()
         .then(() =>
             ffmpegExecute([
                 '-i',
