@@ -23,7 +23,7 @@ export const ffmpegClientVideoToImages = (videoFile, fps, videoDuration) => {
         .then(imageUrls => {
             const imageFilePromises = imageUrls.map(fileName => {
                 const fileExtension = getFileExtension(fileName);
-                return fetch(`/images/ffmpeg/${fileName}`)
+                return fetch(`/raw/ffmpeg/${fileName}`)
                     .then(res => res.blob())
                     .then(
                         blob =>

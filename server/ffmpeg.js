@@ -7,9 +7,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export const FFMPEG_RAW_DIRECTORY = path.join(__dirname, '..', 'tmp');
+export const FFMPEG_OUTPUT_DIRECTORY = path.join(__dirname, '..', 'tmp-output');
+const OUTPUT_VIDEO_NAME = 'video.mp4';
+const OUTPUT_VIDEO_PATH = path.join(FFMPEG_OUTPUT_DIRECTORY, OUTPUT_VIDEO_NAME);
 const IMAGE_EXTENSION = '.jpg';
 const RAW_AUDIO_NAME = 'audio.m4a';
 const RAW_AUDIO_PATH = path.join(FFMPEG_RAW_DIRECTORY, RAW_AUDIO_NAME);
+
+export const DITHERED_IMAGES_DIRECTORY_NAME = 'uploads-dithered';
+const DITHERED_IMAGES_DIRECTORY_PATH = path.join(
+    __dirname,
+    '..',
+    DITHERED_IMAGES_DIRECTORY_NAME
+);
 
 /**
  *
@@ -57,6 +67,16 @@ const cleanUpRawFiles = () =>
 
 /**
  *
+ * @returns {Promise<boolean>}
+ */
+const doesAudioFileExist = () =>
+    fs
+        .access(RAW_AUDIO_PATH, fs.constants.R_OK)
+        .then(() => true)
+        .catch(() => false);
+
+/**
+ *
  * @param {string} videoPath
  * @param {number} fps
  * @param {number} duration
@@ -100,3 +120,46 @@ export const videoToFrames = (videoPath, fps, duration) => {
         .then(() => fs.readdir(FFMPEG_RAW_DIRECTORY))
         .then(files => files.filter(file => file.endsWith(IMAGE_EXTENSION)));
 };
+
+/**
+ *
+ * @param {number} fps
+ * @returns {Promise<string>}
+ */
+export const framesToVideo = fps =>
+    fs
+        .unlink(OUTPUT_VIDEO_PATH)
+        .then(() => doesAudioFileExist())
+        .then(hasAudio => {
+            let args = [
+                '-framerate',
+                `${fps}`,
+                '-f',
+                'image2',
+                '-pattern_type',
+                'glob',
+                '-i',
+                `${DITHERED_IMAGES_DIRECTORY_PATH}/*${IMAGE_EXTENSION}`,
+            ];
+
+            if (hasAudio) {
+                args = args.concat(['-i', RAW_AUDIO_PATH, '-c:a', 'copy']);
+            }
+
+            args = args.concat([
+                '-vf',
+                `format=yuv420p, pad=ceil(iw/2)*2:ceil(ih/2)*2`,
+                '-vcodec',
+                'libx264',
+                // '-acodec',
+                // 'aac',
+                OUTPUT_VIDEO_PATH,
+            ]);
+
+            return ffmpegExecute(args);
+        })
+        .then(code => {
+            return cleanUpRawFiles().then(() =>
+                code === 0 ? OUTPUT_VIDEO_NAME : ''
+            );
+        });
