@@ -82,11 +82,12 @@ const cleanUpDitheredImages = fileExtension =>
 
 /**
  *
+ * @param {string} path
  * @returns {Promise<boolean>}
  */
-const doesAudioFileExist = () =>
+const doesFileExist = path =>
     fs
-        .access(RAW_AUDIO_PATH, fs.constants.R_OK)
+        .access(path, fs.constants.R_OK)
         .then(() => true)
         .catch(() => false);
 
@@ -105,7 +106,7 @@ export const videoToFrames = (videoPath, fps, duration) => {
 
     const videoInputPath = path.join(__dirname, '..', videoPath);
 
-    return cleanUpRawFiles()
+    return Promise.all([cleanUpRawFiles(), cleanUpDitheredImages()])
         .then(() =>
             ffmpegExecute([
                 '-i',
@@ -143,9 +144,13 @@ export const videoToFrames = (videoPath, fps, duration) => {
  * @returns {Promise<string>}
  */
 export const framesToVideo = (fps, imageExtension) =>
-    fs
-        .unlink(OUTPUT_VIDEO_PATH)
-        .then(() => doesAudioFileExist())
+    doesFileExist(OUTPUT_VIDEO_PATH)
+        .then(hasOldOutputVideo => {
+            if (hasOldOutputVideo) {
+                return fs.unlink(OUTPUT_VIDEO_PATH);
+            }
+        })
+        .then(() => doesFileExist(RAW_AUDIO_PATH))
         .then(hasAudio => {
             let args = [
                 '-framerate',

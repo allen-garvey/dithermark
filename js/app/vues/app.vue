@@ -1156,9 +1156,19 @@ export default {
                 this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
             ) {
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
-                this.$refs.exportTab.exportVideoFromFrames(ffmpeg).then(() => {
-                    this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                });
+                if (this.useFfmpegServer) {
+                    this.$refs.exportTab
+                        .exportVideoFromFramesFfmpegServer()
+                        .then(() => {
+                            this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                        });
+                } else {
+                    this.$refs.exportTab
+                        .exportVideoFromFrames(ffmpeg)
+                        .then(() => {
+                            this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                        });
+                }
             } else {
                 this.batchConvertState = BATCH_CONVERT_STATE.NONE;
             }
@@ -1184,16 +1194,25 @@ export default {
             if (this.batchImageQueue.length === 0) {
                 return;
             }
-            const action =
+            let actionPromise;
+            if (
                 this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO ||
                 this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
-                    ? () => this.$refs.exportTab.saveImageToFfmpeg(ffmpeg)
-                    : () =>
-                          this.$refs.exportTab
-                              .saveImage()
-                              .then(() => sleep(100));
+            ) {
+                if (this.useFfmpegServer) {
+                    actionPromise =
+                        this.$refs.exportTab.saveImageToFfmpegServer();
+                } else {
+                    actionPromise =
+                        this.$refs.exportTab.saveImageToFfmpeg(ffmpeg);
+                }
+            } else {
+                actionPromise = this.$refs.exportTab
+                    .saveImage()
+                    .then(() => sleep(100));
+            }
 
-            action().then(() => {
+            actionPromise.then(() => {
                 this.batchImageQueue = this.batchImageQueue.slice(1);
                 this.loadNextBatchImage();
             });

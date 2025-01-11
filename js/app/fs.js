@@ -153,7 +153,7 @@ const messageForOpenImageUrlError = (error, imageUrl) => {
  * @param {Blob} blob
  * @param {Function} callback
  */
-const blobToObjectUrl = (blob, callback) => {
+export const blobToObjectUrl = (blob, callback) => {
     const objectUrl = URL.createObjectURL(blob);
     callback(objectUrl);
     //add timeout before revoking for iOS

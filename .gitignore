@@ -43,3 +43,5 @@ scripts/matrix-output/*.json
 scripts/scratch/*
 uploads/*
 tmp/*
+uploads-dithered/*
+tmp-output/*

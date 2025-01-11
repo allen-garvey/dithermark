@@ -22,7 +22,17 @@ import {
 } from './ffmpeg.js';
 
 const upload = multer({ dest: 'uploads/' });
-const uploadDithered = multer({ dest: `${DITHERED_IMAGES_DIRECTORY_NAME}/` });
+const uploadDithered = multer({
+    storage: multer.diskStorage({
+        destination: function (req, file, cb) {
+            cb(null, `${DITHERED_IMAGES_DIRECTORY_NAME}/`);
+        },
+        filename: function (req, file, cb) {
+            // TODO sanitize filename to remove forward slashes
+            cb(null, file.originalname);
+        },
+    }),
+});
 
 const FFMPEG_OUTPUT_URL_BASE = '/output/ffmpeg';
 
@@ -46,14 +56,13 @@ app.post('/api/ffmpeg/video-to-frames', upload.single('video'), (req, res) => {
     );
 });
 
-app.post('/api/ffmpge/image', uploadDithered.single('image'), (req, res) => {
+app.post('/api/ffmpeg/image', uploadDithered.single('image'), (req, res) => {
     return res.json({ code: 200 });
 });
 
 app.post('/api/ffmpeg/frames-to-video', (req, res) => {
     framesToVideo(req.body.fps, req.body.imageExtension).then(videoName =>
         res.json({
-            name: videoName,
             url: `${FFMPEG_OUTPUT_URL_BASE}/${videoName}`,
         })
     );

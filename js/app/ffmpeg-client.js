@@ -39,3 +39,37 @@ export const ffmpegClientVideoToImages = (videoFile, fps, videoDuration) => {
             return Promise.all(imageFilePromises);
         });
 };
+
+/**
+ *
+ * @param {File} imageFile
+ * @returns {Promise}
+ */
+export const ffmpegClientSaveImage = imageFile => {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+
+    return fetch('/api/ffmpeg/image', {
+        method: 'POST',
+        body: formData,
+    });
+};
+
+/**
+ *
+ * @param {number} fps
+ * @param {string} imageExtension e.g. .jpg or .webp
+ * @returns {Promise<Blob>}
+ */
+export const ffmpegClientFramesToVideo = (fps, imageExtension) => {
+    return fetch('/api/ffmpeg/frames-to-video', {
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ fps, imageExtension }),
+    })
+        .then(res => res.json())
+        .then(res => fetch(res.url))
+        .then(res => res.blob());
+};

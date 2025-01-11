@@ -181,7 +181,13 @@ import {
     UNSPLASH_API_PHOTO_ID_QUERY_KEY,
 } from '../../../constants.js';
 import Canvas from '../canvas.js';
-import { saveImage, canvasToArray, arrayToObjectUrl } from '../fs.js';
+import {
+    saveImage,
+    canvasToArray,
+    arrayToObjectUrl,
+    canvasToBlob,
+    blobToObjectUrl,
+} from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import userSettings from '../user-settings.js';
 import {
@@ -189,6 +195,10 @@ import {
     saveImageFrame,
     ffmpegImageFileType,
 } from '../ffmpeg.js';
+import {
+    ffmpegClientSaveImage,
+    ffmpegClientFramesToVideo,
+} from '../ffmpeg-client.js';
 import { getFilenameWithoutExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
@@ -462,9 +472,7 @@ export default {
                     return this.saveImage();
             }
         },
-        //downloads image
-        //based on: https://stackoverflow.com/questions/30694433/how-to-give-browser-save-image-as-option-to-button
-        saveImage() {
+        saveImageBase(promiseFunc) {
             return new Promise(resolve => {
                 if (this.isCurrentlySavingImage) {
                     return resolve();
@@ -473,6 +481,21 @@ export default {
                 this.saveRequested(
                     saveImageCanvas,
                     (sourceCanvas, unsplash) => {
+                        promiseFunc(sourceCanvas, unsplash).then(() => {
+                            //clear the canvas to free up memory
+                            Canvas.clear(saveImageCanvas);
+                            this.isCurrentlySavingImage = false;
+                            resolve();
+                        });
+                    }
+                );
+            });
+        },
+        //downloads image
+        saveImage() {
+            return this.saveImageBase(
+                (sourceCanvas, unsplash) =>
+                    new Promise((resolve, reject) => {
                         saveImage(
                             sourceCanvas.canvas,
                             this.saveImageFileType.mime,
@@ -483,8 +506,6 @@ export default {
                                     this.saveImageFileType.extension;
                                 saveImageLink.click();
 
-                                //clear the canvas to free up memory
-                                Canvas.clear(saveImageCanvas);
                                 //follow Unsplash API guidelines for triggering download
                                 //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
                                 if (unsplash) {
@@ -493,44 +514,41 @@ export default {
                                         `${UNSPLASH_DOWNLOAD_URL}?${UNSPLASH_API_PHOTO_ID_QUERY_KEY}=${unsplash.id}`
                                     );
                                 }
-                                this.isCurrentlySavingImage = false;
                                 resolve();
                             }
                         );
-                    }
-                );
-            });
+                    })
+            );
+        },
+        saveImageToFfmpegServer() {
+            return this.saveImageBase((sourceCanvas, unsplash) =>
+                canvasToBlob(
+                    sourceCanvas.canvas,
+                    ffmpegImageFileType.mime
+                ).then(blob =>
+                    ffmpegClientSaveImage(
+                        new File(
+                            [blob],
+                            this.saveImageFileName +
+                                ffmpegImageFileType.extension
+                        )
+                    )
+                )
+            );
         },
         saveImageToFfmpeg(ffmpeg) {
-            return new Promise(resolve => {
-                if (this.isCurrentlySavingImage) {
-                    return resolve();
-                }
-                this.isCurrentlySavingImage = true;
-                this.saveRequested(
-                    saveImageCanvas,
-                    (sourceCanvas, unsplash) => {
-                        canvasToArray(
-                            sourceCanvas.canvas,
-                            ffmpegImageFileType.mime
-                        )
-                            .then(array =>
-                                saveImageFrame(
-                                    ffmpeg,
-                                    this.saveImageFileName +
-                                        ffmpegImageFileType.extension,
-                                    array
-                                )
-                            )
-                            .then(() => {
-                                //clear the canvas to free up memory
-                                Canvas.clear(saveImageCanvas);
-                                this.isCurrentlySavingImage = false;
-                                resolve();
-                            });
-                    }
-                );
-            });
+            return this.saveImageBase((sourceCanvas, unsplash) =>
+                canvasToArray(
+                    sourceCanvas.canvas,
+                    ffmpegImageFileType.mime
+                ).then(array =>
+                    saveImageFrame(
+                        ffmpeg,
+                        this.saveImageFileName + ffmpegImageFileType.extension,
+                        array
+                    )
+                )
+            );
         },
         exportVideoFromFrames(ffmpeg) {
             const exportFilename =
@@ -539,6 +557,24 @@ export default {
             return new Promise(resolve => {
                 exportFramesToVideo(ffmpeg, this.videoFps).then(data => {
                     arrayToObjectUrl(data, objectUrl => {
+                        saveImageLink.href = objectUrl;
+                        saveImageLink.download = exportFilename;
+                        saveImageLink.click();
+                        resolve();
+                    });
+                });
+            });
+        },
+        exportVideoFromFramesFfmpegServer() {
+            const exportFilename =
+                this.videoExportFilename + this.videoFileExtension;
+
+            return new Promise(resolve => {
+                ffmpegClientFramesToVideo(
+                    this.videoFps,
+                    this.saveImageFileType.extension
+                ).then(blob => {
+                    blobToObjectUrl(blob, objectUrl => {
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = exportFilename;
                         saveImageLink.click();
