@@ -106,7 +106,7 @@ export const videoToFrames = (videoPath, fps, duration) => {
 
     const videoInputPath = path.join(__dirname, '..', videoPath);
 
-    return Promise.all([cleanUpRawFiles(), cleanUpDitheredImages()])
+    return cleanUpRawFiles()
         .then(() =>
             ffmpegExecute([
                 '-i',
@@ -182,6 +182,6 @@ export const framesToVideo = (fps, imageExtension) =>
         .then(code => {
             return Promise.all([
                 cleanUpRawFiles(),
-                cleanUpDitheredImages(),
+                cleanUpDitheredImages(imageExtension),
             ]).then(() => (code === 0 ? OUTPUT_VIDEO_NAME : ''));
         });
