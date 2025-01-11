@@ -1179,15 +1179,23 @@ export default {
                 return;
             }
 
-            Fs.openImageFile(this.batchImageQueue[0]).then(([image, file]) => {
-                if (!image) {
-                    return this.onOpenImageError(file);
-                }
-                this.loadImage(image, file, {
-                    height: image.height,
-                    width: image.width,
+            const batchImageItem = this.batchImageQueue[0];
+            const batchImageItemPromise =
+                typeof batchImageItem === 'function'
+                    ? batchImageItem()
+                    : Promise.resolve(batchImageItem);
+
+            batchImageItemPromise
+                .then(item => Fs.openImageFile(item))
+                .then(([image, file]) => {
+                    if (!image) {
+                        return this.onOpenImageError(file);
+                    }
+                    this.loadImage(image, file, {
+                        height: image.height,
+                        width: image.width,
+                    });
                 });
-            });
         },
         imageProcessingCompleted() {
             // export image if we are in batch processing mode

@@ -8,7 +8,7 @@ const saveImageFileTypes = getSaveImageFileTypes();
  * @param {File} videoFile
  * @param {number} fps
  * @param {number} videoDuration
- * @returns {Promise<File[]>}
+ * @returns {Promise<Array<() => Promise>>}
  */
 export const ffmpegClientVideoToImages = (videoFile, fps, videoDuration) => {
     const formData = new FormData();
@@ -20,24 +20,23 @@ export const ffmpegClientVideoToImages = (videoFile, fps, videoDuration) => {
         body: formData,
     })
         .then(res => res.json())
-        .then(imageUrls => {
-            const imageFilePromises = imageUrls.map(fileName => {
+        .then(imageUrls =>
+            imageUrls.map(fileName => {
                 const fileExtension = getFileExtension(fileName);
-                return fetch(`/raw/ffmpeg/${fileName}`)
-                    .then(res => res.blob())
-                    .then(
-                        blob =>
-                            new File([blob], fileName, {
-                                type: saveImageFileTypes.find(
-                                    fileType =>
-                                        fileType.extension === fileExtension
-                                ).mime,
-                            })
-                    );
-            });
-
-            return Promise.all(imageFilePromises);
-        });
+                return () =>
+                    fetch(`/raw/ffmpeg/${fileName}`)
+                        .then(res => res.blob())
+                        .then(
+                            blob =>
+                                new File([blob], fileName, {
+                                    type: saveImageFileTypes.find(
+                                        fileType =>
+                                            fileType.extension === fileExtension
+                                    ).mime,
+                                })
+                        );
+            })
+        );
 };
 
 /**
