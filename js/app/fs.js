@@ -167,15 +167,28 @@ const blobToObjectUrl = (blob, callback) => {
  *
  * @param {HTMLCanvasElement} canvas
  * @param {string} mimeType
+ * @returns {Promise<Blob>}
+ */
+export const canvasToBlob = (canvas, mimeType) =>
+    new Promise((resolve, reject) => {
+        canvas.toBlob(
+            blob => {
+                resolve(blob);
+            },
+            mimeType,
+            1
+        );
+    });
+
+/**
+ *
+ * @param {HTMLCanvasElement} canvas
+ * @param {string} mimeType
  * @param {Function} callback
  */
 export const saveImage = (canvas, mimeType, callback) => {
-    canvas.toBlob(
-        blob => {
-            blobToObjectUrl(blob, callback);
-        },
-        mimeType,
-        1
+    canvasToBlob(canvas, mimeType).then(blob =>
+        blobToObjectUrl(blob, callback)
     );
 };
 
@@ -185,19 +198,10 @@ export const saveImage = (canvas, mimeType, callback) => {
  * @param {string} mimeType
  * @returns {Promise<Uint8Array>}
  */
-export const canvasToArray = (canvas, mimeType) => {
-    return new Promise(resolve => {
-        canvas.toBlob(
-            blob => {
-                resolve(
-                    blob.arrayBuffer().then(buffer => new Uint8Array(buffer))
-                );
-            },
-            mimeType,
-            1
-        );
-    });
-};
+export const canvasToArray = (canvas, mimeType) =>
+    canvasToBlob(canvas, mimeType)
+        .then(blob => blob.arrayBuffer())
+        .then(buffer => new Uint8Array(buffer));
 
 /**
  *
