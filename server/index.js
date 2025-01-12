@@ -1,3 +1,4 @@
+import { styleText } from 'util';
 import express from 'express';
 import multer from 'multer';
 import { createFsFromVolume, Volume } from 'memfs';
@@ -51,8 +52,20 @@ app.get(`/${ASSETS_DIR}/:filename`, (req, res) => {
 });
 
 app.post('/api/ffmpeg/video-to-frames', upload.single('video'), (req, res) => {
+    const start = performance.now();
     videoToFrames(req.file.path, req.body.fps, req.body.videoDuration).then(
-        imageFilePaths => res.json(imageFilePaths)
+        imageFilePaths => {
+            const end = performance.now();
+            console.log(
+                styleText(
+                    'green',
+                    `\nVideo to frames finished after ${
+                        (end - start) / 1000
+                    }s\n`
+                )
+            );
+            res.json(imageFilePaths);
+        }
     );
 });
 
@@ -61,11 +74,19 @@ app.post('/api/ffmpeg/image', uploadDithered.single('image'), (req, res) => {
 });
 
 app.post('/api/ffmpeg/frames-to-video', (req, res) => {
-    framesToVideo(req.body.fps, req.body.imageExtension).then(videoName =>
+    const start = performance.now();
+    framesToVideo(req.body.fps, req.body.imageExtension).then(videoName => {
+        const end = performance.now();
+        console.log(
+            styleText(
+                'green',
+                `\nFrames to video finished after ${(end - start) / 1000}s\n`
+            )
+        );
         res.json({
             url: `${FFMPEG_OUTPUT_URL_BASE}/${videoName}`,
-        })
-    );
+        });
+    });
 });
 
 app.use('/raw/ffmpeg', express.static(FFMPEG_RAW_DIRECTORY, { index: false }));
