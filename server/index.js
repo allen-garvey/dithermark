@@ -36,6 +36,7 @@ const uploadDithered = multer({
 });
 
 const FFMPEG_OUTPUT_URL_BASE = '/output/ffmpeg';
+const FFMPEG_RAW_URL_BASE = '/raw/ffmpeg';
 
 const app = express();
 const port = 3000;
@@ -64,7 +65,12 @@ app.post('/api/ffmpeg/video-to-frames', upload.single('video'), (req, res) => {
                     }s\n`
                 )
             );
-            res.json(imageFilePaths);
+            res.json(
+                imageFilePaths.map(name => ({
+                    name,
+                    url: `${FFMPEG_RAW_URL_BASE}/${name}`,
+                }))
+            );
         }
     );
 });
@@ -89,7 +95,10 @@ app.post('/api/ffmpeg/frames-to-video', (req, res) => {
     });
 });
 
-app.use('/raw/ffmpeg', express.static(FFMPEG_RAW_DIRECTORY, { index: false }));
+app.use(
+    FFMPEG_RAW_URL_BASE,
+    express.static(FFMPEG_RAW_DIRECTORY, { index: false })
+);
 
 app.use(
     FFMPEG_OUTPUT_URL_BASE,

@@ -20,15 +20,15 @@ export const ffmpegClientVideoToImages = (videoFile, fps, videoDuration) => {
         body: formData,
     })
         .then(res => res.json())
-        .then(imageUrls =>
-            imageUrls.map(fileName => {
-                const fileExtension = getFileExtension(fileName);
+        .then(imageData =>
+            imageData.map(imageData => {
+                const fileExtension = getFileExtension(imageData.name);
                 return () =>
-                    fetch(`/raw/ffmpeg/${fileName}`)
+                    fetch(imageData.url)
                         .then(res => res.blob())
                         .then(
                             blob =>
-                                new File([blob], fileName, {
+                                new File([blob], imageData.name, {
                                     type: saveImageFileTypes.find(
                                         fileType =>
                                             fileType.extension === fileExtension
