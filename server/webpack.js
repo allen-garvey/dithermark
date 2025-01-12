@@ -1,3 +1,4 @@
+import { styleText } from 'util';
 import path from 'path';
 import webpack from 'webpack';
 
@@ -29,11 +30,14 @@ export const startWebpackCompiler = webpackCompiler => {
         const now = new Date();
 
         console.log(
-            `webpack compilation finished at ${formatTimePart(
-                now.getHours()
-            )}:${formatTimePart(now.getMinutes())}:${formatTimePart(
-                now.getSeconds()
-            )} in ${info.time / 1000}s`
+            styleText(
+                'green',
+                `webpack compilation finished at ${formatTimePart(
+                    now.getHours()
+                )}:${formatTimePart(now.getMinutes())}:${formatTimePart(
+                    now.getSeconds()
+                )} in ${info.time / 1000}s`
+            )
         );
 
         if (stats.hasErrors()) {
