@@ -55,9 +55,10 @@ export const saveImageFrame = (ffmpeg, filename, data) =>
  * @param {File} file
  * @param {number} fps
  * @param {number} duration video duration in seconds
+ * @param {boolean} useAudio
  * @returns {Promise<File[]>}
  */
-export const videoToFrames = (ffmpeg, file, fps, duration) => {
+export const videoToFrames = (ffmpeg, file, fps, duration, useAudio) => {
     const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/movie${getFileExtension(
         file.name
     )}`;
@@ -80,17 +81,21 @@ export const videoToFrames = (ffmpeg, file, fps, duration) => {
         .then(errorCode => {
             console.log(`ffmpeg video to frames return value ${errorCode}`);
 
-            return ffmpeg.exec([
-                '-i',
-                importedVideoPath,
-                '-vn',
-                '-acodec',
-                'copy',
-                FFMPEG_AUDIO_FILE,
-            ]);
+            if (useAudio) {
+                return ffmpeg.exec([
+                    '-i',
+                    importedVideoPath,
+                    '-vn',
+                    '-acodec',
+                    'copy',
+                    FFMPEG_AUDIO_FILE,
+                ]);
+            }
         })
         .then(errorCode => {
-            console.log(`ffmpeg extract audio return value ${errorCode}`);
+            if (useAudio) {
+                console.log(`ffmpeg extract audio return value ${errorCode}`);
+            }
             return ffmpeg.deleteFile(importedVideoPath);
         })
         .then(() => ffmpeg.listDir(FFMPEG_RAW_DIRECTORY))

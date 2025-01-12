@@ -72,17 +72,31 @@
             </label>
         </div>
         <div v-if="currentOutputFileOption === outputFileOptions.VIDEO">
-            <label :class="$style.exportLabel" for="export-tab-fps"
-                >Frames per second</label
-            >
-            <input
-                v-model.number="videoFps"
-                type="number"
-                min="1"
-                step="1"
-                :class="{ [$style.invalid]: hasFpsError }"
-                id="export-tab-fps"
-            />
+            <label
+                ><span>Sync input and output FPS</span
+                ><input type="checkbox" v-model="videoSyncFps"
+            /></label>
+            <label :class="$style.exportLabel"
+                ><span>Input frames per second</span>
+                <input
+                    v-model.number="videoInputFps"
+                    type="number"
+                    min="1"
+                    step="1"
+                    :class="{ [$style.invalid]: hasInputFpsError }"
+                />
+            </label>
+            <label :class="$style.exportLabel"
+                ><span>Output frames per second</span>
+                <input
+                    v-model.number="videoOutputFps"
+                    type="number"
+                    min="1"
+                    step="1"
+                    :class="{ [$style.invalid]: hasOutputFpsError }"
+                    :disabled="videoSyncFps"
+                />
+            </label>
         </div>
         <div v-if="!isOutputtingVideo">
             <label :class="$style.exportLabel" for="export-tab-filetype"
@@ -135,6 +149,7 @@
                 v-if="isOutputtingVideo"
                 :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                 :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
+                :doInputAndOutputFpsMatch="videoInputFps === videoOutputFps"
             />
         </div>
     </div>
@@ -296,7 +311,9 @@ export default {
             saveImageFileTypeValue: exportSettings.fileType,
             isCurrentlySavingImage: false,
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
-            videoFps: exportSettings.videoFps,
+            videoInputFps: exportSettings.videoFps,
+            videoOutputFps: exportSettings.videoFps,
+            videoSyncFps: true,
         };
     },
     computed: {
@@ -308,10 +325,16 @@ export default {
                 (this.isOutputtingVideo && !this.videoExportFilename)
             );
         },
-        hasFpsError() {
+        hasInputFpsError() {
             return (
                 this.isOutputtingVideo &&
-                (isNaN(this.videoFps) || this.videoFps <= 0)
+                (isNaN(this.videoInputFps) || this.videoInputFps <= 0)
+            );
+        },
+        hasOutputFpsError() {
+            return (
+                this.isOutputtingVideo &&
+                (isNaN(this.videoOutputFps) || this.videoOutputFps <= 0)
             );
         },
         errorMessages() {
@@ -321,7 +344,7 @@ export default {
                 errorMessages.push(`File name can't be blank.`);
             }
 
-            if (this.hasFpsError) {
+            if (this.hasInputFpsError || this.hasOutputFpsError) {
                 errorMessages.push(
                     'Frames per second must be a number greater than 0.'
                 );
@@ -342,7 +365,8 @@ export default {
             if (this.isOutputtingVideo) {
                 return (
                     this.isCurrentlySavingImage ||
-                    this.hasFpsError ||
+                    this.hasInputFpsError ||
+                    this.hasOutputFpsError ||
                     this.hasFilenameError ||
                     !this.isFfmpegReady
                 );
@@ -415,8 +439,8 @@ export default {
             }
             document.title = title;
         },
-        videoFps(newValue) {
-            if (this.isOutputtingVideo && !this.hasFpsError) {
+        videoInputFps(newValue) {
+            if (this.isOutputtingVideo && !this.hasInputFpsError) {
                 clearTimeout(saveFpsTimeout);
                 saveFpsTimeout = setTimeout(() => {
                     userSettings.saveExportSettings({
@@ -425,11 +449,14 @@ export default {
                     });
                 }, 2000);
             }
+            if (this.videoSyncFps) {
+                this.videoOutputFps = newValue;
+            }
         },
         saveImageFileTypeValue(newValue) {
             userSettings.saveExportSettings({
                 fileType: newValue,
-                videoFps: this.videoFps,
+                videoFps: this.videoInputFps,
             });
         },
         openFileMode(newValue) {
@@ -462,7 +489,10 @@ export default {
                     if (
                         this.currentInputFileType === this.inputFileTypes.VIDEO
                     ) {
-                        return this.videoExportRequested(this.videoFps);
+                        return this.videoExportRequested(
+                            this.videoInputFps,
+                            this.videoOutputFps
+                        );
                     } else {
                         return this.onSubmitBatchConvertImages(
                             BATCH_IMAGE_MODE_EXPORT_VIDEO
@@ -555,7 +585,7 @@ export default {
                 this.videoExportFilename + this.videoFileExtension;
 
             return new Promise(resolve => {
-                exportFramesToVideo(ffmpeg, this.videoFps).then(data => {
+                exportFramesToVideo(ffmpeg, this.videoOutputFps).then(data => {
                     arrayToObjectUrl(data, objectUrl => {
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = exportFilename;
@@ -571,7 +601,7 @@ export default {
 
             return new Promise(resolve => {
                 ffmpegClientFramesToVideo(
-                    this.videoFps,
+                    this.videoOutputFps,
                     this.saveImageFileType.extension
                 ).then(blob => {
                     blobToObjectUrl(blob, objectUrl => {

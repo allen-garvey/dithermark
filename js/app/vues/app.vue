@@ -1105,19 +1105,21 @@ export default {
         },
         /**
          *
-         * @param {number} fps
+         * @param {number} inputFps
+         * @param {number} outputFps
          */
-        onVideoExportRequested(fps) {
+        onVideoExportRequested(inputFps, outputFps) {
             this.batchConvertState = BATCH_CONVERT_STATE.VIDEO_TO_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
-            this.videoTotalFrames = Math.floor(fps * this.videoDuration);
+            this.videoTotalFrames = Math.floor(inputFps * this.videoDuration);
             this.ffmpegPercentage = 0;
 
             if (this.useFfmpegServer) {
                 ffmpegClientVideoToImages(
                     this.videoFile,
-                    fps,
-                    this.videoDuration
+                    inputFps,
+                    this.videoDuration,
+                    inputFps === outputFps
                 ).then(files => {
                     this.loadBatchImageFiles(
                         files,
@@ -1128,8 +1130,9 @@ export default {
                 videoToFrames(
                     ffmpeg,
                     this.videoFile,
-                    fps,
-                    this.videoDuration
+                    inputFps,
+                    this.videoDuration,
+                    inputFps === outputFps
                 ).then(files => {
                     this.loadBatchImageFiles(
                         files,

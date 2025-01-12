@@ -96,9 +96,10 @@ const doesFileExist = path =>
  * @param {string} videoPath
  * @param {number} fps
  * @param {number} duration
+ * @param {boolean} useAudio
  * @returns {Promise<string[]>}
  */
-export const videoToFrames = (videoPath, fps, duration) => {
+export const videoToFrames = (videoPath, fps, duration, useAudio) => {
     const framesPattern = Math.max(
         Math.ceil(Math.log10(Math.ceil(parseInt(fps) * parseInt(duration)))),
         2
@@ -117,7 +118,7 @@ export const videoToFrames = (videoPath, fps, duration) => {
             ])
         )
         .then(code => {
-            if (code === 0) {
+            if (code === 0 && useAudio) {
                 return ffmpegExecute([
                     '-i',
                     videoInputPath,

@@ -28,13 +28,20 @@ const fetchRawImage = (name, url) => {
  * @param {File} videoFile
  * @param {number} fps
  * @param {number} videoDuration
+ * @param {boolean} useAudio
  * @returns {Promise<Array<() => Promise>>}
  */
-export const ffmpegClientVideoToImages = (videoFile, fps, videoDuration) => {
+export const ffmpegClientVideoToImages = (
+    videoFile,
+    fps,
+    videoDuration,
+    useAudio
+) => {
     const formData = new FormData();
     formData.append('video', videoFile);
     formData.append('fps', `${fps}`);
     formData.append('videoDuration', `${videoDuration}`);
+    formData.append('useAudio', `${useAudio}`);
     return fetch('/api/ffmpeg/video-to-frames', {
         method: 'POST',
         body: formData,

@@ -97,6 +97,10 @@ input:not([type]), input[type="text"], input[type="url"]{
 input[type="range"]{
     flex-basis: 50%;
 }
+input:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
 
 .spread-content{
     display: flex;
