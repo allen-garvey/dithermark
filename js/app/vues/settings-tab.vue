@@ -82,7 +82,7 @@
                 />
                 <checkbox
                     v-if="isDev"
-                    tooltip="Use WebGL to speed up performance when possible"
+                    tooltip="Use FFmpeg directly on your computer"
                     label="Use FFmpeg Server"
                     :model-value="useFfmpegServer"
                     @update:model-value="
