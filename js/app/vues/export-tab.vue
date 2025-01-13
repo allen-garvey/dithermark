@@ -442,6 +442,11 @@ export default {
             }
             document.title = title;
         },
+        videoSyncFps(newValue) {
+            if (newValue) {
+                this.videoOutputFps = this.videoInputFps;
+            }
+        },
         videoInputFps(newValue) {
             if (this.isOutputtingVideo && !this.hasInputFpsError) {
                 clearTimeout(saveFpsTimeout);
