@@ -751,8 +751,7 @@ export default {
                 const percentage = isNaN(currentFrame)
                     ? 0
                     : Math.floor((currentFrame / total) * 100);
-                // don't show 100%, because even on the last frame ffmpeg still has work to do
-                this.ffmpegPercentage = percentage === 100 ? 99.9 : percentage;
+                this.ffmpegPercentage = percentage;
             }
         });
     },

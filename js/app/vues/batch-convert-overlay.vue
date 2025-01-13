@@ -13,11 +13,15 @@
                 batchConvertState === batchConvertStates.VIDEO_TO_FRAMES
             "
         >
-            <div>
+            <div :class="$style.messageContainer">
                 {{ progressMessage }}
-                <span v-if="videoConvertPercentage">
-                    {{ videoConvertPercentage }}%
-                </span>
+                <template v-if="videoConvertPercentage">
+                    <template v-if="videoConvertPercentage === 100">
+                        <span>99.9%</span>
+                        <div>Finalizing. This may take a while.</div>
+                    </template>
+                    <span v-else>{{ videoConvertPercentage }}%</span>
+                </template>
             </div>
             <spinner :class="$style.spinner" />
         </div>
@@ -38,6 +42,9 @@
     align-items: center;
     flex-direction: column;
     font-size: 1.25rem;
+}
+.messageContainer {
+    text-align: center;
 }
 .spinner {
     margin-top: 0.5rem;
