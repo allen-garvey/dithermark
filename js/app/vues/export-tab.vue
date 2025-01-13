@@ -72,10 +72,11 @@
             </label>
         </div>
         <div v-if="currentOutputFileOption === outputFileOptions.VIDEO">
-            <label
-                ><span>Sync input and output FPS</span
-                ><input type="checkbox" v-model="videoSyncFps"
-            /></label>
+            <checkbox
+                tooltip="Keep input and output frames per second the same"
+                label="Sync input and output FPS"
+                v-model="videoSyncFps"
+            />
             <label :class="$style.exportLabel"
                 ><span>Input frames per second</span>
                 <input
@@ -226,6 +227,7 @@ import {
 import VideoWarningBanner from './widgets/video-warning-banner.vue';
 import BannerMessages from './widgets/banner-messages.vue';
 import Spinner from './widgets/spinner.vue';
+import Checkbox from './checkbox.vue';
 
 // needs to be here, otherwise data() will fail since computed properties don't exist yet
 const outputFileOptions = {
@@ -297,6 +299,7 @@ export default {
         VideoWarningBanner,
         BannerMessages,
         Spinner,
+        Checkbox,
     },
     created() {
         saveImageCanvas = Canvas.create();
