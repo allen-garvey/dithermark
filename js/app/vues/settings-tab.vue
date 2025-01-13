@@ -3,50 +3,91 @@
         <fieldset>
             <legend>Appearance</legend>
             <div class="spread-content">
-                <label>Theme
-                    <select :value.number="currentEditorThemeIndex" @input="$emit('update:currentEditorThemeIndex', parseInt($event.target.value))">
-                        <template v-for="(theme, index) in editorThemes" :key="index">
-                            <option :value="index">{{theme.name}}</option>
+                <label
+                    >Theme
+                    <select
+                        :value.number="currentEditorThemeIndex"
+                        @input="
+                            $emit(
+                                'update:currentEditorThemeIndex',
+                                parseInt($event.target.value)
+                            )
+                        "
+                    >
+                        <template
+                            v-for="(theme, index) in editorThemes"
+                            :key="index"
+                        >
+                            <option :value="index">{{ theme.name }}</option>
                         </template>
                     </select>
                 </label>
-                <cycle-property-list 
-                    model-name="theme" 
-                    :model-value="currentEditorThemeIndex" 
-                    @update:model-value="newValue => $emit('update:currentEditorThemeIndex', newValue)"
-                    :array-length="editorThemes.length" 
+                <cycle-property-list
+                    model-name="theme"
+                    :model-value="currentEditorThemeIndex"
+                    @update:model-value="
+                        newValue =>
+                            $emit('update:currentEditorThemeIndex', newValue)
+                    "
+                    :array-length="editorThemes.length"
                 />
             </div>
-            <full-screen-mode-control/>
+            <full-screen-mode-control />
         </fieldset>
         <fieldset>
             <legend>Performance</legend>
             <div class="spread-content" :class="$style.checkboxesContainer">
-                <checkbox 
+                <checkbox
                     tooltip="Immediately transform image when controls change"
                     label="Live update"
-                    :model-value="isLivePreviewEnabled" 
-                    @update:model-value="newValue => $emit('update:isLivePreviewEnabled', newValue)"
+                    :model-value="isLivePreviewEnabled"
+                    @update:model-value="
+                        newValue =>
+                            $emit('update:isLivePreviewEnabled', newValue)
+                    "
                 />
-                <checkbox 
+                <checkbox
                     v-if="isLivePreviewEnabled"
                     tooltip="Update colors immediately when selected in color picker"
                     label="Color picker live update"
-                    :model-value="isColorPickerLivePreviewEnabledSetting" 
-                    @update:model-value="newValue => $emit('update:isColorPickerLivePreviewEnabledSetting', newValue)"
+                    :model-value="isColorPickerLivePreviewEnabledSetting"
+                    @update:model-value="
+                        newValue =>
+                            $emit(
+                                'update:isColorPickerLivePreviewEnabledSetting',
+                                newValue
+                            )
+                    "
                 />
-                <checkbox 
+                <checkbox
                     tooltip="Automatically shrink large images when opening them"
                     label="Shrink large images"
-                    :model-value="automaticallyResizeLargeImages" 
-                    @update:model-value="newValue => $emit('update:automaticallyResizeLargeImages', newValue)"
+                    :model-value="automaticallyResizeLargeImages"
+                    @update:model-value="
+                        newValue =>
+                            $emit(
+                                'update:automaticallyResizeLargeImages',
+                                newValue
+                            )
+                    "
                 />
-                <checkbox 
+                <checkbox
                     v-if="isWebglSupported"
                     tooltip="Use WebGL to speed up performance when possible"
                     label="Use WebGL"
-                    :model-value="isWebglEnabled" 
-                    @update:model-value="newValue => $emit('update:isWebglEnabled', newValue)"
+                    :model-value="isWebglEnabled"
+                    @update:model-value="
+                        newValue => $emit('update:isWebglEnabled', newValue)
+                    "
+                />
+                <checkbox
+                    v-if="isDev"
+                    tooltip="Use WebGL to speed up performance when possible"
+                    label="Use FFmpeg Server"
+                    :model-value="useFfmpegServer"
+                    @update:model-value="
+                        newValue => $emit('update:useFfmpegServer', newValue)
+                    "
                 />
             </div>
         </fieldset>
@@ -58,12 +99,12 @@
 </template>
 
 <style lang="scss" module>
-    .checkboxesContainer {
-        gap: 16px;
-    }
-    .hint {
-        font-size: 0.8rem;
-    }
+.checkboxesContainer {
+    gap: 16px;
+}
+.hint {
+    font-size: 0.8rem;
+}
 </style>
 
 <script>
@@ -81,7 +122,15 @@ export default {
             type: Boolean,
             required: true,
         },
+        isDev: {
+            type: Boolean,
+            required: true,
+        },
         // v-models
+        useFfmpegServer: {
+            type: Boolean,
+            required: true,
+        },
         currentEditorThemeIndex: {
             type: Number,
             required: true,
@@ -109,24 +158,30 @@ export default {
         Checkbox,
     },
     computed: {
-        hints(){
+        hints() {
             const hints = [];
 
-            if(!this.isLivePreviewEnabled){
-                hints.push('To update the image output, use the “Dither” button.');
-            }
-            else if(!this.isColorPickerLivePreviewEnabledSetting){
-                hints.push('Colors won’t update until you press the color picker OK button.');
-            }
-
-            if(!this.automaticallyResizeLargeImages){
-                hints.push('Opening very large images can result in poor performance or browser crashes.');
-            }
-
-            if(this.isWebglSupported && !this.isWebglEnabled){
-                hints.push('With WebGL is disabled some image filters will not be available, and the Yliluoma 1, Yliluoma 2 and adaptive threshold dithers will be very slow.');
+            if (!this.isLivePreviewEnabled) {
+                hints.push(
+                    'To update the image output, use the “Dither” button.'
+                );
+            } else if (!this.isColorPickerLivePreviewEnabledSetting) {
+                hints.push(
+                    'Colors won’t update until you press the color picker OK button.'
+                );
             }
 
+            if (!this.automaticallyResizeLargeImages) {
+                hints.push(
+                    'Opening very large images can result in poor performance or browser crashes.'
+                );
+            }
+
+            if (this.isWebglSupported && !this.isWebglEnabled) {
+                hints.push(
+                    'With WebGL is disabled some image filters will not be available, and the Yliluoma 1, Yliluoma 2 and adaptive threshold dithers will be very slow.'
+                );
+            }
 
             return hints;
         },

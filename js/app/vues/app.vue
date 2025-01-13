@@ -404,6 +404,8 @@
                         <settings-tab
                             :is-webgl-supported="isWebglSupported"
                             :editor-themes="editorThemes"
+                            :isDev="isDev"
+                            v-model:useFfmpegServer="useFfmpegServer"
                             v-model:current-editor-theme-index="
                                 currentEditorThemeIndex
                             "
@@ -682,7 +684,7 @@ const tabsThatHaveSeenImageSet = new Set();
 
 export default {
     props: {
-        useFfmpegServer: {
+        isDev: {
             type: Boolean,
             required: true,
         },
@@ -800,6 +802,7 @@ export default {
             videoDimensions: null,
             videoDuration: 0,
             videoTotalFrames: 0,
+            useFfmpegServer: this.isDev,
             //loadedImage has properties: width, height, fileName, and optionally unsplash info
             loadedImage: null,
             /**

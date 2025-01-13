@@ -255,7 +255,7 @@ export const renderHome = ({ isProduction = false, isElectron = false }) => {
                 APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
                 GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
                 URL_ROOT,
-                FFMPEG_SERVER: !isProduction,
+                IS_DEV: !isProduction,
                 shaderContent,
             })
     );
