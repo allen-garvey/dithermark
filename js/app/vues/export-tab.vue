@@ -1,136 +1,150 @@
 <template>
     <div class="controls-tab-container">
         <div v-if="currentInputFileType === inputFileTypes.MULTIPLE_IMAGES">
-            <label :class="$style.exportLabel">Export type</label>
-            <label :class="$style.radioLabel"
-                >Current image
-                <input
-                    type="radio"
-                    v-model="currentOutputFileOption"
-                    :value="outputFileOptions.CURRENT_IMAGE"
-                />
-            </label>
-            <label :class="$style.radioLabel"
-                >Batch export images
-                <input
-                    type="radio"
-                    v-model="currentOutputFileOption"
-                    :value="outputFileOptions.BATCH_CONVERT_IMAGES"
-                />
-            </label>
-            <label :class="$style.radioLabel"
-                >Images to video
-                <input
-                    type="radio"
-                    v-model="currentOutputFileOption"
-                    :value="outputFileOptions.VIDEO"
-                />
-            </label>
+            <label :class="$style.labelText">Export type</label>
+            <div :class="$style.radioGroup">
+                <label :class="$style.radioLabel"
+                    ><span>Current image</span>
+                    <input
+                        type="radio"
+                        v-model="currentOutputFileOption"
+                        :value="outputFileOptions.CURRENT_IMAGE"
+                    />
+                </label>
+                <label :class="$style.radioLabel"
+                    ><span>Batch export images</span>
+                    <input
+                        type="radio"
+                        v-model="currentOutputFileOption"
+                        :value="outputFileOptions.BATCH_CONVERT_IMAGES"
+                    />
+                </label>
+                <label :class="$style.radioLabel"
+                    ><span>Images to video</span>
+                    <input
+                        type="radio"
+                        v-model="currentOutputFileOption"
+                        :value="outputFileOptions.VIDEO"
+                    />
+                </label>
+            </div>
         </div>
 
         <div v-if="currentInputFileType === inputFileTypes.VIDEO">
-            <label :class="$style.exportLabel">Export type</label>
-            <label :class="$style.radioLabel"
-                >Current image
-                <input
-                    type="radio"
-                    v-model="currentOutputFileOption"
-                    :value="outputFileOptions.CURRENT_IMAGE"
-                />
-            </label>
-            <label :class="$style.radioLabel"
-                >Video
-                <input
-                    type="radio"
-                    v-model="currentOutputFileOption"
-                    :value="outputFileOptions.VIDEO"
-                />
-            </label>
+            <label :class="$style.labelText">Export type</label>
+            <div :class="$style.radioGroup">
+                <label :class="$style.radioLabel"
+                    ><span>Current image</span>
+                    <input
+                        type="radio"
+                        v-model="currentOutputFileOption"
+                        :value="outputFileOptions.CURRENT_IMAGE"
+                    />
+                </label>
+                <label :class="$style.radioLabel"
+                    ><span>Video</span>
+                    <input
+                        type="radio"
+                        v-model="currentOutputFileOption"
+                        :value="outputFileOptions.VIDEO"
+                    />
+                </label>
+            </div>
         </div>
         <div v-if="currentOutputFileOption === outputFileOptions.CURRENT_IMAGE">
-            <label :class="$style.exportLabel"
-                ><span>File name</span>
+            <label
+                ><span :class="$style.labelText">File name</span>
                 <input
                     placeholder="File name"
                     v-model="saveImageFileName"
                     @keyup.enter="submit"
                     :class="{ [$style.invalid]: hasFilenameError }"
-                    id="export-tab-filename"
                 /><span>{{ displayedOutputFileExtension }}</span>
             </label>
         </div>
         <div v-if="isOutputtingVideo">
-            <label :class="$style.exportLabel"
-                ><span>File name</span>
+            <label>
+                <span :class="$style.labelText">File name</span>
                 <input
                     placeholder="File name"
                     v-model="videoExportFilename"
                     @keyup.enter="submit"
                     :class="{ [$style.invalid]: hasFilenameError }"
-                    id="export-tab-filename"
                 /><span>{{ displayedOutputFileExtension }}</span>
             </label>
         </div>
-        <div v-if="currentOutputFileOption === outputFileOptions.VIDEO">
+        <div
+            v-if="currentOutputFileOption === outputFileOptions.VIDEO"
+            :class="$style.inputList"
+        >
             <checkbox
                 tooltip="Keep input and output frames per second the same"
-                label="Sync input and output FPS"
+                label="Sync FPS"
                 v-model="videoSyncFps"
+                :labelTextClass="$style.labelText"
             />
-            <label :class="$style.exportLabel"
-                ><span>Input frames per second</span>
+            <label>
+                <span :class="$style.labelText">Input FPS</span>
                 <input
                     v-model.number="videoInputFps"
                     type="number"
                     min="1"
                     step="1"
-                    :class="{ [$style.invalid]: hasInputFpsError }"
+                    :class="{
+                        [$style.invalid]: hasInputFpsError,
+                        [$style.fpsInput]: true,
+                    }"
                 />
             </label>
-            <label :class="$style.exportLabel"
-                ><span>Output frames per second</span>
+            <label>
+                <span :class="$style.labelText">Output FPS</span>
                 <input
                     v-model.number="videoOutputFps"
                     type="number"
                     min="1"
                     step="1"
-                    :class="{ [$style.invalid]: hasOutputFpsError }"
+                    :class="{
+                        [$style.invalid]: hasOutputFpsError,
+                        [$style.fpsInput]: true,
+                    }"
                     :disabled="videoSyncFps"
                 />
             </label>
         </div>
         <div v-if="!isOutputtingVideo">
-            <label :class="$style.exportLabel" for="export-tab-filetype"
-                >File type</label
-            >
-            <select v-model="saveImageFileTypeValue" id="export-tab-filetype">
-                <option
-                    v-for="fileType of saveImageFileTypes"
-                    :key="fileType.value"
-                    :value="fileType.value"
-                >
-                    {{ fileType.label }}
-                </option>
-            </select>
+            <label
+                ><span :class="$style.labelText">File type</span>
+                <select v-model="saveImageFileTypeValue">
+                    <option
+                        v-for="fileType of saveImageFileTypes"
+                        :key="fileType.value"
+                        :value="fileType.value"
+                    >
+                        {{ fileType.label }}
+                    </option>
+                </select>
+            </label>
         </div>
         <div v-if="isImagePixelated">
-            <label :class="$style.exportLabel">Size</label>
-            <label :class="$style.radioLabel">
-                Upsampled
-                <input
-                    type="radio"
-                    @change="$emit('update:shouldUpsample', true)"
-                    :checked="shouldUpsample"
-                />
-            </label>
-            <label :class="$style.radioLabel">
-                Actual
-                <input
-                    type="radio"
-                    @change="$emit('update:shouldUpsample', false)"
-                    :checked="!shouldUpsample"
-                />
-            </label>
+            <label :class="$style.labelText">Size</label>
+            <div :class="$style.radioGroup">
+                <label :class="$style.radioLabel">
+                    <span>Upsampled</span>
+                    <input
+                        type="radio"
+                        @change="$emit('update:shouldUpsample', true)"
+                        :checked="shouldUpsample"
+                    />
+                </label>
+                <label :class="$style.radioLabel">
+                    <span>Actual</span>
+                    <input
+                        type="radio"
+                        @change="$emit('update:shouldUpsample', false)"
+                        :checked="!shouldUpsample"
+                    />
+                </label>
+            </div>
         </div>
         <div>
             <button
@@ -157,18 +171,28 @@
 </template>
 
 <style lang="scss" module>
-.exportLabel {
+.inputList {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+.labelText {
     display: inline-block;
-    min-width: 4.5em;
-    margin-right: 0.8em;
+    margin-right: 0.5em;
+    min-width: 5.25em;
 }
 
 .radioLabel {
     font-size: 0.8rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 1em 0.5em;
+}
 
-    & + & {
-        margin-left: 0.5em;
-    }
+.radioGroup {
+    display: inline-flex;
+    flex-wrap: wrap;
+    gap: 1em;
 }
 
 .alertsContainer {
@@ -187,6 +211,10 @@
     display: flex;
     align-items: center;
     gap: 1em;
+}
+
+.fpsInput {
+    width: 4em;
 }
 </style>
 

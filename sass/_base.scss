@@ -94,6 +94,9 @@ input{
 input:not([type]), input[type="text"], input[type="url"]{
     width: 16em;
 }
+input[type="radio"]{
+    margin: 0;
+}
 input[type="range"]{
     flex-basis: 50%;
 }

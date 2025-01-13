@@ -1,6 +1,6 @@
 <template>
     <label :title="tooltip"
-        ><span :class="$style.labelText">{{ label }}</span>
+        ><span :class="[$style.labelText, labelTextClass]">{{ label }}</span>
         <input
             type="checkbox"
             :value="modelValue"
@@ -23,6 +23,10 @@ export default {
         label: {
             type: String,
             required: true,
+        },
+        labelTextClass: {
+            type: String,
+            default: '',
         },
         tooltip: {
             type: String,

@@ -5,11 +5,6 @@
 @use './variables';
 @use './mixins';
 
-input[type="radio"]{
-    margin-right: 14px;
-    margin-left: 2px;
-}
-
 .controls-panel > *{
     margin-bottom: 16px;
 }
