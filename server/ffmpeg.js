@@ -128,6 +128,7 @@ export const videoToFrames = (videoPath, fps, duration, useAudio) => {
                     RAW_AUDIO_PATH,
                 ]);
             }
+            return code;
         })
         .then(code => {
             if (code === 0) {
