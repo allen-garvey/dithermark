@@ -1,5 +1,5 @@
 <template>
-    <div :class="$style.container">
+    <div :class="$style.batchConvertOverlay">
         <div v-if="progressStagesCount > 1">
             {{ currentProgressStage }} / {{ progressStagesCount }}
         </div>
@@ -29,19 +29,14 @@
 </template>
 
 <style lang="scss" module>
-.container {
-    position: absolute;
-    z-index: 100;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
+.batchConvertOverlay {
     background-color: var(--main-bg-color);
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: column;
     font-size: 1.25rem;
+    padding: 2em 1em;
 }
 .messageContainer {
     text-align: center;

@@ -24,6 +24,7 @@
                 <div
                     :class="{ 'no-image': !isImageLoaded }"
                     class="global-controls-panel controls-panel"
+                    v-show="!isBatchConverting"
                 >
                     <tabs
                         :activeTabIndex="activeControlsTab"
@@ -441,7 +442,7 @@
                 </div>
                 <div
                     class="super-dither-controls-container"
-                    v-show="isImageLoaded"
+                    v-show="isImageLoaded && !isBatchConverting"
                 >
                     <tabs
                         :activeTabIndex="activeDitherComponentId"
