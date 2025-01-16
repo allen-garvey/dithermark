@@ -34,6 +34,8 @@
 
 * Fix exporting on enter key pressed in export file name input when it shouldn't be allowed.
 
+* Fix controls being visible during batch export.
+
 ### Technical
 
 * Change to dart-sass from node-sass for scss compilation.
