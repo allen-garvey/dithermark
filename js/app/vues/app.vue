@@ -1136,12 +1136,21 @@ export default {
                     inputFps,
                     this.videoDuration,
                     inputFps === outputFps
-                ).then(files => {
-                    this.loadBatchImageFiles(
-                        files,
-                        BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
-                    );
-                });
+                )
+                    .catch(error => {
+                        this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                        this.onOpenImageError(
+                            `Converting video to images failed due to: ${error.message}`
+                        );
+                    })
+                    .then(files => {
+                        if (files) {
+                            this.loadBatchImageFiles(
+                                files,
+                                BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
+                            );
+                        }
+                    });
             }
         },
         loadBatchImages(batchImageMode) {
@@ -1640,7 +1649,7 @@ export default {
          * Open tab
          */
         onOpenImageError(errorMessage) {
-            this.$refs.alertsContainer.openImageErrorMessage = errorMessage;
+            this.$refs.alertsContainer.displayOpenMessage(errorMessage);
         },
         /**
          * Image tab
