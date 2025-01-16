@@ -165,6 +165,7 @@
                 :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                 :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
                 :doInputAndOutputFpsMatch="videoInputFps === videoOutputFps"
+                :useFfmpegServer="useFfmpegServer"
             />
         </div>
     </div>
@@ -314,6 +315,10 @@ export default {
             required: true,
         },
         isBatchConverting: {
+            type: Boolean,
+            required: true,
+        },
+        useFfmpegServer: {
             type: Boolean,
             required: true,
         },

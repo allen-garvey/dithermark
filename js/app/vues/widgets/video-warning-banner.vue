@@ -21,6 +21,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        useFfmpegServer: {
+            type: Boolean,
+            required: true,
+        },
     },
     components: {
         BannerMessages,
@@ -28,6 +32,10 @@ export default {
     computed: {
         warningMessages() {
             const messages = [];
+
+            if (!this.useFfmpegServer) {
+                messages.push('Video export is experimental and may fail.');
+            }
 
             if (this.automaticallyResizeLargeImages) {
                 messages.push(

@@ -436,6 +436,7 @@
                         :onSubmitBatchConvertImages="loadBatchImages"
                         :isFfmpegReady="isFfmpegReady"
                         :isBatchConverting="isBatchConverting"
+                        :useFfmpegServer="useFfmpegServer"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />
