@@ -67,73 +67,79 @@ export const videoToFrames = (ffmpeg, file, fps, duration, useAudio) => {
         2
     );
 
-    return fileToArray(file)
-        .then(data => ffmpeg.writeFile(importedVideoPath, data))
-        .then(() =>
-            ffmpeg
-                .exec([
-                    '-i',
-                    importedVideoPath,
-                    '-vf',
-                    `fps=${fps}`,
-                    `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${RAW_IMAGE_FILE_EXTENSION}`,
-                ])
-                .then(code => [null, code])
-        )
-        .catch(errorRaw => {
-            const error =
-                typeof errorRaw === 'string' ? new Error(errorRaw) : errorRaw;
-            return [error, -1];
-        })
-        .then(([error, code]) => {
-            console.log(`ffmpeg video to frames return value ${code}`);
-
-            if (!error && code === 0 && useAudio) {
-                return ffmpeg
+    return (
+        fileToArray(file)
+            .then(data => ffmpeg.writeFile(importedVideoPath, data))
+            // executing invalid ffmpeg command fixes memory access out of bound error https://github.com/ffmpegwasm/ffmpeg.wasm/issues/823
+            .then(() => ffmpeg.exec(['-i', 'not-found']))
+            .then(() =>
+                ffmpeg
                     .exec([
                         '-i',
                         importedVideoPath,
-                        '-vn',
-                        '-acodec',
-                        'copy',
-                        FFMPEG_AUDIO_FILE,
+                        '-vf',
+                        `fps=${fps}`,
+                        `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${RAW_IMAGE_FILE_EXTENSION}`,
                     ])
-                    .then(code => {
-                        console.log(
-                            `ffmpeg extract audio return value ${code}`
-                        );
-                        return [error, code];
-                    });
-            }
-            return [error, code];
-        })
-        .then(result => {
-            return ffmpeg.deleteFile(importedVideoPath).then(() => result);
-        })
-        .then(([error, code]) => {
-            if (error) {
-                throw error;
-            }
+                    .then(code => [null, code])
+            )
+            .catch(errorRaw => {
+                const error =
+                    typeof errorRaw === 'string'
+                        ? new Error(errorRaw)
+                        : errorRaw;
+                return [error, -1];
+            })
+            .then(([error, code]) => {
+                console.log(`ffmpeg video to frames return value ${code}`);
 
-            return ffmpeg.listDir(FFMPEG_RAW_DIRECTORY).then(files => {
-                const filesPromises = files
-                    .filter(file => !file.isDir)
-                    .map(file => {
-                        const imagePath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
-
-                        return ffmpeg.readFile(imagePath).then(data => {
-                            const retFile = new File([data], file.name, {
-                                type: RAW_IMAGE_MIME,
-                            });
-
-                            return ffmpeg
-                                .deleteFile(imagePath)
-                                .then(() => retFile);
+                if (!error && code === 0 && useAudio) {
+                    return ffmpeg
+                        .exec([
+                            '-i',
+                            importedVideoPath,
+                            '-vn',
+                            '-acodec',
+                            'copy',
+                            FFMPEG_AUDIO_FILE,
+                        ])
+                        .then(code => {
+                            console.log(
+                                `ffmpeg extract audio return value ${code}`
+                            );
+                            return [error, code];
                         });
-                    });
-                return Promise.all(filesPromises);
-            });
-        });
+                }
+                return [error, code];
+            })
+            .then(result => {
+                return ffmpeg.deleteFile(importedVideoPath).then(() => result);
+            })
+            .then(([error, code]) => {
+                if (error) {
+                    throw error;
+                }
+
+                return ffmpeg.listDir(FFMPEG_RAW_DIRECTORY).then(files => {
+                    const filesPromises = files
+                        .filter(file => !file.isDir)
+                        .map(file => {
+                            const imagePath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
+
+                            return ffmpeg.readFile(imagePath).then(data => {
+                                const retFile = new File([data], file.name, {
+                                    type: RAW_IMAGE_MIME,
+                                });
+
+                                return ffmpeg
+                                    .deleteFile(imagePath)
+                                    .then(() => retFile);
+                            });
+                        });
+                    return Promise.all(filesPromises);
+                });
+            })
+    );
 };
 
 /**
