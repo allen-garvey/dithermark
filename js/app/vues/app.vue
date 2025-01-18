@@ -1143,9 +1143,7 @@ export default {
                 )
                     .catch(error => {
                         this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                        this.onOpenImageError(
-                            `Converting video to images failed due to: ${error.message}`
-                        );
+                        this.onOpenImageError(error.message);
                     })
                     .then(files => {
                         if (files) {
