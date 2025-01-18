@@ -733,7 +733,9 @@ export default {
         }
 
         ffmpeg.on('log', ({ message }) => {
-            console.log(message);
+            if (this.isDev) {
+                console.log(message);
+            }
             if (
                 (this.batchConvertState ===
                     BATCH_CONVERT_STATE.FRAMES_TO_VIDEO ||
