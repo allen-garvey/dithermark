@@ -1310,7 +1310,7 @@ export default {
             this.activeDitherSection.imageLoaded(this.imageHeader, true);
             //this is so mobile users will actually be able to see that an image has loaded
             //have to use a timer since unsplashAttributionContainer won't be in proper place on initial page load
-            if (!this.areControlsPinned()) {
+            if (!this.isBatchConverting && !this.areControlsPinned()) {
                 setTimeout(() => {
                     this.$refs.unsplashAttributionContainer.scrollIntoView({
                         behavior: 'smooth',
