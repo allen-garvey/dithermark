@@ -612,6 +612,7 @@
  * sourceCanvasOutput: original image as displayed to the user, after zoomed and pixelated
  * transformCanvasOutput: output from dither as shown to user, after zoom
  */
+import { nextTick } from 'vue';
 
 import UserSettings from '../user-settings.js';
 import Canvas from '../canvas.js';
@@ -1309,14 +1310,14 @@ export default {
             tabsThatHaveSeenImageSet.add(this.activeDitherComponentId);
             this.activeDitherSection.imageLoaded(this.imageHeader, true);
             //this is so mobile users will actually be able to see that an image has loaded
-            //have to use a timer since unsplashAttributionContainer won't be in proper place on initial page load
+            //have to use a nexttick since unsplashAttributionContainer won't be in proper place on initial page load
             if (!this.isBatchConverting && !this.areControlsPinned()) {
-                setTimeout(() => {
+                nextTick().then(() => {
                     this.$refs.unsplashAttributionContainer.scrollIntoView({
                         behavior: 'smooth',
                         block: 'start',
                     });
-                }, 1);
+                });
             }
         },
         imageFiltersBeforeDitherChanged(notifyDitherSection = true) {
