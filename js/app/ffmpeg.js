@@ -58,7 +58,7 @@ export const saveImageFrame = (ffmpeg, filename, data) =>
  * @param {boolean} useAudio
  * @returns {Promise<File[]>}
  */
-export const videoToFrames = (ffmpeg, file, fps, duration, useAudio) => {
+export const videoToFrames = async (ffmpeg, file, fps, duration, useAudio) => {
     const importedVideoPath = `${FFMPEG_RAW_DIRECTORY}/movie${getFileExtension(
         file.name
     )}`;
@@ -66,95 +66,81 @@ export const videoToFrames = (ffmpeg, file, fps, duration, useAudio) => {
         Math.ceil(Math.log10(Math.ceil(fps * duration))),
         2
     );
+    try {
+        const fileData = await fileToArray(file);
+        await ffmpeg.writeFile(importedVideoPath, fileData);
+    } catch (error) {
+        throw new Error('Video file is too large.');
+    }
+    // executing invalid ffmpeg command fixes memory access out of bound error https://github.com/ffmpegwasm/ffmpeg.wasm/issues/823
+    await ffmpeg.exec(['-i', 'not-found']);
+    let videoToFramesReturnCode;
+    try {
+        videoToFramesReturnCode = await ffmpeg.exec([
+            '-i',
+            importedVideoPath,
+            '-vf',
+            `fps=${fps}`,
+            `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${RAW_IMAGE_FILE_EXTENSION}`,
+        ]);
+    } catch (errorRaw) {
+        const error =
+            typeof errorRaw === 'string'
+                ? new Error(
+                      `Converting video to images failed due to: ${errorRaw}`
+                  )
+                : errorRaw;
+        throw error;
+    }
+    if (videoToFramesReturnCode !== 0) {
+        throw new Error(
+            `Converting video to images failed with return code: ${videoToFramesReturnCode}`
+        );
+    }
+    if (useAudio) {
+        let extractAudioReturnCode;
+        try {
+            extractAudioReturnCode = await ffmpeg.exec([
+                '-i',
+                importedVideoPath,
+                '-vn',
+                '-acodec',
+                'copy',
+                FFMPEG_AUDIO_FILE,
+            ]);
+        } catch (errorRaw) {
+            // don't rethrow error, since audio is not required
+            const error =
+                typeof errorRaw === 'string'
+                    ? new Error(
+                          `Extracting audio from video failed due to: ${errorRaw}`
+                      )
+                    : errorRaw;
+            console.log(error.message);
+        }
+        // don't throw error on failure, since audio is not required
+        if (extractAudioReturnCode !== 0) {
+            console.log(
+                `Extracting audio failed with return code ${extractAudioReturnCode}`
+            );
+        }
+        await ffmpeg.deleteFile(importedVideoPath);
+        const files = await ffmpeg.listDir(FFMPEG_RAW_DIRECTORY);
+        const filesPromises = files
+            .filter(file => !file.isDir)
+            .map(file => {
+                const imagePath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
 
-    return fileToArray(file)
-        .then(data => ffmpeg.writeFile(importedVideoPath, data))
-        .catch(error => {
-            return new Error('Video file is too large.');
-        })
-        .then(error => {
-            if (error) {
-                throw error;
-            }
-            // executing invalid ffmpeg command fixes memory access out of bound error https://github.com/ffmpegwasm/ffmpeg.wasm/issues/823
-            return ffmpeg
-                .exec(['-i', 'not-found'])
-                .then(() =>
-                    ffmpeg
-                        .exec([
-                            '-i',
-                            importedVideoPath,
-                            '-vf',
-                            `fps=${fps}`,
-                            `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${RAW_IMAGE_FILE_EXTENSION}`,
-                        ])
-                        .then(code => [null, code])
-                )
-                .catch(errorRaw => {
-                    const error =
-                        typeof errorRaw === 'string'
-                            ? new Error(
-                                  `Converting video to images failed due to: ${errorRaw}`
-                              )
-                            : errorRaw;
-                    return [error, -1];
-                })
-                .then(([error, code]) => {
-                    console.log(`ffmpeg video to frames return value ${code}`);
-
-                    if (!error && code === 0 && useAudio) {
-                        return ffmpeg
-                            .exec([
-                                '-i',
-                                importedVideoPath,
-                                '-vn',
-                                '-acodec',
-                                'copy',
-                                FFMPEG_AUDIO_FILE,
-                            ])
-                            .then(code => {
-                                console.log(
-                                    `ffmpeg extract audio return value ${code}`
-                                );
-                                return [error, code];
-                            });
-                    }
-                    return [error, code];
-                })
-                .then(result => {
-                    return ffmpeg
-                        .deleteFile(importedVideoPath)
-                        .then(() => result);
-                })
-                .then(([error, code]) => {
-                    if (error) {
-                        throw error;
-                    }
-
-                    return ffmpeg.listDir(FFMPEG_RAW_DIRECTORY).then(files => {
-                        const filesPromises = files
-                            .filter(file => !file.isDir)
-                            .map(file => {
-                                const imagePath = `${FFMPEG_RAW_DIRECTORY}/${file.name}`;
-
-                                return ffmpeg.readFile(imagePath).then(data => {
-                                    const retFile = new File(
-                                        [data],
-                                        file.name,
-                                        {
-                                            type: RAW_IMAGE_MIME,
-                                        }
-                                    );
-
-                                    return ffmpeg
-                                        .deleteFile(imagePath)
-                                        .then(() => retFile);
-                                });
-                            });
-                        return Promise.all(filesPromises);
+                return ffmpeg.readFile(imagePath).then(data => {
+                    const retFile = new File([data], file.name, {
+                        type: RAW_IMAGE_MIME,
                     });
+
+                    return ffmpeg.deleteFile(imagePath).then(() => retFile);
                 });
-        });
+            });
+        return Promise.all(filesPromises);
+    }
 };
 
 /**
