@@ -621,18 +621,16 @@ export default {
                 )
             );
         },
-        exportVideoFromFrames(ffmpeg) {
+        async exportVideoFromFrames(ffmpeg) {
             const exportFilename =
                 this.videoExportFilename + this.videoFileExtension;
-
+            const data = await exportFramesToVideo(ffmpeg, this.videoOutputFps);
             return new Promise(resolve => {
-                exportFramesToVideo(ffmpeg, this.videoOutputFps).then(data => {
-                    arrayToObjectUrl(data, objectUrl => {
-                        saveImageLink.href = objectUrl;
-                        saveImageLink.download = exportFilename;
-                        saveImageLink.click();
-                        resolve();
-                    });
+                arrayToObjectUrl(data, objectUrl => {
+                    saveImageLink.href = objectUrl;
+                    saveImageLink.download = exportFilename;
+                    saveImageLink.click();
+                    resolve();
                 });
             });
         },

@@ -149,61 +149,56 @@ export const videoToFrames = async (ffmpeg, file, fps, duration, useAudio) => {
  * @param {number} fps
  * @returns {Promise<import("../../node_modules/@ffmpeg/ffmpeg/dist/esm/types").FileData>}
  */
-export const exportFramesToVideo = (ffmpeg, fps) => {
-    return ffmpeg
-        .listDir(FFMPEG_DITHERED_DIRECTORY)
-        .then(files => {
-            const hasAudio =
-                files.findIndex(
-                    file => file.name === FFMPEG_AUDIO_FILE_NAME
-                ) !== -1;
+export const exportFramesToVideo = async (ffmpeg, fps) => {
+    const files = await ffmpeg.listDir(FFMPEG_DITHERED_DIRECTORY);
+    const hasAudio =
+        files.findIndex(file => file.name === FFMPEG_AUDIO_FILE_NAME) !== -1;
 
-            let args = [
-                '-framerate',
-                `${fps}`, // for some reason ffmpeg will fail if fps is not a string
-                '-f',
-                'image2',
-                '-pattern_type',
-                'glob',
-                '-i',
-                `${FFMPEG_DITHERED_DIRECTORY}/*${IMAGE_FILE_EXTENSION}`,
-            ];
+    let args = [
+        '-framerate',
+        `${fps}`, // for some reason ffmpeg will fail if fps is not a string
+        '-f',
+        'image2',
+        '-pattern_type',
+        'glob',
+        '-i',
+        `${FFMPEG_DITHERED_DIRECTORY}/*${IMAGE_FILE_EXTENSION}`,
+    ];
 
-            if (hasAudio) {
-                args = args.concat(['-i', FFMPEG_AUDIO_FILE, '-c:a', 'copy']);
-            }
+    if (hasAudio) {
+        args = args.concat(['-i', FFMPEG_AUDIO_FILE, '-c:a', 'copy']);
+    }
 
-            args = args.concat([
-                '-vf',
-                `format=yuv420p, pad=ceil(iw/2)*2:ceil(ih/2)*2`,
-                '-vcodec',
-                'libx264',
-                // '-acodec',
-                // 'aac',
-                FFMPEG_VIDEO_OUTPUT_FILE,
-            ]);
+    args = args.concat([
+        '-vf',
+        `format=yuv420p, pad=ceil(iw/2)*2:ceil(ih/2)*2`,
+        '-vcodec',
+        'libx264',
+        // '-acodec',
+        // 'aac',
+        FFMPEG_VIDEO_OUTPUT_FILE,
+    ]);
 
-            return ffmpeg.exec(args);
-        })
-        .then(errorCode => {
-            console.log(`ffmpeg frames to video return value ${errorCode}`);
-            return ffmpeg.readFile(FFMPEG_VIDEO_OUTPUT_FILE);
-        })
-        .then(data =>
-            ffmpeg.listDir(FFMPEG_DITHERED_DIRECTORY).then(files => {
-                const promises = files
-                    .filter(file => !file.isDir)
-                    .map(file =>
-                        ffmpeg.deleteFile(
-                            `${FFMPEG_DITHERED_DIRECTORY}/${file.name}`
-                        )
-                    );
-                return (
-                    Promise.all(promises)
-                        // .then(() => ffmpeg.listDir(FFMPEG_EXPORT_DIRECTORY))
-                        // .then(contents => console.log(contents))
-                        .then(() => data)
-                );
-            })
+    let framesToVideoReturnCode;
+    try {
+        framesToVideoReturnCode = await ffmpeg.exec(args);
+    } catch (errorRaw) {
+        const error =
+            typeof errorRaw === 'string'
+                ? new Error(`Images to video failed due to: ${errorRaw}`)
+                : errorRaw;
+        throw error;
+    }
+    if (framesToVideoReturnCode !== 0) {
+        throw new Error(
+            `Images to video failed with return code: ${framesToVideoReturnCode}`
         );
+    }
+    const deleteFilePromises = files
+        .filter(file => !file.isDir)
+        .map(file =>
+            ffmpeg.deleteFile(`${FFMPEG_DITHERED_DIRECTORY}/${file.name}`)
+        );
+    await Promise.all(deleteFilePromises);
+    return ffmpeg.readFile(FFMPEG_VIDEO_OUTPUT_FILE);
 };

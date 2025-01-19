@@ -1182,6 +1182,13 @@ export default {
                 } else {
                     this.$refs.exportTab
                         .exportVideoFromFrames(ffmpeg)
+                        .catch(errorRaw => {
+                            const errorMessage =
+                                typeof errorRaw === 'string'
+                                    ? errorRaw
+                                    : `Converting images to video failed due to: ${errorRaw.message}`;
+                            this.onOpenImageError(errorMessage);
+                        })
                         .then(() => {
                             this.batchConvertState = BATCH_CONVERT_STATE.NONE;
                         });
