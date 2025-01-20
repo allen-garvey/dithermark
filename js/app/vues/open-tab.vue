@@ -174,6 +174,7 @@ export default {
                 return this.openImageError('No image files selected');
             }
             this.getFfmpegReady();
+            this.currentImageFileIndex = 0;
             this.imageFiles = files;
             const mode =
                 files.length > 1
