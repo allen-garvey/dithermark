@@ -168,6 +168,7 @@
                 :useFfmpegServer="useFfmpegServer"
             />
         </div>
+        <a ref="saveImageLink" v-show="false"></a>
     </div>
 </template>
 
@@ -266,19 +267,8 @@ const outputFileOptions = {
 };
 
 let saveImageCanvas;
-let saveImageLink;
 
 let saveFpsTimeout = null;
-
-function createSaveImageLink() {
-    const link = document.createElement('a');
-    //firefox needs the link attached to the body in order for downloads to work
-    //so display none in order to hide it
-    //https://stackoverflow.com/questions/38869328/unable-to-download-a-blob-file-with-firefox-but-it-works-in-chrome
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    return link;
-}
 
 export default {
     props: {
@@ -336,7 +326,6 @@ export default {
     },
     created() {
         saveImageCanvas = Canvas.create();
-        saveImageLink = createSaveImageLink();
     },
     data() {
         const exportSettings = userSettings.getExportSettings();
@@ -571,6 +560,7 @@ export default {
                             sourceCanvas.canvas,
                             this.saveImageFileType.mime,
                             objectUrl => {
+                                const saveImageLink = this.$refs.saveImageLink;
                                 saveImageLink.href = objectUrl;
                                 saveImageLink.download =
                                     this.saveImageFileName +
@@ -627,6 +617,7 @@ export default {
             const data = await exportFramesToVideo(ffmpeg, this.videoOutputFps);
             return new Promise(resolve => {
                 arrayToObjectUrl(data, objectUrl => {
+                    const saveImageLink = this.$refs.saveImageLink;
                     saveImageLink.href = objectUrl;
                     saveImageLink.download = exportFilename;
                     saveImageLink.click();
@@ -644,6 +635,7 @@ export default {
                     this.saveImageFileType.extension
                 ).then(blob => {
                     blobToObjectUrl(blob, objectUrl => {
+                        const saveImageLink = this.$refs.saveImageLink;
                         saveImageLink.href = objectUrl;
                         saveImageLink.download = exportFilename;
                         saveImageLink.click();
