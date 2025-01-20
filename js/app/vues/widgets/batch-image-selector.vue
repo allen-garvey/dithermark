@@ -13,7 +13,7 @@
                 @change="updateFileIndex($event.target.value)"
             />
             <input
-                type=" number"
+                type="number"
                 min="1"
                 :max="fileCount"
                 step="1"
