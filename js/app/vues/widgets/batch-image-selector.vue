@@ -11,7 +11,11 @@
                 :value="fileIndex + 1"
                 :class="$style.range"
                 @change="updateFileIndex($event.target.value)"
+                list="batch-image-selector-datalist"
             />
+            <datalist id="batch-image-selector-datalist">
+                <option v-for="i in fileCount" :value="i + 1" :key="i"></option>
+            </datalist>
             <input
                 type="number"
                 min="1"
