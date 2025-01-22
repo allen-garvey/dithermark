@@ -17,16 +17,23 @@ import { serveFile } from './routes.js';
 import {
     videoToFrames,
     framesToVideo,
-    FFMPEG_RAW_DIRECTORY,
+    FFMPEG_RAW_IMAGE_DIRECTORY,
     FFMPEG_OUTPUT_DIRECTORY,
     DITHERED_IMAGES_DIRECTORY_NAME,
+    FFMPEG_TMP_ROOT_NAME,
+    FFMPEG_VIDEO_UPLOAD_DIRECTORY_NAME,
 } from './ffmpeg.js';
 
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+    dest: `${FFMPEG_TMP_ROOT_NAME}/${FFMPEG_VIDEO_UPLOAD_DIRECTORY_NAME}/`,
+});
 const uploadDithered = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, `${DITHERED_IMAGES_DIRECTORY_NAME}/`);
+            cb(
+                null,
+                `${FFMPEG_TMP_ROOT_NAME}/${DITHERED_IMAGES_DIRECTORY_NAME}/`
+            );
         },
         filename: function (req, file, cb) {
             // TODO sanitize filename to remove forward slashes
@@ -97,7 +104,7 @@ app.post('/api/ffmpeg/frames-to-video', (req, res) => {
 
 app.use(
     FFMPEG_RAW_URL_BASE,
-    express.static(FFMPEG_RAW_DIRECTORY, { index: false })
+    express.static(FFMPEG_RAW_IMAGE_DIRECTORY, { index: false })
 );
 
 app.use(

@@ -6,20 +6,34 @@ import { spawn } from 'node:child_process';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const FFMPEG_RAW_DIRECTORY = path.join(__dirname, '..', 'tmp');
-export const FFMPEG_OUTPUT_DIRECTORY = path.join(__dirname, '..', 'tmp-output');
+export const FFMPEG_TMP_ROOT_NAME = 'tmp';
+const TMP_ROOT_PATH = path.join(__dirname, '..', FFMPEG_TMP_ROOT_NAME);
+export const FFMPEG_RAW_IMAGE_DIRECTORY = path.join(TMP_ROOT_PATH, 'raw-image');
+export const FFMPEG_OUTPUT_DIRECTORY = path.join(TMP_ROOT_PATH, 'video-output');
+export const FFMPEG_VIDEO_UPLOAD_DIRECTORY_NAME = 'uploads-video';
+const VIDEO_UPLOAD_PATH = path.join(
+    TMP_ROOT_PATH,
+    FFMPEG_VIDEO_UPLOAD_DIRECTORY_NAME
+);
 const OUTPUT_VIDEO_NAME = 'video.mp4';
 const OUTPUT_VIDEO_PATH = path.join(FFMPEG_OUTPUT_DIRECTORY, OUTPUT_VIDEO_NAME);
 const IMAGE_EXTENSION = '.jpg';
 const RAW_AUDIO_NAME = 'audio.m4a';
-const RAW_AUDIO_PATH = path.join(FFMPEG_RAW_DIRECTORY, RAW_AUDIO_NAME);
+const RAW_AUDIO_PATH = path.join(FFMPEG_RAW_IMAGE_DIRECTORY, RAW_AUDIO_NAME);
 
 export const DITHERED_IMAGES_DIRECTORY_NAME = 'uploads-dithered';
 const DITHERED_IMAGES_DIRECTORY_PATH = path.join(
-    __dirname,
-    '..',
+    TMP_ROOT_PATH,
     DITHERED_IMAGES_DIRECTORY_NAME
 );
+
+// create directories on server start. Don't wait for results since should be complete by the time uploads start
+Promise.all([
+    fs.mkdir(VIDEO_UPLOAD_PATH, { recursive: true }),
+    fs.mkdir(FFMPEG_RAW_IMAGE_DIRECTORY, { recursive: true }),
+    fs.mkdir(DITHERED_IMAGES_DIRECTORY_PATH, { recursive: true }),
+    fs.mkdir(FFMPEG_OUTPUT_DIRECTORY, { recursive: true }),
+]);
 
 /**
  *
@@ -51,7 +65,7 @@ const ffmpegExecute = args =>
  * @returns {Promise}
  */
 const cleanUpRawFiles = () =>
-    fs.readdir(FFMPEG_RAW_DIRECTORY).then(filePaths => {
+    fs.readdir(FFMPEG_RAW_IMAGE_DIRECTORY).then(filePaths => {
         const cleanUpFilesPromises = filePaths
             .filter(
                 filePath =>
@@ -59,7 +73,7 @@ const cleanUpRawFiles = () =>
                     filePath === RAW_AUDIO_NAME
             )
             .map(filePath =>
-                fs.unlink(path.join(FFMPEG_RAW_DIRECTORY, filePath))
+                fs.unlink(path.join(FFMPEG_RAW_IMAGE_DIRECTORY, filePath))
             );
 
         return Promise.all(cleanUpFilesPromises);
@@ -114,7 +128,7 @@ export const videoToFrames = (videoPath, fps, duration, useAudio) => {
                 videoInputPath,
                 '-vf',
                 `fps=${fps}`,
-                `${FFMPEG_RAW_DIRECTORY}/%0${framesPattern}d${IMAGE_EXTENSION}`,
+                `${FFMPEG_RAW_IMAGE_DIRECTORY}/%0${framesPattern}d${IMAGE_EXTENSION}`,
             ])
         )
         .then(code => {
@@ -135,7 +149,7 @@ export const videoToFrames = (videoPath, fps, duration, useAudio) => {
                 return fs.unlink(videoInputPath);
             }
         })
-        .then(() => fs.readdir(FFMPEG_RAW_DIRECTORY))
+        .then(() => fs.readdir(FFMPEG_RAW_IMAGE_DIRECTORY))
         .then(files => files.filter(file => file.endsWith(IMAGE_EXTENSION)));
 };
 
