@@ -22,9 +22,9 @@ This is a guide for installing and building the project directly on you computer
 ## Creating a static development build
 
 * Run `npm run build`
-* A static version of the site is in the `public_html` directory
+* A static version of the site is in the `deploy/public_html` directory
 
 ## Creating a static production build
 
 * Run `npm run deploy`
-* A static version of the site is in the `public_html` directory
+* A static version of the site is in the `deploy/public_html` directory

@@ -1,11 +1,8 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
 import { UNSPLASH_ACCESS_KEY } from '../unsplash-secrets.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+import { PUBLIC_HTML_DIR } from '../build/webpack.config.js';
 
 const modifierWordsSet = new Set([
     'a',
@@ -133,7 +130,7 @@ const getRandomPhotosJson = () =>
             })
         );
 
-const outputDir = path.join(__dirname, '..', 'public_html', 'api');
+const outputDir = path.join(PUBLIC_HTML_DIR, 'api');
 
 const mkdirPromise = fs.mkdir(outputDir, { recursive: true });
 

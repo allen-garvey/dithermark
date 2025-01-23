@@ -26,9 +26,9 @@ Thumbs.db
 *.eot
 *.woff
 *.zip
-public_html/assets/*
-public_html/index.html
-public_html/api/*.json
+deploy/public_html/assets/*
+deploy/public_html/index.html
+deploy/public_html/api/*
 *.rb
 sass/lib/*
 inc/unsplash-api-secret.php

@@ -2,6 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
+import { PUBLIC_HTML_DIR } from './webpack.config.js';
 import { renderHome } from '../server/views/home.js';
 import { renderUnsplashDownloadApi } from '../server/views/unsplash-download-api.js';
 
@@ -11,8 +12,7 @@ const __dirname = path.dirname(__filename);
 const isProduction = process.env.IS_PRODUCTION === 'true';
 const isElectron = process.env.ELECTRON === 'true';
 
-const publicHtmlDir = path.join(__dirname, '..', 'public_html');
-let homeOutputPath = path.join(publicHtmlDir, 'index.html');
+let homeOutputPath = path.join(PUBLIC_HTML_DIR, 'index.html');
 let getPrebuildHomePromise = () => Promise.resolve();
 
 if (isElectron) {
@@ -24,10 +24,10 @@ if (isElectron) {
     );
 
     getPrebuildHomePromise = () =>
-        fs.cp(publicHtmlDir, electronOutputDir, {
+        fs.cp(PUBLIC_HTML_DIR, electronOutputDir, {
             recursive: true,
             filter: (src, _dest) => {
-                if (src === publicHtmlDir) {
+                if (src === PUBLIC_HTML_DIR) {
                     return true;
                 }
                 return /\.(png|ico)$/.test(src);
@@ -39,14 +39,14 @@ if (isElectron) {
 
 const homePromise = getPrebuildHomePromise()
     .then(() => renderHome({ isProduction, isElectron }))
-    .then((indexContent) => fs.writeFile(homeOutputPath, indexContent));
+    .then(indexContent => fs.writeFile(homeOutputPath, indexContent));
 
 const SERVERLESS_PATH = path.join(__dirname, '..', 'serverless');
 
 const unsplashDownloadApiPromise = fs
     .mkdir(SERVERLESS_PATH, { recursive: true })
     .then(() => renderUnsplashDownloadApi())
-    .then((unsplashDownloadApi) => {
+    .then(unsplashDownloadApi => {
         if (unsplashDownloadApi) {
             return fs.writeFile(
                 path.join(SERVERLESS_PATH, 'unsplash-download.php'),
@@ -54,7 +54,6 @@ const unsplashDownloadApiPromise = fs
             );
         }
         return null;
-    }
-    );
+    });
 
 Promise.all([homePromise, unsplashDownloadApiPromise]);
