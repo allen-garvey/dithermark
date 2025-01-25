@@ -26,6 +26,8 @@ Thumbs.db
 *.eot
 *.woff
 *.zip
+deploy/dithermark
+deploy/*.exe
 deploy/public_html/assets/*
 deploy/public_html/index.html
 deploy/public_html/api/*
