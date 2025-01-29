@@ -38,6 +38,8 @@
 
 ### Technical
 
+* Replace standalone Electron builds with local http server and compiled static assets. This avoids security warning on Mac, and requires less memory to run, removes the need for compilation for Mac, Linux and BSD, and allows cross-compilation for Windows and Windows ARM.
+
 * Change to dart-sass from node-sass for scss compilation.
 
 * Change from using PHP for templates and generating JavaScript to using JavaScript for everything. This removes the dependency on PHP and make for local development, and the dependency on sed and rsync for Electron development. This allows for easier local development on Windows, as well as faster development, as templates don't need to be recompiled. It also makes it simpler to add additonal dither and color quantization algorithms.

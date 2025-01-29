@@ -34,9 +34,6 @@ deploy/public_html/api/*
 *.rb
 sass/lib/*
 inc/unsplash-api-secret.php
-electron/node_modules/*
-electron/public_html/*
-electron/out/*
 inc/serverless/build/*
 unsplash-secrets.js
 serverless/*

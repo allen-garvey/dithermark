@@ -7,7 +7,7 @@ import {
     YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH,
 } from '../../constants.js';
 
-export const renderHome = ({ isProduction = false, isElectron = false }) => {
+export const renderHome = ({ isProduction = false }) => {
     const shaders = [
         // vertex
         {
@@ -246,15 +246,13 @@ export const renderHome = ({ isProduction = false, isElectron = false }) => {
         )
     ).then(shaderTexts => shaderTexts.join(''));
 
-    const URL_ROOT = isElectron ? '.' : '';
-
     return Promise.all([shaderPromises, getTemplate('index.html')]).then(
         ([shaderContent, indexTemplate]) =>
             render(indexTemplate, {
                 APP_NAME,
                 APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
                 GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
-                URL_ROOT,
+                URL_ROOT: '',
                 IS_DEV: !isProduction,
                 shaderContent,
             })

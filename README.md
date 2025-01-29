@@ -2,9 +2,9 @@
 
 An interactive, in-browser playground for image dithering and color quantization algorithms. Demo at [app.dithermark.com](https://app.dithermark.com).
 
-## Electron
+## Running offline
 
-Standalone desktop Electron builds can be found [on the releases page.](https://github.com/allen-garvey/dithermark/releases). Directions for creating an Electron build can be found in `docs/electron.md`
+Standalone desktop builds can be found [on the releases page.](https://github.com/allen-garvey/dithermark/releases).
 
 ## Documentation
 

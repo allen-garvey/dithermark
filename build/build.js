@@ -10,36 +10,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const isProduction = process.env.IS_PRODUCTION === 'true';
-const isElectron = process.env.ELECTRON === 'true';
 
-let homeOutputPath = path.join(PUBLIC_HTML_DIR, 'index.html');
-let getPrebuildHomePromise = () => Promise.resolve();
+const homeOutputPath = path.join(PUBLIC_HTML_DIR, 'index.html');
 
-if (isElectron) {
-    const electronOutputDir = path.join(
-        __dirname,
-        '..',
-        'electron',
-        'public_html'
-    );
-
-    getPrebuildHomePromise = () =>
-        fs.cp(PUBLIC_HTML_DIR, electronOutputDir, {
-            recursive: true,
-            filter: (src, _dest) => {
-                if (src === PUBLIC_HTML_DIR) {
-                    return true;
-                }
-                return /\.(png|ico)$/.test(src);
-            },
-        });
-
-    homeOutputPath = path.join(electronOutputDir, 'index.html');
-}
-
-const homePromise = getPrebuildHomePromise()
-    .then(() => renderHome({ isProduction, isElectron }))
-    .then(indexContent => fs.writeFile(homeOutputPath, indexContent));
+const homePromise = renderHome({ isProduction }).then(indexContent =>
+    fs.writeFile(homeOutputPath, indexContent)
+);
 
 const SERVERLESS_PATH = path.join(__dirname, '..', 'serverless');
 

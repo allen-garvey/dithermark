@@ -13,9 +13,6 @@
     "deploy": "npm run deploy:html && npm run deploy:js",
     "deploy:html": "IS_PRODUCTION=true node build/build.js",
     "deploy:js": "webpack --config build/webpack.production.config.js",
-    "electron": "npm run electron:html && npm run electron:js",
-    "electron:html": "IS_PRODUCTION=true ELECTRON=true node build/build.js",
-    "electron:js": "webpack --config build/webpack.electron.config.js",
     "seed:unsplash": "node scripts/unsplash-random-images.js",
     "image-to-matrix": "node scripts/image-to-matrix.js"
   },
