@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PORT=8080
+PORT=8800
 HTML_ROOT="$(dirname "$0")/public_html"
 
 if [ -x "$(command -v python3)" ]; then

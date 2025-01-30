@@ -13,7 +13,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	port := 8080
+	port := 8800
 	http.Handle("/", http.FileServer(http.Dir(path.Join(filepath.Dir(executable), "public_html"))))
 
 	fmt.Printf("Dithermark server listening on http://localhost:%d\n", port)
