@@ -1,5 +1,3 @@
-import { isiOs } from '../cross-platform.js';
-
 /**
  * @typedef {Object} FileType
  * @property {string} label label to be displayed
@@ -9,7 +7,11 @@ import { isiOs } from '../cross-platform.js';
  */
 
 // https://caniuse.com/mdn-api_htmlcanvaselement_toblob_type_parameter_webp
-export const isWebpExportSupported = !isiOs();
+// based on: https://stackoverflow.com/questions/5573096/detecting-webp-support
+export const isWebpExportSupported = document
+    .createElement('canvas')
+    .toDataURL('image/webp')
+    .startsWith('data:image/webp;');
 
 /**
  *
