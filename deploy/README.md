@@ -24,7 +24,7 @@ This is the instructions for how to run [Dithermark](https://app.dithermark.com)
 
 * Right click `dithermark.command` and open with TextEdit
 
-* You will see a message about permissions, click ok
+* You will see a message about MacOS not being able to verify the developer, click open
 
 * Close the file without saving it
 
