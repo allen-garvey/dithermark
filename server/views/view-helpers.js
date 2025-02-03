@@ -2,8 +2,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /**
  * @param {string} string
@@ -25,5 +24,5 @@ export const render = (string, context) => {
 /**
  * @param {string} filename
  */
-export const getTemplate = (filename) =>
+export const getTemplate = filename =>
     fs.readFile(path.join(__dirname, '..', 'templates', filename), 'utf8');

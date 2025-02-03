@@ -4,8 +4,7 @@ import webpack from 'webpack';
 import { VueLoaderPlugin } from 'vue-loader';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const PUBLIC_HTML_DIR = path.resolve(
     __dirname,

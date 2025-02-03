@@ -3,8 +3,7 @@ import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { spawn } from 'node:child_process';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export const FFMPEG_TMP_ROOT_NAME = 'tmp';
 const TMP_ROOT_PATH = path.join(__dirname, '..', FFMPEG_TMP_ROOT_NAME);

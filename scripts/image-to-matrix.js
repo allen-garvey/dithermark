@@ -5,8 +5,7 @@ import fs from 'fs/promises';
 
 import { lightness } from '../js/shared/pixel-math-lite.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const outputDir = path.join(__dirname, 'matrix-output');
 
@@ -19,7 +18,7 @@ fs.mkdir(outputDir, { recursive: true })
             .raw()
             .toBuffer()
     )
-    .then((pixels) => {
+    .then(pixels => {
         const pixelsLength = pixels.length;
         const lightnessMatrix = new Uint8Array(pixelsLength / 3);
         const lightnessDivisor = 256 / lightnessMatrix.length;

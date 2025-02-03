@@ -6,8 +6,7 @@ import { PUBLIC_HTML_DIR } from './webpack.config.js';
 import { renderHome } from '../server/views/home.js';
 import { renderUnsplashDownloadApi } from '../server/views/unsplash-download-api.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const isProduction = process.env.IS_PRODUCTION === 'true';
 
