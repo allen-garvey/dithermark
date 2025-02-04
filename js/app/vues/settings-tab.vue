@@ -3,8 +3,8 @@
         <fieldset>
             <legend>Appearance</legend>
             <div class="spread-content">
-                <label
-                    >Theme
+                <label class="label">
+                    <span>Theme</span>
                     <select
                         :value.number="currentEditorThemeIndex"
                         @input="

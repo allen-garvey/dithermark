@@ -23,9 +23,24 @@
     }
 }
 
+.label {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5em;
+
+    & > span {
+        display: inline-block;
+    }
+}
+
 .label-align {
-    label {
+    label, & > span {
         min-width: variables.$global_controls_label_min_width;
         display: inline-block;
+    }
+
+    & > span {
+        min-width: variables.$global_controls_label_min_width - 0.5em;
     }
 }
