@@ -60,12 +60,9 @@
                                     Filters <small>(pre dither)</small>
                                 </legend>
                                 <div class="spread-content">
-                                    <div class="label-align">
-                                        <label for="pixelate-dropdown"
-                                            >Pixelate</label
-                                        >
+                                    <label class="label label-align">
+                                        <span>Pixelate</span>
                                         <select
-                                            id="pixelate-dropdown"
                                             v-model.number="
                                                 selectedPixelateImageZoom
                                             "
@@ -84,7 +81,7 @@
                                                 }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="pixelation value"
                                         v-model="selectedPixelateImageZoom"
@@ -97,12 +94,9 @@
                                     class="spread-content"
                                     v-if="areCanvasFiltersEnabled"
                                 >
-                                    <div class="label-align">
-                                        <label for="brightness-dropdown"
-                                            >Brightness</label
-                                        >
+                                    <label class="label label-align"
+                                        ><span>Brightness</span>
                                         <select
-                                            id="brightness-dropdown"
                                             v-model.number="
                                                 selectedImageBrightnessIndex
                                             "
@@ -117,7 +111,7 @@
                                                 {{ `${percentage}%` }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="brightness percentage"
                                         v-model="selectedImageBrightnessIndex"
@@ -130,12 +124,9 @@
                                     class="spread-content"
                                     v-if="areCanvasFiltersEnabled"
                                 >
-                                    <div class="label-align">
-                                        <label for="contrast-dropdown"
-                                            >Contrast</label
-                                        >
+                                    <label class="label label-align">
+                                        <span>Contrast</span>
                                         <select
-                                            id="contrast-dropdown"
                                             v-model.number="
                                                 selectedImageContrastIndex
                                             "
@@ -150,7 +141,7 @@
                                                 {{ `${percentage}%` }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="contrast percentage"
                                         v-model="selectedImageContrastIndex"
@@ -163,12 +154,9 @@
                                     class="spread-content"
                                     v-if="areCanvasFiltersEnabled"
                                 >
-                                    <div class="label-align">
-                                        <label for="saturation-dropdown"
-                                            >Saturation</label
-                                        >
+                                    <label class="label label-align">
+                                        <span>Saturation</span>
                                         <select
-                                            id="saturation-dropdown"
                                             v-model.number="
                                                 selectedImageSaturationIndex
                                             "
@@ -183,7 +171,7 @@
                                                 {{ `${percentage}%` }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="saturation percentage"
                                         v-model="selectedImageSaturationIndex"
@@ -227,12 +215,10 @@
                                     class="spread-content"
                                     v-if="isWebglEnabled"
                                 >
-                                    <div class="label-align">
-                                        <label for="denoise-before-dropdown"
-                                            >Denoise</label
-                                        >
+                                    <label class="label label-align">
+                                        <span>Denoise</span>
+
                                         <select
-                                            id="denoise-before-dropdown"
                                             v-model.number="
                                                 selectedBilateralFilterValueBefore
                                             "
@@ -251,7 +237,7 @@
                                                 }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="bilateral filter amount"
                                         v-model="
@@ -266,12 +252,9 @@
                                     class="spread-content"
                                     v-if="isSmoothingEnabled"
                                 >
-                                    <div class="label-align">
-                                        <label for="smoothing-before-dropdown"
-                                            >Smooth</label
-                                        >
+                                    <label class="label label-align">
+                                        <span>Smooth</span>
                                         <select
-                                            id="smoothing-before-dropdown"
                                             v-model.number="
                                                 selectedImageSmoothingRadiusBefore
                                             "
@@ -290,7 +273,7 @@
                                                 }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="smoothing value"
                                         v-model="
@@ -307,12 +290,9 @@
                                     Filters <small>(post dither)</small>
                                 </legend>
                                 <div class="spread-content">
-                                    <div class="label-align">
-                                        <label for="denoise-after-dropdown"
-                                            >Denoise</label
-                                        >
+                                    <label class="label label-align">
+                                        <span>Denoise</span>
                                         <select
-                                            id="denoise-after-dropdown"
                                             v-model.number="
                                                 selectedBilateralFilterValueAfter
                                             "
@@ -331,7 +311,7 @@
                                                 }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="bilateral filter amount"
                                         v-model="
@@ -346,12 +326,10 @@
                                     class="spread-content"
                                     v-if="isSmoothingEnabled"
                                 >
-                                    <div class="label-align">
-                                        <label for="smoothing-after-dropdown"
-                                            >Smooth</label
-                                        >
+                                    <label class="label label-align">
+                                        <span>Smooth</span>
+
                                         <select
-                                            id="smoothing-after-dropdown"
                                             v-model.number="
                                                 selectedImageSmoothingRadiusAfter
                                             "
@@ -370,7 +348,7 @@
                                                 }}
                                             </option>
                                         </select>
-                                    </div>
+                                    </label>
                                     <cycle-property-list
                                         model-name="smoothing value"
                                         v-model="

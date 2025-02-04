@@ -23,11 +23,13 @@
     }
 }
 
+$label_gap: 0.5em;
+
 .label {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5em;
+    gap: $label_gap;
 
     & > span {
         display: inline-block;
@@ -35,12 +37,7 @@
 }
 
 .label-align {
-    label, & > span {
-        min-width: variables.$global_controls_label_min_width;
-        display: inline-block;
-    }
-
     & > span {
-        min-width: variables.$global_controls_label_min_width - 0.5em;
+        min-width: variables.$global_controls_label_min_width - $label_gap;
     }
 }
