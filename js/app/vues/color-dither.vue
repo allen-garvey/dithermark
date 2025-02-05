@@ -80,8 +80,8 @@
                 class="spread-content"
                 :class="$style.optimizePaletteControlsContainer"
             >
-                <label
-                    >Algorithm
+                <label class="label">
+                    <span>Algorithm</span>
                     <select v-model="selectedColorQuantizationModeIndex">
                         <optgroup
                             v-for="colorQuantizationGroup in colorQuantizationGroups"
