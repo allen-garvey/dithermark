@@ -1,5 +1,5 @@
 <template>
-    <div class="spread-content">
+    <div>
         <label class="label">
             <span>Algorithm</span>
             <select
@@ -22,13 +22,13 @@
                     </option>
                 </optgroup>
             </select>
+            <cycle-property-list
+                model-name="algorithm"
+                :modelValue="selectedDitherAlgorithmIndex"
+                @update:modelValue="$emit('update:modelValue', $event)"
+                :array-length="algorithmCount"
+            />
         </label>
-        <cycle-property-list
-            model-name="algorithm"
-            :modelValue="selectedDitherAlgorithmIndex"
-            @update:modelValue="$emit('update:modelValue', $event)"
-            :array-length="algorithmCount"
-        />
     </div>
 </template>
 
