@@ -415,6 +415,7 @@
                         :isFfmpegReady="isFfmpegReady"
                         :isBatchConverting="isBatchConverting"
                         :useFfmpegServer="useFfmpegServer"
+                        :isDev="isDev"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />

@@ -270,6 +270,8 @@ let saveImageCanvas;
 
 let saveFpsTimeout = null;
 
+const isLocalhost = window.location.hostname === 'localhost';
+
 export default {
     props: {
         openFileMode: {
@@ -314,6 +316,10 @@ export default {
         },
         onSubmitBatchConvertImages: {
             type: Function,
+            required: true,
+        },
+        isDev: {
+            type: Boolean,
             required: true,
         },
     },
@@ -569,7 +575,7 @@ export default {
 
                                 //follow Unsplash API guidelines for triggering download
                                 //https://medium.com/unsplash/unsplash-api-guidelines-triggering-a-download-c39b24e99e02
-                                if (unsplash) {
+                                if (unsplash && (this.isDev || !isLocalhost)) {
                                     //arguably should be POST request here, but much easier to just use GET
                                     fetch(
                                         `${UNSPLASH_DOWNLOAD_URL}?${UNSPLASH_API_PHOTO_ID_QUERY_KEY}=${unsplash.id}`
