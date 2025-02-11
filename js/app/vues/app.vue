@@ -184,18 +184,17 @@
                                     class="spread-content"
                                     v-if="areCanvasFiltersEnabled"
                                 >
-                                    <label for="hue-rotation-range"
-                                        >Hue rotation</label
-                                    >
-                                    <input
-                                        id="hue-rotation-range"
-                                        type="range"
-                                        list="hue-rotation-tickmarks"
-                                        v-model.number="hueRotationValue"
-                                        step="1"
-                                        min="0"
-                                        max="359"
-                                    />
+                                    <label class="label label-align">
+                                        <span>Hue rotation</span>
+                                        <input
+                                            type="range"
+                                            list="hue-rotation-tickmarks"
+                                            v-model.number="hueRotationValue"
+                                            step="1"
+                                            min="0"
+                                            max="359"
+                                        />
+                                    </label>
                                     <input
                                         type="number"
                                         v-model.number="hueRotationValue"
