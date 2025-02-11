@@ -100,6 +100,7 @@ input[type="radio"]{
 }
 input[type="range"]{
     flex-basis: 50%;
+    flex-grow: 1;
 }
 input:disabled {
     cursor: not-allowed;

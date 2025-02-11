@@ -30,6 +30,7 @@ $label_gap: 0.5em;
     flex-wrap: wrap;
     align-items: center;
     gap: $label_gap;
+    flex-grow: 1;
 
     & > span {
         display: inline-block;
