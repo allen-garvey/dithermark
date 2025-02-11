@@ -3,7 +3,6 @@
         <label class="label" :class="$style.zoomLabel">
             <span>Zoom</span>
             <input
-                id="zoom-bar-range"
                 type="range"
                 :min="zoomMin"
                 :max="zoomMax"
