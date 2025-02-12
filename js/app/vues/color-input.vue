@@ -1,29 +1,39 @@
 <template>
-    <div 
-        :draggable="draggableAttributeValue" 
-        @dragstart="optionalHandler($event, handleColorDragstart)" 
-        @dragover="optionalHandler($event, handleColorDragover)" 
-        @drop="handleColorDrop($event)" 
-        @dragend="optionalHandler($event, handleColorDragend)" 
-        :class="{[$style.colorContainer]: true, [$style.dragged]: isBeingDragged, [$style.colorDisabled]: isDisabled, [$style.selected]: isSelected}" 
-        :style="{'background-color': colorValue, 'color': textColor}"
+    <div
+        :draggable="draggableAttributeValue"
+        @dragstart="optionalHandler($event, handleColorDragstart)"
+        @dragover="optionalHandler($event, handleColorDragover)"
+        @drop="handleColorDrop($event)"
+        @dragend="optionalHandler($event, handleColorDragend)"
+        :class="{
+            [$style.colorContainer]: true,
+            [$style.dragged]: isBeingDragged,
+            [$style.colorDisabled]: isDisabled,
+            [$style.selected]: isSelected,
+        }"
+        :style="{ 'background-color': colorValue, color: textColor }"
     >
-        <label :for="colorInputId">{{labelText}}</label>
-        <div :class="$style.fauxColorInputContainer">
-            <input 
-                :id="colorInputId" 
-                type="button" 
-                @click="inputClicked" 
-                :style="{'background-color': colorValue}" 
-                :class="{[$style.fauxColorInput]: true, disabled: isDisabled}"
-            />
-        </div>
+        <label class="label" :class="$style.colorLabel">
+            <span :class="$style.labelText">
+                {{ labelText }}
+            </span>
+            <div :class="$style.fauxColorInputContainer">
+                <input
+                    type="button"
+                    @click="inputClicked"
+                    :style="{ 'background-color': colorValue }"
+                    :class="{
+                        [$style.fauxColorInput]: true,
+                        disabled: isDisabled,
+                    }"
+                />
+            </div>
+        </label>
     </div>
 </template>
 
 <style lang="scss" module>
-
-.colorContainer{
+.colorContainer {
     //so currently selected color is not hidden by .colorPickerOverlay
     position: relative;
     display: flex;
@@ -36,42 +46,47 @@
     padding: 4px;
 
     //z-index should be higher than .colorPickerOverlay
-    &.selected{
+    &.selected {
         z-index: 3;
     }
-    
-    &.dragged, &.colorDisabled{
+
+    &.dragged,
+    &.colorDisabled {
         opacity: 0.4;
     }
-    label{
-        padding: 0;
-    }
 
-    &[draggable="true"]{
-        cursor: move;
-        .fauxColorInputContainer{
+    &[draggable='true'] {
+        .colorLabel {
+            cursor: move;
+            justify-content: space-between;
+        }
+        .labelText {
+            cursor: default;
+        }
+        .fauxColorInputContainer {
             margin-right: 26px;
         }
     }
-    &:focus-within{
+
+    &:focus-within {
         outline: 5px auto -webkit-focus-ring-color;
         outline-offset: -2px;
     }
 }
 
 //input[type="button"] that's meant to look and act like color input
-.fauxColorInputContainer{
+.fauxColorInputContainer {
     border: 5px solid white;
     border-radius: 6px;
     display: inline-block;
-    &:focus-within{
+    &:focus-within {
         outline: 5px auto -webkit-focus-ring-color;
         border-color: variables.$highlight_color;
         outline-offset: -2px;
     }
 }
 
-.fauxColorInput{
+.fauxColorInput {
     position: relative;
     z-index: 1;
     width: 46px;
@@ -81,7 +96,7 @@
     cursor: pointer;
 
     &:before {
-        content: " ";
+        content: ' ';
         position: absolute;
         z-index: -1;
         top: 5px;
@@ -90,47 +105,41 @@
         bottom: 5px;
         border-radius: 4px;
         border: 5px solid white;
-      }
+    }
 
-    &.disabled{
+    &.disabled {
         cursor: not-allowed;
     }
 }
-
 </style>
 
 <script>
 //color picker component for color dither color list
 
 import ColorPicker from '../color-picker.js';
-import {lightness} from '../../shared/pixel-math-lite.js';
-
+import { lightness } from '../../shared/pixel-math-lite.js';
 
 export default {
     props: {
         colorIndex: {
             type: Number,
             default: 0,
-        }, 
+        },
         colorValue: {
             type: String,
             required: true,
-        }, 
-        idPrefix: {
-            type: String,
-            required: true,
-        }, 
+        },
         isSelected: {
             type: Boolean,
             required: true,
-        }, 
+        },
         handleColorDragstart: {
             type: Function,
         },
         handleColorDragover: {
             type: Function,
         },
-        handleColorDragend:{
+        handleColorDragend: {
             type: Function,
         },
         isDisabled: {
@@ -146,41 +155,43 @@ export default {
         onClick: {
             type: Function,
             required: true,
-        }
+        },
     },
     computed: {
-        colorInputId(){
-            return `${this.idPrefix}__color-input__${this.colorIndex}`;
-        },
         //so text is visible on light color backgrounds
-        textColor(){
-            const colorLightness = lightness(ColorPicker.pixelFromHex(this.colorValue));
-            if(colorLightness >= 127){
+        textColor() {
+            const colorLightness = lightness(
+                ColorPicker.pixelFromHex(this.colorValue)
+            );
+            if (colorLightness >= 127) {
                 return '#000';
             }
             return '#fff';
         },
-        draggableAttributeValue(){
+        draggableAttributeValue() {
             return this.handleColorDragstart ? 'true' : 'false';
         },
-        isBeingDragged(){
-            return this.draggedIndex !== undefined && this.colorIndex === this.draggedIndex;
+        isBeingDragged() {
+            return (
+                this.draggedIndex !== undefined &&
+                this.colorIndex === this.draggedIndex
+            );
         },
-        labelText(){
+        labelText() {
             return this.label || this.colorIndex + 1;
         },
     },
     methods: {
-        handleColorDrop(e){
+        handleColorDrop(e) {
             e.preventDefault();
         },
-        optionalHandler(e, handler){
-            if(handler){
+        optionalHandler(e, handler) {
+            if (handler) {
                 handler(e, this.colorIndex);
             }
         },
-        inputClicked(){
-            if(this.isDisabled){
+        inputClicked() {
+            if (this.isDisabled) {
                 return;
             }
             this.onClick();

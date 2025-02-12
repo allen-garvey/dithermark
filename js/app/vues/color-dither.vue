@@ -52,7 +52,6 @@
                 <color-input
                     v-for="(color, i) in colors"
                     :key="i"
-                    id-prefix="color"
                     :on-click="createColorInputClicked(i)"
                     :is-selected="
                         shouldShowColorPicker && colorPickerColorIndex === i

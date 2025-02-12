@@ -155,7 +155,6 @@
             <div class="spread-content" :class="$style.imageOutlineColorInput">
                 <color-input
                     label="Color"
-                    id-prefix="outline-color"
                     :is-selected="shouldShowColorPicker"
                     :on-click="
                         () => {
