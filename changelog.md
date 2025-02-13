@@ -2,6 +2,8 @@
 
 ## HEAD
 
+## 2025-02-13 [Commit 220d0b5](https://github.com/allen-garvey/dithermark/commit/220d0b573011f59edda41ff19c10070c0063fefb)
+
 ### Features
 
 * Add simplex dither algorithm, and simplex variations to ordered dithers.
