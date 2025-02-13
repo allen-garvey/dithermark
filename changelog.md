@@ -36,6 +36,8 @@
 
 * Fix controls being visible during batch export.
 
+* Fix reset colors button in BW Dither tab height being stretched.
+
 ### Technical
 
 * Replace standalone Electron builds with local http server and compiled static assets. This avoids security warning on Mac, and requires less memory to run, removes the need for compilation for Mac, Linux and BSD, and allows cross-compilation for Windows and Windows ARM.

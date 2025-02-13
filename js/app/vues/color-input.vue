@@ -40,7 +40,6 @@
     align-items: center;
     justify-content: space-between;
     flex-basis: 110px;
-    margin: 0 13px variables.$colors_container_margin_bottom 0;
     border: 1px solid var(--border-color);
     border-radius: 5px;
     padding: 4px;

@@ -122,6 +122,7 @@
 .colorsListContainer {
     display: flex;
     flex-wrap: wrap;
+    gap: 16px 13px;
 }
 
 .optimizePalettePending {

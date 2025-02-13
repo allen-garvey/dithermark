@@ -44,10 +44,8 @@
 .colorReplaceContainer {
     display: flex;
     flex-wrap: wrap;
-    .btn {
-        flex-basis: 25%;
-        margin-bottom: variables.$colors_container_margin_bottom;
-    }
+    align-items: center;
+    gap: 16px 13px;
 }
 </style>
 
