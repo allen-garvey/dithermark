@@ -75,7 +75,7 @@ export default {
         PhotoshopPicker,
     },
     directives: {
-        'scroll-into-view': ScrollIntoViewDirective,
+        scrollIntoView: ScrollIntoViewDirective,
     },
     methods: {
         bubbleEvent(name, args) {
