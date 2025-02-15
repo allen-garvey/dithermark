@@ -6,6 +6,8 @@
 
 * Fix color picker not being scrolled into view when opened.
 
+* Fix color picker attention animation not being triggered when color picker is opened, and inactive controls are clicked.
+
 ## 2025-02-13 [Commit 220d0b5](https://github.com/allen-garvey/dithermark/commit/220d0b573011f59edda41ff19c10070c0063fefb)
 
 ### Features
