@@ -34,7 +34,7 @@
   "devDependencies": {
     "@vue/compiler-sfc": "3.5.13",
     "css-loader": "^7.1.2",
-    "express": "^4.21.2",
+    "express": "^5.1.0",
     "memfs": "^4.17.0",
     "mini-css-extract-plugin": "^2.9.2",
     "multer": "^1.4.5-lts.1",
