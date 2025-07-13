@@ -1,6 +1,8 @@
+#version 300 es
 precision mediump float;
     
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 output_color;
 uniform sampler2D u_texture;
 uniform float u_threshold;
 uniform vec3 u_black_pixel;
@@ -12,7 +14,7 @@ uniform float u_dither_r_coefficient;
 #{{lightnessFunction}}
 
 void main(){
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
     float pixelLightness = lightness(pixel.rgb);
     #{{customBody}}
     
@@ -23,5 +25,5 @@ void main(){
     else{
         outputPixel = u_white_pixel;
     }
-    gl_FragColor = vec4(outputPixel, pixel.a);
+    output_color = vec4(outputPixel, pixel.a);
 }

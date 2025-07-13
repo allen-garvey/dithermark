@@ -1,6 +1,8 @@
+#version 300 es
 precision mediump float;
     
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 output_color;
 uniform sampler2D u_texture;
 
 uniform int u_colors_array_length;
@@ -16,7 +18,7 @@ uniform float u_dither_r_coefficient;
 #{{customDeclaration}}
 
 void main(){
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
     vec3 adjustedPixel = pixel.rgb;
 
     #{{customBody}}
@@ -40,5 +42,5 @@ void main(){
 
     #{{optionalPostscript}}
     
-    gl_FragColor = vec4(outputPixel, pixel.a);
+    output_color = vec4(outputPixel, pixel.a);
 }

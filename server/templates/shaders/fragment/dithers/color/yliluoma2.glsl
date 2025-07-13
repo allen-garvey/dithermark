@@ -1,3 +1,4 @@
+#version 300 es
 // Yliluoma's ordered dithering
 // from: https://bisqwit.iki.fi/story/howto/dither/jy/
 // based on: Yliluoma's ordered dithering algorithm 2
@@ -5,7 +6,8 @@
 
 precision mediump float;
 
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 output_color;
 uniform sampler2D u_texture;
 
 uniform sampler2D u_bayer_texture;
@@ -120,10 +122,10 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
 }
 
 void main(){
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
     vec3 outputPixel = pixel.rgb;
     vec2 bayerPixelCoord = vec2(gl_FragCoord.xy / vec2(u_bayer_texture_dimensions));
-    vec4 bayerPixel = texture2D(u_bayer_texture, bayerPixelCoord);
+    vec4 bayerPixel = texture(u_bayer_texture, bayerPixelCoord);
     float bayerLength = u_bayer_texture_dimensions * u_bayer_texture_dimensions;
     // bayerValue could be rounded, but only webgl2 has round function, and difference is trivial
     float bayerValue = bayerPixel.r * (bayerLength - 1.0);
@@ -137,5 +139,5 @@ void main(){
         }
     }
 
-    gl_FragColor = vec4(outputPixel, pixel.a);
+    output_color = vec4(outputPixel, pixel.a);
 }

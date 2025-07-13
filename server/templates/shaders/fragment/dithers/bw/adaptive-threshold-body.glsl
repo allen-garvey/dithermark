@@ -8,7 +8,7 @@ float total = 0.0;
 
 for (float x = -4.0; x <= 4.0; x += 1.0) {
     for (float y = -4.0; y <= 4.0; y += 1.0) {
-        vec3 sample = texture2D(u_texture, v_texcoord + dx * x + dy * y).rgb;
+        vec3 sample = texture(u_texture, v_texcoord + dx * x + dy * y).rgb;
         sum += lightness(sample);
         total++;
     }

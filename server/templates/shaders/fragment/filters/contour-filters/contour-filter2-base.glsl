@@ -1,8 +1,10 @@
+#version 300 es
 //@param u_radius radius in pixels (radiusPercentage / height)
 precision mediump float;
 
 uniform sampler2D u_texture;
-varying vec2 v_texcoord;
+out vec4 output_color;
+in vec2 v_texcoord;
 uniform float u_radius;
 
 #{{customDeclaration}}
@@ -13,7 +15,7 @@ float random(vec3 scale, float seed) {
 }
 
 void main(){
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
     
     vec2 color = vec2(0.0);
     vec2 total = vec2(0.0);
@@ -24,7 +26,7 @@ void main(){
     for(float t = -30.0; t <= 30.0; t++){
         float percent = (t + offset - 0.5) / 30.0;
         float weight = 1.0 - abs(percent);
-        vec2 sample = texture2D(u_texture, v_texcoord + vec2(0.0, u_radius) * percent).xy;
+        vec2 sample = texture(u_texture, v_texcoord + vec2(0.0, u_radius) * percent).xy;
         color.x += sample.x * weight;
         total.x += weight;
         if(abs(t) < 15.0){
@@ -35,9 +37,9 @@ void main(){
     }
     float c = clamp(10000.0 * (color.y / total.y - color.x / total.x) + 0.5, 0.0, 1.0);
     if(c < 0.5){
-        gl_FragColor = #{{customOutlineColor}}
+        output_color = #{{customOutlineColor}}
     }
     else{
-        gl_FragColor = vec4(0.0);
+        output_color = vec4(0.0);
     }
 }
