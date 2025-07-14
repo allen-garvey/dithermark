@@ -1,4 +1,3 @@
-#version 300 es
 //high int precision required for bitwise functions to work on mobile devices
 precision highp int;
 
