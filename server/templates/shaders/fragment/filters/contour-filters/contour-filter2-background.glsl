@@ -1,4 +1,3 @@
-#version 300 es
 uniform sampler2D u_background_texture;
 uniform int u_colors_array_length;
 uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
