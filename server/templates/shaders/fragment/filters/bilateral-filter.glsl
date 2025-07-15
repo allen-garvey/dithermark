@@ -41,10 +41,10 @@ void main() {
     float total = 0.0;
     for(float x = -4.0; x <= 4.0; x += 1.0) {
         for(float y = -4.0; y <= 4.0; y += 1.0) {
-            vec4 sample = texture(u_texture, v_texcoord + vec2(x, y) / u_image_dimensions);
-            float weight = 1.0 - abs(dot(sample.rgb - center.rgb, vec3(0.25)));
+            vec4 sample1 = texture(u_texture, v_texcoord + vec2(x, y) / u_image_dimensions);
+            float weight = 1.0 - abs(dot(sample1.rgb - center.rgb, vec3(0.25)));
             weight = pow(weight, u_exponent);
-            color += sample * weight;
+            color += sample1 * weight;
             total += weight;
         }
     }

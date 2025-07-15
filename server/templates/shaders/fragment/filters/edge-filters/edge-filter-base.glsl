@@ -48,11 +48,11 @@ void main(){
     vec3 smallAverage = vec3(0.0);
     for (float x = -#{{edgeThickness}}; x <= #{{edgeThickness}}; x += 1.0) {
         for (float y = -#{{edgeThickness}}; y <= #{{edgeThickness}}; y += 1.0) {
-            vec3 sample = texture(u_texture, v_texcoord + dx * x + dy * y).rgb;
-            bigAverage += sample;
+            vec3 sample1 = texture(u_texture, v_texcoord + dx * x + dy * y).rgb;
+            bigAverage += sample1;
             bigTotal += 1.0;
             if (abs(x) + abs(y) < #{{edgeThickness}}) {
-                smallAverage += sample;
+                smallAverage += sample1;
                 smallTotal += 1.0;
             }
         }

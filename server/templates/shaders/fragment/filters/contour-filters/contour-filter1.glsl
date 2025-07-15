@@ -51,8 +51,8 @@ void main(){
     for(float t = -30.0; t <= 30.0; t++){
         float percent = (t + offset - 0.5) / 30.0;
         float weight = 1.0 - abs(percent);
-        vec3 sample = texture(u_texture, v_texcoord + vec2(u_radius, 0.0) * percent).rgb;
-        float average = (sample.r + sample.g + sample.b) / 3.0;
+        vec3 sample1 = texture(u_texture, v_texcoord + vec2(u_radius, 0.0) * percent).rgb;
+        float average = (sample1.r + sample1.g + sample1.b) / 3.0;
         color.x += average * weight;
         total.x += weight;
         if(abs(t) < 15.0){

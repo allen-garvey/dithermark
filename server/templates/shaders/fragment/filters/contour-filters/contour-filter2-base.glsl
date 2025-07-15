@@ -26,12 +26,12 @@ void main(){
     for(float t = -30.0; t <= 30.0; t++){
         float percent = (t + offset - 0.5) / 30.0;
         float weight = 1.0 - abs(percent);
-        vec2 sample = texture(u_texture, v_texcoord + vec2(0.0, u_radius) * percent).xy;
-        color.x += sample.x * weight;
+        vec2 sample1 = texture(u_texture, v_texcoord + vec2(0.0, u_radius) * percent).xy;
+        color.x += sample1.x * weight;
         total.x += weight;
         if(abs(t) < 15.0){
             weight = weight * 2.0 - 1.0;
-            color.y += sample.y * weight;
+            color.y += sample1.y * weight;
             total.y += weight;
         }
     }
