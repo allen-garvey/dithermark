@@ -1,5 +1,7 @@
 #version 300 es
 
+precision mediump float;
+
 // an attribute is an input (in) to a vertex shader.
 // It will receive data from a buffer
 in vec2 a_position;
