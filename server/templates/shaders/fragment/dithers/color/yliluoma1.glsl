@@ -38,22 +38,9 @@ int devise_mixing_plan(vec3 pixel, float bayerLength, float bayerValue){
     // Loop through every unique combination of two colors from the palette,
     // and through each possible way to mix those two colors. They can be
     // mixed in exactly 64 ways, when the threshold matrix is 8x8.
-    for(int index1=0;index1<<?= COLOR_DITHER_MAX_COLORS; ?>;index1++){
-        if(index1 >= u_colors_array_length){
-            break;
-        }
-        for(int index2=0;index2<<?= COLOR_DITHER_MAX_COLORS; ?>;index2++){
-            //can't initialize index2 with value of index1
-            if(index2<index1){
-                continue;
-            }
-            if(index2 >= u_colors_array_length){
-                break;
-            }
-            for(int ratio=0;ratio<<?= YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH; ?>;ratio++){
-                if(ratio >= bayerLengthInt){
-                    break;
-                }
+    for(int index1=0;index1<u_colors_array_length;index1++){
+        for(int index2=index1;index2<u_colors_array_length;index2++){
+            for(int ratio=0;ratio<bayerLengthInt;ratio++){
                 if(index1 == index2 && ratio != 0){
                     break;
                 }
@@ -90,12 +77,7 @@ void main(){
     float bayerLength = u_bayer_texture_dimensions * u_bayer_texture_dimensions;
     int colorIndex = devise_mixing_plan(outputPixel, bayerLength, bayerValue);
     
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        if(i == colorIndex){
-            outputPixel = u_colors_array[i];
-            break;
-        }
-    }
+    outputPixel = u_colors_array[colorIndex];
 
     output_color = vec4(outputPixel, pixel.a);
 }
