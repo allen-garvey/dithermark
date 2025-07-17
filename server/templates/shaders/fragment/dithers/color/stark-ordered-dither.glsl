@@ -25,10 +25,7 @@ void main(){
     float shortestDistance = 9999.9;
     vec3 outputPixel = adjustedPixel;
     
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        if(i >= u_colors_array_length){
-            break;
-        }
+    for(int i=0;i<u_colors_array_length;i++){
         vec3 currentColor = u_colors_array[i];
         float currentDistance = quick_distance(adjustedPixel, currentColor);
         if(currentDistance < shortestDistance){
@@ -45,10 +42,7 @@ void main(){
     // so we don't divide by 0
     if(shortestDistance > 0.0){
         float greatestAllowedDistance = shortestDistance;
-        for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-            if(i >= u_colors_array_length){
-                break;
-            }
+        for(int i=0;i<u_colors_array_length;i++){
             vec3 currentColor = u_colors_array[i];
             float currentDistance = quick_distance(adjustedPixel, currentColor);
             if(currentDistance > greatestAllowedDistance && currentDistance / shortestDistance * bayerPercentage < 1.0){

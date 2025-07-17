@@ -26,10 +26,7 @@ void main(){
     float shortestDistance = 9999.9;
     vec3 closestPixel = adjustedPixel;
     
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        if(i >= u_colors_array_length){
-            break;
-        }
+    for(int i=0;i<u_colors_array_length;i++){
         vec3 currentColor = u_colors_array[i];
         float currentDistance = quick_distance(adjustedPixel, currentColor);
         if(currentDistance < shortestDistance){
