@@ -26,22 +26,19 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
     vec2 planValues[<?= COLOR_DITHER_MAX_COLORS; ?>];
     int proportionTotal = 0;
     vec3 soFar = vec3(0.0);
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
+    for(int i=0;i<u_colors_array_length;i++){
         int chosenAmount = 1;
         int chosen = 0;
         int maxTestCount = int(max(1.0, float(proportionTotal)));
         //big number
         float leastPenalty = 9999.99;
 
-        for(int index=0; index<<?= COLOR_DITHER_MAX_COLORS; ?>; index++){
-            if(index >= u_colors_array_length){
-                break;
-            }   
+        for(int index=0; index<u_colors_array_length; index++){ 
             vec3 color = u_colors_array[index];
             vec3 sum = soFar;
             vec3 add = color;
             int p = 1;
-            for(int q=0; q<<?= COLOR_DITHER_MAX_COLORS; ?>; q++){
+            for(int q=0; q<u_colors_array_length; q++){
                 if(p > maxTestCount){
                     break;
                 }
@@ -57,32 +54,18 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
                 p = p * 2;
             }
         }
-        for(int p=0; p<<?= COLOR_DITHER_MAX_COLORS; ?>; ++p){
+        for(int p=0; p<u_colors_array_length; ++p){
             if(p >= chosenAmount || proportionTotal >= u_colors_array_length){
                 break;
             }
-            for(int q=0; q<<?= COLOR_DITHER_MAX_COLORS; ?>; q++){
-                if(q == proportionTotal){
-                    float luma = 0.0;
-                    for(int j=0;j<<?= COLOR_DITHER_MAX_COLORS; ?>;j++){
-                        if(j == chosen){
-                            luma = pixel_luma(u_colors_array[j]);
-                            break;
-                        }
-                    }
-                    planValues[q] = vec2(float(chosen), luma);
-                    break;
-                }
-            }
+            float luma = pixel_luma(u_colors_array[chosen]);
+            planValues[proportionTotal] = vec2(float(chosen), luma);
+            
             proportionTotal++;
         }
-        for(int p=0; p<<?= COLOR_DITHER_MAX_COLORS; ?>; ++p){
-            if(p==chosen){
-                vec3 color = u_colors_array[p];
-                soFar = soFar + color * vec3(float(chosenAmount));
-                break;
-            }
-        }
+        vec3 color = u_colors_array[chosen];
+        soFar = soFar + color * vec3(float(chosenAmount));
+        
         if(proportionTotal >= u_colors_array_length){
             break;
         }
@@ -112,13 +95,7 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
         innerLoopLimit--;
     }
 
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        if(i == planIndex){
-            return int(planValues[i].x);
-        }
-    }
-    // should never reach this line, but to keep compiler happy
-    return 0;
+    return int(planValues[planIndex].x);
 }
 
 void main(){
@@ -131,13 +108,6 @@ void main(){
     float bayerValue = bayerPixel.r * (bayerLength - 1.0);
     int planIndex = int(bayerValue * float(u_colors_array_length) / bayerLength);
     int colorIndex = deviseMixingPlan(outputPixel, planIndex);
-    
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        if(i == colorIndex){
-            outputPixel = u_colors_array[i];
-            break;
-        }
-    }
 
-    output_color = vec4(outputPixel, pixel.a);
+    output_color = vec4(u_colors_array[colorIndex], pixel.a);
 }
