@@ -70,29 +70,19 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
             break;
         }
     }
-    
-    // bubble sort
-    // can't use insertion sort since if we iterate array in reverse we would have to use continue statements until we found the actual end of the array
-    // with optimization from wikipedia
-    int innerLoopLimit = u_colors_array_length-1;
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        bool swapped = false;
-        for(int j=0;j<<?= COLOR_DITHER_MAX_COLORS; ?>-1;j++){
-            if(j >= innerLoopLimit){
+
+    // insertion sort
+    for(int i=1;i<u_colors_array_length;i++){
+        for(int j=i;j>0;j--){
+            if(planValues[j].y < planValues[j-1].y){
+                vec2 temp = planValues[j];
+                planValues[j] = planValues[j-1];
+                planValues[j-1] = temp;
+            }
+            else {
                 break;
             }
-            if(planValues[j].y > planValues[j+1].y){
-                vec2 temp = planValues[j];
-                planValues[j] = planValues[j+1];
-                planValues[j+1] = temp;
-
-                swapped = true;
-            }
         }
-        if(!swapped){
-            break;
-        }
-        innerLoopLimit--;
     }
 
     return int(planValues[planIndex].x);
