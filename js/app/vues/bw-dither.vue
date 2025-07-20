@@ -1,26 +1,27 @@
 <template>
     <div class="dither-controls-container controls-panel">
         <histogram ref="histogram" />
-        <dither-button 
+        <dither-button
             :on-click="ditherImageWithSelectedAlgorithm"
             v-if="!isLivePreviewEnabled"
         />
-        <algorithm-select 
+        <algorithm-select
             v-model="selectedDitherAlgorithmIndex"
             :algorithmCount="ditherAlgorithms.length"
             :ditherGroups="ditherGroups"
         />
-        <threshold-input 
-            v-model="threshold"
-        />
+        <threshold-input v-model="threshold" />
         <color-substitution-input
             v-model="colorReplaceColors"
             :isColorPickerLivePreviewEnabled="isColorPickerLivePreviewEnabled"
         />
-        <texture-combine 
-            ref="textureCombineComponent" 
-            :loaded-image="loadedImage" 
-            :request-canvases="requestCanvases" :request-display-transformed-image="requestDisplayTransformedImage" :color-replace-black-pixel="colorReplaceBlackPixel" :color-replace-white-pixel="colorReplaceWhitePixel"
+        <texture-combine
+            ref="textureCombineComponent"
+            :loaded-image="loadedImage"
+            :request-canvases="requestCanvases"
+            :request-display-transformed-image="requestDisplayTransformedImage"
+            :color-replace-black-pixel="colorReplaceBlackPixel"
+            :color-replace-white-pixel="colorReplaceWhitePixel"
         />
     </div>
 </template>
@@ -43,7 +44,10 @@ import HistogramComponent from './histogram-bw.vue';
 import AlgorithmSelect from './algorithm-select.vue';
 import ColorSubstitutionInput from './color-substitution-input.vue';
 import TextureCombine from 'texture-combine-component'; //resolved via webpack config so not included in release builds
-import { getBwGroups, getBwDitherAlgorithms } from '../models/dither-algorithms.js';
+import {
+    getBwGroups,
+    getBwDitherAlgorithms,
+} from '../models/dither-algorithms.js';
 
 //used for creating BW texture for webgl color replace
 let isDitherWorkerBwWorking = false;
@@ -88,157 +92,217 @@ export default {
         AlgorithmSelect,
         ColorSubstitutionInput,
     },
-    mounted(){
+    mounted() {
         //have to get canvases here, because DOM manipulation needs to happen in mounted hook
         histogramCanvas = Canvas.create(this.$refs.histogram.histogramCanvas);
-        histogramCanvasIndicator = Canvas.create(this.$refs.histogram.histogramCanvasIndicator);
+        histogramCanvasIndicator = Canvas.create(
+            this.$refs.histogram.histogramCanvasIndicator
+        );
     },
-    data(){ 
-        return{
+    data() {
+        return {
             threshold: 127,
             selectedDitherAlgorithmIndex: 0,
             hasImageBeenTransformed: false,
             loadedImage: null,
             colorReplaceColors: ColorPicker.defaultBwColors(),
             ditherGroups: getBwGroups(),
-            ditherAlgorithms: getBwDitherAlgorithms(this.isWebglHighIntPrecisionSupported),
+            ditherAlgorithms: getBwDitherAlgorithms(
+                this.isWebglHighIntPrecisionSupported
+            ),
         };
     },
     computed: {
-        selectedDitherAlgorithm(){
+        selectedDitherAlgorithm() {
             return this.ditherAlgorithms[this.selectedDitherAlgorithmIndex];
         },
-        isSelectedAlgorithmWebGl(){
-            return this.isWebglEnabled && this.selectedDitherAlgorithm.webGlFunc;
+        isSelectedAlgorithmWebGl() {
+            return (
+                this.isWebglEnabled && this.selectedDitherAlgorithm.webGlFunc
+            );
         },
-        colorReplaceBlackPixel(){
+        colorReplaceBlackPixel() {
             return ColorPicker.pixelFromHex(this.colorReplaceColors[0]);
         },
-        colorReplaceWhitePixel(){
+        colorReplaceWhitePixel() {
             return ColorPicker.pixelFromHex(this.colorReplaceColors[1]);
         },
-        isImageLoaded(){
-            return this.loadedImage != null;  
+        isImageLoaded() {
+            return this.loadedImage != null;
         },
     },
     watch: {
-        isLivePreviewEnabled(newValue){
-            if(newValue){
+        isLivePreviewEnabled(newValue) {
+            if (newValue) {
                 this.ditherImageWithSelectedAlgorithm();
             }
         },
-        threshold(){
+        threshold() {
             //reset bw texture
             this.freeTransformedImageBwTexture();
-            Histogram.drawIndicator(histogramCanvasIndicator, this.threshold); 
-            
-            if(this.isLivePreviewEnabled){
+            Histogram.drawIndicator(histogramCanvasIndicator, this.threshold);
+
+            if (this.isLivePreviewEnabled) {
                 this.ditherImageWithSelectedAlgorithm();
             }
         },
-        selectedDitherAlgorithmIndex(newIndex){
+        selectedDitherAlgorithmIndex(newIndex) {
             //reset bw texture
             this.freeTransformedImageBwTexture();
-            
-            if(this.isLivePreviewEnabled){
+
+            if (this.isLivePreviewEnabled) {
                 this.ditherImageWithSelectedAlgorithm();
             }
         },
         colorReplaceColors: {
             deep: true,
-            handler(newValue){
+            handler(newValue) {
                 this.colorReplaceColorsChanged();
-            }
+            },
         },
     },
     methods: {
-        colorReplaceColorsChanged(){
-            if(!this.hasImageBeenTransformed){
+        colorReplaceColorsChanged() {
+            if (!this.hasImageBeenTransformed) {
                 return;
             }
-            if(!this.isWebglEnabled || this.isSelectedAlgorithmWebGl){
+            if (!this.isWebglEnabled || this.isSelectedAlgorithmWebGl) {
                 this.ditherImageWithSelectedAlgorithm();
                 return;
             }
-            
+
             //if we're here we know that webgl is enabled, and that the selected algorithm is NOT webgl
             //so send message to create BW texture if necessary
-            if(!transformedImageBwTexture && !isDitherWorkerBwWorking){
+            if (!transformedImageBwTexture && !isDitherWorkerBwWorking) {
                 isDitherWorkerBwWorking = true;
-                this.$emit('request-worker', (worker)=>{
-                    worker.postMessage(WorkerUtil.ditherWorkerBwHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.index));
+                this.$emit('request-worker', worker => {
+                    worker.postMessage(
+                        WorkerUtil.ditherWorkerBwHeader(
+                            this.loadedImage.width,
+                            this.loadedImage.height,
+                            this.threshold,
+                            this.selectedDitherAlgorithm.index
+                        )
+                    );
                 });
-                
             }
             //see if texture was created already, or has been created in time here
-            if(!transformedImageBwTexture){
+            if (!transformedImageBwTexture) {
                 this.ditherImageWithSelectedAlgorithm();
                 return;
             }
-            this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
-                Timer.megapixelsPerSecond('Color replace webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                    WebGlBwDither.colorReplace(transformCanvasWebGl.gl, transformedImageBwTexture, this.loadedImage.width, this.loadedImage.height, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
-                });
-                transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
+            this.requestCanvases((transformCanvas, transformCanvasWebGl) => {
+                Timer.megapixelsPerSecond(
+                    'Color replace webgl',
+                    this.loadedImage.width * this.loadedImage.height,
+                    () => {
+                        WebGlBwDither.colorReplace(
+                            transformCanvasWebGl.gl,
+                            transformedImageBwTexture,
+                            this.loadedImage.width,
+                            this.loadedImage.height,
+                            this.colorReplaceBlackPixel,
+                            this.colorReplaceWhitePixel
+                        );
+                    }
+                );
+                transformCanvas.context.drawImage(
+                    transformCanvasWebGl.canvas,
+                    0,
+                    0
+                );
                 this.requestDisplayTransformedImage();
             });
         },
         //isNewImage is used to determine if the image is actually different,
         //or it is the same image with filters changed
-        imageLoaded(loadedImage, isNewImage=false){
+        imageLoaded(loadedImage, isNewImage = false) {
             const isFirstImageLoaded = this.loadedImage === null;
             this.loadedImage = loadedImage;
             this.hasImageBeenTransformed = false;
-            
+
             //reset combine textures component if new image
-            if(isNewImage && this.$refs.textureCombineComponent){
+            if (isNewImage && this.$refs.textureCombineComponent) {
                 nextTick().then(() => {
                     this.$refs.textureCombineComponent.resetTextures();
                 });
             }
 
             //draw histogram
-            this.$emit('request-worker', (worker)=>{
+            this.$emit('request-worker', worker => {
                 worker.postMessage(WorkerUtil.histogramWorkerHeader());
             });
-            
+
             this.freeTransformedImageBwTexture();
-            
-            if(this.isLivePreviewEnabled){
-                this.ditherImageWithSelectedAlgorithm();   
-            }
-            else{
+
+            if (this.isLivePreviewEnabled) {
+                this.ditherImageWithSelectedAlgorithm();
+            } else {
                 //if live preview is not enabled, transform canvas will be blank unless we do this
                 this.requestDisplayTransformedImage();
             }
             //only need to do this for first image loaded, since indicator won't be drawn yet
-            if(isFirstImageLoaded){
-                Histogram.drawIndicator(histogramCanvasIndicator, this.threshold);
+            if (isFirstImageLoaded) {
+                Histogram.drawIndicator(
+                    histogramCanvasIndicator,
+                    this.threshold
+                );
             }
         },
-        ditherImageWithSelectedAlgorithm(){
-            if(!this.isImageLoaded){
+        ditherImageWithSelectedAlgorithm() {
+            if (!this.isImageLoaded) {
                 return;
             }
-            if(this.isSelectedAlgorithmWebGl){
-                this.requestCanvases((transformCanvas, transformCanvasWebGl, sourceWebglTexture)=>{
-                    this.hasImageBeenTransformed = true;
-                    Timer.megapixelsPerSecond(this.selectedDitherAlgorithm.title + ' webgl', this.loadedImage.width * this.loadedImage.height, ()=>{
-                        this.selectedDitherAlgorithm.webGlFunc(transformCanvasWebGl.gl, sourceWebglTexture, this.loadedImage.width, this.loadedImage.height, this.threshold, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel); 
-                    });
-                    //have to copy to 2d context, since chrome will clear webgl context after switching tabs
-                    //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
-                    transformCanvas.context.drawImage(transformCanvasWebGl.canvas, 0, 0);
-                    this.requestDisplayTransformedImage();
-                });
+            if (this.isSelectedAlgorithmWebGl) {
+                this.requestCanvases(
+                    (
+                        transformCanvas,
+                        transformCanvasWebGl,
+                        sourceWebglTexture
+                    ) => {
+                        this.hasImageBeenTransformed = true;
+                        Timer.megapixelsPerSecond(
+                            this.selectedDitherAlgorithm.title + ' webgl2',
+                            this.loadedImage.width * this.loadedImage.height,
+                            () => {
+                                this.selectedDitherAlgorithm.webGlFunc(
+                                    transformCanvasWebGl.gl,
+                                    sourceWebglTexture,
+                                    this.loadedImage.width,
+                                    this.loadedImage.height,
+                                    this.threshold,
+                                    this.colorReplaceBlackPixel,
+                                    this.colorReplaceWhitePixel
+                                );
+                            }
+                        );
+                        //have to copy to 2d context, since chrome will clear webgl context after switching tabs
+                        //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
+                        transformCanvas.context.drawImage(
+                            transformCanvasWebGl.canvas,
+                            0,
+                            0
+                        );
+                        this.requestDisplayTransformedImage();
+                    }
+                );
                 return;
             }
-            this.$emit('request-worker', (worker)=>{
-                worker.postMessage(WorkerUtil.ditherWorkerHeader(this.loadedImage.width, this.loadedImage.height, this.threshold, this.selectedDitherAlgorithm.index, this.colorReplaceBlackPixel, this.colorReplaceWhitePixel));
+            this.$emit('request-worker', worker => {
+                worker.postMessage(
+                    WorkerUtil.ditherWorkerHeader(
+                        this.loadedImage.width,
+                        this.loadedImage.height,
+                        this.threshold,
+                        this.selectedDitherAlgorithm.index,
+                        this.colorReplaceBlackPixel,
+                        this.colorReplaceWhitePixel
+                    )
+                );
             });
         },
-        ditherWorkerMessageReceivedDispatcher(messageTypeId, message){
-            switch(messageTypeId){
+        ditherWorkerMessageReceivedDispatcher(messageTypeId, message) {
+            switch (messageTypeId) {
                 case WorkerHeaders.DITHER:
                     this.ditherWorkerMessageReceived(message.pixels);
                     break;
@@ -251,33 +315,45 @@ export default {
                     break;
             }
         },
-        histogramWorkerMessageReceived(heightPercentages){
+        histogramWorkerMessageReceived(heightPercentages) {
             Histogram.drawBwHistogram(histogramCanvas, heightPercentages);
         },
-        ditherWorkerMessageReceived(pixels){
-            this.requestCanvases((transformCanvas)=>{
+        ditherWorkerMessageReceived(pixels) {
+            this.requestCanvases(transformCanvas => {
                 this.hasImageBeenTransformed = true;
-                Canvas.loadPixels(transformCanvas, this.loadedImage.width, this.loadedImage.height, pixels);
+                Canvas.loadPixels(
+                    transformCanvas,
+                    this.loadedImage.width,
+                    this.loadedImage.height,
+                    pixels
+                );
                 this.requestDisplayTransformedImage(this.componentId);
             });
         },
-        ditherWorkerBwMessageReceived(pixels){
+        ditherWorkerBwMessageReceived(pixels) {
             this.freeTransformedImageBwTexture();
-            this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
-                transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(transformCanvasWebGl.gl, pixels, this.loadedImage.width, this.loadedImage.height);
+            this.requestCanvases((transformCanvas, transformCanvasWebGl) => {
+                transformedImageBwTexture = WebGl.createAndLoadTextureFromArray(
+                    transformCanvasWebGl.gl,
+                    pixels,
+                    this.loadedImage.width,
+                    this.loadedImage.height
+                );
             });
         },
-        freeTransformedImageBwTexture(){
-            if(!transformedImageBwTexture){
+        freeTransformedImageBwTexture() {
+            if (!transformedImageBwTexture) {
                 return;
             }
-            this.requestCanvases((transformCanvas, transformCanvasWebGl)=>{
-                transformCanvasWebGl.gl.deleteTexture(transformedImageBwTexture);
+            this.requestCanvases((transformCanvas, transformCanvasWebGl) => {
+                transformCanvasWebGl.gl.deleteTexture(
+                    transformedImageBwTexture
+                );
             });
             //to avoid weird errors, we will do this reset the variables here, even if requestCanvases fails
             transformedImageBwTexture = null;
             isDitherWorkerBwWorking = false;
         },
-    }
+    },
 };
 </script>
