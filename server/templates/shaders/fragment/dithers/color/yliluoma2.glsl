@@ -37,11 +37,7 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
             vec3 color = u_colors_array[index];
             vec3 sum = soFar;
             vec3 add = color;
-            int p = 1;
-            for(int q=0; q<u_colors_array_length; q++){
-                if(p > maxTestCount){
-                    break;
-                }
+            for(int p=1;p<=maxTestCount;p*=2){
                 sum += add;
                 add += add;
                 vec3 test = sum / vec3(float(proportionTotal + p));
@@ -51,7 +47,6 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
                     chosen = index;
                     chosenAmount = p;
                 }
-                p = p * 2;
             }
         }
         for(int p=0; p<u_colors_array_length; ++p){
