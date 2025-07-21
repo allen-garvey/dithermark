@@ -49,8 +49,8 @@ int deviseMixingPlan(vec3 pixel, int planIndex){
                 }
             }
         }
-        for(int p=0; p<u_colors_array_length; ++p){
-            if(p >= chosenAmount || proportionTotal >= u_colors_array_length){
+        for(int p=0; p<chosenAmount; ++p){
+            if(proportionTotal >= u_colors_array_length){
                 break;
             }
             float luma = pixel_luma(u_colors_array[chosen]);
