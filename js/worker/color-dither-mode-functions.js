@@ -7,8 +7,8 @@ function identity(item) {
 
 //hsl values have to be between 0.0-1.0 for
 //comparing distances to work correctly
-function pixelToHsl(pixel) {
-    const ret = new Uint16Array(3);
+function pixelToHsl(pixel, buffer) {
+    const ret = buffer || new Uint16Array(3);
     ret[0] = PixelMath.hue(pixel);
     ret[1] = PixelMath.saturation(pixel);
     ret[2] = PixelMath.lightness(pixel);
@@ -20,8 +20,8 @@ function rgbValueToLinear(d) {
     return c >= 0.04045 ? Math.pow((c + 0.055) / 1.055, 2.4) : c / 12.92;
 }
 
-function pixelToOklab(pixel) {
-    const ret = new Float64Array(3);
+function pixelToOklab(pixel, buffer) {
+    const ret = buffer || new Float64Array(3);
 
     const r = rgbValueToLinear(pixel[0]);
     const g = rgbValueToLinear(pixel[1]);
@@ -174,6 +174,9 @@ function errorAmount3d(expectedValues, actualValues, buffer) {
     return buffer;
 }
 
+const createNull = () => null;
+const createHslBuffer = () => new Uint16Array(3);
+
 const exports = {};
 exports[ColorDitherModes.get('LIGHTNESS').id] = {
     pixelValue: PixelMath.lightness,
@@ -181,6 +184,7 @@ exports[ColorDitherModes.get('LIGHTNESS').id] = {
     dimensions: 1,
     incrementValue: incrementLightness,
     errorAmount: errorAmount1d,
+    createBuffer: createNull,
 };
 exports[ColorDitherModes.get('HUE').id] = {
     pixelValue: pixelToHsl,
@@ -188,6 +192,7 @@ exports[ColorDitherModes.get('HUE').id] = {
     dimensions: 3, //need 3 dimensions because we are using hsl function
     incrementValue: incrementHsl,
     errorAmount: errorAmountHue,
+    createBuffer: createHslBuffer,
 };
 exports[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
     pixelValue: pixelToHsl,
@@ -195,6 +200,7 @@ exports[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
     dimensions: 3, //need 3 dimensions because we are using hsl function
     incrementValue: incrementHsl,
     errorAmount: errorAmountHl,
+    createBuffer: createHslBuffer,
 };
 exports[ColorDitherModes.get('HSL_WEIGHTED').id] = {
     pixelValue: pixelToHsl,
@@ -202,6 +208,7 @@ exports[ColorDitherModes.get('HSL_WEIGHTED').id] = {
     dimensions: 3,
     incrementValue: incrementHsl,
     errorAmount: errorAmountHsl,
+    createBuffer: createHslBuffer,
 };
 exports[ColorDitherModes.get('RGB').id] = {
     pixelValue: identity,
@@ -209,6 +216,7 @@ exports[ColorDitherModes.get('RGB').id] = {
     dimensions: 3,
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
+    createBuffer: createNull,
 };
 
 exports[ColorDitherModes.get('OKLAB').id] = {
@@ -217,6 +225,7 @@ exports[ColorDitherModes.get('OKLAB').id] = {
     dimensions: 3,
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
+    createBuffer: () => new Float64Array(3),
 };
 
 exports[ColorDitherModes.get('LUMA').id] = {
@@ -225,6 +234,7 @@ exports[ColorDitherModes.get('LUMA').id] = {
     dimensions: 3,
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
+    createBuffer: createNull,
 };
 
 export default exports;
