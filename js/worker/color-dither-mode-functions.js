@@ -1,18 +1,40 @@
 import PixelMath from '../shared/pixel-math.js';
 import ColorDitherModes from '../shared/color-dither-modes.js';
 
-
 function identity(item) {
     return item;
 }
 
-//hsl values have to be between 0.0-1.0 for 
+//hsl values have to be between 0.0-1.0 for
 //comparing distances to work correctly
 function pixelToHsl(pixel) {
     const ret = new Uint16Array(3);
     ret[0] = PixelMath.hue(pixel);
     ret[1] = PixelMath.saturation(pixel);
     ret[2] = PixelMath.lightness(pixel);
+    return ret;
+}
+
+function rgbValueToLinear(d) {
+    const c = d / 255;
+    return c >= 0.04045 ? Math.pow((c + 0.055) / 1.055, 2.4) : c / 12.92;
+}
+
+function pixelToOklab(pixel) {
+    const ret = new Float64Array(3);
+
+    const r = rgbValueToLinear(pixel[0]);
+    const g = rgbValueToLinear(pixel[1]);
+    const b = rgbValueToLinear(pixel[2]);
+
+    const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+    const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+    const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+
+    ret[0] = l * 0.2104542553 + m * 0.793617785 + s * -0.0040720468;
+    ret[1] = l * 1.9779984951 + m * -2.428592205 + s * 0.4505937099;
+    ret[2] = l * 0.0259040371 + m * 0.7827717662 + s * -0.808675766;
+
     return ret;
 }
 
@@ -26,7 +48,10 @@ function distanceHue(item1, item2) {
     if (item1[1] < 7) {
         const fraction = item1[1] / 7;
         const lightnesstDist = Math.abs(item1[2] - item2[2]) / 255;
-        return 4 * fraction * hueDist * hueDist + (1 - fraction) * lightnesstDist * lightnesstDist;
+        return (
+            4 * fraction * hueDist * hueDist +
+            (1 - fraction) * lightnesstDist * lightnesstDist
+        );
     }
 
     return hueDist * hueDist;
@@ -38,7 +63,10 @@ function distanceHueLightness(item1, item2) {
 
     if (item1[1] < 30) {
         const fraction = item1[1] / 30;
-        return 2 * fraction * hueDist * hueDist + (1 - fraction) * lightnessDist * lightnessDist;
+        return (
+            2 * fraction * hueDist * hueDist +
+            (1 - fraction) * lightnessDist * lightnessDist
+        );
     }
 
     return 32 * hueDist * hueDist + lightnessDist * lightnessDist;
@@ -49,9 +77,12 @@ function distanceHslWeighted(item1, item2) {
     const satDist = Math.abs(item1[1] - item2[1]) / 100;
     const lighnesstDist = Math.abs(item1[2] - item2[2]) / 255;
 
-    return hueDist * hueDist * 8 + satDist * satDist + lighnesstDist * lighnesstDist * 32;
+    return (
+        hueDist * hueDist * 8 +
+        satDist * satDist +
+        lighnesstDist * lighnesstDist * 32
+    );
 }
-
 
 function distance3d(item1, item2) {
     const dist1 = item1[0] - item2[0];
@@ -66,13 +97,14 @@ function distanceLuma(item1, item2) {
     const distR = item1[0] - item2[0];
     const distG = item1[1] - item2[1];
     const distB = item1[2] - item2[2];
-    return distR * distR * 0.299 + distG * distG * 0.587 + distB * distB * 0.114;
+    return (
+        distR * distR * 0.299 + distG * distG * 0.587 + distB * distB * 0.114
+    );
 }
-
 
 /**
  * Functions for error prop dither
-*/
+ */
 
 function incrementHueValue(hue, incrementValue) {
     return Math.abs(Math.round(hue + incrementValue) % 360);
@@ -142,7 +174,6 @@ function errorAmount3d(expectedValues, actualValues, buffer) {
     return buffer;
 }
 
-
 const exports = {};
 exports[ColorDitherModes.get('LIGHTNESS').id] = {
     pixelValue: PixelMath.lightness,
@@ -174,6 +205,14 @@ exports[ColorDitherModes.get('HSL_WEIGHTED').id] = {
 };
 exports[ColorDitherModes.get('RGB').id] = {
     pixelValue: identity,
+    distance: distance3d,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+};
+
+exports[ColorDitherModes.get('OKLAB').id] = {
+    pixelValue: pixelToOklab,
     distance: distance3d,
     dimensions: 3,
     incrementValue: incrementRgb,
