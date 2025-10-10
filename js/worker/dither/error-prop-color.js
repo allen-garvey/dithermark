@@ -7,10 +7,12 @@ import ErrorPropModel from './error-prop-model.js';
  */
 function createErrorMaxtrix(width, numRows, lengthOffset, dimensions) {
     const rowWidth = (width + lengthOffset * 2) * dimensions;
-    const data = {};
+    const rowWidthBytes = rowWidth * 4;
+    const buffer = new ArrayBuffer(rowWidthBytes * numRows);
+    const data = new Array(numRows);
 
     for (let i = 0; i < numRows; i++) {
-        data[i] = new Float32Array(rowWidth);
+        data[i] = new Float32Array(buffer, rowWidthBytes * i, rowWidth);
     }
 
     return {
@@ -123,7 +125,7 @@ function errorPropDitherBase(
             //move it to the end and move all other rows up one
             const temp = errorMatrix.data[0];
             temp.fill(0);
-            const length = Object.keys(errorMatrix.data).length;
+            const length = errorMatrix.data.length;
 
             for (let i = 1; i < length; i++) {
                 errorMatrix.data[i - 1] = errorMatrix.data[i];
