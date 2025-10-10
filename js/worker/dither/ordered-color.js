@@ -102,9 +102,8 @@ function createStarkColorOrderedDither(dimensions, bayerFuncName) {
             ColorDitherModeFunctions[colorDitherModeId];
         const pixelValueFunc = colorDitherModeFuncs.pixelValue;
         const pixelDistanceFunc = colorDitherModeFuncs.distance;
-        const colorValues = colorDitherModeFuncs.createTransformedColors
-            ? colorDitherModeFuncs.createTransformedColors(colors)
-            : colors.map(color => pixelValueFunc(color));
+        const colorValues =
+            colorDitherModeFuncs.createTransformedColors(colors);
 
         return Image.transform(
             pixels,
@@ -263,9 +262,8 @@ function createYliluoma1ColorDither(dimensions, bayerFuncName) {
             ColorDitherModeFunctions[colorDitherModeId];
         const pixelValueFunc = colorDitherModeFuncs.pixelValue;
         const pixelDistanceFunc = colorDitherModeFuncs.distance;
-        const colorValues = colorDitherModeFuncs.createTransformedColors
-            ? colorDitherModeFuncs.createTransformedColors(colors)
-            : colors.map(color => pixelValueFunc(color));
+        const colorValues =
+            colorDitherModeFuncs.createTransformedColors(colors);
         //to reduce allocations and deletions
         const mixPixel = new Uint8Array(3);
 

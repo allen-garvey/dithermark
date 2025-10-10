@@ -248,6 +248,7 @@ exports[ColorDitherModes.get('RGB').id] = {
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
     createBuffer: createNull,
+    createTransformedColors: identity,
 };
 
 exports[ColorDitherModes.get('OKLAB').id] = {
@@ -271,6 +272,7 @@ exports[ColorDitherModes.get('LUMA').id] = {
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
     createBuffer: createNull,
+    createTransformedColors: identity,
 };
 
 export default exports;
