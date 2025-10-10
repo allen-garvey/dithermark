@@ -67,6 +67,7 @@ function errorPropDitherBase(
     const modeDimensions = colorDitherMode.dimensions;
     const incrementValueFunc = colorDitherMode.incrementValue;
     const errorAmountFunc = colorDitherMode.errorAmount;
+    const transformedPixelBuffer = colorDitherMode.createBuffer();
 
     const colorValues = colors.map(color => pixelValueFunc(color));
     const errorMatrix = createErrorMaxtrix(
@@ -90,7 +91,7 @@ function errorPropDitherBase(
                 0
             );
             const pixelAdjustedValue = incrementValueFunc(
-                pixelValueFunc(pixel),
+                pixelValueFunc(pixel, transformedPixelBuffer),
                 errorValue
             );
             const closestColorIndex = Image.findClosestColorIndex(
