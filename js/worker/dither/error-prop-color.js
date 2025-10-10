@@ -69,7 +69,9 @@ function errorPropDitherBase(
     const errorAmountFunc = colorDitherMode.errorAmount;
     const transformedPixelBuffer = colorDitherMode.createBuffer();
 
-    const colorValues = colors.map(color => pixelValueFunc(color));
+    const colorValues = colorDitherMode.createTransformedColors
+        ? colorDitherMode.createTransformedColors(colors)
+        : colors.map(color => pixelValueFunc(color));
     const errorMatrix = createErrorMaxtrix(
         imageWidth,
         errorPropagationModel.numRows,

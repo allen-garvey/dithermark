@@ -176,6 +176,34 @@ function errorAmount3d(expectedValues, actualValues, buffer) {
 
 const createNull = () => null;
 const createHslBuffer = () => new Uint16Array(3);
+const createTransformColorsFunction = (
+    typedArrayConstructor,
+    dimensions,
+    pixelValueFunc
+) => {
+    return colors => {
+        const ret = [];
+        const bytesPerColor =
+            dimensions * typedArrayConstructor.BYTES_PER_ELEMENT;
+        const buffer = new ArrayBuffer(colors.length * bytesPerColor);
+
+        colors.forEach((color, i) => {
+            const array = new typedArrayConstructor(
+                buffer,
+                bytesPerColor * i,
+                dimensions
+            );
+            ret.push(pixelValueFunc(color, array));
+        });
+
+        return ret;
+    };
+};
+const hslTransformColorsFunction = createTransformColorsFunction(
+    Uint16Array,
+    3,
+    pixelToHsl
+);
 
 const exports = {};
 exports[ColorDitherModes.get('LIGHTNESS').id] = {
@@ -193,6 +221,7 @@ exports[ColorDitherModes.get('HUE').id] = {
     incrementValue: incrementHsl,
     errorAmount: errorAmountHue,
     createBuffer: createHslBuffer,
+    createTransformedColors: hslTransformColorsFunction,
 };
 exports[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
     pixelValue: pixelToHsl,
@@ -201,6 +230,7 @@ exports[ColorDitherModes.get('HUE_LIGHTNESS').id] = {
     incrementValue: incrementHsl,
     errorAmount: errorAmountHl,
     createBuffer: createHslBuffer,
+    createTransformedColors: hslTransformColorsFunction,
 };
 exports[ColorDitherModes.get('HSL_WEIGHTED').id] = {
     pixelValue: pixelToHsl,
@@ -209,6 +239,7 @@ exports[ColorDitherModes.get('HSL_WEIGHTED').id] = {
     incrementValue: incrementHsl,
     errorAmount: errorAmountHsl,
     createBuffer: createHslBuffer,
+    createTransformedColors: hslTransformColorsFunction,
 };
 exports[ColorDitherModes.get('RGB').id] = {
     pixelValue: identity,
@@ -226,6 +257,11 @@ exports[ColorDitherModes.get('OKLAB').id] = {
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
     createBuffer: () => new Float64Array(3),
+    createTransformedColors: createTransformColorsFunction(
+        Float64Array,
+        3,
+        pixelToOklab
+    ),
 };
 
 exports[ColorDitherModes.get('LUMA').id] = {

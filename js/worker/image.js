@@ -66,7 +66,9 @@ function colorDitherImage(
         postscriptFunc = identity;
     }
     const ditherRCoefficient = DitherUtil.ditherRCoefficient(colors.length);
-    const colorValues = colors.map(color => pixelValueFunc(color));
+    const colorValues = colorDitherModeFuncs.createTransformedColors
+        ? colorDitherModeFuncs.createTransformedColors(colors)
+        : colors.map(color => pixelValueFunc(color));
     const transformedPixelBuffer = colorDitherModeFuncs.createBuffer();
 
     let y = 0;
