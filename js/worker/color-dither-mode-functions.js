@@ -38,6 +38,28 @@ function pixelToOklab(pixel, buffer) {
     return ret;
 }
 
+function pixelToCielab(pixel, buffer) {
+    const ret = buffer || new Float64Array(3);
+
+    const r = rgbValueToLinear(pixel[0]);
+    const g = rgbValueToLinear(pixel[1]);
+    const b = rgbValueToLinear(pixel[2]);
+
+    let x = (r * 0.4124 + g * 0.3576 + b * 0.1805) / 0.95047;
+    let y = r * 0.2126 + g * 0.7152 + b * 0.0722;
+    let z = (r * 0.0193 + g * 0.1192 + b * 0.9505) / 1.08883;
+
+    x = x > 0.008856 ? Math.cbrt(x) : 7.787 * x + 16 / 116;
+    y = y > 0.008856 ? Math.cbrt(y) : 7.787 * y + 16 / 116;
+    z = z > 0.008856 ? Math.cbrt(z) : 7.787 * z + 16 / 116;
+
+    ret[0] = 116 * y - 16;
+    ret[1] = 500 * (x - y);
+    ret[2] = 200 * (y - z);
+
+    return ret;
+}
+
 function distance1d(value1, value2) {
     return Math.abs(value1 - value2);
 }
@@ -270,6 +292,20 @@ exports[ColorDitherModes.get('OKLAB').id] = {
         Float64Array,
         3,
         pixelToOklab
+    ),
+};
+
+exports[ColorDitherModes.get('CIE_LAB').id] = {
+    pixelValue: pixelToCielab,
+    distance: distance3d,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: () => new Float64Array(3),
+    createTransformedColors: createTransformColorsFunction(
+        Float64Array,
+        3,
+        pixelToCielab
     ),
 };
 

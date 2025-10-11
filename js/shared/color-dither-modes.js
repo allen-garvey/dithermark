@@ -7,5 +7,6 @@ exports.set('HSL_WEIGHTED', { id: 1, title: 'Weighted HSL' });
 exports.set('RGB', { id: 0, title: 'RGB' });
 exports.set('LUMA', { id: 5, title: 'Luma' });
 exports.set('OKLAB', { id: 6, title: 'Oklab' });
+exports.set('CIE_LAB', { id: 7, title: 'CIE Lab' });
 
 export default exports;
