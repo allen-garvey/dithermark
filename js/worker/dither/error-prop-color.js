@@ -5,6 +5,21 @@ import ErrorPropModel from './error-prop-model.js';
 /*
  ** Error propagation matrix stuff
  */
+
+/**
+ * @typedef {Object} ErrorMatrix
+ * @property {number} dimensions
+ * @property {Float32Array[]} data
+ */
+
+/**
+ *
+ * @param {number} width
+ * @param {number} dimensions
+ * @property {number} numRows
+ * @property {number} lengthOffset
+ * @returns {ErrorMatrix}
+ */
 function createErrorMaxtrix(width, numRows, lengthOffset, dimensions) {
     const rowWidth = (width + lengthOffset * 2) * dimensions;
     const rowWidthBytes = rowWidth * 4;
@@ -22,6 +37,22 @@ function createErrorMaxtrix(width, numRows, lengthOffset, dimensions) {
 }
 
 /**
+ *
+ * @param {ErrorMatrix} matrix
+ * @param {number} x
+ * @param {number} y
+ * @returns
+ */
+function errorMatrixValue(matrix, x, y) {
+    const normalizedX = x * matrix.dimensions;
+    return matrix.data[y].subarray(
+        normalizedX,
+        normalizedX + matrix.dimensions
+    );
+}
+
+/**
+ * @param {ErrorMatrix} matrix
  * @param {Number} x
  * @param {Number} y
  * @param {Number} errorFraction
@@ -35,16 +66,9 @@ function errorMatrixIncrement(matrix, x, y, error, errorFraction) {
     }
 }
 
-function errorMatrixValue(matrix, x, y) {
-    const normalizedX = x * matrix.dimensions;
-    return matrix.data[y].subarray(
-        normalizedX,
-        normalizedX + matrix.dimensions
-    );
-}
-
 /**
  * @param {Float32Array} propagationModel
+ * @param {ErrorMatrix} errorPropMatrix
  * @param {Number} x
  * @param {Float32Array} currentError
  */
