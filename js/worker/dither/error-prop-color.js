@@ -21,6 +21,12 @@ function createErrorMaxtrix(width, numRows, lengthOffset, dimensions) {
     };
 }
 
+/**
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} errorFraction
+ * @param {Float32Array} error
+ */
 function errorMatrixIncrement(matrix, x, y, error, errorFraction) {
     const matrixValues = errorMatrixValue(matrix, x, y);
 
@@ -38,18 +44,20 @@ function errorMatrixValue(matrix, x, y) {
 }
 
 /**
- * Propagate error functions
+ * @param {Float32Array} propagationModel
+ * @param {Number} x
+ * @param {Float32Array} currentError
  */
 function propagateError(propagationModel, errorPropMatrix, x, currentError) {
-    propagationModel.forEach(item => {
+    for (let i = 0; i < propagationModel.length; i += 3) {
         errorMatrixIncrement(
             errorPropMatrix,
-            x + item[1],
-            item[2],
+            propagationModel[i] + x,
+            propagationModel[i + 1],
             currentError,
-            item[0]
+            propagationModel[i + 2]
         );
-    });
+    }
 }
 
 /**
