@@ -124,6 +124,17 @@ function distanceLuma(item1, item2) {
     );
 }
 
+// based on [taxicab difference](https://en.wikipedia.org/wiki/Taxicab_geometry)
+// as described here https://en.wikipedia.org/wiki/Color_difference#Other_geometric_constructions
+// for lab colors only
+function distanceLabTaxicab(item1, item2) {
+    const distL = Math.abs(item1[0] - item2[0]);
+    const distA = item1[1] - item2[1];
+    const distB = item1[2] - item2[2];
+
+    return Math.sqrt(distA * distA + distB * distB) + distL;
+}
+
 /**
  * Functions for error prop dither
  */
@@ -295,9 +306,37 @@ exports[ColorDitherModes.get('OKLAB').id] = {
     ),
 };
 
+exports[ColorDitherModes.get('OKLAB_TAXI').id] = {
+    pixelValue: pixelToOklab,
+    distance: distanceLabTaxicab,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: () => new Float64Array(3),
+    createTransformedColors: createTransformColorsFunction(
+        Float64Array,
+        3,
+        pixelToOklab
+    ),
+};
+
 exports[ColorDitherModes.get('CIE_LAB').id] = {
     pixelValue: pixelToCielab,
     distance: distance3d,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: () => new Float64Array(3),
+    createTransformedColors: createTransformColorsFunction(
+        Float64Array,
+        3,
+        pixelToCielab
+    ),
+};
+
+exports[ColorDitherModes.get('CIE_LAB_TAXI').id] = {
+    pixelValue: pixelToCielab,
+    distance: distanceLabTaxicab,
     dimensions: 3,
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
