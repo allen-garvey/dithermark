@@ -213,8 +213,14 @@ exports[ColorDitherModes.get('LIGHTNESS').id] = {
     incrementValue: incrementLightness,
     errorAmount: errorAmount1d,
     createBuffer: createNull,
-    createTransformedColors: colors =>
-        colors.map(color => PixelMath.lightness(color)),
+    createTransformedColors: colors => {
+        const ret = new Float32Array(colors.length);
+        colors.forEach((color, i) => {
+            ret[i] = PixelMath.lightness(color);
+        });
+
+        return ret;
+    },
 };
 exports[ColorDitherModes.get('HUE').id] = {
     pixelValue: pixelToHsl,
