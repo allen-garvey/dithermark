@@ -9,6 +9,7 @@ import ErrorPropModel from './error-prop-model.js';
 /**
  * @typedef {Object} ErrorMatrix
  * @property {number} dimensions
+ * @property {number} lengthOffset
  * @property {Float32Array[]} data
  */
 
@@ -32,6 +33,7 @@ function createErrorMaxtrix(width, numRows, lengthOffset, dimensions) {
 
     return {
         dimensions,
+        lengthOffset,
         data,
     };
 }
@@ -44,7 +46,7 @@ function createErrorMaxtrix(width, numRows, lengthOffset, dimensions) {
  * @returns
  */
 function errorMatrixValue(matrix, x, y) {
-    const normalizedX = x * matrix.dimensions;
+    const normalizedX = (x + matrix.lengthOffset) * matrix.dimensions;
     return matrix.data[y].subarray(
         normalizedX,
         normalizedX + matrix.dimensions
@@ -112,18 +114,13 @@ function errorPropDitherBase(
     );
     //this is to avoid uncessesary creation and deletion of arrays during error propagation
     const currentErrorBuffer = new Float32Array(modeDimensions);
-    let errorMatrixIndex = errorPropagationModel.lengthOffset;
 
     Image.transform(
         pixels,
         imageWidth,
         imageHeight,
         (pixel, x, y) => {
-            const errorValue = errorMatrixValue(
-                errorMatrix,
-                errorMatrixIndex,
-                0
-            );
+            const errorValue = errorMatrixValue(errorMatrix, x, 0);
             const pixelAdjustedValue = incrementValueFunc(
                 pixelValueFunc(pixel, transformedPixelBuffer),
                 errorValue
@@ -143,16 +140,14 @@ function errorPropDitherBase(
             propagateError(
                 errorPropagationModel.matrix,
                 errorMatrix,
-                errorMatrixIndex,
+                x,
                 currentError
             );
 
-            errorMatrixIndex++;
             pixel.set(colors[closestColorIndex]);
             return pixel;
         },
         () => {
-            errorMatrixIndex = errorPropagationModel.lengthOffset;
             // fill first row of error prop model with zero,
             //move it to the end and move all other rows up one
             const temp = errorMatrix.data[0];
