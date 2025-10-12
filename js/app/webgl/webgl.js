@@ -237,9 +237,6 @@ function createWebGLDrawImageFunc(
         texHeight,
         setCustomUniformsFunc = (gl, customUniformLocations) => {}
     ) {
-        // Tell WebGL how to convert from clip space to pixels
-        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-
         gl.bindTexture(gl.TEXTURE_2D, tex);
 
         // Tell WebGL to use our shader program pair
