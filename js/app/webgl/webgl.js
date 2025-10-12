@@ -29,8 +29,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import m4 from './webgl-m4.js';
-
 /*
  * Shader and program creation
  */
@@ -163,6 +161,7 @@ function createWebGLDrawImageFunc(
     // look up where the vertex data needs to go.
     const positionLocation = gl.getAttribLocation(program, 'a_position');
     const texcoordLocation = gl.getAttribLocation(program, 'a_texcoord');
+    const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
 
     // lookup uniforms
     const matrixLocation = gl.getUniformLocation(program, 'u_matrix');
@@ -177,21 +176,65 @@ function createWebGLDrawImageFunc(
         );
     });
 
-    // Create a buffer.
-    const positionBuffer = gl.createBuffer();
+    // Create a vertex array object (attribute state)
+    var vao = gl.createVertexArray();
+
+    // and make it the one we're currently working with
+    gl.bindVertexArray(vao);
+
+    // Create a buffer and put a single pixel space rectangle in
+    // it (2 triangles)
+    var positionBuffer = gl.createBuffer();
+
+    // Turn on the attribute
+    gl.enableVertexAttribArray(positionLocation);
+
+    // Bind it to ARRAY_BUFFER (think of it as ARRAY_BUFFER = positionBuffer)
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-    const unitQuad = [0, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1];
+    // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+    var size = 2; // 2 components per iteration
+    var type = gl.FLOAT; // the data is 32bit floats
+    var normalize = false; // don't normalize the data
+    var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+    var offset = 0; // start at the beginning of the buffer
+    gl.vertexAttribPointer(
+        positionLocation,
+        size,
+        type,
+        normalize,
+        stride,
+        offset
+    );
 
-    // Put a unit quad in the buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unitQuad), gl.STATIC_DRAW);
+    // provide texture coordinates for the rectangle.
+    var texCoordBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([
+            0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0,
+        ]),
+        gl.STATIC_DRAW
+    );
 
-    // Create a buffer for texture coords
-    const texcoordBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
+    // Turn on the attribute
+    gl.enableVertexAttribArray(texcoordLocation);
 
-    // Put texcoords in the buffer
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(unitQuad), gl.STATIC_DRAW);
+    // Tell the attribute how to get data out of texCoordBuffer (ARRAY_BUFFER)
+    var size = 2; // 2 components per iteration
+    var type = gl.FLOAT; // the data is 32bit floats
+    var normalize = false; // don't normalize the data
+    var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+    var offset = 0; // start at the beginning of the buffer
+    gl.vertexAttribPointer(
+        texcoordLocation,
+        size,
+        type,
+        normalize,
+        stride,
+        offset
+    );
 
     return function (
         gl,
@@ -200,40 +243,26 @@ function createWebGLDrawImageFunc(
         texHeight,
         setCustomUniformsFunc = (gl, customUniformLocations) => {}
     ) {
+        // Tell WebGL how to convert from clip space to pixels
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+
         gl.bindTexture(gl.TEXTURE_2D, tex);
 
         // Tell WebGL to use our shader program pair
         gl.useProgram(program);
+        gl.bindVertexArray(vao);
 
         // Setup the attributes to pull data from our buffers
+        // Pass in the canvas resolution so we can convert from
+        // pixels to clipspace in the shader
+        gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+
+        // Bind the position buffer so gl.bufferData that will be called
+        // in setRectangle puts data in the position buffer
         gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-        gl.enableVertexAttribArray(positionLocation);
-        gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-        gl.bindBuffer(gl.ARRAY_BUFFER, texcoordBuffer);
-        gl.enableVertexAttribArray(texcoordLocation);
-        gl.vertexAttribPointer(texcoordLocation, 2, gl.FLOAT, false, 0, 0);
 
-        // this matrix will convert from pixels to clip space
-        let matrix = m4.orthographic(
-            0,
-            gl.canvas.width,
-            gl.canvas.height,
-            0,
-            -1,
-            1
-        );
-
-        // this matrix will translate our quad to dstX, dstY
-        const dstX = 0;
-        const dstY = 0;
-        matrix = m4.translate(matrix, dstX, dstY, 0);
-
-        // this matrix will scale our 1 unit quad
-        // from 1 unit to texWidth, texHeight units
-        matrix = m4.scale(matrix, texWidth, texHeight, 1);
-
-        // Set the matrix.
-        gl.uniformMatrix4fv(matrixLocation, false, matrix);
+        // Set a rectangle the same size as the image.
+        setRectangle(gl, 0, 0, texWidth, texHeight);
 
         // Tell the shader to get the texture from texture unit 0
         gl.uniform1i(textureLocation, 0);
@@ -246,6 +275,18 @@ function createWebGLDrawImageFunc(
         // draw the quad (2 triangles, 6 vertices)
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     };
+}
+
+function setRectangle(gl, x, y, width, height) {
+    const x1 = x;
+    const x2 = x + width;
+    const y1 = y;
+    const y2 = y + height;
+    gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([x1, y1, x2, y1, x1, y2, x1, y2, x2, y1, x2, y2]),
+        gl.STATIC_DRAW
+    );
 }
 
 export default {
