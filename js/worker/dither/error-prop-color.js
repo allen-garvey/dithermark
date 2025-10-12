@@ -68,8 +68,7 @@ function errorMatrixIncrement(matrix, x, y, error, errorFraction) {
     const source = matrix.data[y];
 
     for (let i = 0; i < matrix.dimensions; i++) {
-        source[i + normalizedX] =
-            source[i + normalizedX] + error[i] * errorFraction;
+        source[i + normalizedX] += error[i] * errorFraction;
     }
 }
 
