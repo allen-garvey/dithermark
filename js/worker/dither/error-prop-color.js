@@ -43,14 +43,17 @@ function createErrorMaxtrix(width, numRows, lengthOffset, dimensions) {
  * @param {ErrorMatrix} matrix
  * @param {number} x
  * @param {number} y
- * @returns
+ * @param {Float32Array} buffer
+ * @returns {Float32Array}
  */
-function errorMatrixValue(matrix, x, y) {
+function errorMatrixValue(matrix, x, y, buffer) {
     const normalizedX = (x + matrix.lengthOffset) * matrix.dimensions;
-    return matrix.data[y].subarray(
-        normalizedX,
-        normalizedX + matrix.dimensions
-    );
+    const source = matrix.data[y];
+
+    for (let i = 0; i < matrix.dimensions; i++) {
+        buffer[i] = source[normalizedX + i];
+    }
+    return buffer;
 }
 
 /**
@@ -61,10 +64,12 @@ function errorMatrixValue(matrix, x, y) {
  * @param {Float32Array} error
  */
 function errorMatrixIncrement(matrix, x, y, error, errorFraction) {
-    const matrixValues = errorMatrixValue(matrix, x, y);
+    const normalizedX = (x + matrix.lengthOffset) * matrix.dimensions;
+    const source = matrix.data[y];
 
-    for (let i = 0; i < matrixValues.length; i++) {
-        matrixValues[i] = matrixValues[i] + error[i] * errorFraction;
+    for (let i = 0; i < matrix.dimensions; i++) {
+        source[i + normalizedX] =
+            source[i + normalizedX] + error[i] * errorFraction;
     }
 }
 
@@ -115,12 +120,19 @@ function errorPropDitherBase(
     //this is to avoid uncessesary creation and deletion of arrays during error propagation
     const currentErrorBuffer = new Float32Array(modeDimensions);
 
+    const errorValueBuffer = new Float32Array(modeDimensions);
+
     Image.transform(
         pixels,
         imageWidth,
         imageHeight,
         (pixel, x, y) => {
-            const errorValue = errorMatrixValue(errorMatrix, x, 0);
+            const errorValue = errorMatrixValue(
+                errorMatrix,
+                x,
+                0,
+                errorValueBuffer
+            );
             const pixelAdjustedValue = incrementValueFunc(
                 pixelValueFunc(pixel, transformedPixelBuffer),
                 errorValue
