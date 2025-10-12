@@ -1,6 +1,8 @@
+#version 300 es
 precision mediump float;
     
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 output_color;
 uniform sampler2D u_texture;
 
 uniform int u_colors_array_length;
@@ -16,7 +18,7 @@ uniform float u_dither_r_coefficient;
 #{{customDeclaration}}
 
 void main(){
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
     vec3 adjustedPixel = pixel.rgb;
 
     #{{customBody}}
@@ -24,10 +26,7 @@ void main(){
     float shortestDistance = 9999.9;
     vec3 closestPixel = adjustedPixel;
     
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        if(i >= u_colors_array_length){
-            break;
-        }
+    for(int i=0;i<u_colors_array_length;i++){
         vec3 currentColor = u_colors_array[i];
         float currentDistance = quick_distance(adjustedPixel, currentColor);
         if(currentDistance < shortestDistance){
@@ -40,5 +39,5 @@ void main(){
 
     #{{optionalPostscript}}
     
-    gl_FragColor = vec4(outputPixel, pixel.a);
+    output_color = vec4(outputPixel, pixel.a);
 }

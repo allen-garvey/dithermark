@@ -1,11 +1,7 @@
 import path from 'path';
 import { render, getTemplate } from './view-helpers.js';
 
-import {
-    APP_NAME,
-    COLOR_DITHER_MAX_COLORS,
-    YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH,
-} from '../../constants.js';
+import { APP_NAME, COLOR_DITHER_MAX_COLORS } from '../../constants.js';
 
 export const renderHome = ({ isProduction = false }) => {
     const shaders = [
@@ -202,7 +198,6 @@ export const renderHome = ({ isProduction = false }) => {
             path: 'fragment/dithers/color/yliluoma1.glsl',
             context: {
                 COLOR_DITHER_MAX_COLORS,
-                YLILUOMA_1_ORDERED_MATRIX_MAX_LENGTH,
             },
         },
         {

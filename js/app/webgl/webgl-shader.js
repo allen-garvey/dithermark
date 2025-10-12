@@ -12,7 +12,7 @@ const shaderTextMap = new Map([
     ['webgl-fragment-edge-filter-color-fixed', 'vec4(u_outline_color, 1.0);'],
     [
         'webgl-fragment-edge-filter-color-background',
-        'vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);',
+        'vec4(get_dark_outline_color(texture(u_background_texture, v_texcoord).rgb), 1.0);',
     ],
     // contour filters
     [
@@ -25,7 +25,7 @@ const shaderTextMap = new Map([
     ],
     [
         'webgl-fragment-contour-filter2-color-background',
-        'vec4(get_dark_outline_color(texture2D(u_background_texture, v_texcoord).rgb), 1.0);',
+        'vec4(get_dark_outline_color(texture(u_background_texture, v_texcoord).rgb), 1.0);',
     ],
     // shared dither
     [
