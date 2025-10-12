@@ -164,7 +164,6 @@ function createWebGLDrawImageFunc(
     const resolutionLocation = gl.getUniformLocation(program, 'u_resolution');
 
     // lookup uniforms
-    const matrixLocation = gl.getUniformLocation(program, 'u_matrix');
     const textureLocation = gl.getUniformLocation(program, 'u_texture');
 
     //lookup custom uniforms
@@ -177,14 +176,14 @@ function createWebGLDrawImageFunc(
     });
 
     // Create a vertex array object (attribute state)
-    var vao = gl.createVertexArray();
+    const vao = gl.createVertexArray();
 
     // and make it the one we're currently working with
     gl.bindVertexArray(vao);
 
     // Create a buffer and put a single pixel space rectangle in
     // it (2 triangles)
-    var positionBuffer = gl.createBuffer();
+    const positionBuffer = gl.createBuffer();
 
     // Turn on the attribute
     gl.enableVertexAttribArray(positionLocation);
@@ -193,11 +192,11 @@ function createWebGLDrawImageFunc(
     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
     // Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
-    var size = 2; // 2 components per iteration
-    var type = gl.FLOAT; // the data is 32bit floats
-    var normalize = false; // don't normalize the data
-    var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-    var offset = 0; // start at the beginning of the buffer
+    const size = 2; // 2 components per iteration
+    const type = gl.FLOAT; // the data is 32bit floats
+    const normalize = false; // don't normalize the data
+    const stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
+    const offset = 0; // start at the beginning of the buffer
     gl.vertexAttribPointer(
         positionLocation,
         size,
@@ -208,7 +207,7 @@ function createWebGLDrawImageFunc(
     );
 
     // provide texture coordinates for the rectangle.
-    var texCoordBuffer = gl.createBuffer();
+    const texCoordBuffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
     gl.bufferData(
         gl.ARRAY_BUFFER,
@@ -222,11 +221,6 @@ function createWebGLDrawImageFunc(
     gl.enableVertexAttribArray(texcoordLocation);
 
     // Tell the attribute how to get data out of texCoordBuffer (ARRAY_BUFFER)
-    var size = 2; // 2 components per iteration
-    var type = gl.FLOAT; // the data is 32bit floats
-    var normalize = false; // don't normalize the data
-    var stride = 0; // 0 = move forward size * sizeof(type) each iteration to get the next position
-    var offset = 0; // start at the beginning of the buffer
     gl.vertexAttribPointer(
         texcoordLocation,
         size,
