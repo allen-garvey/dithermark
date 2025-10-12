@@ -1,3 +1,4 @@
+#version 300 es
 precision mediump float;
 
 //code to adjust contrast based on:https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/brightnesscontrast.js
@@ -9,7 +10,8 @@ precision mediump float;
 //brightness code simplified version of https://stackoverflow.com/questions/1506299/applying-brightness-and-contrast-with-opengl-es
 //u_brightness >=0, where 1 is unchanged
 
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 output_color;
 uniform sampler2D u_texture;
 uniform float u_contrast;
 uniform float u_saturation;
@@ -24,7 +26,7 @@ float hue_rotate(float pixelHue, float hueRotation) {
 }
 
 void main() {
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
 
     vec3 adjustedPixel = pixel.rgb;
 
@@ -42,6 +44,6 @@ void main() {
     //brightness
     adjustedPixel *= u_brightness;
 
-    gl_FragColor = vec4(adjustedPixel, pixel.a);
+    output_color = vec4(adjustedPixel, pixel.a);
 
 }

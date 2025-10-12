@@ -59,7 +59,7 @@ const createCanvas = (canvas = null, contextOpts = {}) => {
 //instead have to premultiply alpha when creating texture from image, as this should give the same results, and doesn't contain Safari bug
 function createWebglCanvas(canvas = null) {
     canvas = canvas || document.createElement('canvas');
-    const gl = canvas.getContext('webgl');
+    const gl = canvas.getContext('webgl2');
     let maxTextureSize = 0;
     let supportsHighIntPrecision = false;
     let supportsHighFloatPrecision = false;

@@ -1,3 +1,4 @@
+#version 300 es
 // used to add outline around images
 // based on https://github.com/evanw/glfx.js/blob/master/src/filters/fun/edgework.js
 
@@ -30,7 +31,8 @@ THE SOFTWARE.
 precision mediump float;
 
 uniform sampler2D u_texture;
-varying vec2 v_texcoord;
+out vec4 output_color;
+in vec2 v_texcoord;
 uniform float u_radius;
 
 // use the fragment position for a different seed per-pixel
@@ -39,7 +41,7 @@ float random(vec3 scale, float seed) {
 }
 
 void main(){
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
 
     vec2 color = vec2(0.0);
     vec2 total = vec2(0.0);
@@ -49,8 +51,8 @@ void main(){
     for(float t = -30.0; t <= 30.0; t++){
         float percent = (t + offset - 0.5) / 30.0;
         float weight = 1.0 - abs(percent);
-        vec3 sample = texture2D(u_texture, v_texcoord + vec2(u_radius, 0.0) * percent).rgb;
-        float average = (sample.r + sample.g + sample.b) / 3.0;
+        vec3 sample1 = texture(u_texture, v_texcoord + vec2(u_radius, 0.0) * percent).rgb;
+        float average = (sample1.r + sample1.g + sample1.b) / 3.0;
         color.x += average * weight;
         total.x += weight;
         if(abs(t) < 15.0){
@@ -59,5 +61,5 @@ void main(){
             total.y += weight;
         }
     }
-    gl_FragColor = vec4(color / total, 0.0, 1.0);
+    output_color = vec4(color / total, 0.0, 1.0);
 }

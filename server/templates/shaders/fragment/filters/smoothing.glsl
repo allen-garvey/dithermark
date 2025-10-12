@@ -1,12 +1,14 @@
+#version 300 es
 precision highp float;
 
 //Kuwahara filter adapted from:
 //https://stackoverflow.com/questions/5830139/how-can-i-do-these-image-processing-tasks-using-opengl-es-2-0-shaders?noredirect=1&lq=1
 
 //requires highp to work correctly with transparency
-//will work with mediump when hardcoding 1.0 for alpha value in gl_FragColor
+//will work with mediump when hardcoding 1.0 for alpha value in output_color
 
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 output_color;
 uniform sampler2D u_texture;
 uniform int u_radius;
 //since we need constant values for for loops
@@ -14,7 +16,7 @@ const int maxRadius = 16;
 uniform vec2 u_image_dimensions;
 
 void main() {
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
     vec2 uv = v_texcoord;
     int radiusDiff = maxRadius - u_radius;
     float n = float((u_radius + 1) * (u_radius + 1));
@@ -34,7 +36,7 @@ void main() {
             if(i > -radiusDiff) {
                 break;
             }
-            vec3 c = texture2D(u_texture, uv + vec2(i + radiusDiff, j + radiusDiff) / u_image_dimensions).rgb;
+            vec3 c = texture(u_texture, uv + vec2(i + radiusDiff, j + radiusDiff) / u_image_dimensions).rgb;
             m[0] += c;
             s[0] += c * c;
         }
@@ -48,7 +50,7 @@ void main() {
             if(i > u_radius) {
                 break;
             }
-            vec3 c = texture2D(u_texture, uv + vec2(i, j + radiusDiff) / u_image_dimensions).rgb;
+            vec3 c = texture(u_texture, uv + vec2(i, j + radiusDiff) / u_image_dimensions).rgb;
             m[1] += c;
             s[1] += c * c;
         }
@@ -62,7 +64,7 @@ void main() {
             if(i > u_radius) {
                 break;
             }
-            vec3 c = texture2D(u_texture, uv + vec2(i, j) / u_image_dimensions).rgb;
+            vec3 c = texture(u_texture, uv + vec2(i, j) / u_image_dimensions).rgb;
             m[2] += c;
             s[2] += c * c;
         }
@@ -76,7 +78,7 @@ void main() {
             if(i > -radiusDiff) {
                 break;
             }
-            vec3 c = texture2D(u_texture, uv + vec2(i + radiusDiff, j) / u_image_dimensions).rgb;
+            vec3 c = texture(u_texture, uv + vec2(i + radiusDiff, j) / u_image_dimensions).rgb;
             m[3] += c;
             s[3] += c * c;
         }
@@ -90,7 +92,7 @@ void main() {
         float sigma2 = s[k].r + s[k].g + s[k].b;
         if(sigma2 < min_sigma2) {
             min_sigma2 = sigma2;
-            gl_FragColor = vec4(m[k], pixel.a);
+            output_color = vec4(m[k], pixel.a);
         }
     }
 }

@@ -13,10 +13,7 @@ vec3 get_dark_outline_color(vec3 backgroundPixel){
     
     //arbitrarily large number
     float shortestDistance = 99999.99;
-    for(int i=0;i<<?= COLOR_DITHER_MAX_COLORS; ?>;i++){
-        if(i >= u_colors_array_length){
-            break;
-        }
+    for(int i=0;i<u_colors_array_length;i++){
         vec3 currentColor = u_colors_array[i];
         float currentDistance = quick_distance(backgroundPixel, currentColor);
         if(lightness(currentColor) < backgroundLightness && currentDistance < shortestDistance){

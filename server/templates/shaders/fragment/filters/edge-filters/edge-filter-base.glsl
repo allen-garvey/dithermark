@@ -1,3 +1,4 @@
+#version 300 es
 //used to add outline around images
 //based on https://github.com/evanw/glfx.js/blob/master/src/filters/fun/edgework.js
 
@@ -31,12 +32,13 @@ precision mediump float;
 uniform sampler2D u_texture;
 uniform float u_strength;
 uniform vec2 u_image_dimensions;
-varying vec2 v_texcoord;
+in vec2 v_texcoord;
+out vec4 output_color;
 
 #{{customDeclaration}}
 
 void main(){
-    vec4 pixel = texture2D(u_texture, v_texcoord);
+    vec4 pixel = texture(u_texture, v_texcoord);
 
     vec2 dx = vec2(1.0 / u_image_dimensions.x, 0.0);
     vec2 dy = vec2(0.0, 1.0 / u_image_dimensions.y);
@@ -46,11 +48,11 @@ void main(){
     vec3 smallAverage = vec3(0.0);
     for (float x = -#{{edgeThickness}}; x <= #{{edgeThickness}}; x += 1.0) {
         for (float y = -#{{edgeThickness}}; y <= #{{edgeThickness}}; y += 1.0) {
-            vec3 sample = texture2D(u_texture, v_texcoord + dx * x + dy * y).rgb;
-            bigAverage += sample;
+            vec3 sample1 = texture(u_texture, v_texcoord + dx * x + dy * y).rgb;
+            bigAverage += sample1;
             bigTotal += 1.0;
             if (abs(x) + abs(y) < #{{edgeThickness}}) {
-                smallAverage += sample;
+                smallAverage += sample1;
                 smallTotal += 1.0;
             }
         }
@@ -59,9 +61,9 @@ void main(){
     vec3 edgeDiff = pixel.rgb - dot(edge, edge) * u_strength;
     
     if(max(max(edgeDiff.r, edgeDiff.g), edgeDiff.b) <= 0.0){
-        gl_FragColor = #{{customOutlineColor}}
+        output_color = #{{customOutlineColor}}
     }
     else{
-        gl_FragColor = vec4(0.0);    
+        output_color = vec4(0.0);    
     }
 }

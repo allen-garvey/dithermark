@@ -421,7 +421,7 @@ export default {
                         sourceWebglTexture
                     ) => {
                         Timer.megapixelsPerSecond(
-                            this.selectedDitherAlgorithm.title + ' webgl',
+                            this.selectedDitherAlgorithm.title + ' webgl2',
                             this.loadedImage.width * this.loadedImage.height,
                             () => {
                                 this.selectedDitherAlgorithm.webGlFunc(
