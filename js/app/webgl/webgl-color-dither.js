@@ -130,6 +130,7 @@ function createFragmentShaderTexts() {
         'webgl-fragment-shader-lightness-function'
     );
     const fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
+    const fragmentShaderLabFuncsText = shaderText('webgl-lab-functions');
 
     function generateFragmentShader(
         customDeclaration,
@@ -157,6 +158,7 @@ function createFragmentShaderTexts() {
                     fragmentShaderLightnessFuncText
                 )
                 .replace('#{{hslFunctions}}', fragmentShaderHslFuncsText)
+                .replace('#{{labFunctions}}', fragmentShaderLabFuncsText)
                 .replace('#{{distanceFunction}}', shaderText(distanceFuncId));
         }
 
@@ -173,6 +175,13 @@ function createFragmentShaderTexts() {
             },
             { key: 'LIGHTNESS', distanceFunc: 'webgl-lightness-distance' },
             { key: 'HUE', distanceFunc: 'webgl-hue-distance' },
+            { key: 'OKLAB', distanceFunc: 'webgl-oklab-distance' },
+            { key: 'OKLAB_TAXI', distanceFunc: 'webgl-oklab-taxi-distance' },
+            { key: 'CIE_LAB', distanceFunc: 'webgl-cie-lab-distance' },
+            {
+                key: 'CIE_LAB_TAXI',
+                distanceFunc: 'webgl-cie-lab-taxi-distance',
+            },
         ];
 
         const ret = {};

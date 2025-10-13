@@ -73,6 +73,10 @@ export const renderHome = ({ isProduction = false }) => {
             id: 'webgl-fragment-shader-lightness-function',
             path: 'fragment/shared/colors/lightness.glsl',
         },
+        {
+            id: 'webgl-lab-functions',
+            path: 'fragment/shared/colors/lab.glsl',
+        },
         // shared pixel distance functions
         {
             id: 'webgl-hsl2-complementary-distance',
@@ -105,6 +109,22 @@ export const renderHome = ({ isProduction = false }) => {
         {
             id: 'webgl-rgb-distance',
             path: 'fragment/shared/pixel-distance/rgb-distance.glsl',
+        },
+        {
+            id: 'webgl-oklab-distance',
+            path: 'fragment/shared/pixel-distance/oklab-distance.glsl',
+        },
+        {
+            id: 'webgl-oklab-taxi-distance',
+            path: 'fragment/shared/pixel-distance/oklab-taxi-distance.glsl',
+        },
+        {
+            id: 'webgl-cie-lab-distance',
+            path: 'fragment/shared/pixel-distance/cie-lab-distance.glsl',
+        },
+        {
+            id: 'webgl-cie-lab-taxi-distance',
+            path: 'fragment/shared/pixel-distance/cie-lab-taxi-distance.glsl',
         },
         // shared dithers
         {

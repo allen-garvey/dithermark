@@ -16,6 +16,8 @@ uniform float u_bayer_texture_dimensions;
 
 #{{hslFunctions}}
 
+#{{labFunctions}}
+
 #{{distanceFunction}}
 
 void main(){

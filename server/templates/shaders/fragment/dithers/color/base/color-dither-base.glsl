@@ -13,6 +13,8 @@ uniform float u_dither_r_coefficient;
 
 #{{hslFunctions}}
 
+#{{labFunctions}}
+
 #{{distanceFunction}}
 
 #{{customDeclaration}}
