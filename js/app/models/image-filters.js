@@ -58,16 +58,28 @@ function outlineColorModes() {
             distanceFuncPrefix: 'hue-lightness',
         },
         { title: 'Palette (HSL)', id: 4, distanceFuncPrefix: 'hsl2' },
+        { title: 'Palette (CIE Lab)', id: 10, distanceFuncPrefix: 'cie-lab' },
         {
             title: 'Palette (Lightness)',
             id: 5,
             distanceFuncPrefix: 'lightness',
         },
         { title: 'Palette (RGB)', id: 6, distanceFuncPrefix: 'rgb' },
+        {
+            title: 'Palette (Oklab taxi)',
+            id: 9,
+            distanceFuncPrefix: 'oklab-taxi',
+        },
         { title: 'Palette (Luma)', id: 7, distanceFuncPrefix: 'luma' },
+        { title: 'Palette (Oklab)', id: 8, distanceFuncPrefix: 'oklab' },
+        {
+            title: 'Palette (CIE Lab taxi)',
+            id: 11,
+            distanceFuncPrefix: 'cie-lab-taxi',
+        },
         {
             title: 'Palette (Complement)',
-            id: 8,
+            id: 12,
             distanceFuncPrefix: 'hsl2-complementary',
         },
     ];
