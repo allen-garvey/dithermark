@@ -160,7 +160,7 @@ function createFragmentShaderTexts() {
                 .replace('#{{distanceFunction}}', shaderText(distanceFuncId));
         }
 
-        let modeDistances = [
+        const modeDistances = [
             { key: 'RGB', distanceFunc: 'webgl-rgb-distance' },
             { key: 'LUMA', distanceFunc: 'webgl-luma-distance' },
             {
@@ -175,7 +175,7 @@ function createFragmentShaderTexts() {
             { key: 'HUE', distanceFunc: 'webgl-hue-distance' },
         ];
 
-        let ret = {};
+        const ret = {};
 
         modeDistances.forEach(item => {
             ret[ColorDitherModes.get(item.key).id] = fragmentShaderText(
