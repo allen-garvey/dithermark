@@ -433,7 +433,8 @@ export default {
                                     this.selectedColorsVec,
                                     this.numColors
                                 );
-                            }
+                            },
+                            transformCanvasWebGl.gl
                         );
                         //have to copy to 2d context, since chrome will clear webgl context after switching tabs
                         //https://stackoverflow.com/questions/44769093/how-do-i-prevent-chrome-from-disposing-of-my-webgl-drawing-context-after-swit
