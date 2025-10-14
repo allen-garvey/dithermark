@@ -18,12 +18,12 @@ function pixelHue(pixel) {
         return 0;
     }
     let rawHue;
-    if (pixel[R_INDEX] === max) {
-        rawHue = ((pixel[G_INDEX] - pixel[B_INDEX]) / diff) % 6;
-    } else if (pixel[G_INDEX] === max) {
-        rawHue = (pixel[B_INDEX] - pixel[R_INDEX]) / diff + 2;
+    if (pixel[0] === max) {
+        rawHue = ((pixel[1] - pixel[2]) / diff) % 6;
+    } else if (pixel[1] === max) {
+        rawHue = (pixel[2] - pixel[0]) / diff + 2;
     } else {
-        rawHue = (pixel[R_INDEX] - pixel[G_INDEX]) / diff + 4;
+        rawHue = (pixel[0] - pixel[1]) / diff + 4;
     }
     //convert to 360 degrees
     const ret = Math.round(rawHue * 60);
@@ -157,8 +157,8 @@ export default {
     luma: pixelLuma,
     hueDistance,
     saturation: pixelSaturation,
-    hslArrayToRgb: hslArrayToRgb,
-    hslToPixel: hslToPixel,
+    hslArrayToRgb,
+    hslToPixel,
     clamp,
     color32Red,
     color32Green,

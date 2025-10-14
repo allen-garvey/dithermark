@@ -4,6 +4,7 @@ uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
 
 #{{lightnessFunction}}
 #{{hslFunctions}}
+#{{labFunctions}}
 #{{distanceFunction}}
 
 // find closest color to backgroundPixel that is darker to use for outline color

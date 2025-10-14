@@ -57,6 +57,7 @@ function getOutline2ShaderText(distanceFuncIdPrefix = null) {
             Shader.shaderText('webgl-fragment-shader-lightness-function')
         )
         .replace('#{{hslFunctions}}', Shader.shaderText('webgl-hsl-functions'))
+        .replace('#{{labFunctions}}', shaderText('webgl-lab-functions'))
         .replace(
             '#{{distanceFunction}}',
             Shader.shaderText(`webgl-${distanceFuncIdPrefix}-distance`)

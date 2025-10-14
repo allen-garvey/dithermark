@@ -20,6 +20,8 @@ uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
 
 #{{hslFunctions}}
 
+#{{labFunctions}}
+
 #{{distanceFunction}}
 
 int deviseMixingPlan(vec3 pixel, int planIndex){

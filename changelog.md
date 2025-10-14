@@ -2,9 +2,19 @@
 
 ## HEAD
 
+### Features
+
+* Add Oklab and CIE lab color comparisons for both dithering and outline filters, using both Euclidean and taxicab distance formulas
+
 ### Technical
 
 * Update WebGL code to WebGL 2
+
+* Add more accurate performance measurement for WebGL code in debug mode
+
+* Increase webworker dithering performance by roughly 10% by reducing memory allocations and hard-coding array indexes
+
+* Increase error propagation color dithering performance by 33%-100% by increasing memory locality and reducing memory allocations
 
 ## 2025-03-16 [Commit 83743ea](https://github.com/allen-garvey/dithermark/commit/83743ea996b875a1200404323ca9e242b386b1e8)
 

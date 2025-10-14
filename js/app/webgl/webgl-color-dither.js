@@ -51,56 +51,37 @@ const ALGO_KEYS = [
     STARK_ORDERED_DITHER,
 ];
 
-/*
- * Actual webgl function creation
- */
-function createWebGLDrawImageFunc(
-    gl,
-    fragmentShaderText,
-    customUniformNames = []
-) {
-    customUniformNames = customUniformNames.concat([
-        'u_colors_array',
-        'u_colors_array_length',
-        'u_dither_r_coefficient',
-    ]);
-    const drawFunc = WebGl.createDrawImageFunc(
-        gl,
-        Shader.vertexShaderText,
-        fragmentShaderText,
-        customUniformNames
-    );
-
-    return function (
-        gl,
-        tex,
-        texWidth,
-        texHeight,
-        colorsArray,
-        colorsArrayLength,
-        setCustomUniformsFunc
-    ) {
-        drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations) => {
-            gl.uniform1i(
-                customUniformLocations['u_colors_array_length'],
-                colorsArrayLength
-            );
-            gl.uniform3fv(
-                customUniformLocations['u_colors_array'],
-                colorsArray
-            );
-            gl.uniform1f(
-                customUniformLocations['u_dither_r_coefficient'],
-                DitherUtil.ditherRCoefficient(colorsArrayLength, true)
-            );
-
-            //set custom uniform values
-            if (setCustomUniformsFunc) {
-                setCustomUniformsFunc(gl, customUniformLocations);
-            }
-        });
-    };
-}
+const colorDitherModeTranslation = new Map();
+colorDitherModeTranslation.set(ColorDitherModes.get('RGB').id, {
+    distanceFunc: 'webgl-rgb-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('LUMA').id, {
+    distanceFunc: 'webgl-luma-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('HUE_LIGHTNESS').id, {
+    distanceFunc: 'webgl-hue-lightness-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('HSL_WEIGHTED').id, {
+    distanceFunc: 'webgl-hue-saturation-lightness-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('LIGHTNESS').id, {
+    distanceFunc: 'webgl-lightness-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('HUE').id, {
+    distanceFunc: 'webgl-hue-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('OKLAB').id, {
+    distanceFunc: 'webgl-oklab-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('OKLAB_TAXI').id, {
+    distanceFunc: 'webgl-oklab-taxi-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('CIE_LAB').id, {
+    distanceFunc: 'webgl-cie-lab-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('CIE_LAB_TAXI').id, {
+    distanceFunc: 'webgl-cie-lab-taxi-distance',
+});
 
 /*
  * Shader caching
@@ -130,6 +111,7 @@ function createFragmentShaderTexts() {
         'webgl-fragment-shader-lightness-function'
     );
     const fragmentShaderHslFuncsText = shaderText('webgl-hsl-functions');
+    const fragmentShaderLabFuncsText = shaderText('webgl-lab-functions');
 
     function generateFragmentShader(
         customDeclaration,
@@ -157,32 +139,21 @@ function createFragmentShaderTexts() {
                     fragmentShaderLightnessFuncText
                 )
                 .replace('#{{hslFunctions}}', fragmentShaderHslFuncsText)
+                .replace('#{{labFunctions}}', fragmentShaderLabFuncsText)
                 .replace('#{{distanceFunction}}', shaderText(distanceFuncId));
         }
 
-        let modeDistances = [
-            { key: 'RGB', distanceFunc: 'webgl-rgb-distance' },
-            { key: 'LUMA', distanceFunc: 'webgl-luma-distance' },
-            {
-                key: 'HUE_LIGHTNESS',
-                distanceFunc: 'webgl-hue-lightness-distance',
-            },
-            {
-                key: 'HSL_WEIGHTED',
-                distanceFunc: 'webgl-hue-saturation-lightness-distance',
-            },
-            { key: 'LIGHTNESS', distanceFunc: 'webgl-lightness-distance' },
-            { key: 'HUE', distanceFunc: 'webgl-hue-distance' },
-        ];
+        const ret = {};
 
-        let ret = {};
-
-        modeDistances.forEach(item => {
-            ret[ColorDitherModes.get(item.key).id] = fragmentShaderText(
+        for (let [
+            colorDitherModeId,
+            colorDitherModeOptions,
+        ] of colorDitherModeTranslation) {
+            ret[colorDitherModeId] = fragmentShaderText(
                 baseText,
-                item.distanceFunc
+                colorDitherModeOptions.distanceFunc
             );
-        });
+        }
 
         return ret;
     }
@@ -340,6 +311,63 @@ const drawImageFuncs = new Map(ALGO_KEYS.map(key => [key, new Map()]));
 const bayerTextures = new Map();
 
 /**
+ * Actual webgl function creation
+ * @param {WebGL2RenderingContext} gl
+ * @param {string} fragmentShaderText
+ * @param {number} colorDitherModeId
+ * @param {string[]} customUniformNames
+ */
+function createWebGLDrawImageFunc(
+    gl,
+    fragmentShaderText,
+    colorDitherModeId,
+    customUniformNames = []
+) {
+    customUniformNames = customUniformNames.concat([
+        'u_colors_array',
+        'u_colors_array_transformed',
+        'u_colors_array_length',
+        'u_dither_r_coefficient',
+    ]);
+    const drawFunc = WebGl.createDrawImageFunc(
+        gl,
+        Shader.vertexShaderText,
+        fragmentShaderText,
+        customUniformNames
+    );
+
+    return function (
+        gl,
+        tex,
+        texWidth,
+        texHeight,
+        colorsArray,
+        colorsArrayLength,
+        setCustomUniformsFunc
+    ) {
+        drawFunc(gl, tex, texWidth, texHeight, (gl, customUniformLocations) => {
+            gl.uniform1i(
+                customUniformLocations['u_colors_array_length'],
+                colorsArrayLength
+            );
+            gl.uniform3fv(
+                customUniformLocations['u_colors_array'],
+                colorsArray
+            );
+            gl.uniform1f(
+                customUniformLocations['u_dither_r_coefficient'],
+                DitherUtil.ditherRCoefficient(colorsArrayLength, true)
+            );
+
+            //set custom uniform values
+            if (setCustomUniformsFunc) {
+                setCustomUniformsFunc(gl, customUniformLocations);
+            }
+        });
+    };
+}
+
+/**
  *
  * @param {number} algoKey
  * @param {number} colorDitherModeId
@@ -371,7 +399,8 @@ function closestColor(
         () =>
             createWebGLDrawImageFunc(
                 gl,
-                fragmentShaderTexts.get(CLOSEST_COLOR)[colorDitherModeId]
+                fragmentShaderTexts.get(CLOSEST_COLOR)[colorDitherModeId],
+                colorDitherModeId
             )
     );
     // Tell WebGL how to convert from clip space to pixels
@@ -403,7 +432,8 @@ function simplexClosestColor(
                 gl,
                 fragmentShaderTexts.get(SIMPLEX_CLOSEST_COLOR)[
                     colorDitherModeId
-                ]
+                ],
+                colorDitherModeId
             )
     );
     // Tell WebGL how to convert from clip space to pixels
@@ -436,6 +466,7 @@ function randomDither(
                 fragmentShaderTexts.get(RANDOM_CLOSEST_COLOR)[
                     colorDitherModeId
                 ],
+                colorDitherModeId,
                 ['u_random_seed']
             )
     );
@@ -486,6 +517,7 @@ function orderedDither(
             return createWebGLDrawImageFunc(
                 gl,
                 fragmentShaderTexts.get(algoKey)[colorDitherModeId],
+                colorDitherModeId,
                 customUniforms
             );
         }
@@ -624,7 +656,8 @@ function createArithmeticDither(key) {
             () =>
                 createWebGLDrawImageFunc(
                     gl,
-                    fragmentShaderTexts.get(key)[colorDitherModeId]
+                    fragmentShaderTexts.get(key)[colorDitherModeId],
+                    colorDitherModeId
                 )
         );
 

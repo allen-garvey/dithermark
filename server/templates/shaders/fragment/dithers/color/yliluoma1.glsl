@@ -20,6 +20,8 @@ uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
 
 #{{hslFunctions}}
 
+#{{labFunctions}}
+
 #{{distanceFunction}}
 
 float evaluate_mixing_error(vec3 pixel, vec3 color0, vec3 color1, vec3 color2, float ratioFraction){

@@ -5,7 +5,13 @@ import DitherUtil from '../../shared/dither-util.js';
 import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
 import { fillArray } from '../../shared/array-util.js';
 import Bayer from '../../shared/bayer-matrix.js';
-import { createMatrix, matrixValue, convertBayerToFloat, calculateFloatMatrixFraction, getMatrixAdjustmentFunc } from './ordered-matrix.js';
+import {
+    createMatrix,
+    matrixValue,
+    convertBayerToFloat,
+    calculateFloatMatrixFraction,
+    getMatrixAdjustmentFunc,
+} from './ordered-matrix.js';
 
 function createColorOrderedDither(
     dimensions,
@@ -77,7 +83,7 @@ function createStarkFloatMatrix(matrix, dimensions, ditherRCoefficient) {
 
     const matrixData = fillArray(
         new Float32Array(length),
-        (i) => 1 - matrix[i] * fraction * ditherRCoefficient
+        i => 1 - matrix[i] * fraction * ditherRCoefficient
     );
 
     return createMatrix(dimensions, matrixData);
@@ -96,9 +102,8 @@ function createStarkColorOrderedDither(dimensions, bayerFuncName) {
             ColorDitherModeFunctions[colorDitherModeId];
         const pixelValueFunc = colorDitherModeFuncs.pixelValue;
         const pixelDistanceFunc = colorDitherModeFuncs.distance;
-        const colorValues = colors.map((color) => {
-            return pixelValueFunc(color);
-        });
+        const colorValues =
+            colorDitherModeFuncs.createTransformedColors(colors);
 
         return Image.transform(
             pixels,
@@ -143,7 +148,7 @@ function createStarkColorOrderedDither(dimensions, bayerFuncName) {
                         if (
                             currentDistance > greatestAllowedDistance &&
                             (currentDistance / shortestDistance) * bayerValue <
-                            1
+                                1
                         ) {
                             greatestAllowedDistance = currentDistance;
                             greatestAllowedDistanceIndex = i;
@@ -180,8 +185,8 @@ function yliluoma1EvaluateMixingError(
     return (
         pixelDistanceFunc(pixelValue, mixValue) +
         pixelDistanceFunc(color1Value, color2Value) *
-        0.1 *
-        (Math.abs(ratioFraction - 0.5) + 0.5)
+            0.1 *
+            (Math.abs(ratioFraction - 0.5) + 0.5)
     );
 }
 function yliluoma1DeviseMixingPlan(
@@ -215,15 +220,15 @@ function yliluoma1DeviseMixingPlan(
                 mixPixel[R_INDEX] =
                     color1[R_INDEX] +
                     (ratio * (color2[R_INDEX] - color1[R_INDEX])) /
-                    matrixLength;
+                        matrixLength;
                 mixPixel[G_INDEX] =
                     color1[G_INDEX] +
                     (ratio * (color2[G_INDEX] - color1[G_INDEX])) /
-                    matrixLength;
+                        matrixLength;
                 mixPixel[B_INDEX] =
                     color1[B_INDEX] +
                     (ratio * (color2[B_INDEX] - color1[B_INDEX])) /
-                    matrixLength;
+                        matrixLength;
                 // Determine how well that matches what we want to accomplish
                 const penalty = yliluoma1EvaluateMixingError(
                     pixelValue,
@@ -257,9 +262,8 @@ function createYliluoma1ColorDither(dimensions, bayerFuncName) {
             ColorDitherModeFunctions[colorDitherModeId];
         const pixelValueFunc = colorDitherModeFuncs.pixelValue;
         const pixelDistanceFunc = colorDitherModeFuncs.distance;
-        const colorValues = colors.map((color) => {
-            return pixelValueFunc(color);
-        });
+        const colorValues =
+            colorDitherModeFuncs.createTransformedColors(colors);
         //to reduce allocations and deletions
         const mixPixel = new Uint8Array(3);
 
