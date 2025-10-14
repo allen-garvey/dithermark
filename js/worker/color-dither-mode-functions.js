@@ -15,6 +15,11 @@ function pixelToHsl(pixel, buffer) {
     return ret;
 }
 
+/**
+ *
+ * @param {number} d
+ * @returns {number}
+ */
 function rgbValueToLinear(d) {
     const c = d / 255;
     return c >= 0.04045 ? Math.pow((c + 0.055) / 1.055, 2.4) : c / 12.92;
