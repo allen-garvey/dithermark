@@ -7,6 +7,7 @@ uniform sampler2D u_texture;
 
 uniform int u_colors_array_length;
 uniform vec3 u_colors_array[<?= COLOR_DITHER_MAX_COLORS; ?>];
+uniform vec3 u_colors_array_transformed[<?= COLOR_DITHER_MAX_COLORS; ?>];
 uniform float u_dither_r_coefficient;
 
 #{{lightnessFunction}}
@@ -25,12 +26,13 @@ void main(){
 
     #{{customBody}}
     
+    adjustedPixel = transform_pixel(adjustedPixel);
     float shortestDistance = 9999.9;
     vec3 closestPixel = adjustedPixel;
     
     for(int i=0;i<u_colors_array_length;i++){
         vec3 currentColor = u_colors_array[i];
-        float currentDistance = quick_distance(adjustedPixel, currentColor);
+        float currentDistance = quick_distance1(adjustedPixel, currentColor);
         if(currentDistance < shortestDistance){
             shortestDistance = currentDistance;
             closestPixel = currentColor;

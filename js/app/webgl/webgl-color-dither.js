@@ -9,6 +9,8 @@ import {
     ORDERED_DITHER_VARIANT_RANDOM,
     ORDERED_DITHER_VARIANT_SIMPLEX,
 } from '../../shared/models/ordered-dither-variants.js';
+import PixelMath from '../../shared/pixel-math.js';
+import { lightness } from '../../shared/pixel-math-lite.js';
 
 // when adding algorithm key make sure to add to ALGO_KEYS array below
 const CLOSEST_COLOR = 0;
@@ -51,36 +53,69 @@ const ALGO_KEYS = [
     STARK_ORDERED_DITHER,
 ];
 
+/**
+ *
+ * @param {Float32Array} colors
+ * @param {*} transformFunc
+ * @returns {Float32Array}
+ */
+const createTransformColors = (colors, transformFunc) => {
+    const ret = colors.slice();
+    const buffer = new Float32Array(3);
+    for (let i = 0; i < colors.length; i += 3) {
+        buffer[0] = colors[i] * 255;
+        buffer[1] = colors[i + 1] * 255;
+        buffer[2] = colors[i + 2] * 255;
+        transformFunc(buffer, ret, i);
+    }
+    return ret;
+};
+
 const colorDitherModeTranslation = new Map();
 colorDitherModeTranslation.set(ColorDitherModes.get('RGB').id, {
     distanceFunc: 'webgl-rgb-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('LUMA').id, {
     distanceFunc: 'webgl-luma-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('HUE_LIGHTNESS').id, {
     distanceFunc: 'webgl-hue-lightness-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('HSL_WEIGHTED').id, {
     distanceFunc: 'webgl-hue-saturation-lightness-distance',
+    transformColors: colors =>
+        createTransformColors(colors, (pixel, transformedColors, i) => {
+            transformedColors[i] = PixelMath.hue(pixel) / 359;
+            transformedColors[i + 1] = PixelMath.saturation(pixel) / 255;
+            transformedColors[i + 2] = PixelMath.lightness(pixel) / 255;
+        }),
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('LIGHTNESS').id, {
     distanceFunc: 'webgl-lightness-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('HUE').id, {
     distanceFunc: 'webgl-hue-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('OKLAB').id, {
     distanceFunc: 'webgl-oklab-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('OKLAB_TAXI').id, {
     distanceFunc: 'webgl-oklab-taxi-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('CIE_LAB').id, {
     distanceFunc: 'webgl-cie-lab-distance',
+    transformColors: colors => colors,
 });
 colorDitherModeTranslation.set(ColorDitherModes.get('CIE_LAB_TAXI').id, {
     distanceFunc: 'webgl-cie-lab-taxi-distance',
+    transformColors: colors => colors,
 });
 
 /*
@@ -353,6 +388,12 @@ function createWebGLDrawImageFunc(
             gl.uniform3fv(
                 customUniformLocations['u_colors_array'],
                 colorsArray
+            );
+            gl.uniform3fv(
+                customUniformLocations['u_colors_array_transformed'],
+                colorDitherModeTranslation
+                    .get(colorDitherModeId)
+                    .transformColors(colorsArray)
             );
             gl.uniform1f(
                 customUniformLocations['u_dither_r_coefficient'],
