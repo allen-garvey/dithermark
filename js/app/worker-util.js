@@ -2,6 +2,7 @@ import WorkerHeaders from '../shared/worker-headers.js';
 import ColorPicker from './color-picker.js';
 import { createArray } from '../shared/array-util.js';
 import { createPixel } from '../shared/pixel.js';
+import { getShouldLimitNumberOfWebworkersSetting } from './user-settings.js';
 
 function createDitherWorkerHeader(
     imageWidth,
@@ -102,25 +103,27 @@ function getWorkers() {
 
 //creates queue of webworkers
 function createWorkers() {
-    const hardwareConcurrency = window.navigator.hardwareConcurrency;
-    //limit webworkers to 8 because hardwareConcurrency doesn't distinguish between
-    //real cores and hyperthreads, and running on 4 core machine at least having more than 8 workers shows no benefit
-    //multiply by 2 because some browsers lie about cores (i.e. Safari)
-    const numWorkers = hardwareConcurrency
-        ? Math.min(hardwareConcurrency * 2, 8)
-        : 1;
-    const workers = createArray(numWorkers, () => {
-        return new Worker(new URL('../worker/worker-main.js', import.meta.url));
-    });
+    let numWorkers = 1;
+    if (!getShouldLimitNumberOfWebworkersSetting()) {
+        const hardwareConcurrency = window.navigator.hardwareConcurrency;
+        //limit webworkers to 8 because hardwareConcurrency doesn't distinguish between
+        //real cores and hyperthreads, and running on 4 core machine at least having more than 8 workers shows no benefit
+        //multiply by 2 because some browsers lie about cores (i.e. Safari)
+        numWorkers = hardwareConcurrency
+            ? Math.min(hardwareConcurrency * 2, 8)
+            : 1;
+    }
+
+    const workers = createArray(
+        numWorkers,
+        () => new Worker(new URL('../worker/worker-main.js', import.meta.url))
+    );
 
     let workerCurrentIndex = 0;
 
     function getNextWorker() {
         const worker = workers[workerCurrentIndex];
-        workerCurrentIndex++;
-        if (workerCurrentIndex === workers.length) {
-            workerCurrentIndex = 0;
-        }
+        workerCurrentIndex = (workerCurrentIndex + 1) % workers.length;
         return worker;
     }
 
@@ -129,8 +132,8 @@ function createWorkers() {
     }
 
     return {
-        getNextWorker: getNextWorker,
-        forEach: forEach,
+        getNextWorker,
+        forEach,
     };
 }
 

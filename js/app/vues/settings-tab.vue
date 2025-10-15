@@ -72,6 +72,11 @@
                     "
                 />
                 <checkbox
+                    tooltip="Reduce the number of processes to save memory"
+                    label="Use single web worker"
+                    v-model="shouldLimitNumberOfWebworkers"
+                />
+                <checkbox
                     v-if="isWebglSupported"
                     tooltip="Use WebGL to speed up performance when possible"
                     label="Use WebGL"
@@ -111,6 +116,10 @@
 import CyclePropertyList from './cycle-property-list.vue';
 import FullScreenModeControl from './full-screen-mode-control.vue';
 import Checkbox from './checkbox.vue';
+import {
+    getShouldLimitNumberOfWebworkersSetting,
+    setLimitNumberOfWebworkersSetting,
+} from '../user-settings';
 
 export default {
     props: {
@@ -157,6 +166,18 @@ export default {
         FullScreenModeControl,
         Checkbox,
     },
+    created() {
+        this.shouldLimitNumberOfWebworkers =
+            getShouldLimitNumberOfWebworkersSetting();
+        this.shouldLimitNumberOfWebworkersOriginalValue =
+            this.shouldLimitNumberOfWebworkers;
+    },
+    data() {
+        return {
+            shouldLimitNumberOfWebworkers: true,
+            shouldLimitNumberOfWebworkersOriginalValue: true,
+        };
+    },
     computed: {
         hints() {
             const hints = [];
@@ -177,6 +198,15 @@ export default {
                 );
             }
 
+            if (
+                this.shouldLimitNumberOfWebworkersOriginalValue !==
+                this.shouldLimitNumberOfWebworkers
+            ) {
+                hints.push(
+                    'Refresh the page to update the number of web workers'
+                );
+            }
+
             if (this.isWebglSupported && !this.isWebglEnabled) {
                 hints.push(
                     'With WebGL is disabled some image filters will not be available, and the Yliluoma 1, Yliluoma 2 and adaptive threshold dithers will be very slow.'
@@ -184,6 +214,13 @@ export default {
             }
 
             return hints;
+        },
+    },
+    watch: {
+        shouldLimitNumberOfWebworkers() {
+            setLimitNumberOfWebworkersSetting(
+                this.shouldLimitNumberOfWebworkers
+            );
         },
     },
 };

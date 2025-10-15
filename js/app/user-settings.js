@@ -8,6 +8,8 @@ const localStorage = window.localStorage;
 const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
 const USER_GLOBAL_SETTINGS_KEY = 'user-global-settings';
 const USER_EXPORT_SETTINGS_KEY = 'user-export-settings';
+const USER_LIMIT_NUMBER_OF_WEBWORKERS_SETTING_KEY =
+    'user-limit-number-of-webworkers-setting';
 
 /**
  * @typedef {Object} ExportSettings
@@ -109,6 +111,27 @@ function getPalettes(minimumColorsLength) {
         getSettingOrDefault(USER_SAVED_PALETTES_KEY, []),
         minimumColorsLength
     );
+}
+
+/**
+ * @returns {boolean}
+ */
+export function getShouldLimitNumberOfWebworkersSetting() {
+    const value = localStorage.getItem(
+        USER_LIMIT_NUMBER_OF_WEBWORKERS_SETTING_KEY
+    );
+    return !value || value === '1';
+}
+
+/**
+ *
+ * @param {boolean} shouldLimitNumberOfWebworkers
+ */
+export function setLimitNumberOfWebworkersSetting(
+    shouldLimitNumberOfWebworkers
+) {
+    const value = shouldLimitNumberOfWebworkers ? '1' : '0';
+    localStorage.setItem(USER_LIMIT_NUMBER_OF_WEBWORKERS_SETTING_KEY, value);
 }
 
 export default {
