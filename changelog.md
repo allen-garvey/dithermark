@@ -6,6 +6,8 @@
 
 * Add Oklab and CIE lab color comparisons for both dithering and outline filters, using both Euclidean and taxicab distance formulas
 
+* Add performance option to only use one webworker to reduce memory usage
+
 ### Technical
 
 * Update WebGL code to WebGL 2
