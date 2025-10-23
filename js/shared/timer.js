@@ -16,16 +16,16 @@ function megapixelsPerSecond(name, numPixels, functionToTime, gl) {
     clearTimeout(webglTimeout);
     const megapixels = numPixels / 1000000;
     const start = performance.now();
-    let webglExtension;
+    const webglExtension = gl?.getExtension('EXT_disjoint_timer_query_webgl2');
     let webglQuery;
-    if (gl) {
-        webglExtension = gl.getExtension('EXT_disjoint_timer_query_webgl2');
+
+    if (webglExtension) {
         webglQuery = gl.createQuery();
         gl.beginQuery(webglExtension.TIME_ELAPSED_EXT, webglQuery);
     }
     functionToTime();
     const end = performance.now();
-    if (gl) {
+    if (webglExtension) {
         gl.endQuery(webglExtension.TIME_ELAPSED_EXT);
 
         webglTimeout = setTimeout(() => {
