@@ -142,8 +142,18 @@ const algoMap = new Map([
         'neuquant--low-alt',
         { algo: NeuQuant.neuQuant, options: { sample: 30, networkSize: 128 } },
     ],
-    ['k-means--rgb', { algo: KMeans.kMeans, options: {} }],
-    ['k-means--luma', { algo: KMeans.kMeans, options: { distanceLuma: true } }],
+    [
+        'k-means--rgb',
+        { algo: KMeans.kMeans, options: { colorDitherModeKey: 'RGB' } },
+    ],
+    [
+        'k-means--luma',
+        { algo: KMeans.kMeans, options: { colorDitherModeKey: 'LUMA' } },
+    ],
+    [
+        'k-means--cie-lab',
+        { algo: KMeans.kMeans, options: { colorDitherModeKey: 'CIE_LAB' } },
+    ],
     ['octree--wide', { algo: Octree.octree, options: { sort: 0 } }],
     ['octree--wide-alt', { algo: Octree.octree, options: { sort: 1 } }],
     ['octree--narrow', { algo: Octree.octree, options: { sort: 2 } }],
@@ -226,5 +236,5 @@ const algoMap = new Map([
     ],
 ]);
 
-export const getColorQuantizationAlgo = (colorQuantizationModel) =>
+export const getColorQuantizationAlgo = colorQuantizationModel =>
     algoMap.get(colorQuantizationModel.slug);

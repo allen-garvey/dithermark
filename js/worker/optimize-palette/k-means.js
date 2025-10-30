@@ -13,12 +13,17 @@ function bufferToPixelArray(buffer) {
     return ret;
 }
 
-function findClosestPaletteIndex(pixel, palette, distanceFunc) {
+function findClosestPaletteIndex(pixel, palette, colorDitherMode) {
     let shortestDistance = Infinity;
     let closestPaletteIndex = 0;
+    const pixelValueFunc = colorDitherMode.pixelValue;
+    const distanceFunc = colorDitherMode.distance;
+    const pixelValue = pixelValueFunc(pixel);
+    const paletteBuffer = colorDitherMode.createBuffer;
 
     palette.forEach((color, index) => {
-        const currentDistance = distanceFunc(pixel, color);
+        const paletteValue = pixelValueFunc(color, paletteBuffer);
+        const currentDistance = distanceFunc(pixelValue, paletteValue);
         if (currentDistance < shortestDistance) {
             shortestDistance = currentDistance;
             closestPaletteIndex = index;
@@ -75,10 +80,20 @@ function createColorHistogram(pixels) {
 //wide and narrow initialization generally return similar results, the reason why there is an option is because
 //for mostly black and white images with few colors, wide is better.
 //also on chrome, wide is generally 2x faster, however on firefox, where perceptual median cut is much slower, narrow is 2x faster
+/**
+ *
+ * @param {Uint8Array} pixels
+ * @param {number} numColors
+ * @param {object} options
+ * @param {number} imageWidth
+ * @param {number} imageHeight
+ * @param {Function} progressCallback
+ * @returns
+ */
 function kMeans(
     pixels,
     numColors,
-    colorQuantization,
+    options,
     imageWidth,
     imageHeight,
     progressCallback
@@ -94,10 +109,10 @@ function kMeans(
         imageHeight
     );
     const palette = bufferToPixelArray(paletteBuffer);
-    const colorDitherModeKey = colorQuantization.distanceLuma ? 'LUMA' : 'RGB';
-    const distanceFunc =
-        ColorDitherModeFunctions[ColorDitherModes.get(colorDitherModeKey).id]
-            .distance;
+    const colorDitherMode =
+        ColorDitherModeFunctions[
+            ColorDitherModes.get(options.colorDitherModeKey).id
+        ];
     const meansBuffer = new Float32Array(4 * numColors);
     const colorHistogram = createColorHistogram(pixels);
 
@@ -119,7 +134,7 @@ function kMeans(
             const paletteIndex = findClosestPaletteIndex(
                 pixelBuffer,
                 palette,
-                distanceFunc
+                colorDitherMode
             );
             const meansBufferIndexOffset = paletteIndex * 4;
             for (let j = 0; j < 3; j++) {

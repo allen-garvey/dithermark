@@ -101,6 +101,7 @@ export const colorQuantizationModesModel = [
         items: [
             { title: 'K Means (RGB)', slug: 'k-means--rgb' },
             { title: 'K Means (Luma)', slug: 'k-means--luma' },
+            { title: 'K Means (CIE Lab)', slug: 'k-means--cie-lab' },
         ],
     },
 
@@ -210,4 +211,4 @@ export const colorQuantizationModesModel = [
 ];
 
 export const getColorQuantizationModes = () =>
-    colorQuantizationModesModel.flatMap((group) => group.items);
+    colorQuantizationModesModel.flatMap(group => group.items);
