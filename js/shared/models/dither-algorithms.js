@@ -1,12 +1,17 @@
 import { YLILUOMA_1_ORDERED_MATRIX_MAX_DIMENSIONS } from '../../../constants.js';
 
-import { ORDERED_DITHER_VARIANT_NORMAL, ORDERED_DITHER_VARIANT_RANDOM, ORDERED_DITHER_VARIANT_SIMPLEX } from './ordered-dither-variants.js';
+import {
+    ORDERED_DITHER_VARIANT_NORMAL,
+    ORDERED_DITHER_VARIANT_RANDOM,
+    ORDERED_DITHER_VARIANT_SIMPLEX,
+} from './ordered-dither-variants.js';
 
 const getOrderedDitherPatterns = () => [
     { title: 'Bayer 2×2', pattern: 'bayer', dimensions: 2 },
     { title: 'Bayer 4×4', pattern: 'bayer', dimensions: 4 },
     { title: 'Bayer 8×8', pattern: 'bayer', dimensions: 8 },
     { title: 'Bayer 16×16', pattern: 'bayer', dimensions: 16 },
+    { title: 'Blue Noise 16×16', pattern: 'blueNoise', dimensions: 16 },
     { title: 'Hatch Horizontal', pattern: 'hatchHorizontal', dimensions: 4 },
     { title: 'Hatch Vertical', pattern: 'hatchVertical', dimensions: 4 },
     { title: 'Hatch Right', pattern: 'hatchRight', dimensions: 4 },
@@ -63,7 +68,7 @@ const getOrderedDitherPatterns = () => [
 ];
 
 const getBwOrderedModels = () =>
-    getOrderedDitherPatterns().map((model) => {
+    getOrderedDitherPatterns().map(model => {
         const { title, ...orderedOpts } = model;
         const slug = `ordered--${orderedOpts.pattern}-${orderedOpts.dimensions}`;
 
@@ -99,7 +104,7 @@ const getBwOrderedModels = () =>
     });
 
 const getColorOrderedModels = () =>
-    getOrderedDitherPatterns().map((model) => {
+    getOrderedDitherPatterns().map(model => {
         const { title, ...orderedOpts } = model;
         const dimensions = orderedOpts.dimensions;
         const slug = `ordered--${orderedOpts.pattern}-${dimensions}`;
@@ -260,7 +265,7 @@ export const getColorDitherModel = () =>
         getDiffusionReducedBleedModel(),
     ].concat(getColorOrderedModels());
 
-const flattenModel = (model) => model.flatMap((group) => group.items);
+const flattenModel = model => model.flatMap(group => group.items);
 
 export const getColorAlgorithms = () => flattenModel(getColorDitherModel());
 export const getBwAlgorithms = () => flattenModel(getBwDitherModel());

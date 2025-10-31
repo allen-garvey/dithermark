@@ -17,7 +17,7 @@ const rotate90Degrees = (source, dimensions) => {
  * https://en.wikipedia.org/wiki/Ordered_dithering of bayer matrix
  * @param {number} dimensions = power of 2 greater than or equal to 2 (length of 1 side of the matrix)
  */
-const bayer = (dimensions) => {
+const bayer = dimensions => {
     const bayerBase = new Uint8Array([0, 2, 3, 1]);
 
     //guard against infinite loop
@@ -75,7 +75,7 @@ const bayer = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const square = (dimensions) => {
+const square = dimensions => {
     const length = dimensions * dimensions;
     const ret = new Uint8Array(length);
     ret[0] = length - 1;
@@ -101,7 +101,7 @@ const square = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const cluster = (dimensions) => {
+const cluster = dimensions => {
     return new Uint8Array([
         11, 5, 9, 3, 0, 15, 13, 6, 7, 12, 14, 1, 2, 8, 4, 10,
     ]);
@@ -112,7 +112,7 @@ const cluster = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const hatchRight = (dimensions) => {
+const hatchRight = dimensions => {
     return new Uint8Array([15, 7, 0, 7, 7, 0, 7, 15, 0, 7, 15, 7, 7, 15, 7, 0]);
 };
 
@@ -122,7 +122,7 @@ const hatchRight = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const hatchLeft = (dimensions) => {
+const hatchLeft = dimensions => {
     return rotate90Degrees(hatchRight(dimensions), dimensions);
 };
 
@@ -130,7 +130,7 @@ const hatchLeft = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const hatchVertical = (dimensions) => {
+const hatchVertical = dimensions => {
     return new Uint8Array([7, 0, 7, 15, 7, 0, 7, 15, 7, 0, 7, 15, 7, 0, 7, 15]);
 };
 
@@ -138,7 +138,7 @@ const hatchVertical = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const hatchHorizontal = (dimensions) => {
+const hatchHorizontal = dimensions => {
     return rotate90Degrees(hatchVertical(dimensions), dimensions);
 };
 
@@ -146,7 +146,7 @@ const hatchHorizontal = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const crossHatchVertical = (dimensions) => {
+const crossHatchVertical = dimensions => {
     return new Uint8Array([9, 2, 9, 15, 5, 0, 5, 13, 9, 2, 9, 15, 5, 0, 5, 13]);
 };
 
@@ -154,7 +154,7 @@ const crossHatchVertical = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const crossHatchHorizontal = (dimensions) => {
+const crossHatchHorizontal = dimensions => {
     return rotate90Degrees(crossHatchVertical(dimensions), dimensions);
 };
 
@@ -162,7 +162,7 @@ const crossHatchHorizontal = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const crossHatchRight = (dimensions) => {
+const crossHatchRight = dimensions => {
     return new Uint8Array([13, 6, 2, 7, 8, 0, 6, 15, 2, 8, 13, 6, 7, 15, 8, 0]);
 };
 
@@ -170,7 +170,7 @@ const crossHatchRight = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const crossHatchLeft = (dimensions) => {
+const crossHatchLeft = dimensions => {
     return rotate90Degrees(crossHatchRight(dimensions), dimensions);
 };
 
@@ -178,7 +178,7 @@ const crossHatchLeft = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const zigzagHorizontal = (dimensions) => {
+const zigzagHorizontal = dimensions => {
     if (dimensions <= 4) {
         return new Uint8Array([
             7, 0, 0, 7, 0, 7, 7, 0, 7, 15, 15, 7, 15, 7, 7, 15,
@@ -218,7 +218,7 @@ const zigzagHorizontal = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const zigzagVertical = (dimensions) => {
+const zigzagVertical = dimensions => {
     return rotate90Degrees(zigzagHorizontal(dimensions), dimensions);
 };
 
@@ -226,7 +226,7 @@ const zigzagVertical = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const fishnet = (dimensions) => {
+const fishnet = dimensions => {
     return new Uint8Array([
         47, 15, 15, 15, 15, 15, 15, 47, 15, 31, 15, 15, 15, 15, 31, 15, 15, 15,
         47, 15, 15, 47, 15, 15, 15, 15, 15, 63, 63, 15, 15, 15, 15, 15, 15, 63,
@@ -239,7 +239,7 @@ const fishnet = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const dot = (dimensions) => {
+const dot = dimensions => {
     if (dimensions === 4) {
         return new Uint8Array([
             0, 2, 3, 0, 2, 15, 12, 3, 3, 13, 14, 2, 0, 3, 2, 0,
@@ -259,7 +259,7 @@ const dot = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const halftone = (dimensions) => {
+const halftone = dimensions => {
     return new Uint8Array([
         24, 10, 12, 26, 35, 47, 49, 37, 8, 0, 2, 14, 45, 59, 61, 51, 22, 6, 4,
         16, 43, 57, 63, 53, 30, 20, 18, 28, 33, 41, 55, 39, 34, 46, 48, 36, 25,
@@ -272,7 +272,7 @@ const halftone = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const checkerboard = (dimensions) => {
+const checkerboard = dimensions => {
     return new Uint8Array([1, 2, 2, 1]);
 };
 
@@ -280,7 +280,7 @@ const checkerboard = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const smile = (dimensions) => {
+const smile = dimensions => {
     if (dimensions === 8) {
         return new Uint8Array([
             18, 26, 26, 26, 26, 26, 26, 18, 26, 40, 54, 26, 26, 54, 40, 26, 26,
@@ -316,7 +316,7 @@ const smile = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const heart = (dimensions) => {
+const heart = dimensions => {
     if (dimensions === 16) {
         return new Uint8Array([
             54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54, 54,
@@ -352,7 +352,7 @@ const heart = (dimensions) => {
  * dimensions should be power of 2
  * @param {number} dimensions
  */
-const stars = (dimensions) => {
+const stars = dimensions => {
     return new Uint8Array([
         81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81, 81,
         81, 95, 81, 81, 81, 81, 95, 81, 81, 81, 81, 95, 81, 81, 81, 81, 126,
@@ -370,6 +370,34 @@ const stars = (dimensions) => {
         193, 255, 193, 95, 81, 81, 184, 81, 81, 95, 193, 255, 193, 95, 81, 81,
         126, 193, 126, 81, 81, 81, 153, 81, 81, 81, 126, 193, 126, 81, 81, 81,
         81, 95, 81, 81, 81, 81, 95, 81, 81, 81, 81, 95, 81, 81,
+    ]);
+};
+
+// from: https://momentsingraphics.de/BlueNoise.html free blue noise textures download
+// HDR_L_1.png
+/**
+ * dimensions should be power of 2
+ * @param {number} dimensions
+ */
+const blueNoise = dimensions => {
+    return new Uint8Array([
+        232, 130, 251, 155, 98, 238, 199, 162, 85, 34, 101, 70, 44, 254, 29, 81,
+        197, 120, 40, 19, 188, 137, 8, 128, 248, 178, 10, 160, 125, 181, 59,
+        164, 11, 177, 88, 63, 112, 171, 22, 222, 58, 116, 208, 239, 17, 141,
+        229, 104, 50, 215, 240, 144, 225, 46, 94, 76, 200, 152, 51, 90, 190, 77,
+        36, 151, 126, 73, 161, 4, 203, 245, 192, 142, 39, 233, 132, 27, 223,
+        113, 206, 249, 26, 186, 102, 35, 83, 124, 28, 107, 176, 5, 100, 157, 64,
+        173, 0, 93, 221, 133, 235, 57, 180, 149, 68, 163, 250, 62, 217, 183,
+        242, 136, 53, 196, 69, 16, 154, 209, 117, 18, 230, 212, 21, 82, 121, 42,
+        15, 84, 165, 119, 246, 174, 45, 91, 255, 195, 49, 97, 131, 189, 202,
+        148, 108, 210, 231, 38, 140, 78, 110, 9, 138, 169, 75, 1, 159, 236, 52,
+        72, 253, 30, 153, 99, 201, 182, 214, 234, 33, 105, 224, 145, 114, 31,
+        172, 12, 129, 191, 61, 6, 20, 127, 55, 158, 66, 187, 207, 43, 241, 87,
+        219, 103, 179, 89, 226, 167, 220, 92, 247, 24, 86, 123, 13, 60, 166,
+        198, 65, 143, 237, 41, 118, 74, 32, 106, 194, 139, 228, 175, 252, 96,
+        134, 7, 122, 23, 204, 56, 156, 243, 147, 47, 170, 3, 115, 37, 150, 213,
+        184, 48, 244, 80, 168, 2, 135, 185, 14, 67, 205, 79, 216, 54, 71, 25,
+        109, 227, 146, 193, 218, 111, 95, 211,
     ]);
 };
 
@@ -394,4 +422,5 @@ export default {
     smile,
     heart,
     stars,
+    blueNoise,
 };

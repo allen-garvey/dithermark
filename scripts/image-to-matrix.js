@@ -9,7 +9,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const outputDir = path.join(__dirname, 'matrix-output');
 
-const imageName = 'stars-16x16.png';
+const imageName = 'HDR_L_1.png';
 
 fs.mkdir(outputDir, { recursive: true })
     .then(() =>

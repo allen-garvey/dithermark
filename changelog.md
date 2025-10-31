@@ -6,6 +6,8 @@
 
 * Add Oklab and CIE lab color comparisons for both dithering and outline filters, using both Euclidean and taxicab distance formulas
 
+* Add blue noise ordered dither pattern
+
 * Add performance option to only use one webworker to reduce memory usage
 
 ### Technical
