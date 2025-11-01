@@ -2,6 +2,8 @@
 
 ## HEAD
 
+## 2025-11-01 [Commit d02446b](https://github.com/allen-garvey/dithermark/commit/d02446bfbe8985e0b1b6feec651f95681e806b3c)
+
 ### Features
 
 * Add Oklab and CIE lab color comparisons for both dithering and outline filters, using both Euclidean and taxicab distance formulas
