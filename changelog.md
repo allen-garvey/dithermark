@@ -2,7 +2,7 @@
 
 ## HEAD
 
-## 2025-11-01 [Commit d02446b](https://github.com/allen-garvey/dithermark/commit/d02446bfbe8985e0b1b6feec651f95681e806b3c)
+## 5.0 2025-11-01 [Commit d02446b](https://github.com/allen-garvey/dithermark/commit/d02446bfbe8985e0b1b6feec651f95681e806b3c)
 
 ### Features
 
@@ -22,7 +22,7 @@
 
 * Increase error propagation color dithering performance by 33%-100% by increasing memory locality and reducing memory allocations
 
-## 2025-03-16 [Commit 83743ea](https://github.com/allen-garvey/dithermark/commit/83743ea996b875a1200404323ca9e242b386b1e8)
+## 4.1.1 2025-03-16 [Commit 83743ea](https://github.com/allen-garvey/dithermark/commit/83743ea996b875a1200404323ca9e242b386b1e8)
 
 ### Bugs
 
@@ -30,7 +30,7 @@
 
 * Fix color picker attention animation not being triggered when color picker is opened, and inactive controls are clicked.
 
-## 2025-02-13 [Commit 220d0b5](https://github.com/allen-garvey/dithermark/commit/220d0b573011f59edda41ff19c10070c0063fefb)
+## 4.1 2025-02-13 [Commit 220d0b5](https://github.com/allen-garvey/dithermark/commit/220d0b573011f59edda41ff19c10070c0063fefb)
 
 ### Features
 
@@ -84,7 +84,7 @@
 
 * Refactor opening images to use ImageBitmap instead of ObjectURL. This means opening images uses less memory, however it also means the [lowest supported iOS version is 15.](https://caniuse.com/?search=createImageBitmap)
 
-## 2024-03-03 [Commit cd1d5c3](https://github.com/allen-garvey/dithermark/commit/cd1d5c3f9b3189b06edbf9f1d473a36bc9224073)
+## 3.2 2024-03-03 [Commit cd1d5c3](https://github.com/allen-garvey/dithermark/commit/cd1d5c3f9b3189b06edbf9f1d473a36bc9224073)
 
 ### Bugs
 
@@ -94,7 +94,7 @@
 
 * Change Unsplash API endpoint to be a serverless function
 
-## 2024-02-29 [Commit 6ae2c8c](https://github.com/allen-garvey/dithermark/commit/6ae2c8c9ec2dad5b59171faea289cada479e1189)
+## 3.0 2024-02-29 [Commit 6ae2c8c](https://github.com/allen-garvey/dithermark/commit/6ae2c8c9ec2dad5b59171faea289cada479e1189)
 
 ### Features
 
@@ -108,7 +108,7 @@
 
 * Persist preferred export file type in user settings
 
-## 2023-05-23 [Commit 0129f6f](https://github.com/allen-garvey/dithermark/commit/0129f6f8f0926e0da173904627cbed1d5a01d0af)
+## 2.1 2023-05-23 [Commit 0129f6f](https://github.com/allen-garvey/dithermark/commit/0129f6f8f0926e0da173904627cbed1d5a01d0af)
 
 ### Features
 
@@ -138,6 +138,6 @@
 
 * Fix export not working on Firefox
 
-## 2018-09-04 [Commit dfefd3b](https://github.com/allen-garvey/dithermark/commit/dfefd3b782a78ecdd22f4f4f034925d908f012f7)
+## 1.0 2018-09-04 [Commit dfefd3b](https://github.com/allen-garvey/dithermark/commit/dfefd3b782a78ecdd22f4f4f034925d908f012f7)
 
 Initial release of Dithermark
