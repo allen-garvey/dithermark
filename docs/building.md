@@ -5,12 +5,13 @@ This is a guide for installing and building the project directly on you computer
 ## Dependencies for building
 
 * Node.js >= 22
+* ffmpeg (if using ffmpeg server for video export)
 
 ## Initial setup
 
 * Clone or download this repository
 * Open a command line and `cd` into the project directory
-* Run `cp unsplash-secrets.example.js unsplash-secrets.js` to copy `unsplash-secrets.example.js` to `unsplash-secrets.js` by running `cp unsplash`
+* Run `cp unsplash-secrets.example.js unsplash-secrets.js` to copy `unsplash-secrets.example.js` to `unsplash-secrets.js`
 * Run `npm install`
 
 ## Developing locally
