@@ -14,7 +14,7 @@ This is a guide for installing and building the project directly on you computer
 * Run `cp unsplash-secrets.example.js unsplash-secrets.js` to copy `unsplash-secrets.example.js` to `unsplash-secrets.js`
 * Run `npm install`
 
-## Developing locally
+## Running locally
 
 * Run `npm start`
 * Open your browser to [localhost:3000](http://localhost:3000)
