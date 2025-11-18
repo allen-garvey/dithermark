@@ -31,6 +31,7 @@ export const serveFile = (res, fs, rootDir, filename) => {
                 if (data === null) {
                     return;
                 }
+                res.setHeader('Cache-Control', 'no-store');
                 res.setHeader('Content-Type', mimeType);
                 res.send(data);
             },
