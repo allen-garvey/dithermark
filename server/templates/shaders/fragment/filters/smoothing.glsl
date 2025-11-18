@@ -4,9 +4,6 @@ precision highp float;
 //Kuwahara filter adapted from:
 //https://stackoverflow.com/questions/5830139/how-can-i-do-these-image-processing-tasks-using-opengl-es-2-0-shaders?noredirect=1&lq=1
 
-//requires highp to work correctly with transparency
-//will work with mediump when hardcoding 1.0 for alpha value in output_color
-
 in vec2 v_texcoord;
 out vec4 output_color;
 uniform sampler2D u_texture;

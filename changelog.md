@@ -2,6 +2,10 @@
 
 ## HEAD
 
+### Bugs
+
+* Update all WebGL shaders to require highp precison to fix bugs on mobile devices (such as simplex)
+
 ## 5.0 2025-11-01 [Commit d02446b](https://github.com/allen-garvey/dithermark/commit/d02446bfbe8985e0b1b6feec651f95681e806b3c)
 
 ### Features

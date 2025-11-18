@@ -27,7 +27,7 @@ THE SOFTWARE.
 //@param u_strength (value from 0-1 that is then prepared by Math.pow(strength, 5) * 100,000.0)
 //#{{edgeThickness}} - floating point number between 1.0 and roughly 6.0
     
-precision mediump float;
+precision highp float;
 
 uniform sampler2D u_texture;
 uniform float u_strength;

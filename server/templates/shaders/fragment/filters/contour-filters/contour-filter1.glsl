@@ -28,7 +28,7 @@ THE SOFTWARE.
 
 // @param u_radius radius in pixels (radiusPercentage / width)
 
-precision mediump float;
+precision highp float;
 
 uniform sampler2D u_texture;
 out vec4 output_color;

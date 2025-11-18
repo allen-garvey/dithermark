@@ -4,7 +4,7 @@
 // based on: Yliluoma's ordered dithering algorithm 2
 // Joel Yliluoma considers this algorithm released in the public domain
 
-precision mediump float;
+precision highp float;
 
 in vec2 v_texcoord;
 out vec4 output_color;

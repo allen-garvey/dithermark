@@ -1,5 +1,5 @@
 #version 300 es
-precision mediump float;
+precision highp float;
 
 //bilateral filter adapted from: https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/denoise.js
 

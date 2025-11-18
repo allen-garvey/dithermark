@@ -1,6 +1,6 @@
 #version 300 es
 //@param u_radius radius in pixels (radiusPercentage / height)
-precision mediump float;
+precision highp float;
 
 uniform sampler2D u_texture;
 out vec4 output_color;

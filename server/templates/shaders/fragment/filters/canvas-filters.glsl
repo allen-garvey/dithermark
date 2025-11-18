@@ -1,5 +1,5 @@
 #version 300 es
-precision mediump float;
+precision highp float;
 
 //code to adjust contrast based on:https://github.com/evanw/glfx.js/blob/master/src/filters/adjust/brightnesscontrast.js
 //u_contrast -1 to 2 (-1 is solid gray, 0 is no change, and 2 is maximum contrast)
