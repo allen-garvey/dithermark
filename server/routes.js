@@ -1,8 +1,8 @@
 import path from 'path';
 
 const mimeTypes = new Map([
-    ['.js', 'text/javascript'],
-    ['.css', 'text/css'],
+    ['.js', 'text/javascript; charset=UTF-8'],
+    ['.css', 'text/css; charset=UTF-8'],
 ]);
 
 /**
