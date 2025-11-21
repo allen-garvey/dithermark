@@ -28,14 +28,14 @@ THE SOFTWARE.
 
 //  * @filter       Triangle Blur
 //  * @description  This is the most basic blur filter, which convolves the image with a pyramid filter. The pyramid filter is separable and is applied as two perpendicular triangle filters.
-//  * @param u_delta The radius of the pyramid convolved with the image.
+//  * @param u_radius The radius of the pyramid convolved with the image.
 
 
 in vec2 v_texcoord;
 out vec4 output_color;
 
 uniform sampler2D u_texture;
-uniform vec2 u_delta;
+uniform vec2 u_radius;
 
 float random(vec3 scale, float seed) {
     return fract(sin(dot(gl_FragCoord.xyz + seed, scale)) * 43758.5453 + seed);
@@ -51,7 +51,7 @@ void main() {
     for (float t = -30.0; t <= 30.0; t++) {
         float percent = (t + offset - 0.5) / 30.0;
         float weight = 1.0 - abs(percent);
-        vec4 sample = texture2D(u_texture, v_texcoord + u_delta * percent);
+        vec4 sample = texture2D(u_texture, v_texcoord + u_radius * percent);
         
         // switch to pre-multiplied alpha to correctly blur transparent images
         sample.rgb *= sample.a;
