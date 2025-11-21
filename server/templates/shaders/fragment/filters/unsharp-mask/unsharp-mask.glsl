@@ -25,13 +25,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/**
- * @filter         Unsharp Mask
- * @description    A form of image sharpening that amplifies high-frequencies in the image. It
- *                 is implemented by scaling pixels away from the average of their neighbors.
- * Blurred texture is the result of triangle blur
- * @param u_strength A scale factor where 0 is no effect and higher values cause a stronger effect.
- */
+
+//  * @filter         Unsharp Mask
+//  * @description    A form of image sharpening that amplifies high-frequencies in the image. It is implemented by scaling pixels away from the average of their neighbors.
+//  * Blurred texture is the result of triangle blur
+//  * @param u_strength A scale factor where 0 is no effect and higher values cause a stronger effect.
+
 
 in vec2 v_texcoord;
 out vec4 output_color;

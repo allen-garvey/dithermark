@@ -25,13 +25,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-/**
- * @filter       Triangle Blur
- * @description  This is the most basic blur filter, which convolves the image with a
- *               pyramid filter. The pyramid filter is separable and is applied as two
- *               perpendicular triangle filters.
- * @param u_delta The radius of the pyramid convolved with the image.
- */
+
+//  * @filter       Triangle Blur
+//  * @description  This is the most basic blur filter, which convolves the image with a pyramid filter. The pyramid filter is separable and is applied as two perpendicular triangle filters.
+//  * @param u_delta The radius of the pyramid convolved with the image.
+
 
 in vec2 v_texcoord;
 out vec4 output_color;
