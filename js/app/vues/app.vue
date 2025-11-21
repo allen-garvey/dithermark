@@ -249,6 +249,39 @@
                                 </div>
                                 <div
                                     class="spread-content"
+                                    v-if="isWebglEnabled"
+                                >
+                                    <label class="label label-align">
+                                        <span>Sharpen</span>
+
+                                        <select
+                                            v-model.number="
+                                                selectedUnsharpMaskFilterValue
+                                            "
+                                        >
+                                            <option
+                                                v-for="(
+                                                    value, index
+                                                ) in unsharpMaskValues"
+                                                :value="index"
+                                                :key="index"
+                                            >
+                                                {{
+                                                    imageFilterSteppedDropdownOption(
+                                                        index
+                                                    )
+                                                }}
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <cycle-property-list
+                                        model-name="unsharp mask filter amount"
+                                        v-model="selectedUnsharpMaskFilterValue"
+                                        :array-length="unsharpMaskValues.length"
+                                    />
+                                </div>
+                                <div
+                                    class="spread-content"
                                     v-if="isSmoothingEnabled"
                                 >
                                     <label class="label label-align">
@@ -827,6 +860,9 @@ export default {
             bilateralFilterValues: ImageFiltersModel.bilateralFilterValues,
             selectedBilateralFilterValueBefore: 0,
             selectedBilateralFilterValueAfter: 0,
+            //unsharp mask
+            unsharpMaskValues: ImageFiltersModel.unsharpMaskValues,
+            selectedUnsharpMaskFilterValue: 0,
             //pre dither filters
             canvasFilterValues: ImageFiltersModel.canvasFilterValues,
             selectedImageSaturationIndex:
