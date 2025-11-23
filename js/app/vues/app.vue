@@ -636,6 +636,7 @@ import EditorThemes, {
 import WebGlSmoothing from '../webgl/webgl-smoothing.js';
 import WebGlBilateralFilter from '../webgl/webgl-bilateral-filter.js';
 import WebGlCanvasFilters from '../webgl/webgl-canvas-filters.js';
+import { webglUnsharpMask } from '../webgl/webgl-unsharp-mask.js';
 import ImageFiltersModel from '../models/image-filters.js';
 import { getGlobalTabs } from '../models/global-tabs.js';
 import { getDitherTabs } from '../models/dither-tabs.js';
@@ -1072,6 +1073,11 @@ export default {
                 this.imageFiltersBeforeDitherChanged();
             }
         },
+        selectedUnsharpMaskFilterValue(newValue, oldValue) {
+            if (this.isImageLoaded && newValue !== oldValue) {
+                this.imageFiltersBeforeDitherChanged();
+            }
+        },
         selectedBilateralFilterValueAfter: function (newValue, oldValue) {
             if (this.isImageLoaded && newValue !== oldValue) {
                 this.imageFiltersAfterDitherChanged();
@@ -1357,6 +1363,9 @@ export default {
                     this.bilateralFilterValueBeforeChanged() ||
                     hasImageBeenTransformed;
                 hasImageBeenTransformed =
+                    this.selectedUnsharpMaskFilterValueChanged() ||
+                    hasImageBeenTransformed;
+                hasImageBeenTransformed =
                     this.imageSmoothingBeforeChanged() ||
                     hasImageBeenTransformed;
 
@@ -1463,6 +1472,32 @@ export default {
                 imageHeader.height,
                 filterExponent
             );
+            return true;
+        },
+        selectedUnsharpMaskFilterValueChanged() {
+            if (this.selectedUnsharpMaskFilterValue === 0) {
+                return false;
+            }
+
+            const value =
+                this.unsharpMaskValues[this.selectedUnsharpMaskFilterValue];
+
+            const imageHeader = this.imageHeader;
+            sourceWebglTexture = webglUnsharpMask(
+                transformCanvasWebGl.gl,
+                sourceWebglTexture,
+                imageHeader.width,
+                imageHeader.height,
+                value.radius,
+                value.strength
+            );
+
+            transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
+            sourceWebglTexture = WebGl.createAndLoadTextureFromCanvas(
+                transformCanvasWebGl.gl,
+                transformCanvasWebGl.canvas
+            );
+
             return true;
         },
         //image smoothing after pixelation, before dither
