@@ -51,12 +51,12 @@ void main() {
     for (float t = -30.0; t <= 30.0; t++) {
         float percent = (t + offset - 0.5) / 30.0;
         float weight = 1.0 - abs(percent);
-        vec4 sample = texture2D(u_texture, v_texcoord + u_radius * percent);
+        vec4 current_sample = texture(u_texture, v_texcoord + u_radius * percent);
         
         // switch to pre-multiplied alpha to correctly blur transparent images
-        sample.rgb *= sample.a;
+        current_sample.rgb *= current_sample.a;
         
-        color += sample * weight;
+        color += current_sample * weight;
         total += weight;
     }
     

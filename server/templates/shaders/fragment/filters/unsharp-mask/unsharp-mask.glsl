@@ -40,7 +40,7 @@ uniform sampler2D u_texture;
 uniform float u_strength;
 
 void main() {
-    vec4 blurred = texture2D(u_blurred_texture, v_texcoord);
-    vec4 original = texture2D(u_texture, v_texcoord);
+    vec4 blurred = texture(u_blurred_texture, v_texcoord);
+    vec4 original = texture(u_texture, v_texcoord);
     output_color = mix(blurred, original, 1.0 + u_strength);
 }
