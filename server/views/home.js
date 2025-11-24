@@ -23,14 +23,9 @@ export const renderHome = ({ isProduction = false }) => {
             id: 'webgl-fragment-shader-bilateral-filter',
             path: 'fragment/filters/bilateral-filter.glsl',
         },
-        // unsharp mask
-        {
-            id: 'webgl-fragment-shader-triangle-blur',
-            path: 'fragment/filters/unsharp-mask/triangle-blur.glsl',
-        },
         {
             id: 'webgl-fragment-shader-unsharp-mask',
-            path: 'fragment/filters/unsharp-mask/unsharp-mask.glsl',
+            path: 'fragment/filters/unsharp-mask.glsl',
         },
         // filters edge
         {
