@@ -2,6 +2,10 @@
 
 ## HEAD
 
+### Features
+
+* Add sharpen (unsharp mask) image filter
+
 ### Bugs
 
 * Update all WebGL shaders to require highp precison to fix bugs on mobile devices (such as simplex)
