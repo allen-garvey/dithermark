@@ -265,6 +265,9 @@
                                                 v-model.number="
                                                     unsharpMaskStrength
                                                 "
+                                                :disabled="
+                                                    !isUnsharpMaskRadiusEnabled
+                                                "
                                             />
                                         </label>
                                         <label class="label">
@@ -276,6 +279,9 @@
                                                 step="1"
                                                 v-model.number="
                                                     unsharpMaskRadius
+                                                "
+                                                :disabled="
+                                                    !isUnsharpMaskStrengthEnabled
                                                 "
                                             />
                                         </label>
@@ -918,17 +924,6 @@ export default {
             }
             return transformCanvas;
         },
-        /**
-         * Image outline filter stuff
-         */
-        isImageOutlineFilterEnabled() {
-            //only enabled for color dither
-            return (
-                this.isImageLoaded &&
-                this.isWebglEnabled &&
-                this.activeDitherComponentId === 1
-            );
-        },
         isColorPickerLivePreviewEnabled() {
             return (
                 this.isLivePreviewEnabled &&
@@ -977,6 +972,17 @@ export default {
         isImagePixelated() {
             return this.pixelateImageZoom !== 100;
         },
+        /**
+         * Image filters stuff
+         */
+        isImageOutlineFilterEnabled() {
+            //only enabled for color dither
+            return (
+                this.isImageLoaded &&
+                this.isWebglEnabled &&
+                this.activeDitherComponentId === 1
+            );
+        },
         imageFiltersRaw() {
             const filters = {};
             const contrast =
@@ -1023,6 +1029,14 @@ export default {
         },
         areCanvasFiltersEnabled() {
             return this.areCanvasFiltersSupported || this.isWebglEnabled;
+        },
+        isUnsharpMaskStrengthEnabled() {
+            // testing greater than 0 also ensures it is not NaN
+            return this.unsharpMaskStrength > 0;
+        },
+        isUnsharpMaskRadiusEnabled() {
+            // testing greater than 0 also ensures it is not NaN
+            return this.unsharpMaskRadius > 0;
         },
         serializedGlobalSettings() {
             const editorThemeKey =
@@ -1486,10 +1500,8 @@ export default {
         },
         unsharpMaskFilterValuesChanged() {
             if (
-                this.unsharpMaskStrength <= 0 ||
-                isNaN(this.unsharpMaskStrength) ||
-                this.unsharpMaskRadius <= 0 ||
-                isNaN(this.unsharpMaskRadius)
+                !this.isUnsharpMaskStrengthEnabled ||
+                !this.isUnsharpMaskRadiusEnabled
             ) {
                 return false;
             }
