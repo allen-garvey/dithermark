@@ -1,4 +1,5 @@
 @use './variables';
+@use './mixins';
 
 .global-controls-panel {
     margin: 0 20px 16px 0;
@@ -40,5 +41,30 @@ $label_gap: 0.5em;
 .label-align {
     & > span {
         min-width: variables.$global_controls_label_min_width - $label_gap;
+    }
+}
+
+.inline-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    align-items: center;
+    
+    .label {
+        flex-grow: 0;
+    }
+}
+
+.inline-controls-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em 1.5em;
+    align-items: center;
+}
+
+@include mixins.pinned_controls_mq {
+    .inline-controls-controls {
+        justify-content: space-between;
+        flex-grow: 1;
     }
 }

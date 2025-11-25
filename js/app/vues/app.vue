@@ -248,37 +248,38 @@
                                     />
                                 </div>
                                 <div
-                                    class="spread-content"
+                                    class="inline-controls"
                                     v-if="isWebglEnabled"
                                 >
-                                    <label class="label label-align">
+                                    <span class="label label-align">
                                         <span>Sharpen</span>
-
-                                        <select
-                                            v-model.number="
-                                                selectedUnsharpMaskFilterValue
-                                            "
-                                        >
-                                            <option
-                                                v-for="(
-                                                    value, index
-                                                ) in unsharpMaskValues"
-                                                :value="index"
-                                                :key="index"
-                                            >
-                                                {{
-                                                    imageFilterSteppedDropdownOption(
-                                                        index
-                                                    )
-                                                }}
-                                            </option>
-                                        </select>
-                                    </label>
-                                    <cycle-property-list
-                                        model-name="unsharp mask filter amount"
-                                        v-model="selectedUnsharpMaskFilterValue"
-                                        :array-length="unsharpMaskValues.length"
-                                    />
+                                    </span>
+                                    <div class="inline-controls-controls">
+                                        <label class="label">
+                                            <span>Strength</span>
+                                            <input
+                                                :class="$style.numberInput"
+                                                type="number"
+                                                min="0"
+                                                step="1"
+                                                v-model.number="
+                                                    unsharpMaskStrength
+                                                "
+                                            />
+                                        </label>
+                                        <label class="label">
+                                            <span>Radius</span>
+                                            <input
+                                                :class="$style.numberInput"
+                                                type="number"
+                                                min="1"
+                                                step="1"
+                                                v-model.number="
+                                                    unsharpMaskRadius
+                                                "
+                                            />
+                                        </label>
+                                    </div>
                                 </div>
                                 <div
                                     class="spread-content"
@@ -576,6 +577,10 @@
     padding: 0 variables.$global_horizontal_padding;
 }
 
+.numberInput {
+    width: 3em;
+}
+
 //styles for desktop
 @include mixins.pinned_controls_mq {
     .controls {
@@ -862,8 +867,8 @@ export default {
             selectedBilateralFilterValueBefore: 0,
             selectedBilateralFilterValueAfter: 0,
             //unsharp mask
-            unsharpMaskValues: ImageFiltersModel.unsharpMaskValues,
-            selectedUnsharpMaskFilterValue: 0,
+            unsharpMaskStrength: 0,
+            unsharpMaskRadius: 1,
             //pre dither filters
             canvasFilterValues: ImageFiltersModel.canvasFilterValues,
             selectedImageSaturationIndex:
@@ -1073,7 +1078,12 @@ export default {
                 this.imageFiltersBeforeDitherChanged();
             }
         },
-        selectedUnsharpMaskFilterValue(newValue, oldValue) {
+        unsharpMaskStrength(newValue, oldValue) {
+            if (this.isImageLoaded && newValue !== oldValue) {
+                this.imageFiltersBeforeDitherChanged();
+            }
+        },
+        unsharpMaskRadius(newValue, oldValue) {
             if (this.isImageLoaded && newValue !== oldValue) {
                 this.imageFiltersBeforeDitherChanged();
             }
@@ -1363,7 +1373,7 @@ export default {
                     this.bilateralFilterValueBeforeChanged() ||
                     hasImageBeenTransformed;
                 hasImageBeenTransformed =
-                    this.selectedUnsharpMaskFilterValueChanged() ||
+                    this.unsharpMaskFilterValuesChanged() ||
                     hasImageBeenTransformed;
                 hasImageBeenTransformed =
                     this.imageSmoothingBeforeChanged() ||
@@ -1474,13 +1484,15 @@ export default {
             );
             return true;
         },
-        selectedUnsharpMaskFilterValueChanged() {
-            if (this.selectedUnsharpMaskFilterValue === 0) {
+        unsharpMaskFilterValuesChanged() {
+            if (
+                this.unsharpMaskStrength <= 0 ||
+                isNaN(this.unsharpMaskStrength) ||
+                this.unsharpMaskRadius <= 0 ||
+                isNaN(this.unsharpMaskRadius)
+            ) {
                 return false;
             }
-
-            const value =
-                this.unsharpMaskValues[this.selectedUnsharpMaskFilterValue];
 
             const imageHeader = this.imageHeader;
             sourceWebglTexture = webglUnsharpMask(
@@ -1488,8 +1500,8 @@ export default {
                 sourceWebglTexture,
                 imageHeader.width,
                 imageHeader.height,
-                value.radius,
-                value.strength
+                this.unsharpMaskRadius,
+                this.unsharpMaskStrength
             );
 
             transformCanvasWebGl.gl.deleteTexture(sourceWebglTexture);
