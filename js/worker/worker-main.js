@@ -87,7 +87,7 @@ function colorDitherAction(imageId, messageHeader) {
         `${selectedAlgorithm.title} processed in webworker`,
         imageHeight * imageWidth,
         () => {
-            selectedAlgorithm.algorithm(
+            selectedAlgorithm.getAlgorithm(colorDitherModeId)(
                 pixels,
                 imageWidth,
                 imageHeight,
@@ -112,7 +112,7 @@ function createOptimizePaletteProgressCallback(
     numColors,
     messageHeader
 ) {
-    return (percentage) => {
+    return percentage => {
         self.postMessage(
             WorkerUtil.createOptimizePaletteProgressBuffer(
                 imageId,
@@ -171,7 +171,7 @@ function optimizePaletteAction(
     );
 }
 
-self.onmessage = (e) => {
+self.onmessage = e => {
     const messageData = e.data;
 
     switch (messageData.messageTypeId) {
