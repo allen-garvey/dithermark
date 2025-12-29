@@ -82,6 +82,9 @@ colorDitherModeTranslation.set(ColorDitherModes.get('CIE_LAB').id, {
 colorDitherModeTranslation.set(ColorDitherModes.get('CIE_LAB_TAXI').id, {
     distanceFunc: 'webgl-cie-lab-taxi-distance',
 });
+colorDitherModeTranslation.set(ColorDitherModes.get('CIE_XYZ').id, {
+    distanceFunc: 'webgl-cie-xyz-distance',
+});
 
 /*
  * Shader caching

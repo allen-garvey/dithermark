@@ -5,6 +5,7 @@
 ### Features
 
 * Add sharpen (unsharp mask) image filter
+* Add CIE XYZ color comparison for dithering and outline filters
 
 ### Bugs
 

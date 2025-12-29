@@ -25,6 +25,15 @@ function rgbValueToLinear(d) {
     return c >= 0.04045 ? Math.pow((c + 0.055) / 1.055, 2.4) : c / 12.92;
 }
 
+function pixelToXyz(pixel, buffer) {
+    const ret = buffer || new Float64Array(3);
+    ret[0] = rgbValueToLinear(pixel[0]);
+    ret[1] = rgbValueToLinear(pixel[1]);
+    ret[2] = rgbValueToLinear(pixel[2]);
+
+    return ret;
+}
+
 function pixelToOklab(pixel, buffer) {
     const ret = buffer || new Float64Array(3);
 
@@ -295,6 +304,20 @@ exports[ColorDitherModes.get('RGB').id] = {
     errorAmount: errorAmount3d,
     createBuffer: createNull,
     createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('CIE_XYZ').id] = {
+    pixelValue: pixelToXyz,
+    distance: distance3d,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: () => new Float64Array(3),
+    createTransformedColors: createTransformColorsFunction(
+        Float64Array,
+        3,
+        pixelToXyz
+    ),
 };
 
 exports[ColorDitherModes.get('OKLAB').id] = {

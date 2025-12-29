@@ -130,6 +130,10 @@ export const renderHome = ({ isProduction = false }) => {
             id: 'webgl-cie-lab-taxi-distance',
             path: 'fragment/shared/pixel-distance/cie-lab-taxi-distance.glsl',
         },
+        {
+            id: 'webgl-cie-xyz-distance',
+            path: 'fragment/shared/pixel-distance/cie-xyz-distance.glsl',
+        },
         // shared dithers
         {
             id: 'webgl-random-dither-declaration-fshader',

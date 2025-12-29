@@ -72,6 +72,7 @@ function outlineColorModes() {
         },
         { title: 'Palette (Luma)', id: 7, distanceFuncPrefix: 'luma' },
         { title: 'Palette (Oklab)', id: 8, distanceFuncPrefix: 'oklab' },
+        { title: 'Palette (CIE XYZ)', id: 13, distanceFuncPrefix: 'cie-xyz' },
         {
             title: 'Palette (CIE Lab taxi)',
             id: 11,
