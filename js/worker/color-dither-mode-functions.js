@@ -177,6 +177,14 @@ function incrementRgb(rgbValue, incrementValues) {
     ];
 }
 
+function increment3d(rgbValue, incrementValues) {
+    return [
+        rgbValue[0] + incrementValues[0],
+        rgbValue[1] + incrementValues[1],
+        rgbValue[2] + incrementValues[2],
+    ];
+}
+
 function getHueError(expectedValue, actualValue) {
     let distance = PixelMath.hueDistance(expectedValue, actualValue);
 
@@ -310,7 +318,7 @@ exports[ColorDitherModes.get('CIE_XYZ').id] = {
     pixelValue: pixelToXyz,
     distance: distance3d,
     dimensions: 3,
-    incrementValue: incrementRgb,
+    incrementValue: increment3d,
     errorAmount: errorAmount3d,
     createBuffer: () => new Float64Array(3),
     createTransformedColors: createTransformColorsFunction(
