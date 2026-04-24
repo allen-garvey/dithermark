@@ -166,6 +166,8 @@ import AlgorithmSelect from './algorithm-select.vue';
 import HistogramComponent from './histogram-color.vue';
 import ColorPaletteSelect from './color-palette-select.vue';
 
+const colorDitherModesArray = [...ColorDitherModes.values()];
+
 //canvas stuff
 let histogramCanvas;
 
@@ -251,8 +253,10 @@ export default {
             defaultPalettesLength: 0,
             selectedPaletteIndex: null,
             numColors: null,
-            colorDitherModes: [...ColorDitherModes.values()],
-            selectedColorDitherModeIndex: 4,
+            colorDitherModes: colorDitherModesArray,
+            selectedColorDitherModeIndex: colorDitherModesArray.findIndex(
+                mode => mode.id === 0
+            ),
             colorQuantizationGroups: getColorQuantizationGroups(),
             colorQuantizationModes: getColorQuantizationModes(),
             selectedColorQuantizationModeIndex: 0,

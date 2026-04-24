@@ -115,6 +115,18 @@ export const renderHome = ({ isProduction = false }) => {
             path: 'fragment/shared/pixel-distance/rgb-distance.glsl',
         },
         {
+            id: 'webgl-red-distance',
+            path: 'fragment/shared/pixel-distance/red-distance.glsl',
+        },
+        {
+            id: 'webgl-green-distance',
+            path: 'fragment/shared/pixel-distance/green-distance.glsl',
+        },
+        {
+            id: 'webgl-blue-distance',
+            path: 'fragment/shared/pixel-distance/blue-distance.glsl',
+        },
+        {
             id: 'webgl-oklab-distance',
             path: 'fragment/shared/pixel-distance/oklab-distance.glsl',
         },

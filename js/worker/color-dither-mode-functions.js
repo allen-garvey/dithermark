@@ -128,6 +128,10 @@ function distance3d(item1, item2) {
     return dist1 * dist1 + dist2 * dist2 + dist3 * dist3;
 }
 
+const distanceRed = (item1, item2) => Math.abs(item1[0] - item2[0]);
+const distanceGreen = (item1, item2) => Math.abs(item1[1] - item2[1]);
+const distanceBlue = (item1, item2) => Math.abs(item1[2] - item2[2]);
+
 //rgb with correction for luma based on: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
 function distanceLuma(item1, item2) {
     const distR = item1[0] - item2[0];
@@ -176,6 +180,24 @@ function incrementRgb(rgbValue, incrementValues) {
         PixelMath.clamp(rgbValue[2] + incrementValues[2]),
     ];
 }
+
+const incrementRed = (rgbValue, incrementValues) => [
+    PixelMath.clamp(rgbValue[0] + incrementValues[0]),
+    null,
+    null,
+];
+
+const incrementGreen = (rgbValue, incrementValues) => [
+    null,
+    PixelMath.clamp(rgbValue[1] + incrementValues[1]),
+    null,
+];
+
+const incrementBlue = (rgbValue, incrementValues) => [
+    null,
+    null,
+    PixelMath.clamp(rgbValue[2] + incrementValues[2]),
+];
 
 function increment3d(rgbValue, incrementValues) {
     return [
@@ -309,6 +331,36 @@ exports[ColorDitherModes.get('RGB').id] = {
     distance: distance3d,
     dimensions: 3,
     incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('RED').id] = {
+    pixelValue: identity,
+    distance: distanceRed,
+    dimensions: 3,
+    incrementValue: incrementRed,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('GREEN').id] = {
+    pixelValue: identity,
+    distance: distanceGreen,
+    dimensions: 3,
+    incrementValue: incrementGreen,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('BLUE').id] = {
+    pixelValue: identity,
+    distance: distanceBlue,
+    dimensions: 3,
+    incrementValue: incrementBlue,
     errorAmount: errorAmount3d,
     createBuffer: createNull,
     createTransformedColors: identity,

@@ -1,6 +1,9 @@
 const exports = new Map();
 
 exports.set('HUE', { id: 4, title: 'Hue' });
+exports.set('RED', { id: 11, title: 'Red' });
+exports.set('GREEN', { id: 12, title: 'Green' });
+exports.set('BLUE', { id: 13, title: 'Blue' });
 exports.set('LIGHTNESS', { id: 3, title: 'Lightness' });
 exports.set('HUE_LIGHTNESS', { id: 2, title: 'Hue & Lightness' });
 exports.set('HSL_WEIGHTED', { id: 1, title: 'Weighted HSL' });
