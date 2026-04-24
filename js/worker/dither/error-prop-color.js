@@ -118,7 +118,7 @@ function errorPropDitherBase(
     );
     //this is to avoid uncessesary creation and deletion of arrays during error propagation
     const currentErrorBuffer = new Float32Array(modeDimensions);
-
+    const adjustedValueBuffer = new Float32Array(modeDimensions);
     const errorValueBuffer = new Float32Array(modeDimensions);
 
     Image.transform(
@@ -134,7 +134,8 @@ function errorPropDitherBase(
             );
             const pixelAdjustedValue = incrementValueFunc(
                 pixelValueFunc(pixel, transformedPixelBuffer),
-                errorValue
+                errorValue,
+                adjustedValueBuffer
             );
             const closestColorIndex = Image.findClosestColorIndex(
                 pixelAdjustedValue,

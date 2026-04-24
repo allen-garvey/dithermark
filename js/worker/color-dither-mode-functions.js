@@ -157,55 +157,49 @@ function distanceLabTaxicab(item1, item2) {
  * Functions for error prop dither
  */
 
-function incrementHueValue(hue, incrementValue) {
-    return Math.abs(Math.round(hue + incrementValue) % 360);
-}
+const incrementHsl = (hslValues, incrementValues, buffer) => {
+    buffer[0] = Math.abs(Math.round(hslValues[0] + incrementValues[0]) % 360);
+    buffer[1] = PixelMath.clamp(hslValues[1] + incrementValues[1], 100);
+    buffer[2] = PixelMath.clamp(hslValues[2] + incrementValues[2]);
 
-function incrementHsl(hslValues, incrementValues) {
-    return [
-        incrementHueValue(hslValues[0], incrementValues[0]),
-        PixelMath.clamp(hslValues[1] + incrementValues[1], 100),
-        PixelMath.clamp(hslValues[2] + incrementValues[2]),
-    ];
-}
+    return buffer;
+};
 
-function incrementLightness(lightnessValue, incrementValues) {
+// don't write to buffer since causes significant slowdown
+const incrementLightness = (lightnessValue, incrementValues, buffer) => {
     return PixelMath.clamp(lightnessValue + incrementValues[0]);
-}
+};
 
-function incrementRgb(rgbValue, incrementValues) {
-    return [
-        PixelMath.clamp(rgbValue[0] + incrementValues[0]),
-        PixelMath.clamp(rgbValue[1] + incrementValues[1]),
-        PixelMath.clamp(rgbValue[2] + incrementValues[2]),
-    ];
-}
+const incrementRgb = (rgbValue, incrementValues, buffer) => {
+    buffer[0] = PixelMath.clamp(rgbValue[0] + incrementValues[0]);
+    buffer[1] = PixelMath.clamp(rgbValue[1] + incrementValues[1]);
+    buffer[2] = PixelMath.clamp(rgbValue[2] + incrementValues[2]);
 
-const incrementRed = (rgbValue, incrementValues) => [
-    PixelMath.clamp(rgbValue[0] + incrementValues[0]),
-    null,
-    null,
-];
+    return buffer;
+};
 
-const incrementGreen = (rgbValue, incrementValues) => [
-    null,
-    PixelMath.clamp(rgbValue[1] + incrementValues[1]),
-    null,
-];
+const incrementRed = (rgbValue, incrementValues, buffer) => {
+    buffer[0] = PixelMath.clamp(rgbValue[0] + incrementValues[0]);
 
-const incrementBlue = (rgbValue, incrementValues) => [
-    null,
-    null,
-    PixelMath.clamp(rgbValue[2] + incrementValues[2]),
-];
+    return buffer;
+};
 
-function increment3d(rgbValue, incrementValues) {
-    return [
-        rgbValue[0] + incrementValues[0],
-        rgbValue[1] + incrementValues[1],
-        rgbValue[2] + incrementValues[2],
-    ];
-}
+const incrementGreen = (rgbValue, incrementValues, buffer) => {
+    buffer[1] = PixelMath.clamp(rgbValue[1] + incrementValues[1]);
+    return buffer;
+};
+
+const incrementBlue = (rgbValue, incrementValues, buffer) => {
+    buffer[2] = PixelMath.clamp(rgbValue[2] + incrementValues[2]);
+    return buffer;
+};
+
+const increment3d = (rgbValue, incrementValues, buffer) => {
+    buffer[0] = rgbValue[0] + incrementValues[0];
+    buffer[1] = rgbValue[1] + incrementValues[1];
+    buffer[2] = rgbValue[2] + incrementValues[2];
+    return buffer;
+};
 
 function getHueError(expectedValue, actualValue) {
     let distance = PixelMath.hueDistance(expectedValue, actualValue);

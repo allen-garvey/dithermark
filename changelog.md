@@ -7,6 +7,10 @@
 * Add red, green, and blue color comparisons for dithering
 * Add color palette
 
+### Technical
+
+* Slightly increase error prop dither performance by reducing memory allocations
+
 ## 5.1 2026-01-09 [Commit 709ae55](https://github.com/allen-garvey/dithermark/commit/709ae553025dc8944baa436c54b76e3fe2689952)
 
 ### Features
