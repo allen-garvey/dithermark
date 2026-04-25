@@ -51,6 +51,15 @@ function outlineFilterTypes() {
 function outlineColorModes() {
     return [
         { title: 'Fixed', id: 1 },
+        { title: 'Palette (Red)', id: 14, distanceFuncPrefix: 'red' },
+        { title: 'Palette (Red-Blue)', id: 18, distanceFuncPrefix: 'red-blue' },
+        { title: 'Palette (Green)', id: 15, distanceFuncPrefix: 'green' },
+        { title: 'Palette (Blue)', id: 16, distanceFuncPrefix: 'blue' },
+        {
+            title: 'Palette (Blue-Green)',
+            id: 19,
+            distanceFuncPrefix: 'blue-green',
+        },
         { title: 'Palette (Hue)', id: 2, distanceFuncPrefix: 'hue' },
         {
             title: 'Palette (Hue & Lightness)',
@@ -69,6 +78,11 @@ function outlineColorModes() {
             title: 'Palette (Oklab taxi)',
             id: 9,
             distanceFuncPrefix: 'oklab-taxi',
+        },
+        {
+            title: 'Palette (Red-Green)',
+            id: 17,
+            distanceFuncPrefix: 'red-green',
         },
         { title: 'Palette (Luma)', id: 7, distanceFuncPrefix: 'luma' },
         { title: 'Palette (Oklab)', id: 8, distanceFuncPrefix: 'oklab' },
