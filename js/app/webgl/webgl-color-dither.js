@@ -94,6 +94,15 @@ colorDitherModeTranslation.set(ColorDitherModes.get('GREEN').id, {
 colorDitherModeTranslation.set(ColorDitherModes.get('BLUE').id, {
     distanceFunc: 'webgl-blue-distance',
 });
+colorDitherModeTranslation.set(ColorDitherModes.get('RED_GREEN').id, {
+    distanceFunc: 'webgl-red-green-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('RED_BLUE').id, {
+    distanceFunc: 'webgl-red-blue-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('BLUE_GREEN').id, {
+    distanceFunc: 'webgl-blue-green-distance',
+});
 
 /*
  * Shader caching

@@ -4,7 +4,7 @@
 
 ### Features
 
-* Add red, green, and blue color comparisons for dithering
+* Add red, green, blue, red-green, red-blue, and blue-green color comparisons for dithering
 * Add color palette
 
 ### Technical

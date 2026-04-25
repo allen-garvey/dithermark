@@ -132,6 +132,27 @@ const distanceRed = (item1, item2) => Math.abs(item1[0] - item2[0]);
 const distanceGreen = (item1, item2) => Math.abs(item1[1] - item2[1]);
 const distanceBlue = (item1, item2) => Math.abs(item1[2] - item2[2]);
 
+const distanceRedGreen = (item1, item2) => {
+    const dist1 = item1[0] - item2[0];
+    const dist2 = item1[1] - item2[1];
+
+    return dist1 * dist1 + dist2 * dist2;
+};
+
+const distanceRedBlue = (item1, item2) => {
+    const dist1 = item1[0] - item2[0];
+    const dist2 = item1[2] - item2[2];
+
+    return dist1 * dist1 + dist2 * dist2;
+};
+
+const distanceBlueGreen = (item1, item2) => {
+    const dist1 = item1[1] - item2[1];
+    const dist2 = item1[2] - item2[2];
+
+    return dist1 * dist1 + dist2 * dist2;
+};
+
 //rgb with correction for luma based on: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
 function distanceLuma(item1, item2) {
     const distR = item1[0] - item2[0];
@@ -323,6 +344,36 @@ exports[ColorDitherModes.get('HSL_WEIGHTED').id] = {
 exports[ColorDitherModes.get('RGB').id] = {
     pixelValue: identity,
     distance: distance3d,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('RED_GREEN').id] = {
+    pixelValue: identity,
+    distance: distanceRedGreen,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('RED_BLUE').id] = {
+    pixelValue: identity,
+    distance: distanceRedBlue,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('BLUE_GREEN').id] = {
+    pixelValue: identity,
+    distance: distanceBlueGreen,
     dimensions: 3,
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,
