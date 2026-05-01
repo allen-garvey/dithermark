@@ -139,6 +139,26 @@ export const renderHome = ({ isProduction = false }) => {
             path: 'fragment/shared/pixel-distance/blue-green-distance.glsl',
         },
         {
+            id: 'webgl-luma-brg-distance',
+            path: 'fragment/shared/pixel-distance/luma-brg-distance.glsl',
+        },
+        {
+            id: 'webgl-luma-bgr-distance',
+            path: 'fragment/shared/pixel-distance/luma-bgr-distance.glsl',
+        },
+        {
+            id: 'webgl-luma-rgb-distance',
+            path: 'fragment/shared/pixel-distance/luma-rgb-distance.glsl',
+        },
+        {
+            id: 'webgl-luma-rbg-distance',
+            path: 'fragment/shared/pixel-distance/luma-rbg-distance.glsl',
+        },
+        {
+            id: 'webgl-luma-gbr-distance',
+            path: 'fragment/shared/pixel-distance/luma-gbr-distance.glsl',
+        },
+        {
             id: 'webgl-oklab-distance',
             path: 'fragment/shared/pixel-distance/oklab-distance.glsl',
         },

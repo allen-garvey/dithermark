@@ -103,6 +103,21 @@ colorDitherModeTranslation.set(ColorDitherModes.get('RED_BLUE').id, {
 colorDitherModeTranslation.set(ColorDitherModes.get('BLUE_GREEN').id, {
     distanceFunc: 'webgl-blue-green-distance',
 });
+colorDitherModeTranslation.set(ColorDitherModes.get('LUMA_BRG').id, {
+    distanceFunc: 'webgl-luma-brg-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('LUMA_BGR').id, {
+    distanceFunc: 'webgl-luma-bgr-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('LUMA_RGB').id, {
+    distanceFunc: 'webgl-luma-rgb-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('LUMA_RBG').id, {
+    distanceFunc: 'webgl-luma-rbg-distance',
+});
+colorDitherModeTranslation.set(ColorDitherModes.get('LUMA_GBR').id, {
+    distanceFunc: 'webgl-luma-gbr-distance',
+});
 
 /*
  * Shader caching
