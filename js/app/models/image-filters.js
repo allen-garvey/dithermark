@@ -53,12 +53,37 @@ function outlineColorModes() {
         { title: 'Fixed', id: 1 },
         { title: 'Palette (Red)', id: 14, distanceFuncPrefix: 'red' },
         { title: 'Palette (Red-Blue)', id: 18, distanceFuncPrefix: 'red-blue' },
+        {
+            title: 'Palette (Luma RBG)',
+            id: 23,
+            distanceFuncPrefix: 'luma-rbg',
+        },
+        {
+            title: 'Palette (Luma BRG)',
+            id: 20,
+            distanceFuncPrefix: 'luma-brg',
+        },
+        {
+            title: 'Palette (Luma RGB)',
+            id: 22,
+            distanceFuncPrefix: 'luma-rgb',
+        },
         { title: 'Palette (Green)', id: 15, distanceFuncPrefix: 'green' },
         { title: 'Palette (Blue)', id: 16, distanceFuncPrefix: 'blue' },
         {
             title: 'Palette (Blue-Green)',
             id: 19,
             distanceFuncPrefix: 'blue-green',
+        },
+        {
+            title: 'Palette (Luma BGR)',
+            id: 21,
+            distanceFuncPrefix: 'luma-bgr',
+        },
+        {
+            title: 'Palette (Luma GBR)',
+            id: 24,
+            distanceFuncPrefix: 'luma-gbr',
         },
         { title: 'Palette (Hue)', id: 2, distanceFuncPrefix: 'hue' },
         {
