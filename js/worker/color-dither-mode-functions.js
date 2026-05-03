@@ -154,14 +154,59 @@ const distanceBlueGreen = (item1, item2) => {
 };
 
 //rgb with correction for luma based on: http://www.tannerhelland.com/3643/grayscale-image-algorithm-vb6/
-function distanceLuma(item1, item2) {
+const distanceLuma = (item1, item2) => {
     const distR = item1[0] - item2[0];
     const distG = item1[1] - item2[1];
     const distB = item1[2] - item2[2];
     return (
         distR * distR * 0.299 + distG * distG * 0.587 + distB * distB * 0.114
     );
-}
+};
+
+const distanceLumaGBR = (item1, item2) => {
+    const distR = item1[0] - item2[0];
+    const distG = item1[1] - item2[1];
+    const distB = item1[2] - item2[2];
+    return (
+        distR * distR * 0.114 + distG * distG * 0.587 + distB * distB * 0.299
+    );
+};
+
+const distanceLumaBRG = (item1, item2) => {
+    const distR = item1[0] - item2[0];
+    const distG = item1[1] - item2[1];
+    const distB = item1[2] - item2[2];
+    return (
+        distR * distR * 0.299 + distG * distG * 0.114 + distB * distB * 0.587
+    );
+};
+
+const distanceLumaRBG = (item1, item2) => {
+    const distR = item1[0] - item2[0];
+    const distG = item1[1] - item2[1];
+    const distB = item1[2] - item2[2];
+    return (
+        distR * distR * 0.587 + distG * distG * 0.114 + distB * distB * 0.299
+    );
+};
+
+const distanceLumaRGB = (item1, item2) => {
+    const distR = item1[0] - item2[0];
+    const distG = item1[1] - item2[1];
+    const distB = item1[2] - item2[2];
+    return (
+        distR * distR * 0.587 + distG * distG * 0.299 + distB * distB * 0.114
+    );
+};
+
+const distanceLumaBGR = (item1, item2) => {
+    const distR = item1[0] - item2[0];
+    const distG = item1[1] - item2[1];
+    const distB = item1[2] - item2[2];
+    return (
+        distR * distR * 0.114 + distG * distG * 0.299 + distB * distB * 0.587
+    );
+};
 
 // based on [taxicab difference](https://en.wikipedia.org/wiki/Taxicab_geometry)
 // as described here https://en.wikipedia.org/wiki/Color_difference#Other_geometric_constructions
@@ -484,6 +529,56 @@ exports[ColorDitherModes.get('CIE_LAB_TAXI').id] = {
 exports[ColorDitherModes.get('LUMA').id] = {
     pixelValue: identity,
     distance: distanceLuma,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('LUMA_BRG').id] = {
+    pixelValue: identity,
+    distance: distanceLumaBRG,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('LUMA_RBG').id] = {
+    pixelValue: identity,
+    distance: distanceLumaRBG,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('LUMA_BGR').id] = {
+    pixelValue: identity,
+    distance: distanceLumaBGR,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('LUMA_RGB').id] = {
+    pixelValue: identity,
+    distance: distanceLumaRGB,
+    dimensions: 3,
+    incrementValue: incrementRgb,
+    errorAmount: errorAmount3d,
+    createBuffer: createNull,
+    createTransformedColors: identity,
+};
+
+exports[ColorDitherModes.get('LUMA_GBR').id] = {
+    pixelValue: identity,
+    distance: distanceLumaGBR,
     dimensions: 3,
     incrementValue: incrementRgb,
     errorAmount: errorAmount3d,

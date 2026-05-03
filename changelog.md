@@ -4,7 +4,7 @@
 
 ### Features
 
-* Add red, green, blue, red-green, red-blue, and blue-green color comparisons for dithering and outline filters
+* Add red, green, blue, red-green, red-blue, blue-green and luma variant color comparisons for dithering and outline filters
 * Add color palette
 
 ### Technical
