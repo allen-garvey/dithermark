@@ -1,13 +1,10 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
 import webpack from 'webpack';
 import { VueLoaderPlugin } from 'vue-loader';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 export const PUBLIC_HTML_DIR = path.resolve(
-    __dirname,
+    import.meta.dirname,
     '..',
     'deploy',
     'public_html'
@@ -21,7 +18,10 @@ export const PUBLIC_ASSETS_DIR = path.resolve(PUBLIC_HTML_DIR, ASSETS_DIR);
  */
 export const getConfig = () => ({
     mode: 'development',
-    entry: [`${__dirname}/../js/index.js`, `${__dirname}/../sass/style.scss`],
+    entry: [
+        `${import.meta.dirname}/../js/index.js`,
+        `${import.meta.dirname}/../sass/style.scss`,
+    ],
     output: {
         filename: 'app.js',
         path: PUBLIC_ASSETS_DIR,
@@ -29,15 +29,15 @@ export const getConfig = () => ({
     resolve: {
         alias: {
             'app-performance-timer': path.resolve(
-                __dirname,
+                import.meta.dirname,
                 '../js/shared/timer.js'
             ),
             'print-palette-button': path.resolve(
-                __dirname,
+                import.meta.dirname,
                 '../js/app/vues/print-palette-button.vue'
             ),
             'texture-combine-component': path.resolve(
-                __dirname,
+                import.meta.dirname,
                 '../js/app/vues/texture-combine.vue'
             ),
         },
@@ -72,10 +72,10 @@ export const getConfig = () => ({
                                 loader: 'sass-loader',
                                 options: {
                                     additionalData: `@use "${path.resolve(
-                                        __dirname,
+                                        import.meta.dirname,
                                         '../sass'
                                     )}/variables.scss"; @use "${path.resolve(
-                                        __dirname,
+                                        import.meta.dirname,
                                         '../sass'
                                     )}/mixins.scss";`,
                                 },

@@ -1,19 +1,16 @@
 import sharp from 'sharp';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
 import { lightness } from '../js/shared/pixel-math-lite.js';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const outputDir = path.join(__dirname, 'matrix-output');
+const outputDir = path.join(import.meta.dirname, 'matrix-output');
 
 const imageName = 'HDR_L_6.png';
 
 fs.mkdir(outputDir, { recursive: true })
     .then(() =>
-        sharp(path.join(__dirname, 'images', imageName))
+        sharp(path.join(import.meta.dirname, 'images', imageName))
             .removeAlpha()
             .raw()
             .toBuffer()

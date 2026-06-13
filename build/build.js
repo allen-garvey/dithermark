@@ -1,12 +1,9 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
 import fs from 'fs/promises';
 
 import { PUBLIC_HTML_DIR } from './webpack.config.js';
 import { renderHome } from '../server/views/home.js';
 import { renderUnsplashDownloadApi } from '../server/views/unsplash-download-api.js';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const isProduction = process.env.IS_PRODUCTION === 'true';
 
@@ -16,7 +13,7 @@ const homePromise = renderHome({ isProduction }).then(indexContent =>
     fs.writeFile(homeOutputPath, indexContent)
 );
 
-const SERVERLESS_PATH = path.join(__dirname, '..', 'serverless');
+const SERVERLESS_PATH = path.join(import.meta.dirname, '..', 'serverless');
 
 const unsplashDownloadApiPromise = fs
     .mkdir(SERVERLESS_PATH, { recursive: true })

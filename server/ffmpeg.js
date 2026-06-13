@@ -1,12 +1,13 @@
 import path from 'path';
 import fs from 'fs/promises';
-import { fileURLToPath } from 'url';
 import { spawn } from 'node:child_process';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
 export const FFMPEG_TMP_ROOT_NAME = 'tmp';
-const TMP_ROOT_PATH = path.join(__dirname, '..', FFMPEG_TMP_ROOT_NAME);
+const TMP_ROOT_PATH = path.join(
+    import.meta.dirname,
+    '..',
+    FFMPEG_TMP_ROOT_NAME
+);
 export const FFMPEG_RAW_IMAGE_DIRECTORY = path.join(TMP_ROOT_PATH, 'raw-image');
 export const FFMPEG_OUTPUT_DIRECTORY = path.join(TMP_ROOT_PATH, 'video-output');
 export const FFMPEG_VIDEO_UPLOAD_DIRECTORY_NAME = 'uploads-video';
@@ -42,7 +43,7 @@ Promise.all([
 const ffmpegExecute = args =>
     new Promise((resolve, reject) => {
         const ffmpeg = spawn('ffmpeg', args, {
-            cwd: path.join(__dirname, '..', 'tmp'),
+            cwd: path.join(import.meta.dirname, '..', 'tmp'),
         });
 
         ffmpeg.stdout.on('data', data => {
@@ -118,7 +119,7 @@ export const videoToFrames = (videoPath, fps, duration, useAudio) => {
         2
     );
 
-    const videoInputPath = path.join(__dirname, '..', videoPath);
+    const videoInputPath = path.join(import.meta.dirname, '..', videoPath);
 
     return cleanUpRawFiles()
         .then(() =>
