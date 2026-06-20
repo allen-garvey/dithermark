@@ -705,7 +705,7 @@ const defaultPalettes = () => [
         ],
     },
     {
-        title: 'Secam',
+        title: 'Vibrant',
         colors: [
             '#000000',
             '#2121ff',
