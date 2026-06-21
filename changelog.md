@@ -2,6 +2,8 @@
 
 ## HEAD
 
+## 5.2 2026-06-21 [Commit be8c649](https://github.com/allen-garvey/dithermark/commit/be8c649b1debb0aa382230bd826eba2d06f91091)
+
 ### Features
 
 * Add red, green, blue, red-green, red-blue, blue-green and luma variant color comparisons for dithering and outline filters
