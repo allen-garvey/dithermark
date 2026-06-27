@@ -155,7 +155,13 @@
                 title="Save image to downloads folder"
             >
                 {{ saveButtonText }}
-                <spinner v-if="isLoadingFfmpeg || isCurrentlySavingImage" />
+                <spinner
+                    v-if="
+                        isMediabunnyReady ||
+                        isOutputtingVideo ||
+                        isCurrentlySavingImage
+                    "
+                />
             </button>
         </div>
         <div :class="$style.alertsContainer">
@@ -165,7 +171,6 @@
                 :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                 :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
                 :doInputAndOutputFpsMatch="videoInputFps === videoOutputFps"
-                :useFfmpegServer="useFfmpegServer"
             />
         </div>
         <a ref="saveImageLink" v-show="false"></a>
@@ -236,15 +241,6 @@ import {
 } from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import userSettings from '../user-settings.js';
-import {
-    exportFramesToVideo,
-    saveImageFrame,
-    ffmpegImageFileType,
-} from '../ffmpeg.js';
-import {
-    ffmpegClientSaveImage,
-    ffmpegClientFramesToVideo,
-} from '../ffmpeg-client.js';
 import { getFilenameWithoutExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
@@ -302,15 +298,11 @@ export default {
             type: Boolean,
             required: true,
         },
-        isFfmpegReady: {
+        isMediabunnyReady: {
             type: Boolean,
             required: true,
         },
         isBatchConverting: {
-            type: Boolean,
-            required: true,
-        },
-        useFfmpegServer: {
             type: Boolean,
             required: true,
         },
@@ -383,14 +375,11 @@ export default {
 
             return errorMessages;
         },
-        isLoadingFfmpeg() {
-            return this.isOutputtingVideo && !this.isFfmpegReady;
-        },
         saveButtonText() {
             if (this.isCurrentlySavingImage) {
                 return 'Saving…';
             }
-            return this.isLoadingFfmpeg ? 'Loading FFmpeg…' : 'Save';
+            return !this.isMediabunnyReady ? 'Loading Mediabunny…' : 'Save';
         },
         isSaveDisabled() {
             if (this.isOutputtingVideo) {
@@ -399,7 +388,7 @@ export default {
                     this.hasInputFpsError ||
                     this.hasOutputFpsError ||
                     this.hasFilenameError ||
-                    !this.isFfmpegReady
+                    !this.isMediabunnyReady
                 );
             }
 
@@ -586,69 +575,6 @@ export default {
                         );
                     })
             );
-        },
-        saveImageToFfmpegServer() {
-            return this.saveImageBase((sourceCanvas, unsplash) =>
-                canvasToBlob(
-                    sourceCanvas.canvas,
-                    ffmpegImageFileType.mime
-                ).then(blob =>
-                    ffmpegClientSaveImage(
-                        new File(
-                            [blob],
-                            this.saveImageFileName +
-                                ffmpegImageFileType.extension
-                        )
-                    )
-                )
-            );
-        },
-        saveImageToFfmpeg(ffmpeg) {
-            return this.saveImageBase((sourceCanvas, unsplash) =>
-                canvasToArray(
-                    sourceCanvas.canvas,
-                    ffmpegImageFileType.mime
-                ).then(array =>
-                    saveImageFrame(
-                        ffmpeg,
-                        this.saveImageFileName + ffmpegImageFileType.extension,
-                        array
-                    )
-                )
-            );
-        },
-        async exportVideoFromFrames(ffmpeg) {
-            const exportFilename =
-                this.videoExportFilename + this.videoFileExtension;
-            const data = await exportFramesToVideo(ffmpeg, this.videoOutputFps);
-            return new Promise(resolve => {
-                arrayToObjectUrl(data, objectUrl => {
-                    const saveImageLink = this.$refs.saveImageLink;
-                    saveImageLink.href = objectUrl;
-                    saveImageLink.download = exportFilename;
-                    saveImageLink.click();
-                    resolve();
-                });
-            });
-        },
-        exportVideoFromFramesFfmpegServer() {
-            const exportFilename =
-                this.videoExportFilename + this.videoFileExtension;
-
-            return new Promise(resolve => {
-                ffmpegClientFramesToVideo(
-                    this.videoOutputFps,
-                    this.saveImageFileType.extension
-                ).then(blob => {
-                    blobToObjectUrl(blob, objectUrl => {
-                        const saveImageLink = this.$refs.saveImageLink;
-                        saveImageLink.href = objectUrl;
-                        saveImageLink.download = exportFilename;
-                        saveImageLink.click();
-                        resolve();
-                    });
-                });
-            });
         },
     },
 };

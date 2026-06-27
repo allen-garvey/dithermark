@@ -37,7 +37,6 @@
     "express": "^5.1.0",
     "memfs": "^4.17.2",
     "mini-css-extract-plugin": "^2.9.2",
-    "multer": "^2.0.1",
     "sass": "^1.89.2",
     "sass-loader": "^16.0.5",
     "sharp": "^0.34.2",

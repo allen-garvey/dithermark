@@ -21,21 +21,13 @@ export default {
             type: Boolean,
             required: true,
         },
-        useFfmpegServer: {
-            type: Boolean,
-            required: true,
-        },
     },
     components: {
         BannerMessages,
     },
     computed: {
         warningMessages() {
-            const messages = [];
-
-            if (!this.useFfmpegServer) {
-                messages.push('Video export is experimental and may fail.');
-            }
+            const messages = ['Video export is experimental and may fail.'];
 
             if (this.automaticallyResizeLargeImages) {
                 messages.push(

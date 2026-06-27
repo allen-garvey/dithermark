@@ -107,7 +107,7 @@ export default {
             type: Function,
             required: true,
         },
-        getFfmpegReady: {
+        getMediabunnyReady: {
             type: Function,
             required: true,
         },
@@ -173,7 +173,7 @@ export default {
             if (files.length === 0) {
                 return this.openImageError('No image files selected');
             }
-            this.getFfmpegReady();
+            this.getMediabunnyReady();
             this.currentImageFileIndex = 0;
             this.imageFiles = files;
             const mode =
@@ -267,7 +267,7 @@ export default {
                     `${videoFile.name} does not appear to be a video file.`
                 );
             }
-            this.getFfmpegReady();
+            this.getMediabunnyReady();
             this.$emit('update:openFileMode', OPEN_FILE_MODE_VIDEO);
             this.$emit('update:videoFile', videoFile);
         },

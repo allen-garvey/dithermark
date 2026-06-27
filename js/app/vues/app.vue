@@ -19,7 +19,7 @@
                     :current-file-name="loadedImage.fileName"
                     :batch-images-left="batchImageQueue.length"
                     :batch-image-count="batchImageCount"
-                    :video-convert-percentage="ffmpegPercentage"
+                    :video-convert-percentage="videoConvertPercentage"
                 />
                 <div
                     :class="{ 'no-image': !isImageLoaded }"
@@ -41,7 +41,7 @@
                         :onBatchFilesSelected="loadBatchImages"
                         :open-image-error="onOpenImageError"
                         :request-modal="showModalPrompt"
-                        :getFfmpegReady="getFfmpegReady"
+                        :getMediabunnyReady="getMediabunnyReady"
                         v-show="activeControlsTab === 0"
                         ref="openTab"
                     />
@@ -422,8 +422,6 @@
                         <settings-tab
                             :is-webgl-supported="isWebglSupported"
                             :editor-themes="editorThemes"
-                            :isDev="isDev"
-                            v-model:useFfmpegServer="useFfmpegServer"
                             v-model:current-editor-theme-index="
                                 currentEditorThemeIndex
                             "
@@ -451,9 +449,8 @@
                             automaticallyResizeLargeImages
                         "
                         :onSubmitBatchConvertImages="loadBatchImages"
-                        :isFfmpegReady="isFfmpegReady"
+                        :isMediabunnyReady="!!mediabunny"
                         :isBatchConverting="isBatchConverting"
-                        :useFfmpegServer="useFfmpegServer"
                         :isDev="isDev"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
@@ -676,17 +673,6 @@ import {
     BATCH_IMAGE_MODE_VIDEO_TO_VIDEO,
 } from '../models/batch-export-modes.js';
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { initializeFfmpeg, videoToFrames } from '../ffmpeg.js';
-import { ffmpegClientVideoToImages } from '../ffmpeg-client.js';
-
-const FFMPEG_STATES = {
-    NEW: 0,
-    LOADING: 1,
-    READY: 2,
-};
-
-const ffmpeg = new FFmpeg();
 
 //webworker stuff
 let imageId = 0;
@@ -755,33 +741,6 @@ export default {
             this.isWebglHighIntPrecisionSupported =
                 transformCanvasWebGl.supportsHighIntPrecision;
         }
-
-        ffmpeg.on('log', ({ message }) => {
-            if (this.isDev) {
-                console.log(message);
-            }
-            if (
-                (this.batchConvertState ===
-                    BATCH_CONVERT_STATE.FRAMES_TO_VIDEO ||
-                    this.batchConvertState ===
-                        BATCH_CONVERT_STATE.VIDEO_TO_FRAMES) &&
-                /^frame=\s+\d+/.test(message)
-            ) {
-                const currentFrame = parseInt(
-                    message.replace(/^frame=\s+/, '').replace(/\s.*$/, '')
-                );
-                const total =
-                    this.batchConvertState ===
-                    BATCH_CONVERT_STATE.VIDEO_TO_FRAMES
-                        ? this.videoTotalFrames
-                        : this.batchImageCount;
-
-                const percentage = isNaN(currentFrame)
-                    ? 0
-                    : Math.floor((currentFrame / total) * 100);
-                this.ffmpegPercentage = percentage;
-            }
-        });
     },
     mounted() {
         const refs = this.$refs;
@@ -829,7 +788,6 @@ export default {
             videoDimensions: null,
             videoDuration: 0,
             videoTotalFrames: 0,
-            useFfmpegServer: this.isDev,
             //loadedImage has properties: width, height, fileName, and optionally unsplash info
             loadedImage: null,
             /**
@@ -839,8 +797,8 @@ export default {
             batchImageCount: 0,
             batchImageMode: BATCH_IMAGE_MODE_EXPORT_IMAGES,
             batchConvertState: BATCH_CONVERT_STATE.NONE,
-            ffmpegPercentage: 0,
-            ffmpegState: FFMPEG_STATES.NEW,
+            videoConvertPercentage: 0,
+            mediabunny: null,
             /**
              * Color picker
              */
@@ -901,9 +859,6 @@ export default {
          */
         isBatchConverting() {
             return this.batchConvertState !== BATCH_CONVERT_STATE.NONE;
-        },
-        isFfmpegReady() {
-            return this.ffmpegState === FFMPEG_STATES.READY;
         },
         /**
          * Tabs
@@ -1163,41 +1118,10 @@ export default {
             this.batchConvertState = BATCH_CONVERT_STATE.VIDEO_TO_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             this.videoTotalFrames = Math.floor(inputFps * this.videoDuration);
-            this.ffmpegPercentage = 0;
+            this.videoConvertPercentage = 0;
 
-            if (this.useFfmpegServer) {
-                ffmpegClientVideoToImages(
-                    this.videoFile,
-                    inputFps,
-                    this.videoDuration,
-                    inputFps === outputFps
-                ).then(files => {
-                    this.loadBatchImageFiles(
-                        files,
-                        BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
-                    );
-                });
-            } else {
-                videoToFrames(
-                    ffmpeg,
-                    this.videoFile,
-                    inputFps,
-                    this.videoDuration,
-                    inputFps === outputFps
-                )
-                    .catch(error => {
-                        this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                        this.onOpenImageError(error.message);
-                    })
-                    .then(files => {
-                        if (files) {
-                            this.loadBatchImageFiles(
-                                files,
-                                BATCH_IMAGE_MODE_VIDEO_TO_VIDEO
-                            );
-                        }
-                    });
-            }
+            // TODO: setup mediabunny conversion
+            // update batch convert state
         },
         loadBatchImages(batchImageMode) {
             const files = this.$refs.openTab.getImageFiles();
@@ -1208,7 +1132,6 @@ export default {
             this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
-            this.ffmpegPercentage = 0;
             this.loadNextBatchImage();
         },
         batchProcessingCompleted() {
@@ -1217,26 +1140,7 @@ export default {
                 this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
             ) {
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
-                if (this.useFfmpegServer) {
-                    this.$refs.exportTab
-                        .exportVideoFromFramesFfmpegServer()
-                        .then(() => {
-                            this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                        });
-                } else {
-                    this.$refs.exportTab
-                        .exportVideoFromFrames(ffmpeg)
-                        .catch(errorRaw => {
-                            const errorMessage =
-                                typeof errorRaw === 'string'
-                                    ? errorRaw
-                                    : `Converting images to video failed due to: ${errorRaw.message}`;
-                            this.onOpenImageError(errorMessage);
-                        })
-                        .then(() => {
-                            this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                        });
-                }
+                // TODO update batch convert state after mediabunny completed
             } else {
                 this.batchConvertState = BATCH_CONVERT_STATE.NONE;
             }
@@ -1275,13 +1179,7 @@ export default {
                 this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO ||
                 this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
             ) {
-                if (this.useFfmpegServer) {
-                    actionPromise =
-                        this.$refs.exportTab.saveImageToFfmpegServer();
-                } else {
-                    actionPromise =
-                        this.$refs.exportTab.saveImageToFfmpeg(ffmpeg);
-                }
+                // TODO return frame to mediabunny after completed
             } else {
                 actionPromise = this.$refs.exportTab
                     .saveImage()
@@ -1293,14 +1191,11 @@ export default {
                 this.loadNextBatchImage();
             });
         },
-        getFfmpegReady() {
-            if (this.ffmpegState !== FFMPEG_STATES.NEW) {
-                return;
-            }
-            this.ffmpegState = FFMPEG_STATES.LOADING;
-            initializeFfmpeg(ffmpeg).then(
-                () => (this.ffmpegState = FFMPEG_STATES.READY)
-            );
+        getMediabunnyReady() {
+            import('mediabunny').then(mediabunny => {
+                console.log(mediabunny);
+                this.mediabunny = mediabunny;
+            });
         },
         /**
          *
