@@ -27,8 +27,8 @@
   },
   "homepage": "https://github.com/allen-garvey/dithermark#readme",
   "dependencies": {
-    "@ffmpeg/ffmpeg": "0.12.10",
     "lodash.throttle": "^4.1.1",
+    "mediabunny": "1.49.0",
     "vue": "3.5.17"
   },
   "devDependencies": {
