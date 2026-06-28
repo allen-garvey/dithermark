@@ -15,7 +15,6 @@
                 <batch-convert-overlay
                     v-if="isBatchConverting"
                     :batch-convert-state="batchConvertState"
-                    :batchImageMode="batchImageMode"
                     :current-file-name="loadedImage.fileName"
                     :batch-images-left="batchImageQueue.length"
                     :batch-image-count="batchImageCount"
@@ -648,7 +647,7 @@ import { webglUnsharpMask } from '../webgl/webgl-unsharp-mask.js';
 import ImageFiltersModel from '../models/image-filters.js';
 import { getGlobalTabs } from '../models/global-tabs.js';
 import { getDitherTabs } from '../models/dither-tabs.js';
-import Fs from '../fs.js';
+import Fs, { downloadVideo } from '../fs.js';
 import { sleep } from '../util.js';
 
 import CyclePropertyList from './cycle-property-list.vue';
@@ -686,6 +685,7 @@ let ditherOutputCanvas;
 let transformCanvasWebGl;
 let sourceCanvasOutput;
 let transformCanvasOutput;
+let videoFrameOutputCanvas;
 
 let sourceWebglTexture;
 let ditherOutputWebglTexture;
@@ -731,6 +731,7 @@ export default {
         transformCanvas = Canvas.create();
         transformCanvasWebGl = Canvas.createWebgl();
         ditherOutputCanvas = Canvas.create();
+        videoFrameOutputCanvas = Canvas.create();
         this.areCanvasFiltersSupported =
             Canvas.areCanvasFiltersSupported(originalImageCanvas);
         //check for webgl support
@@ -787,7 +788,6 @@ export default {
             videoFile: null,
             videoDimensions: null,
             videoDuration: 0,
-            videoTotalFrames: 0,
             //loadedImage has properties: width, height, fileName, and optionally unsplash info
             loadedImage: null,
             /**
@@ -799,6 +799,7 @@ export default {
             batchConvertState: BATCH_CONVERT_STATE.NONE,
             videoConvertPercentage: 0,
             mediabunny: null,
+            mediabunnySampleResolver: null,
             /**
              * Color picker
              */
@@ -1110,18 +1111,71 @@ export default {
             return this.loadedImage.unsplash;
         },
         /**
-         *
+         * @param {string} outputFilename
          * @param {number} inputFps
          * @param {number} outputFps
          */
-        onVideoExportRequested(inputFps, outputFps) {
-            this.batchConvertState = BATCH_CONVERT_STATE.VIDEO_TO_FRAMES;
+        onVideoExportRequested(outputFilename, inputFps, outputFps) {
+            this.batchConvertState =
+                BATCH_CONVERT_STATE.MEDIABUNNY_PROCESS_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
-            this.videoTotalFrames = Math.floor(inputFps * this.videoDuration);
             this.videoConvertPercentage = 0;
 
             // TODO: setup mediabunny conversion
-            // update batch convert state
+            const input = new this.mediabunny.Input({
+                source: new this.mediabunny.BlobSource(this.videoFile),
+                formats: this.mediabunny.ALL_FORMATS,
+            });
+
+            const output = new this.mediabunny.Output({
+                format: new this.mediabunny.Mp4OutputFormat(),
+                target: new this.mediabunny.BufferTarget(),
+            });
+
+            const videoFile = {
+                name: this.videoFile.name,
+            };
+            this.mediabunny.Conversion.init({
+                input,
+                output,
+                video: {
+                    process: sample => {
+                        return new Promise((resolve, reject) => {
+                            this.mediabunnySampleResolver = resolve;
+                            this.loadImage(
+                                sample.toCanvasImageSource(),
+                                videoFile,
+                                this.videoDimensions
+                            );
+                        });
+                    },
+                    forceTranscode: true,
+                },
+            })
+                .then(conversion => {
+                    if (!conversion.isValid) {
+                        const reasons =
+                            conversion.discardedTracks
+                                ?.map(t => t.reason)
+                                .join(', ') || 'Unknown';
+                        const message = `Video conversion failed: ${reasons}`;
+                        this.$refs.alertsContainer.displayOpenMessage(message);
+                        throw new Error(message);
+                    }
+
+                    conversion.onProgress = p => {
+                        this.videoConvertPercentage = Math.round(p * 100);
+                    };
+                    return conversion.execute();
+                })
+                .then(() => {
+                    downloadVideo(
+                        output.target.buffer,
+                        outputFilename,
+                        document.createElement('a')
+                    );
+                    this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                });
         },
         loadBatchImages(batchImageMode) {
             const files = this.$refs.openTab.getImageFiles();
@@ -1135,10 +1189,7 @@ export default {
             this.loadNextBatchImage();
         },
         batchProcessingCompleted() {
-            if (
-                this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO ||
-                this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
-            ) {
+            if (this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
                 this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
                 // TODO update batch convert state after mediabunny completed
             } else {
@@ -1170,16 +1221,19 @@ export default {
                 });
         },
         imageProcessingCompleted() {
+            if (this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO) {
+                this.onSaveRequested(videoFrameOutputCanvas);
+                this.mediabunnySampleResolver(videoFrameOutputCanvas.canvas);
+                return;
+            }
             // export image if we are in batch processing mode
             if (this.batchImageQueue.length === 0) {
                 return;
             }
             let actionPromise;
-            if (
-                this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO ||
-                this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO
-            ) {
-                // TODO return frame to mediabunny after completed
+            if (this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
+                // TODO
+                // actionPromise = videoSource.requestFrame();
             } else {
                 actionPromise = this.$refs.exportTab
                     .saveImage()
@@ -1193,7 +1247,6 @@ export default {
         },
         getMediabunnyReady() {
             import('mediabunny').then(mediabunny => {
-                console.log(mediabunny);
                 this.mediabunny = mediabunny;
             });
         },

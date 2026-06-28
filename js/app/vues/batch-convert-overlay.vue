@@ -1,27 +1,15 @@
 <template>
     <div :class="$style.batchConvertOverlay">
-        <div v-if="progressStagesCount > 1">
-            {{ currentProgressStage }} / {{ progressStagesCount }}
-        </div>
         <div v-if="batchConvertState === batchConvertStates.PROCESSING_FRAMES">
             <div>Processing image {{ currentFileName }}</div>
             <div>{{ currentImageIndex }}/{{ batchImageCount }}</div>
         </div>
-        <div
-            v-if="
-                batchConvertState === batchConvertStates.FRAMES_TO_VIDEO ||
-                batchConvertState === batchConvertStates.VIDEO_TO_FRAMES
-            "
-        >
+        <div v-else>
             <div :class="$style.messageContainer">
                 {{ progressMessage }}
-                <template v-if="videoConvertPercentage">
-                    <template v-if="videoConvertPercentage === 100">
-                        <span>99.9%</span>
-                        <div>Finalizing. This may take a while.</div>
-                    </template>
-                    <span v-else>{{ videoConvertPercentage }}%</span>
-                </template>
+                <span v-if="videoConvertPercentage"
+                    >{{ videoConvertPercentage }}%</span
+                >
             </div>
             <spinner :class="$style.spinner" />
         </div>
@@ -48,7 +36,6 @@
 
 <script>
 import { BATCH_CONVERT_STATE } from '../models/batch-convert-states.js';
-import { stagesMap } from '../models/batch-export-modes.js';
 import spinner from './widgets/spinner.vue';
 
 export default {
@@ -69,10 +56,6 @@ export default {
             type: Number,
             required: true,
         },
-        batchImageMode: {
-            type: Number,
-            required: true,
-        },
         videoConvertPercentage: {
             type: Number,
             required: true,
@@ -82,14 +65,6 @@ export default {
         spinner,
     },
     computed: {
-        currentProgressStage() {
-            return stagesMap
-                .get(this.batchImageMode)
-                .get(this.batchConvertState);
-        },
-        progressStagesCount() {
-            return stagesMap.get(this.batchImageMode).size;
-        },
         batchConvertStates() {
             return BATCH_CONVERT_STATE;
         },
@@ -102,7 +77,7 @@ export default {
             ) {
                 return 'Converting video to images';
             }
-            return 'Converting images to video';
+            return 'Converting video';
         },
     },
 };

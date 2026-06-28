@@ -157,8 +157,7 @@
                 {{ saveButtonText }}
                 <spinner
                     v-if="
-                        isMediabunnyReady ||
-                        isOutputtingVideo ||
+                        (!isMediabunnyReady && isOutputtingVideo) ||
                         isCurrentlySavingImage
                     "
                 />
@@ -379,7 +378,9 @@ export default {
             if (this.isCurrentlySavingImage) {
                 return 'Saving…';
             }
-            return !this.isMediabunnyReady ? 'Loading Mediabunny…' : 'Save';
+            return !this.isMediabunnyReady && this.isOutputtingVideo
+                ? 'Loading Mediabunny…'
+                : 'Save';
         },
         isSaveDisabled() {
             if (this.isOutputtingVideo) {
@@ -515,6 +516,7 @@ export default {
                         this.currentInputFileType === this.inputFileTypes.VIDEO
                     ) {
                         return this.videoExportRequested(
+                            this.videoExportFilename,
                             this.videoInputFps,
                             this.videoOutputFps
                         );
