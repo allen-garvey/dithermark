@@ -231,13 +231,7 @@ import {
     UNSPLASH_API_PHOTO_ID_QUERY_KEY,
 } from '../../../constants.js';
 import Canvas from '../canvas.js';
-import {
-    saveImage,
-    canvasToArray,
-    arrayToObjectUrl,
-    canvasToBlob,
-    blobToObjectUrl,
-} from '../fs.js';
+import { saveImage } from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
 import userSettings from '../user-settings.js';
 import { getFilenameWithoutExtension } from '../path.js';

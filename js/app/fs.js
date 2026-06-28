@@ -153,7 +153,7 @@ const messageForOpenImageUrlError = (error, imageUrl) => {
  * @param {Blob} blob
  * @param {Function} callback
  */
-export const blobToObjectUrl = (blob, callback) => {
+const blobToObjectUrl = (blob, callback) => {
     const objectUrl = URL.createObjectURL(blob);
     callback(objectUrl);
     //add timeout before revoking for iOS
@@ -188,7 +188,7 @@ export const downloadVideo = (buffer, fileName, link) => {
  * @param {string} mimeType
  * @returns {Promise<Blob>}
  */
-export const canvasToBlob = (canvas, mimeType) =>
+const canvasToBlob = (canvas, mimeType) =>
     new Promise((resolve, reject) => {
         canvas.toBlob(
             blob => {
@@ -213,31 +213,11 @@ export const saveImage = (canvas, mimeType, callback) => {
 
 /**
  *
- * @param {HTMLCanvasElement} canvas
- * @param {string} mimeType
- * @returns {Promise<Uint8Array>}
- */
-export const canvasToArray = (canvas, mimeType) =>
-    canvasToBlob(canvas, mimeType)
-        .then(blob => blob.arrayBuffer())
-        .then(buffer => new Uint8Array(buffer));
-
-/**
- *
  * @param {File} file
  * @returns {Promise<Uint8Array>}
  */
 export const fileToArray = file =>
     file.arrayBuffer().then(buffer => new Uint8Array(buffer));
-
-/**
- *
- * @param {Uint8Array} array
- * @param {Function} callback
- */
-export const arrayToObjectUrl = (array, callback) => {
-    blobToObjectUrl(new Blob([array]), callback);
-};
 
 export default {
     openImageFile,
