@@ -533,17 +533,13 @@ export default {
                     return resolve();
                 }
                 this.isCurrentlySavingImage = true;
-                this.saveRequested(
-                    saveImageCanvas,
-                    (sourceCanvas, unsplash) => {
-                        promiseFunc(sourceCanvas, unsplash).then(() => {
-                            //clear the canvas to free up memory
-                            Canvas.clear(saveImageCanvas);
-                            this.isCurrentlySavingImage = false;
-                            resolve();
-                        });
-                    }
-                );
+                const unsplash = this.saveRequested(saveImageCanvas);
+                promiseFunc(saveImageCanvas, unsplash).then(() => {
+                    //clear the canvas to free up memory
+                    Canvas.clear(saveImageCanvas);
+                    this.isCurrentlySavingImage = false;
+                    resolve();
+                });
             });
         },
         //downloads image

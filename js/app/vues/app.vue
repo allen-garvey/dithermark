@@ -1096,7 +1096,7 @@ export default {
         /*
          * Loading and saving image stuff
          */
-        onSaveRequested(exportCanvas, callback) {
+        onSaveRequested(exportCanvas) {
             //scale canvas if pixelated
             const scale =
                 this.isImagePixelated && this.shouldUpsample
@@ -1107,7 +1107,7 @@ export default {
             //since we don't need to check if we are using transform canvas directly
             Canvas.copy(this.transformedSourceCanvas, exportCanvas, scale);
 
-            callback(exportCanvas, this.loadedImage.unsplash);
+            return this.loadedImage.unsplash;
         },
         /**
          *
