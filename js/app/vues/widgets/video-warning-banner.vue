@@ -27,7 +27,7 @@ export default {
     },
     computed: {
         warningMessages() {
-            const messages = ['Video export is experimental and may fail.'];
+            const messages = [];
 
             if (this.automaticallyResizeLargeImages) {
                 messages.push(
