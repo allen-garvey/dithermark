@@ -1120,7 +1120,6 @@ export default {
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             this.videoConvertPercentage = 0;
 
-            // TODO: setup mediabunny conversion
             const input = new this.mediabunny.Input({
                 source: new this.mediabunny.BlobSource(this.videoFile),
                 formats: this.mediabunny.ALL_FORMATS,
