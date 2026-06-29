@@ -2,6 +2,10 @@
 
 ## HEAD
 
+# Technical
+
+* Change video export from using FFmpeg (WebAssembly) to Mediabunny (WebCodecs). This results in video export being much faster (as it now can use harware acceleration), as well as being less buggy. This also allows much bigger / longer videos to be converted, as well as audio being preserved when setting a custom output frame rate.
+
 ## 5.2 2026-06-21 [Commit be8c649](https://github.com/allen-garvey/dithermark/commit/be8c649b1debb0aa382230bd826eba2d06f91091)
 
 ### Features

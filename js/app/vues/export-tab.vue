@@ -78,24 +78,11 @@
             :class="$style.inputList"
         >
             <checkbox
-                tooltip="Keep input and output frames per second the same"
-                label="Sync FPS"
+                tooltip="Preserve frames per second the same"
+                label="Use original FPS"
                 v-model="videoSyncFps"
                 :labelTextClass="$style.labelText"
             />
-            <label>
-                <span :class="$style.labelText">Input FPS</span>
-                <input
-                    v-model.number="videoInputFps"
-                    type="number"
-                    min="1"
-                    step="1"
-                    :class="{
-                        [$style.invalid]: hasInputFpsError,
-                        [$style.fpsInput]: true,
-                    }"
-                />
-            </label>
             <label>
                 <span :class="$style.labelText">Output FPS</span>
                 <input
@@ -169,7 +156,6 @@
                 v-if="isOutputtingVideo"
                 :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                 :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
-                :doInputAndOutputFpsMatch="videoInputFps === videoOutputFps"
             />
         </div>
         <a ref="saveImageLink" v-show="false"></a>
@@ -327,7 +313,6 @@ export default {
             saveImageFileTypeValue: exportSettings.fileType,
             isCurrentlySavingImage: false,
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
-            videoInputFps: exportSettings.videoFps,
             videoOutputFps: exportSettings.videoFps,
             videoSyncFps: true,
         };
@@ -339,12 +324,6 @@ export default {
                     outputFileOptions.CURRENT_IMAGE &&
                     !this.saveImageFileName) ||
                 (this.isOutputtingVideo && !this.videoExportFilename)
-            );
-        },
-        hasInputFpsError() {
-            return (
-                this.isOutputtingVideo &&
-                (isNaN(this.videoInputFps) || this.videoInputFps <= 0)
             );
         },
         hasOutputFpsError() {
@@ -360,7 +339,7 @@ export default {
                 errorMessages.push(`File name can't be blank.`);
             }
 
-            if (this.hasInputFpsError || this.hasOutputFpsError) {
+            if (this.hasOutputFpsError) {
                 errorMessages.push(
                     'Frames per second must be a number greater than 0.'
                 );
@@ -380,7 +359,6 @@ export default {
             if (this.isOutputtingVideo) {
                 return (
                     this.isCurrentlySavingImage ||
-                    this.hasInputFpsError ||
                     this.hasOutputFpsError ||
                     this.hasFilenameError ||
                     !this.isMediabunnyReady
@@ -454,13 +432,8 @@ export default {
             }
             document.title = title;
         },
-        videoSyncFps(newValue) {
-            if (newValue) {
-                this.videoOutputFps = this.videoInputFps;
-            }
-        },
-        videoInputFps(newValue) {
-            if (this.isOutputtingVideo && !this.hasInputFpsError) {
+        videoOutputFps(newValue) {
+            if (this.isOutputtingVideo && !this.hasOutputFpsError) {
                 clearTimeout(saveFpsTimeout);
                 saveFpsTimeout = setTimeout(() => {
                     userSettings.saveExportSettings({
@@ -469,14 +442,11 @@ export default {
                     });
                 }, 2000);
             }
-            if (this.videoSyncFps) {
-                this.videoOutputFps = newValue;
-            }
         },
         saveImageFileTypeValue(newValue) {
             userSettings.saveExportSettings({
                 fileType: newValue,
-                videoFps: this.videoInputFps,
+                videoFps: this.videoOutputFps,
             });
         },
         openFileMode(newValue) {
@@ -509,10 +479,13 @@ export default {
                     if (
                         this.currentInputFileType === this.inputFileTypes.VIDEO
                     ) {
+                        const outputFps = this.videoSyncFps
+                            ? undefined
+                            : this.videoOutputFps;
+
                         return this.videoExportRequested(
                             this.videoExportFilename,
-                            this.videoInputFps,
-                            this.videoOutputFps
+                            outputFps
                         );
                     } else {
                         return this.onSubmitBatchConvertImages(

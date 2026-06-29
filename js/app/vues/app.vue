@@ -1112,10 +1112,9 @@ export default {
         },
         /**
          * @param {string} outputFilename
-         * @param {number} inputFps
-         * @param {number} outputFps
+         * @param {number | undefined} outputFps
          */
-        onVideoExportRequested(outputFilename, inputFps, outputFps) {
+        onVideoExportRequested(outputFilename, outputFps) {
             this.batchConvertState =
                 BATCH_CONVERT_STATE.MEDIABUNNY_PROCESS_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
@@ -1149,6 +1148,7 @@ export default {
                             );
                         });
                     },
+                    frameRate: outputFps,
                     forceTranscode: true,
                 },
             })
