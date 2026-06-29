@@ -1097,7 +1097,7 @@ export default {
         /*
          * Loading and saving image stuff
          */
-        onSaveRequested(exportCanvas) {
+        onSaveRequested(exportCanvas, padEven = false) {
             //scale canvas if pixelated
             const scale =
                 this.isImagePixelated && this.shouldUpsample
@@ -1106,7 +1106,13 @@ export default {
             //while technicaly we can just use transformedSourceCanvas directly if there is no pixelation
             //it makes the logic for clearing the canvas in export component easier
             //since we don't need to check if we are using transform canvas directly
-            Canvas.copy(this.transformedSourceCanvas, exportCanvas, scale);
+            Canvas.copy(
+                this.transformedSourceCanvas,
+                exportCanvas,
+                scale,
+                '',
+                padEven
+            );
 
             return this.loadedImage.unsplash;
         },
@@ -1221,7 +1227,7 @@ export default {
         },
         imageProcessingCompleted() {
             if (this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO) {
-                this.onSaveRequested(videoFrameOutputCanvas);
+                this.onSaveRequested(videoFrameOutputCanvas, true);
                 this.mediabunnySampleResolver(videoFrameOutputCanvas.canvas);
                 return;
             }
