@@ -1179,6 +1179,7 @@ export default {
                         document.createElement('a')
                     );
                     this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                    this.videoConvertPercentage = 0;
                 });
         },
         loadBatchImages(batchImageMode) {
