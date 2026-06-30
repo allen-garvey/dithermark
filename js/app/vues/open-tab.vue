@@ -95,10 +95,6 @@ export default {
             type: Function,
             required: true,
         },
-        onBatchFilesSelected: {
-            type: Function,
-            required: true,
-        },
         openImageError: {
             type: Function,
             required: true,
@@ -159,12 +155,6 @@ export default {
     methods: {
         getImageFiles() {
             return this.imageFiles.slice();
-        },
-        batchConvertImages() {
-            this.onBatchFilesSelected(
-                this.imageFiles,
-                BATCH_IMAGE_MODE_EXPORT_IMAGES
-            );
         },
         onBatchFilesOpened(rawFiles) {
             const files = Array.from(rawFiles).filter(file =>

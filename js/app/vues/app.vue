@@ -37,7 +37,6 @@
                         v-model:videoDimensions="videoDimensions"
                         v-model:videoDuration="videoDuration"
                         :image-opened="loadImage"
-                        :onBatchFilesSelected="loadBatchImages"
                         :open-image-error="onOpenImageError"
                         :request-modal="showModalPrompt"
                         :getMediabunnyReady="getMediabunnyReady"
