@@ -167,9 +167,9 @@ const blobToObjectUrl = (blob, callback) => {
  *
  * @param buffer
  * @param {string} fileName
- * @param {HTMLAnchorElement} link
  */
-export const downloadVideo = (buffer, fileName, link) => {
+export const downloadVideo = (buffer, fileName) => {
+    const link = document.createElement('a');
     const blob = new Blob([buffer], { type: 'video/mp4' });
     const objectUrl = URL.createObjectURL(blob);
     link.href = objectUrl;

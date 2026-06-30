@@ -73,9 +73,10 @@ export default {
         },
         progressMessage() {
             if (
-                this.batchConvertState === BATCH_CONVERT_STATE.VIDEO_TO_FRAMES
+                this.batchConvertState ===
+                BATCH_CONVERT_STATE.MEDIABUNNY_FINALIZING_VIDEO
             ) {
-                return 'Converting video to images';
+                return 'Finalizing video';
             }
             return 'Converting video';
         },

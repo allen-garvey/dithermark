@@ -799,6 +799,9 @@ export default {
             videoConvertPercentage: 0,
             mediabunny: null,
             mediabunnySampleResolver: null,
+            mediabunnyVideoOutput: null,
+            mediabunnyVideoSource: null,
+            videoFrameDuration: 0,
             /**
              * Color picker
              */
@@ -1173,30 +1176,62 @@ export default {
                     return conversion.execute();
                 })
                 .then(() => {
-                    downloadVideo(
-                        output.target.buffer,
-                        outputFilename,
-                        document.createElement('a')
-                    );
+                    downloadVideo(output.target.buffer, outputFilename);
                     this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                    this.mediabunnySampleResolver = null;
                     this.videoConvertPercentage = 0;
                 });
         },
-        loadBatchImages(batchImageMode) {
+        loadBatchImages(batchImageMode, outputFilename, outputFps) {
             const files = this.$refs.openTab.getImageFiles();
-            this.loadBatchImageFiles(files, batchImageMode);
-        },
-        loadBatchImageFiles(files, batchImageMode) {
             this.batchConvertState = BATCH_CONVERT_STATE.PROCESSING_FRAMES;
             this.batchImageMode = batchImageMode;
             this.batchImageQueue = files;
             this.batchImageCount = files.length;
-            this.loadNextBatchImage();
+            if (batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
+                this.videoFrameDuration = 1 / outputFps;
+                this.mediabunnyVideoOutput = new this.mediabunny.Output({
+                    format: new this.mediabunny.Mp4OutputFormat(),
+                    target: new this.mediabunny.BufferTarget(),
+                    onFinalize: () => {
+                        downloadVideo(
+                            this.mediabunnyVideoOutput.target.buffer,
+                            outputFilename
+                        );
+                    },
+                });
+                this.mediabunnyVideoSource = new this.mediabunny.CanvasSource(
+                    videoFrameOutputCanvas.canvas,
+                    {
+                        codec: 'avc', // H.264
+                        bitrate: this.mediabunny.QUALITY_HIGH,
+                        sizeChangeBehavior: 'contain',
+                    }
+                );
+                this.mediabunnyVideoOutput.addVideoTrack(
+                    this.mediabunnyVideoSource,
+                    {
+                        frameRate: outputFps,
+                    }
+                );
+
+                this.mediabunnyVideoOutput.start().then(() => {
+                    this.loadNextBatchImage();
+                });
+            } else {
+                this.loadNextBatchImage();
+            }
         },
         batchProcessingCompleted() {
             if (this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
-                this.batchConvertState = BATCH_CONVERT_STATE.FRAMES_TO_VIDEO;
-                // TODO update batch convert state after mediabunny completed
+                this.batchConvertState =
+                    BATCH_CONVERT_STATE.MEDIABUNNY_FINALIZING_VIDEO;
+                this.mediabunnyVideoSource.close();
+                this.mediabunnyVideoOutput.finalize().then(() => {
+                    this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                    this.mediabunnyVideoSource = null;
+                    this.mediabunnyVideoOutput = null;
+                });
             } else {
                 this.batchConvertState = BATCH_CONVERT_STATE.NONE;
             }
@@ -1237,8 +1272,14 @@ export default {
             }
             let actionPromise;
             if (this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
-                // TODO
-                // actionPromise = videoSource.requestFrame();
+                this.onSaveRequested(videoFrameOutputCanvas, true);
+                const frameIndex =
+                    this.batchImageCount - this.batchImageQueue.length;
+                const timestamp = frameIndex * this.videoFrameDuration;
+                actionPromise = this.mediabunnyVideoSource.add(
+                    timestamp,
+                    this.videoFrameDuration
+                );
             } else {
                 actionPromise = this.$refs.exportTab
                     .saveImage()

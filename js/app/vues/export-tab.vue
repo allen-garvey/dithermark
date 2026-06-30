@@ -80,8 +80,9 @@
             <checkbox
                 tooltip="Preserve frames per second the same"
                 label="Use original FPS"
-                v-model="videoSyncFps"
                 :labelTextClass="$style.labelText"
+                v-model="videoSyncFps"
+                v-if="currentInputFileType === inputFileTypes.VIDEO"
             />
             <label>
                 <span :class="$style.labelText">Output FPS</span>
@@ -94,7 +95,10 @@
                         [$style.invalid]: hasOutputFpsError,
                         [$style.fpsInput]: true,
                     }"
-                    :disabled="videoSyncFps"
+                    :disabled="
+                        currentInputFileType === inputFileTypes.VIDEO &&
+                        videoSyncFps
+                    "
                 />
             </label>
         </div>
@@ -327,10 +331,16 @@ export default {
             );
         },
         hasOutputFpsError() {
-            return (
-                this.isOutputtingVideo &&
-                (isNaN(this.videoOutputFps) || this.videoOutputFps <= 0)
-            );
+            if (!this.isOutputtingVideo) {
+                return false;
+            }
+            if (
+                this.currentInputFileType === this.inputFileTypes.VIDEO &&
+                this.videoSyncFps
+            ) {
+                return false;
+            }
+            return isNaN(this.videoOutputFps) || this.videoOutputFps <= 0;
         },
         errorMessages() {
             const errorMessages = [];
@@ -489,7 +499,9 @@ export default {
                         );
                     } else {
                         return this.onSubmitBatchConvertImages(
-                            BATCH_IMAGE_MODE_EXPORT_VIDEO
+                            BATCH_IMAGE_MODE_EXPORT_VIDEO,
+                            this.videoExportFilename,
+                            this.videoOutputFps
                         );
                     }
                 default:
