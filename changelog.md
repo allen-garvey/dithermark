@@ -4,7 +4,9 @@
 
 # Technical
 
-* Change video export from using FFmpeg (WebAssembly) to Mediabunny (WebCodecs). This results in video export being much faster (as it now can use harware acceleration), as well as being less buggy. This also allows much bigger / longer videos to be converted, as well as audio being preserved when setting a custom output frame rate.
+* Change video export from FFmpeg (WebAssembly) to Mediabunny (WebCodecs). This results in video export being substantially faster (as it now uses hardware acceleration), as well as less buggy. This also allows much bigger / longer videos to be converted, as well as audio being preserved when setting a custom output frame rate.
+
+* The above change also removes the local FFmpeg server option when running Dithermark in local development mode. This option is no longer needed, as Mediabunny is faster than running the local FFmpeg server and does not require temporary disc space to store images.
 
 ## 5.2 2026-06-21 [Commit be8c649](https://github.com/allen-garvey/dithermark/commit/be8c649b1debb0aa382230bd826eba2d06f91091)
 
