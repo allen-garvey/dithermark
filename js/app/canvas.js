@@ -102,6 +102,16 @@ function clearCanvas(canvasObject) {
     );
 }
 
+export const fillCanvas = canvasObject => {
+    canvasObject.context.fillStyle = 'black';
+    canvasObject.context.fillRect(
+        0,
+        0,
+        canvasObject.canvas.width,
+        canvasObject.canvas.height
+    );
+};
+
 //copies an image from source canvas to target canvas
 //scale is percentage to resize image - 1 is 100 percent (unchanged)
 //filters are css canvas filters string

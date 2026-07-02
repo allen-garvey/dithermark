@@ -632,7 +632,7 @@
 import { nextTick } from 'vue';
 
 import UserSettings from '../user-settings.js';
-import Canvas from '../canvas.js';
+import Canvas, { fillCanvas } from '../canvas.js';
 import WorkerHeaders from '../../shared/worker-headers.js';
 import WorkerUtil from '../worker-util.js';
 import WebGl from '../webgl/webgl.js';
@@ -1226,12 +1226,31 @@ export default {
             if (this.batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
                 this.batchConvertState =
                     BATCH_CONVERT_STATE.MEDIABUNNY_FINALIZING_VIDEO;
-                this.mediabunnyVideoSource.close();
-                this.mediabunnyVideoOutput.finalize().then(() => {
-                    this.batchConvertState = BATCH_CONVERT_STATE.NONE;
-                    this.mediabunnyVideoSource = null;
-                    this.mediabunnyVideoOutput = null;
-                });
+                // add 2 final black frames, otherwise last image is not shown
+                // need to add 1 frame so final image is shown
+                // need to add second frame after that or final image is not shown for full duration
+                fillCanvas(videoFrameOutputCanvas);
+                this.mediabunnyVideoSource
+                    .add(
+                        this.batchImageCount * this.videoFrameDuration,
+                        this.videoFrameDuration
+                    )
+                    .then(() =>
+                        this.mediabunnyVideoSource.add(
+                            (this.batchImageCount + 1) *
+                                this.videoFrameDuration,
+                            1
+                        )
+                    )
+                    .then(() => {
+                        this.mediabunnyVideoSource.close();
+                        return this.mediabunnyVideoOutput.finalize();
+                    })
+                    .then(() => {
+                        this.batchConvertState = BATCH_CONVERT_STATE.NONE;
+                        this.mediabunnyVideoSource = null;
+                        this.mediabunnyVideoOutput = null;
+                    });
             } else {
                 this.batchConvertState = BATCH_CONVERT_STATE.NONE;
             }
