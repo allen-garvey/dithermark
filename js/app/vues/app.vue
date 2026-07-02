@@ -1261,13 +1261,12 @@ export default {
                 });
         },
         imageProcessingCompleted() {
+            if (this.batchConvertState === BATCH_CONVERT_STATE.NONE) {
+                return;
+            }
             if (this.batchImageMode === BATCH_IMAGE_MODE_VIDEO_TO_VIDEO) {
                 this.onSaveRequested(videoFrameOutputCanvas, true);
                 this.mediabunnySampleResolver(videoFrameOutputCanvas.canvas);
-                return;
-            }
-            // export image if we are in batch processing mode
-            if (this.batchImageQueue.length === 0) {
                 return;
             }
             let actionPromise;
@@ -1281,6 +1280,7 @@ export default {
                     this.videoFrameDuration
                 );
             } else {
+                // export image if we are in batch processing mode
                 actionPromise = this.$refs.exportTab
                     .saveImage()
                     .then(() => sleep(100));
