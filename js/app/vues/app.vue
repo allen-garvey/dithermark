@@ -1156,6 +1156,7 @@ export default {
                     },
                     frameRate: outputFps,
                     forceTranscode: true,
+                    bitrate: this.mediabunny.QUALITY_VERY_HIGH,
                 },
             })
                 .then(conversion => {
