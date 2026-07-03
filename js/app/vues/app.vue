@@ -1204,7 +1204,7 @@ export default {
                     videoFrameOutputCanvas.canvas,
                     {
                         codec: 'avc', // H.264
-                        bitrate: this.mediabunny.QUALITY_HIGH,
+                        bitrate: this.mediabunny.QUALITY_VERY_HIGH,
                         sizeChangeBehavior: 'contain',
                         transform: {
                             frameRate: outputFps,
