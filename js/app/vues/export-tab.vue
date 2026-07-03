@@ -285,10 +285,6 @@ export default {
             type: Boolean,
             required: true,
         },
-        isBatchConverting: {
-            type: Boolean,
-            required: true,
-        },
         onSubmitBatchConvertImages: {
             type: Function,
             required: true,
@@ -424,13 +420,7 @@ export default {
         sourceFileName(newValue) {
             const filename = getFilenameWithoutExtension(newValue);
             this.saveImageFileName = filename;
-
-            if (
-                this.currentInputFileType === this.inputFileTypes.VIDEO &&
-                !this.isBatchConverting
-            ) {
-                this.videoExportFilename = filename;
-            }
+            this.videoExportFilename = filename;
         },
         saveImageFileName(newValue, oldValue) {
             if (newValue === oldValue) {
