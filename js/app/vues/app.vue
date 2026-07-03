@@ -1206,6 +1206,9 @@ export default {
                         codec: 'avc', // H.264
                         bitrate: this.mediabunny.QUALITY_HIGH,
                         sizeChangeBehavior: 'contain',
+                        transform: {
+                            frameRate: outputFps,
+                        },
                     }
                 );
                 this.mediabunnyVideoOutput.addVideoTrack(
