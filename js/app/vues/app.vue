@@ -449,6 +449,7 @@
                         :onSubmitBatchConvertImages="loadBatchImages"
                         :isMediabunnyReady="!!mediabunny"
                         :isDev="isDev"
+                        :isBatchConverting="isBatchConverting"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />

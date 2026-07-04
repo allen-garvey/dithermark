@@ -293,6 +293,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        isBatchConverting: {
+            type: Boolean,
+            required: true,
+        },
     },
     emits: ['update:shouldUpsample'],
     components: {
@@ -420,7 +424,12 @@ export default {
         sourceFileName(newValue) {
             const filename = getFilenameWithoutExtension(newValue);
             this.saveImageFileName = filename;
-            this.videoExportFilename = filename;
+
+            // don't update video name when we are currently batch converting
+            // otherwise after running images to video the video file name will be different
+            if (!this.isBatchConverting) {
+                this.videoExportFilename = filename;
+            }
         },
         saveImageFileName(newValue, oldValue) {
             if (newValue === oldValue) {
