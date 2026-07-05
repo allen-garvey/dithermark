@@ -89,13 +89,6 @@
                     </option>
                 </select>
             </label>
-            <checkbox
-                tooltip="Preserve frames per second the same"
-                label="Use original FPS"
-                :labelTextClass="$style.labelText"
-                v-model="videoSyncFps"
-                v-if="currentInputFileType === inputFileTypes.VIDEO"
-            />
             <label>
                 <span :class="$style.labelText">Output FPS</span>
                 <input
@@ -113,6 +106,13 @@
                     "
                 />
             </label>
+            <checkbox
+                tooltip="Preserve frames per second the same"
+                label="Use original FPS"
+                :labelTextClass="$style.labelText"
+                v-model="videoSyncFps"
+                v-if="currentInputFileType === inputFileTypes.VIDEO"
+            />
         </div>
         <div v-if="!isOutputtingVideo">
             <label
@@ -182,7 +182,7 @@
 .inputList {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 1em;
 }
 .labelText {
     display: inline-block;
