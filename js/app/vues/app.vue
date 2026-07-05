@@ -450,6 +450,7 @@
                         :isMediabunnyReady="!!mediabunny"
                         :isDev="isDev"
                         :isBatchConverting="isBatchConverting"
+                        :videoCodecs="videoCodecs"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />
@@ -646,6 +647,7 @@ import { webglUnsharpMask } from '../webgl/webgl-unsharp-mask.js';
 import ImageFiltersModel from '../models/image-filters.js';
 import { getGlobalTabs } from '../models/global-tabs.js';
 import { getDitherTabs } from '../models/dither-tabs.js';
+import { getSupportedVideoCodecs } from '../models/mediabunny.js';
 import Fs, { downloadVideo } from '../fs.js';
 import { sleep } from '../util.js';
 
@@ -802,6 +804,7 @@ export default {
             mediabunnyVideoOutput: null,
             mediabunnyVideoSource: null,
             videoFrameDuration: 0,
+            videoCodecs: [],
             /**
              * Color picker
              */
@@ -1121,8 +1124,9 @@ export default {
         /**
          * @param {string} outputFilename
          * @param {number | undefined} outputFps
+         * @param {string} codec
          */
-        onVideoExportRequested(outputFilename, outputFps) {
+        onVideoExportRequested(outputFilename, outputFps, codec) {
             this.batchConvertState =
                 BATCH_CONVERT_STATE.MEDIABUNNY_PROCESS_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
@@ -1155,6 +1159,7 @@ export default {
                             );
                         });
                     },
+                    codec,
                     frameRate: outputFps,
                     forceTranscode: true,
                     bitrate: this.mediabunny.QUALITY_VERY_HIGH,
@@ -1183,7 +1188,7 @@ export default {
                     this.videoConvertPercentage = 0;
                 });
         },
-        loadBatchImages(batchImageMode, outputFilename, outputFps) {
+        loadBatchImages(batchImageMode, outputFilename, outputFps, codec) {
             const files = this.$refs.openTab.getImageFiles();
             this.batchConvertState = BATCH_CONVERT_STATE.PROCESSING_FRAMES;
             this.batchImageMode = batchImageMode;
@@ -1204,7 +1209,7 @@ export default {
                 this.mediabunnyVideoSource = new this.mediabunny.CanvasSource(
                     videoFrameOutputCanvas.canvas,
                     {
-                        codec: 'avc', // H.264
+                        codec,
                         bitrate: this.mediabunny.QUALITY_VERY_HIGH,
                         sizeChangeBehavior: 'contain',
                         transform: {
@@ -1317,6 +1322,10 @@ export default {
         getMediabunnyReady() {
             import('mediabunny').then(mediabunny => {
                 this.mediabunny = mediabunny;
+
+                getSupportedVideoCodecs(mediabunny).then(codecs => {
+                    this.videoCodecs = codecs;
+                });
             });
         },
         /**

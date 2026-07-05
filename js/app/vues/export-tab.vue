@@ -77,6 +77,18 @@
             v-if="currentOutputFileOption === outputFileOptions.VIDEO"
             :class="$style.inputList"
         >
+            <label
+                ><span :class="$style.labelText">Video Codec</span>
+                <select v-model="videoCodecIndex">
+                    <option
+                        v-for="(codec, index) of videoCodecs"
+                        :key="codec.key"
+                        :value="index"
+                    >
+                        {{ codec.title }}
+                    </option>
+                </select>
+            </label>
             <checkbox
                 tooltip="Preserve frames per second the same"
                 label="Use original FPS"
@@ -223,7 +235,10 @@ import {
 import Canvas from '../canvas.js';
 import { saveImage } from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
-import userSettings from '../user-settings.js';
+import userSettings, {
+    getMediabunnyCodecSetting,
+    saveMediabunnyCodecSetting,
+} from '../user-settings.js';
 import { getFilenameWithoutExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
@@ -297,6 +312,10 @@ export default {
             type: Boolean,
             required: true,
         },
+        videoCodecs: {
+            type: Array,
+            required: true,
+        },
     },
     emits: ['update:shouldUpsample'],
     components: {
@@ -319,6 +338,7 @@ export default {
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
             videoOutputFps: exportSettings.videoFps,
             videoSyncFps: true,
+            videoCodecIndex: 0,
         };
     },
     computed: {
@@ -473,6 +493,16 @@ export default {
                     break;
             }
         },
+        videoCodecIndex(newValue) {
+            saveMediabunnyCodecSetting(this.videoCodecs[newValue].key);
+        },
+        videoCodecs(newValue) {
+            const savedUserCodec = getMediabunnyCodecSetting();
+            const index = newValue.findIndex(el => el.key === savedUserCodec);
+            if (index >= 0) {
+                this.videoCodecIndex = index;
+            }
+        },
     },
     methods: {
         submit() {
@@ -494,13 +524,15 @@ export default {
 
                         return this.videoExportRequested(
                             this.videoExportFilename,
-                            outputFps
+                            outputFps,
+                            this.videoCodecs[this.videoCodecIndex].mediabunny
                         );
                     } else {
                         return this.onSubmitBatchConvertImages(
                             BATCH_IMAGE_MODE_EXPORT_VIDEO,
                             this.videoExportFilename,
-                            this.videoOutputFps
+                            this.videoOutputFps,
+                            this.videoCodecs[this.videoCodecIndex].mediabunny
                         );
                     }
                 default:
