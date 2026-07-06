@@ -1132,39 +1132,27 @@ export default {
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
             this.videoConvertPercentage = 0;
 
-            const input = new this.mediabunny.Input({
-                source: new this.mediabunny.BlobSource(this.videoFile),
-                formats: this.mediabunny.ALL_FORMATS,
-            });
-
-            const output = new this.mediabunny.Output({
-                format: new this.mediabunny.Mp4OutputFormat(),
-                target: new this.mediabunny.BufferTarget(),
-            });
-
             const videoFile = {
                 name: this.videoFile.name,
             };
-            this.mediabunny.Conversion.init({
-                input,
-                output,
-                video: {
-                    process: sample => {
-                        return new Promise((resolve, reject) => {
-                            this.mediabunnySampleResolver = resolve;
-                            this.loadImage(
-                                sample.toCanvasImageSource(),
-                                videoFile,
-                                this.videoDimensions
-                            );
-                        });
-                    },
-                    codec,
-                    frameRate: outputFps,
-                    forceTranscode: true,
-                    bitrate: this.mediabunny.QUALITY_VERY_HIGH,
-                },
-            })
+            const processCallback = sample => {
+                return new Promise((resolve, reject) => {
+                    this.mediabunnySampleResolver = resolve;
+                    this.loadImage(
+                        sample.toCanvasImageSource(),
+                        videoFile,
+                        this.videoDimensions
+                    );
+                });
+            };
+
+            const [output, conversion] = this.mediabunny.initConversion(
+                this.videoFile,
+                codec,
+                outputFps,
+                processCallback
+            );
+            conversion
                 .then(conversion => {
                     if (!conversion.isValid) {
                         const reasons =
@@ -1196,26 +1184,18 @@ export default {
             this.batchImageCount = files.length;
             if (batchImageMode === BATCH_IMAGE_MODE_EXPORT_VIDEO) {
                 this.videoFrameDuration = 1 / outputFps;
-                this.mediabunnyVideoOutput = new this.mediabunny.Output({
-                    format: new this.mediabunny.Mp4OutputFormat(),
-                    target: new this.mediabunny.BufferTarget(),
-                    onFinalize: () => {
-                        downloadVideo(
-                            this.mediabunnyVideoOutput.target.buffer,
-                            outputFilename
-                        );
-                    },
-                });
-                this.mediabunnyVideoSource = new this.mediabunny.CanvasSource(
+                const finalizeCallback = () => {
+                    downloadVideo(
+                        this.mediabunnyVideoOutput.target.buffer,
+                        outputFilename
+                    );
+                };
+                this.mediabunnyVideoOutput =
+                    this.mediabunny.createOutput(finalizeCallback);
+                this.mediabunnyVideoSource = this.mediabunny.createCanvasSource(
                     videoFrameOutputCanvas.canvas,
-                    {
-                        codec,
-                        bitrate: this.mediabunny.QUALITY_VERY_HIGH,
-                        sizeChangeBehavior: 'contain',
-                        transform: {
-                            frameRate: outputFps,
-                        },
-                    }
+                    codec,
+                    outputFps
                 );
                 this.mediabunnyVideoOutput.addVideoTrack(
                     this.mediabunnyVideoSource,
@@ -1320,7 +1300,7 @@ export default {
             });
         },
         getMediabunnyReady() {
-            import('mediabunny').then(mediabunny => {
+            import('../mediabunny.js').then(mediabunny => {
                 this.mediabunny = mediabunny;
 
                 getSupportedVideoCodecs(mediabunny).then(codecs => {
