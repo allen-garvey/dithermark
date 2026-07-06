@@ -78,7 +78,7 @@
             :class="$style.inputList"
         >
             <label
-                ><span :class="$style.labelText">Video Codec</span>
+                ><span :class="$style.labelText">Codec</span>
                 <select v-model="videoCodecIndex">
                     <option
                         v-for="(codec, index) of videoCodecs"
