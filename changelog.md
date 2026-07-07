@@ -12,6 +12,8 @@
 
 * The above change also removes the local FFmpeg server option when running Dithermark in local development mode. This option is no longer needed, as Mediabunny is faster than running the local FFmpeg server and does not require temporary disc space to store images.
 
+* Add debounce when saving video export settings to reduce unnecessary disk writes.
+
 ### Bug Fixes
 
 * Fix video and image file names with multiple periods being extracted correctly.

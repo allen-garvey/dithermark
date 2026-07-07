@@ -36,12 +36,18 @@ export const getMediabunnyCodecSetting = () =>
 /**
  *
  * @param {ExportSettings} exportSettings
+ * Debounce saving export settings to prevent unnecessary disk writes,
+ * since videoFps can change rapidly
  */
+let exportSettingsTimeout = null;
 function saveExportSettings(exportSettings) {
-    localStorage.setItem(
-        USER_EXPORT_SETTINGS_KEY,
-        JSON.stringify(exportSettings)
-    );
+    clearTimeout(exportSettingsTimeout);
+    exportSettingsTimeout = setTimeout(() => {
+        localStorage.setItem(
+            USER_EXPORT_SETTINGS_KEY,
+            JSON.stringify(exportSettings)
+        );
+    }, 100);
 }
 
 /**
