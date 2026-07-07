@@ -17,14 +17,6 @@ export default {
             type: Boolean,
             required: true,
         },
-        doInputAndOutputFpsMatch: {
-            type: Boolean,
-            required: true,
-        },
-        useFfmpegServer: {
-            type: Boolean,
-            required: true,
-        },
     },
     components: {
         BannerMessages,
@@ -32,10 +24,6 @@ export default {
     computed: {
         warningMessages() {
             const messages = [];
-
-            if (!this.useFfmpegServer) {
-                messages.push('Video export is experimental and may fail.');
-            }
 
             if (this.automaticallyResizeLargeImages) {
                 messages.push(
@@ -46,12 +34,6 @@ export default {
             if (this.isPixelatedActualSize) {
                 messages.push(
                     `'Actual size' is selected in the export tab. This will reduce the output video resolution.`
-                );
-            }
-
-            if (!this.doInputAndOutputFpsMatch) {
-                messages.push(
-                    'Due to input and output FPS being different, video audio will not be exported because the video length has been modified.'
                 );
             }
 

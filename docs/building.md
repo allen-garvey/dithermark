@@ -5,7 +5,6 @@ This is a guide for installing and building the project directly on you computer
 ## Dependencies for building
 
 * Node.js >= 22
-* ffmpeg (if using ffmpeg server for video export)
 
 ## Initial setup
 

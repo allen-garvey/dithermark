@@ -77,24 +77,17 @@
             v-if="currentOutputFileOption === outputFileOptions.VIDEO"
             :class="$style.inputList"
         >
-            <checkbox
-                tooltip="Keep input and output frames per second the same"
-                label="Sync FPS"
-                v-model="videoSyncFps"
-                :labelTextClass="$style.labelText"
-            />
-            <label>
-                <span :class="$style.labelText">Input FPS</span>
-                <input
-                    v-model.number="videoInputFps"
-                    type="number"
-                    min="1"
-                    step="1"
-                    :class="{
-                        [$style.invalid]: hasInputFpsError,
-                        [$style.fpsInput]: true,
-                    }"
-                />
+            <label
+                ><span :class="$style.labelText">Codec</span>
+                <select v-model="videoCodecIndex">
+                    <option
+                        v-for="(codec, index) of videoCodecs"
+                        :key="codec.key"
+                        :value="index"
+                    >
+                        {{ codec.title }}
+                    </option>
+                </select>
             </label>
             <label>
                 <span :class="$style.labelText">Output FPS</span>
@@ -107,9 +100,19 @@
                         [$style.invalid]: hasOutputFpsError,
                         [$style.fpsInput]: true,
                     }"
-                    :disabled="videoSyncFps"
+                    :disabled="
+                        currentInputFileType === inputFileTypes.VIDEO &&
+                        videoSyncFps
+                    "
                 />
             </label>
+            <checkbox
+                tooltip="Preserve frames per second the same"
+                label="Use original FPS"
+                :labelTextClass="$style.labelText"
+                v-model="videoSyncFps"
+                v-if="currentInputFileType === inputFileTypes.VIDEO"
+            />
         </div>
         <div v-if="!isOutputtingVideo">
             <label
@@ -155,7 +158,12 @@
                 title="Save image to downloads folder"
             >
                 {{ saveButtonText }}
-                <spinner v-if="isLoadingFfmpeg || isCurrentlySavingImage" />
+                <spinner
+                    v-if="
+                        (!isMediabunnyReady && isOutputtingVideo) ||
+                        isCurrentlySavingImage
+                    "
+                />
             </button>
         </div>
         <div :class="$style.alertsContainer">
@@ -164,8 +172,6 @@
                 v-if="isOutputtingVideo"
                 :automaticallyResizeLargeImages="automaticallyResizeLargeImages"
                 :isPixelatedActualSize="isImagePixelated && !shouldUpsample"
-                :doInputAndOutputFpsMatch="videoInputFps === videoOutputFps"
-                :useFfmpegServer="useFfmpegServer"
             />
         </div>
         <a ref="saveImageLink" v-show="false"></a>
@@ -176,7 +182,7 @@
 .inputList {
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 1em;
 }
 .labelText {
     display: inline-block;
@@ -227,24 +233,12 @@ import {
     UNSPLASH_API_PHOTO_ID_QUERY_KEY,
 } from '../../../constants.js';
 import Canvas from '../canvas.js';
-import {
-    saveImage,
-    canvasToArray,
-    arrayToObjectUrl,
-    canvasToBlob,
-    blobToObjectUrl,
-} from '../fs.js';
+import { saveImage } from '../fs.js';
 import { getSaveImageFileTypes } from '../models/export-model.js';
-import userSettings from '../user-settings.js';
-import {
-    exportFramesToVideo,
-    saveImageFrame,
-    ffmpegImageFileType,
-} from '../ffmpeg.js';
-import {
-    ffmpegClientSaveImage,
-    ffmpegClientFramesToVideo,
-} from '../ffmpeg-client.js';
+import userSettings, {
+    getMediabunnyCodecSetting,
+    saveMediabunnyCodecSetting,
+} from '../user-settings.js';
 import { getFilenameWithoutExtension } from '../path.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
@@ -254,6 +248,7 @@ import {
     BATCH_IMAGE_MODE_EXPORT_IMAGES,
     BATCH_IMAGE_MODE_EXPORT_VIDEO,
 } from '../models/batch-export-modes.js';
+import { isSafari } from '../util.js';
 import VideoWarningBanner from './widgets/video-warning-banner.vue';
 import BannerMessages from './widgets/banner-messages.vue';
 import Spinner from './widgets/spinner.vue';
@@ -302,15 +297,7 @@ export default {
             type: Boolean,
             required: true,
         },
-        isFfmpegReady: {
-            type: Boolean,
-            required: true,
-        },
-        isBatchConverting: {
-            type: Boolean,
-            required: true,
-        },
-        useFfmpegServer: {
+        isMediabunnyReady: {
             type: Boolean,
             required: true,
         },
@@ -320,6 +307,14 @@ export default {
         },
         isDev: {
             type: Boolean,
+            required: true,
+        },
+        isBatchConverting: {
+            type: Boolean,
+            required: true,
+        },
+        videoCodecs: {
+            type: Array,
             required: true,
         },
     },
@@ -342,9 +337,9 @@ export default {
             saveImageFileTypeValue: exportSettings.fileType,
             isCurrentlySavingImage: false,
             currentOutputFileOption: outputFileOptions.CURRENT_IMAGE,
-            videoInputFps: exportSettings.videoFps,
             videoOutputFps: exportSettings.videoFps,
             videoSyncFps: true,
+            videoCodecIndex: 0,
         };
     },
     computed: {
@@ -356,17 +351,17 @@ export default {
                 (this.isOutputtingVideo && !this.videoExportFilename)
             );
         },
-        hasInputFpsError() {
-            return (
-                this.isOutputtingVideo &&
-                (isNaN(this.videoInputFps) || this.videoInputFps <= 0)
-            );
-        },
         hasOutputFpsError() {
-            return (
-                this.isOutputtingVideo &&
-                (isNaN(this.videoOutputFps) || this.videoOutputFps <= 0)
-            );
+            if (!this.isOutputtingVideo) {
+                return false;
+            }
+            if (
+                this.currentInputFileType === this.inputFileTypes.VIDEO &&
+                this.videoSyncFps
+            ) {
+                return false;
+            }
+            return isNaN(this.videoOutputFps) || this.videoOutputFps <= 0;
         },
         errorMessages() {
             const errorMessages = [];
@@ -375,7 +370,7 @@ export default {
                 errorMessages.push(`File name can't be blank.`);
             }
 
-            if (this.hasInputFpsError || this.hasOutputFpsError) {
+            if (this.hasOutputFpsError) {
                 errorMessages.push(
                     'Frames per second must be a number greater than 0.'
                 );
@@ -383,23 +378,21 @@ export default {
 
             return errorMessages;
         },
-        isLoadingFfmpeg() {
-            return this.isOutputtingVideo && !this.isFfmpegReady;
-        },
         saveButtonText() {
             if (this.isCurrentlySavingImage) {
                 return 'Saving…';
             }
-            return this.isLoadingFfmpeg ? 'Loading FFmpeg…' : 'Save';
+            return !this.isMediabunnyReady && this.isOutputtingVideo
+                ? 'Loading Mediabunny…'
+                : 'Save';
         },
         isSaveDisabled() {
             if (this.isOutputtingVideo) {
                 return (
                     this.isCurrentlySavingImage ||
-                    this.hasInputFpsError ||
                     this.hasOutputFpsError ||
                     this.hasFilenameError ||
-                    !this.isFfmpegReady
+                    !this.isMediabunnyReady
                 );
             }
 
@@ -453,10 +446,9 @@ export default {
             const filename = getFilenameWithoutExtension(newValue);
             this.saveImageFileName = filename;
 
-            if (
-                this.currentInputFileType === this.inputFileTypes.VIDEO &&
-                !this.isBatchConverting
-            ) {
+            // don't update video name when we are currently batch converting
+            // otherwise after running images to video the video file name will be different
+            if (!this.isBatchConverting) {
                 this.videoExportFilename = filename;
             }
         },
@@ -470,13 +462,8 @@ export default {
             }
             document.title = title;
         },
-        videoSyncFps(newValue) {
-            if (newValue) {
-                this.videoOutputFps = this.videoInputFps;
-            }
-        },
-        videoInputFps(newValue) {
-            if (this.isOutputtingVideo && !this.hasInputFpsError) {
+        videoOutputFps(newValue) {
+            if (this.isOutputtingVideo && !this.hasOutputFpsError) {
                 clearTimeout(saveFpsTimeout);
                 saveFpsTimeout = setTimeout(() => {
                     userSettings.saveExportSettings({
@@ -485,14 +472,11 @@ export default {
                     });
                 }, 2000);
             }
-            if (this.videoSyncFps) {
-                this.videoOutputFps = newValue;
-            }
         },
         saveImageFileTypeValue(newValue) {
             userSettings.saveExportSettings({
                 fileType: newValue,
-                videoFps: this.videoInputFps,
+                videoFps: this.videoOutputFps,
             });
         },
         openFileMode(newValue) {
@@ -510,6 +494,32 @@ export default {
                     break;
             }
         },
+        videoCodecIndex(newValue) {
+            saveMediabunnyCodecSetting(this.videoCodecs[newValue].key);
+        },
+        videoCodecs(newValue) {
+            // have to set codec index here from saved user preferences, because on startup we don't know which codecs are supported by the current browser
+            const savedUserCodec = getMediabunnyCodecSetting();
+            const index = newValue.findIndex(el => el.key === savedUserCodec);
+            if (index >= 0) {
+                this.videoCodecIndex = index;
+                return;
+            }
+            if (isSafari()) {
+                // on Safari default to VP8 or VP9 since colors are not correct when Safari exports H.264 or H.265
+                // prefer VP8 since only Apple M5 and later CPUs support VP9 hardware encoding
+                const vp8Index = newValue.findIndex(el => el.key === 'VP8');
+                if (vp8Index >= 0) {
+                    this.videoCodecIndex = vp8Index;
+                    return;
+                }
+                const vp9Index = newValue.findIndex(el => el.key === 'VP9');
+                if (vp9Index >= 0) {
+                    this.videoCodecIndex = vp9Index;
+                    return;
+                }
+            }
+        },
     },
     methods: {
         submit() {
@@ -525,13 +535,21 @@ export default {
                     if (
                         this.currentInputFileType === this.inputFileTypes.VIDEO
                     ) {
+                        const outputFps = this.videoSyncFps
+                            ? undefined
+                            : this.videoOutputFps;
+
                         return this.videoExportRequested(
-                            this.videoInputFps,
-                            this.videoOutputFps
+                            this.videoExportFilename,
+                            outputFps,
+                            this.videoCodecs[this.videoCodecIndex].mediabunny
                         );
                     } else {
                         return this.onSubmitBatchConvertImages(
-                            BATCH_IMAGE_MODE_EXPORT_VIDEO
+                            BATCH_IMAGE_MODE_EXPORT_VIDEO,
+                            this.videoExportFilename,
+                            this.videoOutputFps,
+                            this.videoCodecs[this.videoCodecIndex].mediabunny
                         );
                     }
                 default:
@@ -544,17 +562,13 @@ export default {
                     return resolve();
                 }
                 this.isCurrentlySavingImage = true;
-                this.saveRequested(
-                    saveImageCanvas,
-                    (sourceCanvas, unsplash) => {
-                        promiseFunc(sourceCanvas, unsplash).then(() => {
-                            //clear the canvas to free up memory
-                            Canvas.clear(saveImageCanvas);
-                            this.isCurrentlySavingImage = false;
-                            resolve();
-                        });
-                    }
-                );
+                const unsplash = this.saveRequested(saveImageCanvas);
+                promiseFunc(saveImageCanvas, unsplash).then(() => {
+                    //clear the canvas to free up memory
+                    Canvas.clear(saveImageCanvas);
+                    this.isCurrentlySavingImage = false;
+                    resolve();
+                });
             });
         },
         //downloads image
@@ -586,69 +600,6 @@ export default {
                         );
                     })
             );
-        },
-        saveImageToFfmpegServer() {
-            return this.saveImageBase((sourceCanvas, unsplash) =>
-                canvasToBlob(
-                    sourceCanvas.canvas,
-                    ffmpegImageFileType.mime
-                ).then(blob =>
-                    ffmpegClientSaveImage(
-                        new File(
-                            [blob],
-                            this.saveImageFileName +
-                                ffmpegImageFileType.extension
-                        )
-                    )
-                )
-            );
-        },
-        saveImageToFfmpeg(ffmpeg) {
-            return this.saveImageBase((sourceCanvas, unsplash) =>
-                canvasToArray(
-                    sourceCanvas.canvas,
-                    ffmpegImageFileType.mime
-                ).then(array =>
-                    saveImageFrame(
-                        ffmpeg,
-                        this.saveImageFileName + ffmpegImageFileType.extension,
-                        array
-                    )
-                )
-            );
-        },
-        async exportVideoFromFrames(ffmpeg) {
-            const exportFilename =
-                this.videoExportFilename + this.videoFileExtension;
-            const data = await exportFramesToVideo(ffmpeg, this.videoOutputFps);
-            return new Promise(resolve => {
-                arrayToObjectUrl(data, objectUrl => {
-                    const saveImageLink = this.$refs.saveImageLink;
-                    saveImageLink.href = objectUrl;
-                    saveImageLink.download = exportFilename;
-                    saveImageLink.click();
-                    resolve();
-                });
-            });
-        },
-        exportVideoFromFramesFfmpegServer() {
-            const exportFilename =
-                this.videoExportFilename + this.videoFileExtension;
-
-            return new Promise(resolve => {
-                ffmpegClientFramesToVideo(
-                    this.videoOutputFps,
-                    this.saveImageFileType.extension
-                ).then(blob => {
-                    blobToObjectUrl(blob, objectUrl => {
-                        const saveImageLink = this.$refs.saveImageLink;
-                        saveImageLink.href = objectUrl;
-                        saveImageLink.download = exportFilename;
-                        saveImageLink.click();
-                        resolve();
-                    });
-                });
-            });
         },
     },
 };

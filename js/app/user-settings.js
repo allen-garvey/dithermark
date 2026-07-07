@@ -8,8 +8,24 @@ const localStorage = window.localStorage;
 const USER_SAVED_PALETTES_KEY = 'user-saved-palettes';
 const USER_GLOBAL_SETTINGS_KEY = 'user-global-settings';
 const USER_EXPORT_SETTINGS_KEY = 'user-export-settings';
+const USER_EXPORT_VIDEO_MEDIABUNNY_CODEC_KEY =
+    'user-export-video-mediabunny-codec';
 const USER_LIMIT_NUMBER_OF_WEBWORKERS_SETTING_KEY =
     'user-limit-number-of-webworkers-setting';
+
+/**
+ *
+ * @param {string} codec
+ */
+export const saveMediabunnyCodecSetting = codec =>
+    localStorage.setItem(USER_EXPORT_VIDEO_MEDIABUNNY_CODEC_KEY, codec);
+
+/**
+ *
+ * @returns {string}
+ */
+export const getMediabunnyCodecSetting = () =>
+    localStorage.getItem(USER_EXPORT_VIDEO_MEDIABUNNY_CODEC_KEY);
 
 /**
  * @typedef {Object} ExportSettings

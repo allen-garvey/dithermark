@@ -102,16 +102,28 @@ function clearCanvas(canvasObject) {
     );
 }
 
+export const fillCanvas = canvasObject => {
+    canvasObject.context.fillStyle = 'black';
+    canvasObject.context.fillRect(
+        0,
+        0,
+        canvasObject.canvas.width,
+        canvasObject.canvas.height
+    );
+};
+
 //copies an image from source canvas to target canvas
 //scale is percentage to resize image - 1 is 100 percent (unchanged)
 //filters are css canvas filters string
 //https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/filter
 //make sure canvas filters are supported before using them
+// padEven pads the output canvas if necessary to have even width and height pixel dimensions for video export
 function copyCanvas(
     sourceCanvasObject,
     targetCanvasObject,
     scale = 1,
-    filters = ''
+    filters = '',
+    padEven = false
 ) {
     const sourceWidth = sourceCanvasObject.canvas.width;
     const sourceHeight = sourceCanvasObject.canvas.height;
@@ -122,9 +134,25 @@ function copyCanvas(
         scaledWidth = Math.ceil(scaledWidth * scale);
         scaledHeight = Math.ceil(scaledHeight * scale);
     }
+    // make sure output values are even if padEven is true
+    // this is because video output requires image to have even dimensions
+    let totalOutputWidth = scaledWidth;
+    let totalOutputHeight = scaledHeight;
+    // if we are adding padding, we need to draw padded areas black
+    let drawBlack = false;
+    if (padEven) {
+        totalOutputWidth = Math.ceil(totalOutputWidth / 2) * 2;
+        totalOutputHeight = Math.ceil(totalOutputHeight / 2) * 2;
+        if (
+            totalOutputWidth !== scaledWidth ||
+            totalOutputHeight !== scaledHeight
+        ) {
+            drawBlack = true;
+        }
+    }
 
-    targetCanvasObject.canvas.width = scaledWidth;
-    targetCanvasObject.canvas.height = scaledHeight;
+    targetCanvasObject.canvas.width = totalOutputWidth;
+    targetCanvasObject.canvas.height = totalOutputHeight;
 
     //has to be done each time we scale the image, or it will be smoothed
     targetCanvasObject.context.webkitImageSmoothingEnabled = false;
@@ -132,6 +160,16 @@ function copyCanvas(
 
     if (filters) {
         targetCanvasObject.context.filter = filters;
+    }
+
+    if (drawBlack) {
+        targetCanvasObject.context.fillStyle = 'black';
+        targetCanvasObject.context.fillRect(
+            0,
+            0,
+            totalOutputWidth,
+            totalOutputHeight
+        );
     }
 
     targetCanvasObject.context.drawImage(

@@ -1,49 +1,49 @@
 {
-  "name": "dithermark",
-  "type": "module",
-  "version": "1.0.0",
-  "description": "Web application to interactively demonstrate image dithering algorithms",
-  "main": "js/index.js",
-  "scripts": {
-    "start": "node server/index.js",
-    "watch": "webpack --config build/webpack.config.js --watch",
-    "build": "npm run build:html && npm run build:js",
-    "build:html": "node build/build.js",
-    "build:js": "webpack --config build/webpack.config.js",
-    "deploy": "npm run deploy:html && npm run deploy:js",
-    "deploy:html": "IS_PRODUCTION=true node build/build.js",
-    "deploy:js": "webpack --config build/webpack.production.config.js",
-    "seed:unsplash": "node scripts/unsplash-random-images.js",
-    "image-to-matrix": "node scripts/image-to-matrix.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/allen-garvey/dithermark.git"
-  },
-  "author": "Allen Garvey",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/allen-garvey/dithermark/issues"
-  },
-  "homepage": "https://github.com/allen-garvey/dithermark#readme",
-  "dependencies": {
-    "@ffmpeg/ffmpeg": "0.12.10",
-    "lodash.throttle": "^4.1.1",
-    "vue": "3.5.17"
-  },
-  "devDependencies": {
-    "@vue/compiler-sfc": "3.5.17",
-    "css-loader": "^7.1.2",
-    "express": "^5.1.0",
-    "memfs": "^4.17.2",
-    "mini-css-extract-plugin": "^2.9.2",
-    "multer": "^2.0.1",
-    "sass": "^1.89.2",
-    "sass-loader": "^16.0.5",
-    "sharp": "^0.34.2",
-    "vue-loader": "17.4.2",
-    "vue-style-loader": "^4.1.3",
-    "webpack": "^5.99.9",
-    "webpack-cli": "^6.0.1"
-  }
+    "name": "dithermark",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "Web application to interactively demonstrate image dithering algorithms",
+    "main": "js/index.js",
+    "scripts": {
+        "test": "node --test",
+        "start": "node server/index.js",
+        "watch": "webpack --config build/webpack.config.js --watch",
+        "build": "npm run build:html && npm run build:js",
+        "build:html": "node build/build.js",
+        "build:js": "webpack --config build/webpack.config.js",
+        "deploy": "npm run deploy:html && npm run deploy:js",
+        "deploy:html": "IS_PRODUCTION=true node build/build.js",
+        "deploy:js": "webpack --config build/webpack.production.config.js",
+        "seed:unsplash": "node scripts/unsplash-random-images.js",
+        "image-to-matrix": "node scripts/image-to-matrix.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/allen-garvey/dithermark.git"
+    },
+    "author": "Allen Garvey",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/allen-garvey/dithermark/issues"
+    },
+    "homepage": "https://github.com/allen-garvey/dithermark#readme",
+    "dependencies": {
+        "lodash.throttle": "^4.1.1",
+        "mediabunny": "1.49.0",
+        "vue": "3.5.17"
+    },
+    "devDependencies": {
+        "@vue/compiler-sfc": "3.5.17",
+        "css-loader": "^7.1.2",
+        "express": "^5.1.0",
+        "memfs": "^4.17.2",
+        "mini-css-extract-plugin": "^2.9.2",
+        "sass": "^1.89.2",
+        "sass-loader": "^16.0.5",
+        "sharp": "^0.34.2",
+        "vue-loader": "17.4.2",
+        "vue-style-loader": "^4.1.3",
+        "webpack": "^5.99.9",
+        "webpack-cli": "^6.0.1"
+    }
 }

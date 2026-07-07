@@ -95,10 +95,6 @@ export default {
             type: Function,
             required: true,
         },
-        onBatchFilesSelected: {
-            type: Function,
-            required: true,
-        },
         openImageError: {
             type: Function,
             required: true,
@@ -107,7 +103,7 @@ export default {
             type: Function,
             required: true,
         },
-        getFfmpegReady: {
+        getMediabunnyReady: {
             type: Function,
             required: true,
         },
@@ -160,12 +156,6 @@ export default {
         getImageFiles() {
             return this.imageFiles.slice();
         },
-        batchConvertImages() {
-            this.onBatchFilesSelected(
-                this.imageFiles,
-                BATCH_IMAGE_MODE_EXPORT_IMAGES
-            );
-        },
         onBatchFilesOpened(rawFiles) {
             const files = Array.from(rawFiles).filter(file =>
                 isImageFile(file)
@@ -173,7 +163,7 @@ export default {
             if (files.length === 0) {
                 return this.openImageError('No image files selected');
             }
-            this.getFfmpegReady();
+            this.getMediabunnyReady();
             this.currentImageFileIndex = 0;
             this.imageFiles = files;
             const mode =
@@ -267,7 +257,7 @@ export default {
                     `${videoFile.name} does not appear to be a video file.`
                 );
             }
-            this.getFfmpegReady();
+            this.getMediabunnyReady();
             this.$emit('update:openFileMode', OPEN_FILE_MODE_VIDEO);
             this.$emit('update:videoFile', videoFile);
         },

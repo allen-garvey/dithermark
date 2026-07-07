@@ -85,15 +85,6 @@
                         newValue => $emit('update:isWebglEnabled', newValue)
                     "
                 />
-                <checkbox
-                    v-if="isDev"
-                    tooltip="Use FFmpeg directly on your computer"
-                    label="Use FFmpeg Server"
-                    :model-value="useFfmpegServer"
-                    @update:model-value="
-                        newValue => $emit('update:useFfmpegServer', newValue)
-                    "
-                />
             </div>
         </fieldset>
 
@@ -131,15 +122,7 @@ export default {
             type: Boolean,
             required: true,
         },
-        isDev: {
-            type: Boolean,
-            required: true,
-        },
         // v-models
-        useFfmpegServer: {
-            type: Boolean,
-            required: true,
-        },
         currentEditorThemeIndex: {
             type: Number,
             required: true,

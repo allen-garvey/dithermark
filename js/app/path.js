@@ -3,8 +3,10 @@
  * @param {string} filename
  * @returns {string}
  */
-export const getFilenameWithoutExtension = filename =>
-    filename.replace(/\..+$/, '');
+export const getFilenameWithoutExtension = filename => {
+    const dotIndex = filename.lastIndexOf('.');
+    return dotIndex === -1 ? filename : filename.substring(0, dotIndex);
+};
 
 /**
  *
