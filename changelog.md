@@ -12,6 +12,12 @@
 
 * The above change also removes the local FFmpeg server option when running Dithermark in local development mode. This option is no longer needed, as Mediabunny is faster than running the local FFmpeg server and does not require temporary disc space to store images.
 
+### Bug Fixes
+
+* Fix video and image file names with multiple periods being extracted correctly.
+
+* Fix video file name being blank when batch converting images to video.
+
 ### Known Issues
 
 * When exporting videos using Safari with the H.264 or H.265 codecs colors can be incorrect. If you experience this issue, try selecting either the VP8 or VP9 codecs.
@@ -34,7 +40,7 @@
 * Add sharpen (unsharp mask) image filter
 * Add CIE XYZ color comparison for dithering and outline filters
 
-### Bugs
+### Bugs Fixes
 
 * Update all WebGL shaders to require highp precison to fix bugs on mobile devices (such as simplex)
 
@@ -60,7 +66,7 @@
 
 ## 4.1.1 2025-03-16 [Commit 83743ea](https://github.com/allen-garvey/dithermark/commit/83743ea996b875a1200404323ca9e242b386b1e8)
 
-### Bugs
+### Bug Fixes
 
 * Fix color picker not being scrolled into view when opened.
 
@@ -90,7 +96,7 @@
 
 * Change buttons and form inputs to use dark colors in dark color themes.
 
-### Bugs
+### Bugs Fixes
 
 * Fix hue, hue & lightness and weighted hsl color comparison modes in color dither not working correctly.
 
@@ -122,7 +128,7 @@
 
 ## 3.2 2024-03-03 [Commit cd1d5c3](https://github.com/allen-garvey/dithermark/commit/cd1d5c3f9b3189b06edbf9f1d473a36bc9224073)
 
-### Bugs
+### Bugs Fixes
 
 * Fix outline filter color picker not working due to not being updated to Vue 3 syntax
 
@@ -170,7 +176,7 @@
 
 * Add lightness as comparison option for outline filters
 
-### Bugs
+### Bugs Fixes
 
 * Fix export not working on Firefox
 
