@@ -4,7 +4,7 @@
 
 ### Features
 
-* Can now select the video codec used when exporting video.
+* Add the ability to select the video codec used when exporting video.
 
 ### Technical
 
