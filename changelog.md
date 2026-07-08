@@ -14,6 +14,8 @@
 
 * Add debounce when saving video export settings to reduce unnecessary disk writes.
 
+* Remove external dependency `lodash.throttle`
+
 ### Bug Fixes
 
 * Fix video and image file names with multiple periods being extracted correctly.

@@ -21,11 +21,18 @@
 </template>
 
 <script>
-import throttle from 'lodash.throttle';
+import { throttle } from '../../../../../util';
 
 export default {
     props: {
         modelValue: Object,
+    },
+    data() {
+        return {
+            throttle: throttle((fn, data) => {
+                fn(data);
+            }, 10),
+        };
     },
     computed: {
         colors() {
@@ -42,16 +49,6 @@ export default {
         },
     },
     methods: {
-        throttle: throttle(
-            (fn, data) => {
-                fn(data);
-            },
-            20,
-            {
-                leading: true,
-                trailing: false,
-            }
-        ),
         handleChange(e, skip) {
             !skip && e.preventDefault();
             const container = this.$refs.container;
