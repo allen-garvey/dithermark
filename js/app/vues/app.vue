@@ -1300,6 +1300,9 @@ export default {
             });
         },
         getMediabunnyReady() {
+            if (this.mediabunny) {
+                return;
+            }
             import('../mediabunny.js').then(mediabunny => {
                 this.mediabunny = mediabunny;
 
