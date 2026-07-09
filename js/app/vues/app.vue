@@ -800,6 +800,7 @@ export default {
             batchConvertState: BATCH_CONVERT_STATE.NONE,
             videoConvertPercentage: 0,
             mediabunny: null,
+            hasRequestedMediabunny: false,
             mediabunnySampleResolver: null,
             mediabunnyVideoOutput: null,
             mediabunnyVideoSource: null,
@@ -1300,9 +1301,10 @@ export default {
             });
         },
         getMediabunnyReady() {
-            if (this.mediabunny) {
+            if (this.hasRequestedMediabunny) {
                 return;
             }
+            this.hasRequestedMediabunny = true;
             import('../mediabunny.js').then(mediabunny => {
                 this.mediabunny = mediabunny;
 
