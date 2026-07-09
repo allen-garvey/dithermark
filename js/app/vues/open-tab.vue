@@ -163,7 +163,6 @@ export default {
             if (files.length === 0) {
                 return this.openImageError('No image files selected');
             }
-            this.getMediabunnyReady();
             this.currentImageFileIndex = 0;
             this.imageFiles = files;
             const mode =

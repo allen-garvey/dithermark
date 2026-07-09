@@ -316,6 +316,10 @@ export default {
             type: Array,
             required: true,
         },
+        getMediabunnyReady: {
+            type: Function,
+            required: true,
+        },
     },
     emits: ['update:shouldUpsample'],
     components: {
@@ -502,6 +506,15 @@ export default {
             const index = newValue.findIndex(el => el.key === savedUserCodec);
             if (index >= 0) {
                 this.videoCodecIndex = index;
+            }
+        },
+        currentOutputFileOption(newValue) {
+            if (
+                newValue === outputFileOptions.VIDEO &&
+                this.currentInputFileType ===
+                    this.inputFileTypes.MULTIPLE_IMAGES
+            ) {
+                this.getMediabunnyReady();
             }
         },
     },

@@ -451,6 +451,7 @@
                         :isDev="isDev"
                         :isBatchConverting="isBatchConverting"
                         :videoCodecs="videoCodecs"
+                        :getMediabunnyReady="getMediabunnyReady"
                         v-show="activeControlsTab === 3"
                         ref="exportTab"
                     />

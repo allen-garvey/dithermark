@@ -16,6 +16,8 @@
 
 * Remove external dependency `lodash.throttle`
 
+* Delay fetching external video libraries when selecting "batch convert images" until video export is selected. This removes unnecessary network activity for users that batch convert images and don't use video export. 
+
 ### Bug Fixes
 
 * Fix video and image file names with multiple periods being extracted correctly.
