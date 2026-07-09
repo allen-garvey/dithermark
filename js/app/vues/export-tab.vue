@@ -248,7 +248,6 @@ import {
     BATCH_IMAGE_MODE_EXPORT_IMAGES,
     BATCH_IMAGE_MODE_EXPORT_VIDEO,
 } from '../models/batch-export-modes.js';
-import { isSafari } from '../util.js';
 import VideoWarningBanner from './widgets/video-warning-banner.vue';
 import BannerMessages from './widgets/banner-messages.vue';
 import Spinner from './widgets/spinner.vue';
@@ -503,21 +502,6 @@ export default {
             const index = newValue.findIndex(el => el.key === savedUserCodec);
             if (index >= 0) {
                 this.videoCodecIndex = index;
-                return;
-            }
-            if (isSafari()) {
-                // on Safari default to VP8 or VP9 since colors are not correct when Safari exports H.264 or H.265
-                // prefer VP8 since only Apple M5 and later CPUs support VP9 hardware encoding
-                const vp8Index = newValue.findIndex(el => el.key === 'VP8');
-                if (vp8Index >= 0) {
-                    this.videoCodecIndex = vp8Index;
-                    return;
-                }
-                const vp9Index = newValue.findIndex(el => el.key === 'VP9');
-                if (vp9Index >= 0) {
-                    this.videoCodecIndex = vp9Index;
-                    return;
-                }
             }
         },
     },
