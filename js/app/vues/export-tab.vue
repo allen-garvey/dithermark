@@ -78,6 +78,18 @@
             :class="$style.inputList"
         >
             <label
+                ><span :class="$style.labelText">Quality</span>
+                <select v-model="selectedVideoQualityOption">
+                    <option
+                        v-for="option of videoQualityOptions"
+                        :key="option.value"
+                        :value="option.value"
+                    >
+                        {{ option.label }}
+                    </option>
+                </select>
+            </label>
+            <label
                 ><span :class="$style.labelText">Codec</span>
                 <select v-model="videoCodecIndex">
                     <option
@@ -248,6 +260,7 @@ import {
     BATCH_IMAGE_MODE_EXPORT_IMAGES,
     BATCH_IMAGE_MODE_EXPORT_VIDEO,
 } from '../models/batch-export-modes.js';
+import { getVideoQualityOptions } from '../models/mediabunny.js';
 import VideoWarningBanner from './widgets/video-warning-banner.vue';
 import BannerMessages from './widgets/banner-messages.vue';
 import Spinner from './widgets/spinner.vue';
@@ -343,6 +356,8 @@ export default {
             videoOutputFps: exportSettings.videoFps,
             videoSyncFps: true,
             videoCodecIndex: 0,
+            videoQualityOptions: getVideoQualityOptions(),
+            selectedVideoQualityOption: 'high',
         };
     },
     computed: {
@@ -539,14 +554,16 @@ export default {
                         return this.videoExportRequested(
                             this.videoExportFilename,
                             outputFps,
-                            this.videoCodecs[this.videoCodecIndex].mediabunny
+                            this.videoCodecs[this.videoCodecIndex].mediabunny,
+                            this.selectedVideoQualityOption
                         );
                     } else {
                         return this.onSubmitBatchConvertImages(
                             BATCH_IMAGE_MODE_EXPORT_VIDEO,
                             this.videoExportFilename,
                             this.videoOutputFps,
-                            this.videoCodecs[this.videoCodecIndex].mediabunny
+                            this.videoCodecs[this.videoCodecIndex].mediabunny,
+                            this.selectedVideoQualityOption
                         );
                     }
                 default:

@@ -1127,8 +1127,9 @@ export default {
          * @param {string} outputFilename
          * @param {number | undefined} outputFps
          * @param {string} codec
+         * @param {string} videoQuality
          */
-        onVideoExportRequested(outputFilename, outputFps, codec) {
+        onVideoExportRequested(outputFilename, outputFps, codec, videoQuality) {
             this.batchConvertState =
                 BATCH_CONVERT_STATE.MEDIABUNNY_PROCESS_FRAMES;
             this.batchImageMode = BATCH_IMAGE_MODE_VIDEO_TO_VIDEO;
@@ -1152,6 +1153,7 @@ export default {
                 this.videoFile,
                 codec,
                 outputFps,
+                videoQuality,
                 processCallback
             );
             conversion
@@ -1178,7 +1180,13 @@ export default {
                     this.videoConvertPercentage = 0;
                 });
         },
-        loadBatchImages(batchImageMode, outputFilename, outputFps, codec) {
+        loadBatchImages(
+            batchImageMode,
+            outputFilename,
+            outputFps,
+            codec,
+            videoQuality
+        ) {
             const files = this.$refs.openTab.getImageFiles();
             this.batchConvertState = BATCH_CONVERT_STATE.PROCESSING_FRAMES;
             this.batchImageMode = batchImageMode;
@@ -1197,7 +1205,8 @@ export default {
                 this.mediabunnyVideoSource = this.mediabunny.createCanvasSource(
                     videoFrameOutputCanvas.canvas,
                     codec,
-                    outputFps
+                    outputFps,
+                    videoQuality
                 );
                 this.mediabunnyVideoOutput.addVideoTrack(
                     this.mediabunnyVideoSource,

@@ -35,3 +35,30 @@ export const getSupportedVideoCodecs = mediabunny => {
         return mediabunnyCodecs.filter(codec => codecSet.has(codec.mediabunny));
     });
 };
+
+export const getVideoQualityOptions = () => [
+    {
+        label: 'Ultra',
+        value: 'ultra',
+    },
+    {
+        label: 'Very High',
+        value: 'very_high',
+    },
+    {
+        label: 'High',
+        value: 'high',
+    },
+    {
+        label: 'Medium',
+        value: 'medium',
+    },
+    {
+        label: 'Low',
+        value: 'low',
+    },
+    {
+        label: 'Very Low',
+        value: 'very_low',
+    },
+];
