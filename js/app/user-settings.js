@@ -1,6 +1,7 @@
 //module for saving and retrieving user settings in localStorage
 
 import ColorPalettes from './models/color-palettes.js';
+import { getVideoQualityOptions } from './models/mediabunny.js';
 import { getSaveImageFileTypes } from './models/export-model.js';
 import { DEFAULT_EDITOR_THEME_KEY } from './models/editor-themes.js';
 
@@ -31,6 +32,7 @@ export const getMediabunnyCodecSetting = () =>
  * @typedef {Object} ExportSettings
  * @property {string} fileType
  * @property {number} videoFps
+ * @property {string} videoQuality
  */
 
 /**
@@ -72,6 +74,14 @@ function getExportSettings() {
         exportSettings.videoFps <= 0
     ) {
         exportSettings.videoFps = 24;
+    }
+    if (
+        !exportSettings.videoQuality ||
+        getVideoQualityOptions().findIndex(
+            option => option.value === exportSettings.videoQuality
+        ) === -1
+    ) {
+        exportSettings.videoQuality = 'high';
     }
     return exportSettings;
 }

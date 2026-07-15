@@ -357,7 +357,7 @@ export default {
             videoSyncFps: true,
             videoCodecIndex: 0,
             videoQualityOptions: getVideoQualityOptions(),
-            selectedVideoQualityOption: 'high',
+            selectedVideoQualityOption: exportSettings.videoQuality,
         };
     },
     computed: {
@@ -480,22 +480,19 @@ export default {
             }
             document.title = title;
         },
-        videoOutputFps(newValue) {
+        videoOutputFps() {
             if (this.isOutputtingVideo && !this.hasOutputFpsError) {
                 clearTimeout(saveFpsTimeout);
                 saveFpsTimeout = setTimeout(() => {
-                    userSettings.saveExportSettings({
-                        fileType: this.saveImageFileTypeValue,
-                        videoFps: newValue,
-                    });
+                    this.saveExportSettings();
                 }, 2000);
             }
         },
-        saveImageFileTypeValue(newValue) {
-            userSettings.saveExportSettings({
-                fileType: newValue,
-                videoFps: this.videoOutputFps,
-            });
+        saveImageFileTypeValue() {
+            this.saveExportSettings();
+        },
+        selectedVideoQualityOption() {
+            this.saveExportSettings();
         },
         openFileMode(newValue) {
             switch (newValue) {
@@ -534,6 +531,13 @@ export default {
         },
     },
     methods: {
+        saveExportSettings() {
+            userSettings.saveExportSettings({
+                fileType: this.saveImageFileTypeValue,
+                videoFps: this.videoOutputFps,
+                videoQuality: this.selectedVideoQualityOption,
+            });
+        },
         submit() {
             if (this.isSaveDisabled) {
                 return;
