@@ -272,6 +272,10 @@ export const renderHome = ({ isProduction = false }) => {
             id: 'webgl-simplex-dither-color-body-fshader',
             path: 'fragment/dithers/color/base/simplex-color-dither-body.glsl',
         },
+        {
+            id: 'webgl-r2-sequence-dither-color-body-fshader',
+            path: 'fragment/dithers/color/base/r2-sequence-color-dither-body.glsl',
+        },
         // color dithers
         {
             id: 'webgl-yliluoma1-color-fshader',

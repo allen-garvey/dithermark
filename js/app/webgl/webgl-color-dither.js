@@ -14,26 +14,28 @@ import {
 const CLOSEST_COLOR = 0;
 const RANDOM_CLOSEST_COLOR = 1;
 const SIMPLEX_CLOSEST_COLOR = 2;
-const ORDERED_DITHER = 3;
-const ORDERED_DITHER_RANDOM = 4;
-const ORDERED_DITHER_SIMPLEX = 5;
-const HUE_LIGHTNESS_ORDERED_DITHER = 6;
-const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 7;
-const HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER = 8;
-const ADITHER_ADD1 = 9;
-const ADITHER_ADD2 = 10;
-const ADITHER_ADD3 = 11;
-const ADITHER_XOR1 = 12;
-const ADITHER_XOR2 = 13;
-const ADITHER_XOR3 = 14;
-const YLILUOMA1 = 15;
-const YLILUOMA2 = 16;
-const STARK_ORDERED_DITHER = 17;
+const R2_SEQUENCE_CLOSEST_COLOR = 3;
+const ORDERED_DITHER = 4;
+const ORDERED_DITHER_RANDOM = 5;
+const ORDERED_DITHER_SIMPLEX = 6;
+const HUE_LIGHTNESS_ORDERED_DITHER = 7;
+const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 8;
+const HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER = 9;
+const ADITHER_ADD1 = 10;
+const ADITHER_ADD2 = 11;
+const ADITHER_ADD3 = 12;
+const ADITHER_XOR1 = 13;
+const ADITHER_XOR2 = 14;
+const ADITHER_XOR3 = 15;
+const YLILUOMA1 = 16;
+const YLILUOMA2 = 17;
+const STARK_ORDERED_DITHER = 18;
 
 const ALGO_KEYS = [
     CLOSEST_COLOR,
     RANDOM_CLOSEST_COLOR,
     SIMPLEX_CLOSEST_COLOR,
+    R2_SEQUENCE_CLOSEST_COLOR,
     ORDERED_DITHER,
     ORDERED_DITHER_RANDOM,
     ORDERED_DITHER_SIMPLEX,
@@ -233,6 +235,12 @@ function createFragmentShaderTexts() {
     const simplexDitherDeclarationText = shaderText(
         'webgl-simplex-declaration-fshader'
     );
+    const r2SequenceDitherBodyText = shaderText(
+        'webgl-r2-sequence-dither-color-body-fshader'
+    );
+    const r2SequenceDitherDeclarationText = shaderText(
+        'webgl-r2-sequence-declaration-fshader'
+    );
     //shader source code
     const closestColorShaderBase = generateFragmentShader('', '');
     const orderedDitherBase = generateFragmentShader(
@@ -271,10 +279,19 @@ function createFragmentShaderTexts() {
         simplexDitherBodyText
     );
 
+    const r2SequenceDitherShaderBase = generateFragmentShader(
+        r2SequenceDitherDeclarationText,
+        r2SequenceDitherBodyText
+    );
+
     const fragmentShaderTexts = new Map([
         [CLOSEST_COLOR, shaderTextContainer(closestColorShaderBase)],
         [RANDOM_CLOSEST_COLOR, shaderTextContainer(randomDitherShaderBase)],
         [SIMPLEX_CLOSEST_COLOR, shaderTextContainer(simplexDitherShaderBase)],
+        [
+            R2_SEQUENCE_CLOSEST_COLOR,
+            shaderTextContainer(r2SequenceDitherShaderBase),
+        ],
         [ORDERED_DITHER, shaderTextContainer(orderedDitherBase)],
         [ORDERED_DITHER_RANDOM, shaderTextContainer(orderedDitherRandomBase)],
         [ORDERED_DITHER_SIMPLEX, shaderTextContainer(orderedDitherSimplexBase)],
@@ -467,6 +484,39 @@ function simplexClosestColor(
             createWebGLDrawImageFunc(
                 gl,
                 fragmentShaderTexts.get(SIMPLEX_CLOSEST_COLOR)[
+                    colorDitherModeId
+                ],
+                colorDitherModeId
+            )
+    );
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    drawImageFunc(
+        gl,
+        texture,
+        imageWidth,
+        imageHeight,
+        colorsArray,
+        colorsArrayLength
+    );
+}
+
+function r2SequenceClosestColor(
+    gl,
+    texture,
+    imageWidth,
+    imageHeight,
+    colorDitherModeId,
+    colorsArray,
+    colorsArrayLength
+) {
+    const drawImageFunc = getCachedDrawImageFunc(
+        R2_SEQUENCE_CLOSEST_COLOR,
+        colorDitherModeId,
+        () =>
+            createWebGLDrawImageFunc(
+                gl,
+                fragmentShaderTexts.get(R2_SEQUENCE_CLOSEST_COLOR)[
                     colorDitherModeId
                 ],
                 colorDitherModeId
@@ -714,6 +764,7 @@ export default {
     closestColor,
     randomClosestColor: randomDither,
     simplexClosestColor,
+    r2SequenceClosestColor,
     aDitherAdd1: createArithmeticDither(ADITHER_ADD1),
     aDitherAdd2: createArithmeticDither(ADITHER_ADD2),
     aDitherAdd3: createArithmeticDither(ADITHER_ADD3),
