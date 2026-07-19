@@ -9,6 +9,7 @@ export const getBwWebglTranslator = isWebglHighIntPrecisionSupported => {
         ['adaptive-threshold', BwDither.adaptiveThreshold],
         ['random', BwDither.randomThreshold],
         ['simplex', BwDither.simplexThreshold],
+        ['r2_sequence', BwDither.r2SequenceThreshold],
     ]);
 
     const arithmeticEntries = [

@@ -187,6 +187,10 @@ export const renderHome = ({ isProduction = false }) => {
             id: 'webgl-simplex-declaration-fshader',
             path: 'fragment/dithers/shared/simplex-declaration.glsl',
         },
+        {
+            id: 'webgl-r2-sequence-declaration-fshader',
+            path: 'fragment/dithers/shared/r2-sequence-declaration.glsl',
+        },
         // bw dithers
         {
             id: 'webgl-adaptive-threshold-fshader-body',
@@ -223,6 +227,10 @@ export const renderHome = ({ isProduction = false }) => {
         {
             id: 'webgl-simplex-threshold-fshader-body',
             path: 'fragment/dithers/bw/simplex-threshold-body.glsl',
+        },
+        {
+            id: 'webgl-r2-sequence-threshold-fshader-body',
+            path: 'fragment/dithers/bw/r2-sequence-threshold-body.glsl',
         },
         {
             id: 'webgl-threshold-fshader-body',

@@ -235,6 +235,7 @@ const getNoiseModel = () => ({
     items: [
         { title: 'Random', slug: 'random' },
         { title: 'Simplex', slug: 'simplex' },
+        { title: 'R2 Sequence', slug: 'r2_sequence' },
     ],
 });
 

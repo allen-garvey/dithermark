@@ -13,17 +13,18 @@ const THRESHOLD = 1;
 const ADAPTIVE_THRESHOLD = 13;
 const RANDOM_THRESHOLD = 2;
 const SIMPLEX_THRESHOLD = 3;
-const ORDERED_DITHER = 4;
-const ORDERED_RANDOM_DITHER = 5;
-const ORDERED_SIMPLEX_DITHER = 6;
-const COLOR_REPLACE = 7;
-const TEXTURE_COMBINE = 8;
-const ADITHER_ADD1 = 9;
-const ADITHER_ADD2 = 10;
-const ADITHER_ADD3 = 11;
-const ADITHER_XOR1 = 12;
-const ADITHER_XOR2 = 13;
-const ADITHER_XOR3 = 14;
+const R2_SEQUENCE_THRESHOLD = 4;
+const ORDERED_DITHER = 5;
+const ORDERED_RANDOM_DITHER = 6;
+const ORDERED_SIMPLEX_DITHER = 7;
+const COLOR_REPLACE = 8;
+const TEXTURE_COMBINE = 9;
+const ADITHER_ADD1 = 10;
+const ADITHER_ADD2 = 11;
+const ADITHER_ADD3 = 12;
+const ADITHER_XOR1 = 13;
+const ADITHER_XOR2 = 14;
+const ADITHER_XOR3 = 15;
 
 /*
  * Actual webgl function creation
@@ -298,6 +299,32 @@ function simplexThreshold(
     );
 }
 
+function r2SequenceThreshold(
+    gl,
+    texture,
+    imageWidth,
+    imageHeight,
+    threshold,
+    blackPixel,
+    whitePixel
+) {
+    const drawFunc = getDrawFunc(R2_SEQUENCE_THRESHOLD, gl, [
+        'webgl-r2-sequence-declaration-fshader',
+        'webgl-r2-sequence-threshold-fshader-body',
+    ]);
+    // Tell WebGL how to convert from clip space to pixels
+    gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+    drawFunc(
+        gl,
+        texture,
+        imageWidth,
+        imageHeight,
+        threshold,
+        blackPixel,
+        whitePixel
+    );
+}
+
 function createArithmeticDither(ditherKey, customDeclarationReplace) {
     const customReplacements = [
         {
@@ -528,6 +555,7 @@ export default {
     adaptiveThreshold: webGLAdaptiveThreshold,
     randomThreshold: webGLRandomThreshold,
     simplexThreshold,
+    r2SequenceThreshold,
     aDitherAdd1: createArithmeticDither(ADITHER_ADD1, Shader.aDitherAdd1Return),
     aDitherAdd2: createArithmeticDither(ADITHER_ADD2, Shader.aDitherAdd2Return),
     aDitherAdd3: createArithmeticDither(ADITHER_ADD3, Shader.aDitherAdd3Return),

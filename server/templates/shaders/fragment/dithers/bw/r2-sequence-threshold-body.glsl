@@ -1,0 +1,1 @@
+bool shouldUseBlackPixel = pixelLightness + u_dither_r_coefficient * (r2_sequence(gl_FragCoord.xy) - 0.5) < u_threshold;
