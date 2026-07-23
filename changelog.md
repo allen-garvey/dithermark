@@ -4,6 +4,8 @@
 
 ### Features
 
+* Add R2 Sequence noise dither
+
 * Add ability to set video quality when exporting video.
 
 ## 6.0 2026-07-09 [Commit 2ab2dab](https://github.com/allen-garvey/dithermark/commit/2ab2dabe1694bef9fdc72a973548db5e466a7afe)
