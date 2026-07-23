@@ -8,6 +8,7 @@ const algorithmMap = new Map([
     ['adaptive-threshold', AdaptiveThreshold.image],
     ['random', Threshold.randomDither],
     ['simplex', Threshold.simplexDither],
+    ['r2_sequence', Threshold.r2SequenceDither],
     ['xor--high', Threshold.aditherXor1],
     ['xor--medium', Threshold.aditherXor3],
     ['xor--low', Threshold.aditherXor2],
@@ -25,13 +26,10 @@ const algorithmMap = new Map([
     ['reduced-atkinson', ErrorPropDither.reducedAtkinson],
 ]);
 
-export const getBwDitherAlgorithmForItem = (algorithmModel) => {
+export const getBwDitherAlgorithmForItem = algorithmModel => {
     if (algorithmModel.orderedOpts) {
         const { pattern, dimensions, variant } = algorithmModel.orderedOpts;
-        return orderedDitherBwBuilder(pattern)(
-            dimensions,
-            variant
-        );
+        return orderedDitherBwBuilder(pattern)(dimensions, variant);
     }
 
     return algorithmMap.get(algorithmModel.slug);

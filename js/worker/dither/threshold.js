@@ -3,6 +3,7 @@ import { A_INDEX } from '../../shared/pixel.js';
 import PixelMath from '../../shared/pixel-math.js';
 import DitherUtil from '../../shared/dither-util.js';
 import { createNoise2D } from './simplex.js';
+import { r2Sequence } from './r2-sequence.js';
 
 const sNoise = createNoise2D();
 
@@ -50,6 +51,14 @@ const randomThreshold = () => Math.random() * 255 - 127.5;
  * @returns {number}
  */
 const simplexThreshold = (x, y) => sNoise(x, y) * 255 - 127.5;
+
+/**
+ *
+ * @param {number} x
+ * @param {number} y
+ * @returns {number}
+ */
+const r2SequenceThreshold = (x, y) => r2Sequence(x, y) * 255 - 127.5;
 
 //a_dither adapted from: http://pippin.gimp.org/a_dither/
 function aDitherMask1(x, y) {
@@ -166,6 +175,7 @@ export default {
     ),
     randomDither: thresholdGenerator(randomThreshold),
     simplexDither: thresholdGenerator(simplexThreshold),
+    r2SequenceDither: thresholdGenerator(r2SequenceThreshold),
     //color dither functions
     closestColor: colorDitherBuilder(() => 0),
     randomClosestColor: colorDitherBuilder(() => Math.random() - 0.5),
