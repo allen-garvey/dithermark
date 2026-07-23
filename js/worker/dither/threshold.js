@@ -180,6 +180,9 @@ export default {
     closestColor: colorDitherBuilder(() => 0),
     randomClosestColor: colorDitherBuilder(() => Math.random() - 0.5),
     simplexClosestColor: colorDitherBuilder((x, y) => sNoise(x, y) - 0.5),
+    r2SequenceClosestColor: colorDitherBuilder(
+        (x, y) => r2Sequence(x, y) - 0.5
+    ),
     aditherXor1Color: colorDitherBuilder(
         colorADitherFuncGenerator(aDitherXorFunc1)
     ),

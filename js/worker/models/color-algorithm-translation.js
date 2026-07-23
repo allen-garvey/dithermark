@@ -6,6 +6,7 @@ const algorithmMap = new Map([
     ['closest-color', Threshold.closestColor],
     ['random', Threshold.randomClosestColor],
     ['simplex', Threshold.simplexClosestColor],
+    ['r2_sequence', Threshold.r2SequenceClosestColor],
     ['xor--high', Threshold.aditherXor1Color],
     ['xor--medium', Threshold.aditherXor3Color],
     ['xor--low', Threshold.aditherXor2Color],
@@ -23,7 +24,7 @@ const algorithmMap = new Map([
     ['reduced-atkinson', ErrorPropColorDither.reducedAtkinson],
 ]);
 
-export const getColorDitherAlgorithmForItem = (algorithmModel) => {
+export const getColorDitherAlgorithmForItem = algorithmModel => {
     if (algorithmModel.orderedOpts) {
         const { pattern, dimensions, variant, type } =
             algorithmModel.orderedOpts;
