@@ -4,6 +4,7 @@ import {
     ORDERED_DITHER_VARIANT_NORMAL,
     ORDERED_DITHER_VARIANT_RANDOM,
     ORDERED_DITHER_VARIANT_SIMPLEX,
+    ORDERED_DITHER_VARIANT_R2_SEQUENCE,
 } from './ordered-dither-variants.js';
 
 const getOrderedDitherPatterns = () => [
@@ -84,6 +85,14 @@ const getBwOrderedModels = () =>
                     },
                 },
                 {
+                    title: `${title} (R2)`,
+                    slug: `${slug}--r2`,
+                    orderedOpts: {
+                        ...orderedOpts,
+                        variant: ORDERED_DITHER_VARIANT_R2_SEQUENCE,
+                    },
+                },
+                {
                     title: `${title} (R)`,
                     slug: `${slug}--r`,
                     orderedOpts: {
@@ -119,6 +128,14 @@ const getColorOrderedModels = () =>
                 },
             },
             {
+                title: `${title} (R2)`,
+                slug: `${slug}--r2`,
+                orderedOpts: {
+                    ...orderedOpts,
+                    variant: ORDERED_DITHER_VARIANT_R2_SEQUENCE,
+                },
+            },
+            {
                 title: `${title} (R)`,
                 slug: `${slug}--r`,
                 orderedOpts: {
@@ -149,6 +166,15 @@ const getColorOrderedModels = () =>
                     ...orderedOpts,
                     type: 'hue-lightness',
                     variant: ORDERED_DITHER_VARIANT_NORMAL,
+                },
+            },
+            {
+                title: `Hue-Lightness ${title} (R2)`,
+                slug: `${slug}--hl-r2`,
+                orderedOpts: {
+                    ...orderedOpts,
+                    type: 'hue-lightness',
+                    variant: ORDERED_DITHER_VARIANT_R2_SEQUENCE,
                 },
             },
             {

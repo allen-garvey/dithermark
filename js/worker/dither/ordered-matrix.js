@@ -1,6 +1,11 @@
 import { fillArray } from '../../shared/array-util.js';
 import { createNoise2D } from './simplex.js';
-import { ORDERED_DITHER_VARIANT_SIMPLEX, ORDERED_DITHER_VARIANT_RANDOM } from '../../shared/models/ordered-dither-variants.js';
+import { r2Sequence } from './r2-sequence.js';
+import {
+    ORDERED_DITHER_VARIANT_SIMPLEX,
+    ORDERED_DITHER_VARIANT_RANDOM,
+    ORDERED_DITHER_VARIANT_R2_SEQUENCE,
+} from '../../shared/models/ordered-dither-variants.js';
 
 /**
  * @typedef {Object} Matrix
@@ -9,9 +14,9 @@ import { ORDERED_DITHER_VARIANT_SIMPLEX, ORDERED_DITHER_VARIANT_RANDOM } from '.
  */
 
 /**
- * 
- * @param {number} dimensions 
- * @param {Float32Array} data 
+ *
+ * @param {number} dimensions
+ * @param {Float32Array} data
  * @returns {Matrix}
  */
 export const createMatrix = (dimensions, data) => ({
@@ -20,19 +25,19 @@ export const createMatrix = (dimensions, data) => ({
 });
 
 /**
- * 
- * @param {Matrix} matrix 
- * @param {number} x 
- * @param {number} y 
+ *
+ * @param {Matrix} matrix
+ * @param {number} x
+ * @param {number} y
  * @returns {number}
  */
 const matrixIndexFor = (matrix, x, y) => matrix.dimensions * y + x;
 
 /**
- * 
- * @param {Matrix} matrix 
- * @param {number} x 
- * @param {number} y 
+ *
+ * @param {Matrix} matrix
+ * @param {number} x
+ * @param {number} y
  * @returns {number}
  */
 export const matrixValue = (matrix, x, y) => {
@@ -41,19 +46,20 @@ export const matrixValue = (matrix, x, y) => {
     }
     const index = matrixIndexFor(matrix, x, y);
     return matrix.data[index];
-}
+};
 
 /**
- * 
- * @param {number} matrixLength 
+ *
+ * @param {number} matrixLength
  * @returns {number}
  */
-export const calculateFloatMatrixFraction = (matrixLength) => 1 / (matrixLength - 1);
+export const calculateFloatMatrixFraction = matrixLength =>
+    1 / (matrixLength - 1);
 
 /**
- * 
- * @param {Uint8Array} bayerMatrix 
- * @param {number} fullValue 
+ *
+ * @param {Uint8Array} bayerMatrix
+ * @param {number} fullValue
  * @returns {Float32Array}
  */
 export const convertBayerToFloat = (bayerMatrix, fullValue = 1) => {
@@ -62,18 +68,22 @@ export const convertBayerToFloat = (bayerMatrix, fullValue = 1) => {
 
     return fillArray(
         new Float32Array(length),
-        (i) => (fraction * bayerMatrix[i] - 0.5) * fullValue
+        i => (fraction * bayerMatrix[i] - 0.5) * fullValue
     );
-}
+};
 
 const snoise = createNoise2D();
+// halve r2 sequence value so it doesn't influence the ordered dither as much. This is because otherwise the result is too close to the random or simplex versions
+const r2SequenceReduced = (x, y) => r2Sequence(x, y) / 2 + 0.5;
 
-export const getMatrixAdjustmentFunc = (variant) => {
+export const getMatrixAdjustmentFunc = variant => {
     switch (variant) {
         case ORDERED_DITHER_VARIANT_RANDOM:
             return () => Math.random();
         case ORDERED_DITHER_VARIANT_SIMPLEX:
             return snoise;
+        case ORDERED_DITHER_VARIANT_R2_SEQUENCE:
+            return r2SequenceReduced;
         default:
             return () => 1;
     }
