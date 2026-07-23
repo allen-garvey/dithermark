@@ -2,13 +2,7 @@ import { createPixel } from '../shared/pixel.js';
 import ColorDitherModeFunctions from './color-dither-mode-functions.js';
 import DitherUtil from '../shared/dither-util.js';
 
-function transformImage(
-    pixels,
-    imageWidth,
-    imageHeight,
-    pixelTransformFunc,
-    endRowFunc = () => {}
-) {
+function transformImage(pixels, imageWidth, imageHeight, pixelTransformFunc) {
     const pixel = createPixel(0, 0, 0);
 
     for (let i = 0, y = 0; y < imageHeight; y++) {
@@ -25,7 +19,6 @@ function transformImage(
             pixels[i + 2] = outputPixel[2];
             pixels[i + 3] = outputPixel[3];
         }
-        endRowFunc();
     }
 
     return pixels;

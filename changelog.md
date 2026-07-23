@@ -8,6 +8,12 @@
 
 * Add ability to set video quality when exporting video.
 
+### Technical
+
+* Improve the performance of the webworker non error progation color dithers by ~10%
+
+* Improve the worst case performance of the color error propogation dithers by ~5%
+
 ## 6.0 2026-07-09 [Commit 2ab2dab](https://github.com/allen-garvey/dithermark/commit/2ab2dabe1694bef9fdc72a973548db5e466a7afe)
 
 ### Features

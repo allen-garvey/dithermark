@@ -1,6 +1,7 @@
 import Image from '../image.js';
 import ColorDitherModeFunctions from '../color-dither-mode-functions.js';
 import ErrorPropModel from './error-prop-model.js';
+import { createPixel } from '../../shared/pixel.js';
 
 /*
  ** Error propagation matrix stuff
@@ -92,6 +93,8 @@ function propagateError(propagationModel, errorPropMatrix, x, currentError) {
 
 /**
  * Base error prop functions
+ * Don't use Image.transform function because having loop directly speeds up worst case performance by ~5% (doesn't really improve best case)
+ * Also not requiring the end row function parameter for the Image.transform function speeds up everything else by ~15%
  */
 function errorPropDitherBase(
     pixels,
@@ -121,11 +124,15 @@ function errorPropDitherBase(
     const adjustedValueBuffer = new Float32Array(modeDimensions);
     const errorValueBuffer = new Float32Array(modeDimensions);
 
-    Image.transform(
-        pixels,
-        imageWidth,
-        imageHeight,
-        (pixel, x, y) => {
+    const pixel = createPixel(0, 0, 0);
+
+    for (let i = 0, y = 0; y < imageHeight; y++) {
+        for (let x = 0; x < imageWidth; x++, i += 4) {
+            pixel[0] = pixels[i];
+            pixel[1] = pixels[i + 1];
+            pixel[2] = pixels[i + 2];
+            pixel[3] = pixels[i + 3];
+
             const errorValue = errorMatrixValue(
                 errorMatrix,
                 x,
@@ -156,22 +163,24 @@ function errorPropDitherBase(
                 currentError
             );
 
-            pixel.set(colors[closestColorIndex]);
-            return pixel;
-        },
-        () => {
-            // fill first row of error prop model with zero,
-            //move it to the end and move all other rows up one
-            const temp = errorMatrix.data[0];
-            temp.fill(0);
-            const length = errorMatrix.data.length;
+            const outputPixel = colors[closestColorIndex];
 
-            for (let i = 1; i < length; i++) {
-                errorMatrix.data[i - 1] = errorMatrix.data[i];
-            }
-            errorMatrix.data[length - 1] = temp;
+            pixels[i] = outputPixel[0];
+            pixels[i + 1] = outputPixel[1];
+            pixels[i + 2] = outputPixel[2];
+            pixels[i + 3] = pixel[3];
         }
-    );
+        // fill first row of error prop model with zero,
+        //move it to the end and move all other rows up one
+        const temp = errorMatrix.data[0];
+        temp.fill(0);
+        const length = errorMatrix.data.length;
+
+        for (let i = 1; i < length; i++) {
+            errorMatrix.data[i - 1] = errorMatrix.data[i];
+        }
+        errorMatrix.data[length - 1] = temp;
+    }
 }
 
 function errorPropBuilder(propagateErrorModel) {
