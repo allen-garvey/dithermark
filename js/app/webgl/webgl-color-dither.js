@@ -8,6 +8,7 @@ import { generateRandomSeed } from './webgl-random.js';
 import {
     ORDERED_DITHER_VARIANT_RANDOM,
     ORDERED_DITHER_VARIANT_SIMPLEX,
+    ORDERED_DITHER_VARIANT_R2_SEQUENCE,
 } from '../../shared/models/ordered-dither-variants.js';
 
 // when adding algorithm key make sure to add to ALGO_KEYS array below
@@ -18,18 +19,19 @@ const R2_SEQUENCE_CLOSEST_COLOR = 3;
 const ORDERED_DITHER = 4;
 const ORDERED_DITHER_RANDOM = 5;
 const ORDERED_DITHER_SIMPLEX = 6;
-const HUE_LIGHTNESS_ORDERED_DITHER = 7;
-const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 8;
-const HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER = 9;
-const ADITHER_ADD1 = 10;
-const ADITHER_ADD2 = 11;
-const ADITHER_ADD3 = 12;
-const ADITHER_XOR1 = 13;
-const ADITHER_XOR2 = 14;
-const ADITHER_XOR3 = 15;
-const YLILUOMA1 = 16;
-const YLILUOMA2 = 17;
-const STARK_ORDERED_DITHER = 18;
+const ORDERED_DITHER_R2_SEQUENCE = 7;
+const HUE_LIGHTNESS_ORDERED_DITHER = 8;
+const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 9;
+const HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER = 10;
+const ADITHER_ADD1 = 11;
+const ADITHER_ADD2 = 12;
+const ADITHER_ADD3 = 13;
+const ADITHER_XOR1 = 14;
+const ADITHER_XOR2 = 15;
+const ADITHER_XOR3 = 16;
+const YLILUOMA1 = 17;
+const YLILUOMA2 = 18;
+const STARK_ORDERED_DITHER = 19;
 
 const ALGO_KEYS = [
     CLOSEST_COLOR,
@@ -39,6 +41,7 @@ const ALGO_KEYS = [
     ORDERED_DITHER,
     ORDERED_DITHER_RANDOM,
     ORDERED_DITHER_SIMPLEX,
+    ORDERED_DITHER_R2_SEQUENCE,
     HUE_LIGHTNESS_ORDERED_DITHER,
     HUE_LIGHTNESS_RANDOM_ORDERED_DITHER,
     HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER,
@@ -215,6 +218,10 @@ function createFragmentShaderTexts() {
         '#{{bayerValueAdjustment}}',
         shaderText('webgl-simplex-ordered-dither-adjustment-fshader')
     );
+    const orderedDitherR2SequenceBodyText = orderedDitherBodyText.replace(
+        '#{{bayerValueAdjustment}}',
+        shaderText('webgl-r2-sequence-ordered-dither-adjustment-fshader')
+    );
     const randomDitherDeclarationText = shaderText(
         'webgl-random-dither-declaration-fshader'
     );
@@ -254,6 +261,10 @@ function createFragmentShaderTexts() {
     const orderedDitherSimplexBase = generateFragmentShader(
         orderedDitherDeclarationText + simplexDitherDeclarationText,
         orderedDitherSimplexBodyText
+    );
+    const orderedDitherR2SequenceBase = generateFragmentShader(
+        orderedDitherDeclarationText + r2SequenceDitherDeclarationText,
+        orderedDitherR2SequenceBodyText
     );
     const hueLightnessOrderedDitherBase = generateFragmentShader(
         hueLightnessDeclarationText,
@@ -295,6 +306,10 @@ function createFragmentShaderTexts() {
         [ORDERED_DITHER, shaderTextContainer(orderedDitherBase)],
         [ORDERED_DITHER_RANDOM, shaderTextContainer(orderedDitherRandomBase)],
         [ORDERED_DITHER_SIMPLEX, shaderTextContainer(orderedDitherSimplexBase)],
+        [
+            ORDERED_DITHER_R2_SEQUENCE,
+            shaderTextContainer(orderedDitherR2SequenceBase),
+        ],
         [
             HUE_LIGHTNESS_ORDERED_DITHER,
             shaderTextContainer(hueLightnessOrderedDitherBase),
@@ -688,6 +703,8 @@ const getAlgoKey = (algoKey, variant) => {
                 return ORDERED_DITHER_RANDOM;
             case ORDERED_DITHER_VARIANT_SIMPLEX:
                 return ORDERED_DITHER_SIMPLEX;
+            case ORDERED_DITHER_VARIANT_R2_SEQUENCE:
+                return ORDERED_DITHER_R2_SEQUENCE;
             default:
                 return ORDERED_DITHER;
         }

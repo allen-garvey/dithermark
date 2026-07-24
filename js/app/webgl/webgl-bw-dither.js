@@ -3,6 +3,7 @@ import Shader from './webgl-shader.js';
 import {
     ORDERED_DITHER_VARIANT_RANDOM,
     ORDERED_DITHER_VARIANT_SIMPLEX,
+    ORDERED_DITHER_VARIANT_R2_SEQUENCE,
 } from '../../shared/models/ordered-dither-variants.js';
 import Bayer from '../../shared/bayer-matrix.js';
 import BayerWebgl from './webgl-bayer.js';
@@ -17,14 +18,15 @@ const R2_SEQUENCE_THRESHOLD = 4;
 const ORDERED_DITHER = 5;
 const ORDERED_RANDOM_DITHER = 6;
 const ORDERED_SIMPLEX_DITHER = 7;
-const COLOR_REPLACE = 8;
-const TEXTURE_COMBINE = 9;
-const ADITHER_ADD1 = 10;
-const ADITHER_ADD2 = 11;
-const ADITHER_ADD3 = 12;
-const ADITHER_XOR1 = 13;
-const ADITHER_XOR2 = 14;
-const ADITHER_XOR3 = 15;
+const ORDERED_R2_SEQUENCE_DITHER = 8;
+const COLOR_REPLACE = 9;
+const TEXTURE_COMBINE = 10;
+const ADITHER_ADD1 = 11;
+const ADITHER_ADD2 = 12;
+const ADITHER_ADD3 = 13;
+const ADITHER_XOR1 = 14;
+const ADITHER_XOR2 = 15;
+const ADITHER_XOR3 = 16;
 
 /*
  * Actual webgl function creation
@@ -391,6 +393,9 @@ function webGLOrderedDither(
     } else if (variant === ORDERED_DITHER_VARIANT_SIMPLEX) {
         algoKey = ORDERED_SIMPLEX_DITHER;
         secondCustomDeclarationId = 'webgl-simplex-declaration-fshader';
+    } else if (variant === ORDERED_DITHER_VARIANT_R2_SEQUENCE) {
+        algoKey = ORDERED_R2_SEQUENCE_DITHER;
+        secondCustomDeclarationId = 'webgl-r2-sequence-declaration-fshader';
     }
     const drawFunc = getDrawFunc(
         algoKey,
@@ -446,6 +451,10 @@ const getBayerAdjustmentText = variant => {
         case ORDERED_DITHER_VARIANT_RANDOM:
             return Shader.shaderText(
                 'webgl-random-ordered-dither-adjustment-fshader'
+            );
+        case ORDERED_DITHER_VARIANT_R2_SEQUENCE:
+            return Shader.shaderText(
+                'webgl-r2-sequence-ordered-dither-adjustment-fshader'
             );
         default:
             return '';

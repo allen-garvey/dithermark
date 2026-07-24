@@ -38,6 +38,11 @@ const shaderTextMap = new Map([
         'webgl-simplex-ordered-dither-adjustment-fshader',
         'bayerValue = bayerValue * snoise(gl_FragCoord.xy);',
     ],
+    [
+        //used for r2 sequence ordered dither in bw and color dithers
+        'webgl-r2-sequence-ordered-dither-adjustment-fshader',
+        'bayerValue = bayerValue * (r2_sequence(gl_FragCoord.xy) / 2.0 + 0.5);',
+    ],
 ]);
 
 /**

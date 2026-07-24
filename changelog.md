@@ -4,7 +4,7 @@
 
 ### Features
 
-* Add R2 Sequence noise dither
+* Add R2 Sequence noise dither and R2 Sequence ordered dither variants
 
 * Add ability to set video quality when exporting video.
 
