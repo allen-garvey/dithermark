@@ -23,15 +23,16 @@ const ORDERED_DITHER_R2_SEQUENCE = 7;
 const HUE_LIGHTNESS_ORDERED_DITHER = 8;
 const HUE_LIGHTNESS_RANDOM_ORDERED_DITHER = 9;
 const HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER = 10;
-const ADITHER_ADD1 = 11;
-const ADITHER_ADD2 = 12;
-const ADITHER_ADD3 = 13;
-const ADITHER_XOR1 = 14;
-const ADITHER_XOR2 = 15;
-const ADITHER_XOR3 = 16;
-const YLILUOMA1 = 17;
-const YLILUOMA2 = 18;
-const STARK_ORDERED_DITHER = 19;
+const HUE_LIGHTNESS_R2_SEQUENCE_ORDERED_DITHER = 11;
+const ADITHER_ADD1 = 12;
+const ADITHER_ADD2 = 13;
+const ADITHER_ADD3 = 14;
+const ADITHER_XOR1 = 15;
+const ADITHER_XOR2 = 16;
+const ADITHER_XOR3 = 17;
+const YLILUOMA1 = 18;
+const YLILUOMA2 = 19;
+const STARK_ORDERED_DITHER = 20;
 
 const ALGO_KEYS = [
     CLOSEST_COLOR,
@@ -45,6 +46,7 @@ const ALGO_KEYS = [
     HUE_LIGHTNESS_ORDERED_DITHER,
     HUE_LIGHTNESS_RANDOM_ORDERED_DITHER,
     HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER,
+    HUE_LIGHTNESS_R2_SEQUENCE_ORDERED_DITHER,
     ADITHER_ADD1,
     ADITHER_ADD2,
     ADITHER_ADD3,
@@ -281,6 +283,11 @@ function createFragmentShaderTexts() {
         orderedDitherSimplexBodyText,
         hueLightnessPostscriptText
     );
+    const hueLightnessR2SequenceOrderedDitherBase = generateFragmentShader(
+        hueLightnessDeclarationText + r2SequenceDitherDeclarationText,
+        orderedDitherR2SequenceBodyText,
+        hueLightnessPostscriptText
+    );
     const randomDitherShaderBase = generateFragmentShader(
         randomDitherDeclarationText,
         randomDitherBodyText
@@ -321,6 +328,10 @@ function createFragmentShaderTexts() {
         [
             HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER,
             shaderTextContainer(hueLightnessSimplexOrderedDitherBase),
+        ],
+        [
+            HUE_LIGHTNESS_R2_SEQUENCE_ORDERED_DITHER,
+            shaderTextContainer(hueLightnessR2SequenceOrderedDitherBase),
         ],
         [
             ADITHER_ADD1,
@@ -714,6 +725,8 @@ const getAlgoKey = (algoKey, variant) => {
             return HUE_LIGHTNESS_RANDOM_ORDERED_DITHER;
         case ORDERED_DITHER_VARIANT_SIMPLEX:
             return HUE_LIGHTNESS_SIMPLEX_ORDERED_DITHER;
+        case ORDERED_DITHER_VARIANT_R2_SEQUENCE:
+            return HUE_LIGHTNESS_R2_SEQUENCE_ORDERED_DITHER;
         default:
             return HUE_LIGHTNESS_ORDERED_DITHER;
     }
