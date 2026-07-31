@@ -13,6 +13,7 @@ const getOrderedDitherPatterns = () => [
     { title: 'Bayer 8×8', pattern: 'bayer', dimensions: 8 },
     { title: 'Bayer 16×16', pattern: 'bayer', dimensions: 16 },
     { title: 'Blue Noise 16×16', pattern: 'blueNoise', dimensions: 16 },
+    { title: 'Blue Noise 2 16×16', pattern: 'blueNoise2', dimensions: 16 },
     { title: 'Hatch Horizontal', pattern: 'hatchHorizontal', dimensions: 4 },
     { title: 'Hatch Vertical', pattern: 'hatchVertical', dimensions: 4 },
     { title: 'Hatch Right', pattern: 'hatchRight', dimensions: 4 },
