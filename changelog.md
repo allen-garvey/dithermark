@@ -2,6 +2,8 @@
 
 ## HEAD
 
+## 6.2 2026-07-31 [Commit a08bc36](https://github.com/allen-garvey/dithermark/commit/a08bc36f46c1673e7cc06b49ea8379d80cb6b3fb)
+
 ### Features
 
 * Add alternative blue noise ordered dither pattern.
