@@ -42,3 +42,4 @@ scripts/matrix-output/*.json
 scripts/scratch/*
 tmp/*
 blue-noise-test/*
+unsplash-api/deploy/*
