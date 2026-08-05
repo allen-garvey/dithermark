@@ -84,7 +84,7 @@ func logUnsplashAccess(photoLink, defaultLogDir string) error {
 	return w.Error()
 }
 
-func handleUnsplashApiRequest(rawPhotoId string) Response {
+func handleUnsplashApiRequest(exeDir, unsplashAccessKey, rawPhotoId string) Response {
 	photoId, err := strconv.Atoi(rawPhotoId)
 	if err != nil {
 		return Response{
@@ -92,17 +92,6 @@ func handleUnsplashApiRequest(rawPhotoId string) Response {
 			Body:       ErrorBody{Errors: "Invalid input argument"},
 		}
 	}
-
-	exePath, err := os.Executable()
-	if err != nil {
-		fmt.Printf("Error getting executable path: %v\n", err)
-		return Response{
-			StatusCode: 500,
-			Body:       ErrorBody{Errors: "Error getting executable path"},
-		}
-	}
-
-	exeDir := filepath.Dir(exePath)
 
 	unsplashImageData, err := loadUnsplashImageData(filepath.Join(exeDir, "unsplash.json"))
 	if err != nil {
@@ -123,7 +112,7 @@ func handleUnsplashApiRequest(rawPhotoId string) Response {
 	unsplashDownloadUrl := fmt.Sprintf(
 		"%s?client_id=%s",
 		photo.Download,
-		os.Getenv("UNSPLASH_ACCESS_KEY"),
+		unsplashAccessKey,
 	)
 
 	resp, err := http.Get(unsplashDownloadUrl)
@@ -151,10 +140,10 @@ func handleUnsplashApiRequest(rawPhotoId string) Response {
 	}
 }
 
-func handler(w http.ResponseWriter, r *http.Request) {
+func handler(w http.ResponseWriter, r *http.Request, exeDir, unsplashAccessKey string) {
 	photoIdStr := r.URL.Query().Get("photo_id")
 
-	result := handleUnsplashApiRequest(photoIdStr)
+	result := handleUnsplashApiRequest(exeDir, unsplashAccessKey, photoIdStr)
 
 	w.Header().Set("Content-Type", "application/json")
 	if result.StatusCode != 0 {
@@ -169,11 +158,28 @@ func main() {
 		port = os.Args[1]
 	}
 
-	http.HandleFunc("/", handler)
+	exePath, err := os.Executable()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error getting executable path: %v\n", err)
+		os.Exit(1)
+	}
+
+	exeDir := filepath.Dir(exePath)
+
+	unsplashAccessKey := os.Getenv("UNSPLASH_ACCESS_KEY")
+
+	if unsplashAccessKey == "" {
+		fmt.Fprintln(os.Stderr, "UNSPLASH_ACCESS_KEY not set")
+		os.Exit(1)
+	}
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		handler(w, r, exeDir, unsplashAccessKey)
+	})
 	addr := ":" + port
 	fmt.Printf("Listening on %s\n", addr)
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		fmt.Println("Server error:", err)
+		fmt.Fprintln(os.Stderr, "Server error:", err)
 		os.Exit(1)
 	}
 }
