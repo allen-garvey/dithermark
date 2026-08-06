@@ -2,6 +2,12 @@
 
 ## HEAD
 
+## 6.3 2026-08-06 [Commit 5ca9d9d](https://github.com/allen-garvey/dithermark/commit/5ca9d9d8e89da1b59bea1af6ee1d1e01b393dce3)
+
+### Technical
+
+* Change Unsplash Download API endpoint from serverless PHP function to stand-alone Go http server.
+
 ## 6.2 2026-07-31 [Commit a08bc36](https://github.com/allen-garvey/dithermark/commit/a08bc36f46c1673e7cc06b49ea8379d80cb6b3fb)
 
 ### Features
