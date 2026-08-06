@@ -13,22 +13,22 @@ This is a guide for implementing the Unsplash random images feature, while follo
 
 * Run `npm run seed:unsplash` to generate a json file with random images from Unsplash.
 
-## DigitalOcean serverless function setup
+## API server setup
 
-In order to comply with the [Unsplash API Guidelines](https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines), you will need to make an API call to Unsplash when a user downloads an Unsplash image. This guide shows you how to use [DigitalOcean functions](https://www.digitalocean.com/products/functions) to implement an API.
+In order to comply with the [Unsplash API Guidelines](https://help.unsplash.com/en/articles/2511245-unsplash-api-guidelines), you will need to make an API call to Unsplash when a user downloads an Unsplash image. This guide shows you how to create a stand-alone Go http server to meet this requirement.
 
 ### Prerequisites
 
 * Follow the instructions above to generate the Unsplash random images JSON file.
 
+## Dependencies
+
+* go >= 1.22
+* make
+* POSIX compliant system
+
 ### Directions
 
-* Run `npm run deploy` to generate a PHP serverless function.
+* In the `unsplash-api` directory run `make` to create a stand-alone http server in `unsplash-api/deploy`.
 
-* Create a new PHP function in the DigitalOcean control plane.
-
-* Paste the contents of `serverless/unsplash-download.php` as the function source.
-
-* Set `UNSPLASH_ACCESS_KEY` as an environment variable, using the value from `unsplash-secrets.js`
-
-* Copy the serverless function url, and set `UNSPLASH_DOWNLOAD_URL` in `unsplash-secrets.js`.
+* Deploy the contents of `unsplash-api/deploy` to a server. Make sure to set the required environment variable `UNSPLASH_ACCESS_KEY`. You can also set `UNSPLASH_ACCESS_LOG_DIR` to set the directory where log files are written. You can specify the port via a command line argument.
