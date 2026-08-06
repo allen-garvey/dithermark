@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -76,8 +77,8 @@ func logUnsplashAccess(photoLink, defaultLogDir string) error {
 	w := csv.NewWriter(f)
 	defer w.Flush()
 
-	timestamp := time.Now().UTC().Format(time.RFC3339)
-	if err := w.Write([]string{timestamp, photoLink}); err != nil {
+	timestamp := time.Now().UTC().Format("2006-01-02T15:04Z")
+	if err := w.Write([]string{timestamp, strings.TrimPrefix(photoLink, "https://unsplash.com/photos/")}); err != nil {
 		return err
 	}
 
