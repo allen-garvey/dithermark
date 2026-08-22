@@ -1,9 +1,50 @@
 import path from 'path';
+import { styleText } from 'util';
 import { render, getTemplate } from './view-helpers.js';
 
 import { APP_NAME, COLOR_DITHER_MAX_COLORS } from '../../constants.js';
 
-export const renderHome = ({ isProduction = false }) => {
+import { WORKER_OUT_FILE } from '../../build/webpack.worker.config.js';
+
+export const renderHome = ({ isProduction = false, webpack, fs }) => {
+    const webpackPromise = new Promise((resolve, reject) => {
+        webpack.run((err, stats) => {
+            if (err) {
+                console.error(err);
+                return resolve('');
+            }
+            const info = stats.toJson();
+            if (stats.hasErrors()) {
+                console.error(info.errors);
+                return resolve('');
+            }
+
+            if (stats.hasWarnings()) {
+                console.warn(info.warnings);
+            }
+
+            console.log(
+                styleText(
+                    'green',
+                    `webpack worker compilation finished in ${
+                        info.time / 1000
+                    }s`
+                )
+            );
+
+            webpack.close(closeErr => {
+                if (closeErr) {
+                    console.error('Problem closing webpack compiler');
+                    console.error(closeErr);
+                    return resolve('');
+                }
+                return fs
+                    .readFile(path.join('/', WORKER_OUT_FILE))
+                    .then(data => resolve(data));
+            });
+        });
+    });
+
     const shaders = [
         // vertex
         {
@@ -325,14 +366,18 @@ export const renderHome = ({ isProduction = false }) => {
         )
     ).then(shaderTexts => shaderTexts.join(''));
 
-    return Promise.all([shaderPromises, getTemplate('index.html')]).then(
-        ([shaderContent, indexTemplate]) =>
-            render(indexTemplate, {
-                APP_NAME,
-                APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
-                GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
-                IS_DEV: !isProduction,
-                shaderContent,
-            })
+    return Promise.all([
+        shaderPromises,
+        getTemplate('index.html'),
+        webpackPromise,
+    ]).then(([shaderContent, indexTemplate, workerText]) =>
+        render(indexTemplate, {
+            APP_NAME,
+            APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
+            GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
+            IS_DEV: !isProduction,
+            shaderContent,
+            workerText,
+        })
     );
 };
