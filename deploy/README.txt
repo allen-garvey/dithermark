@@ -10,36 +10,10 @@ This is the instructions for how to run [Dithermark](https://app.dithermark.com)
 
 * Select the "Cast, save, and share" menu item, and then "Install page as app..."
 
-## Windows
+## Windows / MacOS / Linux / BSD
 
-* If you have an Intel or AMD cpu run `dithermark-x64.exe` in this folder. If you have a Snapdragon or other ARM cpu run `dithermark-arm64.exe` in this folder.
+* Open public_html/index.html in the browser of your choice, such as Chrome, Firefox, Safari.
 
-* This will open a terminal, where you may be asked to allow network permissions.
+## Known Issues
 
-* Open the web browser of your choice to http://localhost:8800
-
-* If there is a problem due to the port being in use, change the port number in `config.json`
-
-## MacOS
-
-* Right click `dithermark.command` and open with TextEdit
-
-* You will see a message about MacOS not being able to verify the developer, click open
-
-* Close the file without saving it
-
-* Double click `dithermark.command`. This should open the Terminal app. If it doesn't, right click `dithermark.command` and open with Terminal.
-
-* Open the web browser of your choice to http://localhost:8800
-
-* If there is a problem due to the port being in use, open `dithemark.command` with TextEdit or the text editor of your choice and change the port number
-
-## Linux / BSD
-
-* Open a terminal to this directory and run `./dithemark.command`
-
-* This requires either Python 3 or PHP. Python 3 is most likely already installed by your distribution, but if not you will need to install it via your package manager
-
-* Open the web browser of your choice to http://localhost:8800
-
-* If there is a problem due to the port being in use, open `dithemark.command` with the text editor of your choice and change the port number
+* In Safari, batch converting multiple images might not work properly due to the permission to download multiple files dialogue box always opening on export. In that case, try using either Chrome or Safari to bypass this issue.
