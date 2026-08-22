@@ -72,7 +72,6 @@ import { getRandomImage } from '../random-image.js';
 import FileInputButton from './widgets/file-input-button.vue';
 import VideoPlayer from './widgets/video-player.vue';
 import BatchImageSelector from './widgets/batch-image-selector.vue';
-import { BATCH_IMAGE_MODE_EXPORT_IMAGES } from '../models/batch-export-modes.js';
 import {
     OPEN_FILE_MODE_BATCH_IMAGES,
     OPEN_FILE_MODE_SINGLE_IMAGE,
