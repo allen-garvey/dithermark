@@ -1,35 +1,49 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta charset="utf-8"/>
+        <meta charset="utf-8" />
         <title><?= APP_NAME; ?></title>
-        <meta name="description" content="An interactive, in-browser exploration of image dithering and color quantization algorithms"/>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <link rel="stylesheet" type="text/css" href="<?= URL_ROOT; ?>/assets/style.css"/>
-        <link rel="apple-touch-icon" href="<?= URL_ROOT; ?>/apple-touch-icon.png"/>
+        <meta
+            name="description"
+            content="An interactive, in-browser exploration of image dithering and color quantization algorithms"
+        />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="stylesheet" type="text/css" href="assets/style.css" />
+        <link rel="apple-touch-icon" href="apple-touch-icon.png" />
     </head>
     <body>
-        //this extra .total-page div is unfortunately required for FireFox full screen mode to allow scrolling, instead of just cutting content off
+        //this .total-page div is required for FireFox fullscreen mode to allow
+        //scrolling, instead of cutting content off
         <div class="total-page">
             <header class="header">
                 <nav class="nav">
                     <h1 class="brand"><?= APP_NAME; ?></h1>
                     <ul>
                         <li>
-                            <a href="<?= APP_SUPPORT_SITE_FAQ_PAGE_URL; ?>" target="_blank">FAQ</a>
+                            <a
+                                href="<?= APP_SUPPORT_SITE_FAQ_PAGE_URL; ?>"
+                                target="_blank"
+                                >FAQ</a
+                            >
                         </li>
                         <li>
-                            <a href="<?= GITHUB_SOURCE_URL; ?>" target="_blank">Source</a>
+                            <a href="<?= GITHUB_SOURCE_URL; ?>" target="_blank"
+                                >Source</a
+                            >
                         </li>
                     </ul>
                 </nav>
             </header>
             <main>
-                <noscript><?= APP_NAME; ?> requires JavaScript to run. Please enable JavaScript in your browser settings and reload this page.</noscript>
+                <noscript
+                    ><?= APP_NAME; ?>
+                    requires JavaScript to run. Please enable JavaScript in your
+                    browser settings and reload this page.</noscript
+                >
                 <div id="app" data-is-dev="<?= IS_DEV; ?>"></div>
             </main>
         </div>
         <?= shaderContent; ?>
-        <script type="text/javascript" src="<?= URL_ROOT; ?>/assets/app.js"></script>
+        <script type="text/javascript" src="assets/app.js"></script>
     </body>
 </html>

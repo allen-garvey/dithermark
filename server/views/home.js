@@ -331,7 +331,6 @@ export const renderHome = ({ isProduction = false }) => {
                 APP_NAME,
                 APP_SUPPORT_SITE_FAQ_PAGE_URL: 'https://www.dithermark.com/faq',
                 GITHUB_SOURCE_URL: 'https://github.com/allen-garvey/dithermark',
-                URL_ROOT: '',
                 IS_DEV: !isProduction,
                 shaderContent,
             })
