@@ -2,6 +2,10 @@
 
 ## HEAD
 
+### Features
+
+* Change the Dithermark offline app to work simply by opening the `index.html` file in a web browser. This greatly reduces the file size of releases, removes the requirement to run a local web server, and removes OS security warnings due to running a local web server.
+
 ## 6.3 2026-08-06 [Commit 5ca9d9d](https://github.com/allen-garvey/dithermark/commit/5ca9d9d8e89da1b59bea1af6ee1d1e01b393dce3)
 
 ### Technical
