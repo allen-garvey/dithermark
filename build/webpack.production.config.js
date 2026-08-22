@@ -23,6 +23,11 @@ export const getProductionConfig = () => {
         '../js/app/vues/dummy.vue'
     );
 
+    config.module.rules.push({
+        test: /worker-main\.js$/,
+        type: 'asset/source',
+    });
+
     return config;
 };
 

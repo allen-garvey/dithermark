@@ -3,6 +3,7 @@ import ColorPicker from './color-picker.js';
 import { createArray } from '../shared/array-util.js';
 import { createPixel } from '../shared/pixel.js';
 import { getShouldLimitNumberOfWebworkersSetting } from './user-settings.js';
+import worker from '../worker/worker-main.js';
 
 function createDitherWorkerHeader(
     imageWidth,
@@ -114,10 +115,12 @@ function createWorkers() {
             : 1;
     }
 
-    const workers = createArray(
-        numWorkers,
-        () => new Worker(new URL('../worker/worker-main.js', import.meta.url))
-    );
+    const blob = new Blob([worker], { type: 'application/javascript' });
+    const workerUrl = URL.createObjectURL(blob);
+
+    const workers = createArray(numWorkers, () => new Worker(workerUrl));
+
+    URL.revokeObjectURL(workerUrl);
 
     let workerCurrentIndex = 0;
 
