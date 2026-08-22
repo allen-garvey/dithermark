@@ -12,8 +12,10 @@ This is the instructions for how to run [Dithermark](https://app.dithermark.com)
 
 ## Windows / MacOS / Linux / BSD
 
-* Open public_html/index.html in the browser of your choice, such as Chrome, Firefox, Safari.
+* Open public_html/index.html in the browser of your choice, such as Chrome, Firefox, Safari, or Edge.
 
 ## Known Issues
+
+* The open random image feature is removed due to web browser limitations when running local HTML files.
 
 * In Safari, batch converting multiple images might not work properly due to the permission to download multiple files dialogue box always opening on export. In that case, try using either Chrome or Safari to bypass this issue.
