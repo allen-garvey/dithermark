@@ -53,7 +53,7 @@ function shaderText(id) {
         return shaderTextMap.get(id);
     }
 
-    const shader = document.getElementById(id).textContent;
+    const shader = document.getElementById(id).textContent.trim();
     shaderTextMap.set(id, shader);
 
     return shader;
