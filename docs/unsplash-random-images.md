@@ -11,7 +11,7 @@ This is a guide for implementing the Unsplash random images feature, while follo
 
 ## Generate random images JSON file for client
 
-* Run `npm run seed:unsplash` to generate a json file with random images from Unsplash.
+* Run `export UNSPLASH_ACCESS_KEY='<your unsplash access key>'; npm run seed:unsplash` to generate a json file with random images from Unsplash.
 
 ## API server setup
 

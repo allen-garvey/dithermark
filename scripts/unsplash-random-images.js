@@ -1,8 +1,14 @@
 import path from 'path';
 import fs from 'fs/promises';
 
-import { UNSPLASH_ACCESS_KEY } from '../unsplash-secrets.js';
 import { PUBLIC_HTML_DIR } from '../build/webpack.config.js';
+
+const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY;
+
+if (!UNSPLASH_ACCESS_KEY) {
+    console.error(`UNSPLASH_ACCESS_KEY env variable not set`);
+    process.exit(1);
+}
 
 const modifierWordsSet = new Set([
     'a',
