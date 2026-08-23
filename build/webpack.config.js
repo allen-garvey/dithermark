@@ -6,8 +6,7 @@ import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 export const PUBLIC_HTML_DIR = path.resolve(
     import.meta.dirname,
     '..',
-    'deploy',
-    'public_html'
+    'deploy'
 );
 export const ASSETS_DIR = 'assets';
 export const PUBLIC_ASSETS_DIR = path.resolve(PUBLIC_HTML_DIR, ASSETS_DIR);

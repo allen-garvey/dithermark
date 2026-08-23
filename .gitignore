@@ -26,14 +26,10 @@ Thumbs.db
 *.eot
 *.woff
 *.zip
-deploy/dithermark
-deploy/*.exe
-deploy/public_html/assets/*
-deploy/public_html/index.html
-deploy/public_html/api/*
+deploy/assets/*
+deploy/*.html
+deploy/api/*
 *.rb
-sass/lib/*
-inc/serverless/build/*
 unsplash-secrets.js
 scripts/images/*
 scripts/matrix-output/*.json
@@ -41,3 +37,5 @@ scripts/scratch/*
 tmp/*
 blue-noise-test/*
 unsplash-api/deploy/*
+dithermark/*.html
+dithermark/assets/*

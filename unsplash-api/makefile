@@ -3,8 +3,8 @@ all: deploy/unsplash-download-api deploy/unsplash-download-api-freebsd deploy/un
 deploy:
 	mkdir -p deploy
 
-deploy/unsplash.json: deploy ../deploy/public_html/api/unsplash.json
-	cp ../deploy/public_html/api/unsplash.json deploy/unsplash.json
+deploy/unsplash.json: deploy ../deploy/api/unsplash.json
+	cp ../deploy/api/unsplash.json deploy/unsplash.json
 
 deploy/unsplash-download-api: deploy unsplash-download-api.go
 	go build -o deploy/ unsplash-download-api.go

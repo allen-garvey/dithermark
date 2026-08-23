@@ -12,7 +12,7 @@ This is the instructions for how to run [Dithermark](https://app.dithermark.com)
 
 ## Windows / MacOS / Linux / BSD
 
-* Open public_html/index.html in the browser of your choice, such as Chrome, Firefox, Safari, or Edge.
+* Open index.html in the browser of your choice, such as Chrome, Firefox, Safari, or Edge.
 
 ## Known Issues
 
