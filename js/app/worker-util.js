@@ -114,10 +114,11 @@ function createWorkers() {
             : 1;
     }
 
-    const blob = new Blob([document.getElementById('worker-src').textContent], {
-        type: 'application/javascript',
-    });
-    const workerUrl = URL.createObjectURL(blob);
+    const workerUrl = URL.createObjectURL(
+        new Blob([document.getElementById('worker-src').textContent], {
+            type: 'application/javascript',
+        })
+    );
 
     const workers = createArray(numWorkers, () => new Worker(workerUrl));
 
