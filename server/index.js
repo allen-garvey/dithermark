@@ -10,8 +10,11 @@ import {
     PUBLIC_HTML_DIR,
     ASSETS_DIR,
 } from '../build/webpack.config.js';
+import { getWorkerConfig } from '../build/webpack.worker.config.js';
 import { createWebpackCompiler, startWebpackCompiler } from './webpack.js';
 import { serveFile } from './routes.js';
+
+const workerWebpackCompiler = createWebpackCompiler(fs, getWorkerConfig());
 
 const app = express();
 const port = 3000;
@@ -19,7 +22,9 @@ const port = 3000;
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    renderHome({}).then(html => res.send(html));
+    renderHome({ webpack: workerWebpackCompiler, fs }).then(html =>
+        res.send(html)
+    );
 });
 
 app.get(`/${ASSETS_DIR}/:filename`, (req, res) => {

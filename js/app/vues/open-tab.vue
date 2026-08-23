@@ -32,6 +32,7 @@
                 Image url
             </button>
             <button
+                v-if="!isRunningAsHTMLFile"
                 class="btn btn-default"
                 @click="openRandomImage"
                 :disabled="isCurrentlyLoadingImageUrl"
@@ -126,6 +127,8 @@ export default {
             isCurrentlyLoadingImageUrl: false,
             imageFiles: null,
             currentImageFileIndex: 0,
+            // required because fetch to unsplash.json not allowed when running as HTML file
+            isRunningAsHTMLFile: window.location.protocol === 'file:',
         };
     },
     watch: {

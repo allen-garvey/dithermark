@@ -114,10 +114,15 @@ function createWorkers() {
             : 1;
     }
 
-    const workers = createArray(
-        numWorkers,
-        () => new Worker(new URL('../worker/worker-main.js', import.meta.url))
+    const workerUrl = URL.createObjectURL(
+        new Blob([document.getElementById('worker-src').textContent], {
+            type: 'application/javascript',
+        })
     );
+
+    const workers = createArray(numWorkers, () => new Worker(workerUrl));
+
+    URL.revokeObjectURL(workerUrl);
 
     let workerCurrentIndex = 0;
 
