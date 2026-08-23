@@ -9,6 +9,7 @@ export const getProductionConfig = () => {
     const config = getConfig();
 
     config.mode = 'production';
+    config.output.clean = true;
 
     config.resolve.alias['app-performance-timer'] = path.resolve(
         import.meta.dirname,
