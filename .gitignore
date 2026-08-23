@@ -38,4 +38,6 @@ tmp/*
 blue-noise-test/*
 unsplash-api/deploy/*
 dithermark/*.html
+dithermark/*.png
+dithermark/*.ico
 dithermark/assets/*
